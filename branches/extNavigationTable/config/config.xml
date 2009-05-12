@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<plugin-config>
+	<depends plugin-name="com.iver.cit.gvsig"/>
+	<depends plugin-name="com.iver.cit.gvsig.cad"/>
+	<libraries library-dir="lib"/>
+	<resourceBundle name="text"/>
+	<extensions>
+		<extension class-name="es.udc.cartolab.gvsig.navtable.NavTableExtension" description="NavTable" active="true">
+			<tool-bar name="planSan">
+				<action-tool icon="images/table_refresh.png" tooltip="Tabla Navegable"
+					action-command="PSTable" position="1"/>
+			</tool-bar>
+		</extension> 
+	</extensions>
+</plugin-config>
