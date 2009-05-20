@@ -44,6 +44,7 @@ public class NavTablePopupMenu extends JPopupMenu implements ActionListener {
 		
 		preferencesMenuItem = new JMenuItem("Preferences...", 
 				new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/preferences.png"));
+		preferencesMenuItem.addActionListener(this);
 		
 		//add all the menu items
 		add(showNullMenuItem);
@@ -61,6 +62,10 @@ public class NavTablePopupMenu extends JPopupMenu implements ActionListener {
 		if (e.getSource()==editFieldsMenuItem) {
 			EditTableSchemaPanel view = new EditTableSchemaPanel(layer);
 			PluginServices.getMDIManager().addWindow(view);
+		}
+		if (e.getSource()==preferencesMenuItem) {
+			PreferencesPanel preferencesPanel = new PreferencesPanel();
+			PluginServices.getMDIManager().addCentredWindow(preferencesPanel);
 		}
 	}
 }
