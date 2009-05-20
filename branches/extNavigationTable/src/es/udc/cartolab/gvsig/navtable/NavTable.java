@@ -3,6 +3,11 @@ package es.udc.cartolab.gvsig.navtable;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.JPanel;
@@ -18,6 +23,9 @@ import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
+import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
+import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
+
 import es.udc.cartolab.gvsig.navtable.ToggleEditing;
 
 /**
@@ -31,6 +39,7 @@ import es.udc.cartolab.gvsig.navtable.ToggleEditing;
  * the table to be shown in this window.</p>
  * 
  * @author Nacho Varela
+ * @author Pablo Sanxiao
  */
 public class NavTable extends AbstractNavTable {
 
@@ -138,16 +147,63 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	/**
+	 * It gets the alias name of the attributes if exists in the 
+	 * alias file
+	 * 
+	 * @param fieldName
+	 * @return alias
+	 */
+	private String getAlias(String fieldName) {
+		File layerFile = null;
+		String filePath = null; 
+		String alias = null;
+		ReadableVectorial source = layer.getSource();
+		
+		if (source != null && source instanceof VectorialFileAdapter) {
+			layerFile = ((VectorialFileAdapter) source).getFile();
+			filePath = layerFile.getAbsolutePath();
+		}
+		
+		String pathTokens[] = filePath.split("shp");
+		File fileAlias = new File(pathTokens[0] + "alias");
+		
+		try {
+			String line;
+			BufferedReader fileReader = new BufferedReader(new FileReader(fileAlias));
+			while ((line = fileReader.readLine())!=null) {
+				String tokens[] = line.split("=");
+				if (fieldName.compareTo(tokens[0]) == 0) {
+					alias = tokens[1];
+					break;
+				}
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return alias;
+	}
+	
+	/**
 	 * It gets the attributes names from the data table and
 	 * sets them on the left column.
 	 *
 	 */
 	private void fillAttributes(){	
-		try {			
+		try {
+			String auxString = null;
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
 			for (int i = 0; i < recordset.getFieldCount(); i++){									
-				Vector aux = new Vector();	
-				aux.add(recordset.getFieldName(i));
+				Vector aux = new Vector();
+				auxString = getAlias(recordset.getFieldName(i));
+				if (auxString != null) {
+					aux.add(auxString);
+				}else {
+					aux.add(recordset.getFieldName(i));
+				}
 				aux.add(" ");				
 				model.addRow(aux);
 				model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);				
