@@ -164,8 +164,8 @@ public class NavTable extends AbstractNavTable {
 			filePath = layerFile.getAbsolutePath();
 		}
 		
-		String pathTokens[] = filePath.split("shp");
-		File fileAlias = new File(pathTokens[0] + "alias");
+		String pathToken = filePath.substring(0, filePath.lastIndexOf("."));
+		File fileAlias = new File(pathToken + ".alias");
 		
 		try {
 			String line;
