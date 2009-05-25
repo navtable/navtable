@@ -1,0 +1,85 @@
+<installation version="1.0">
+	<info>
+		<appname>I18nExtension</appname> <!-- A SUSTITUR POR EL NOMBRE DE EXTENSION, POR EJEMPLO: "VISOR_RUIDO" -->
+		<appversion>0.1</appversion>
+		<authors>
+			<author name="Generalitat Valenciana. Conselleria d'Infraestructures i Transport" email="" />
+			<author name="Iver Tecnologías de la Información S.A." email="" />
+            <author name="Ayto. de Valencia" email="" />
+		</authors>
+		<url>http://www.gvsig.gva.es/</url>
+		<javaversion>1.5</javaversion>
+	</info>
+
+	<guiprefs height="600" resizable="yes" width="800">
+		<laf name="liquid">
+			<os family="unix" />
+		</laf>
+		<laf name="liquid">
+			<os family="windows" />
+		</laf>
+	</guiprefs>
+
+	<locale>
+		<langpack iso3="spa"/>
+		<langpack iso3="val"/>
+		<langpack iso3="eng"/>
+		<langpack iso3="cat"/>
+		<langpack iso3="chn"/>
+		<langpack iso3="cze"/>
+		<langpack iso3="dan"/>
+		<langpack iso3="deu"/>
+		<langpack iso3="fin"/>
+		<langpack iso3="fra"/>
+		<langpack iso3="glg"/>
+		<langpack iso3="hun"/>
+		<langpack iso3="ita"/>
+		<langpack iso3="jpn"/>
+		<langpack iso3="mys"/>
+		<langpack iso3="ned"/>
+		<langpack iso3="nor"/>
+		<langpack iso3="pol"/>
+		<langpack iso3="por"/>
+		<langpack iso3="rom"/>
+		<langpack iso3="rus"/>
+		<langpack iso3="scg"/>
+		<langpack iso3="svk"/>
+		<langpack iso3="swe"/>
+		<langpack iso3="ukr"/>
+	</locale>
+
+	<resources>
+		<res src="resources/gpl.txt" id="LicencePanel.licence"/>
+		<res src="resources/LEEME.html" id="HTMLInfoPanel.info"/>
+		<res src="resources/images/Logo_gvsig_gva.jpg" id="Installer.image"/>
+		<res src="resources/userInputSpec.xml" id="userInputSpec.xml"/>
+		<parsable targetfile="resources/userInputSpec.xml"/>
+		<res src="resources/userInputLang.xml_val" id="userInputLang.xml_val" />
+		<res src="resources/userInputLang.xml_spa" id="userInputLang.xml_spa" />
+	</resources>
+
+	<panels>
+		<panel classname="HTMLInfoPanel"/>
+		<panel classname="LicencePanel"/>
+		<panel classname="PacksPanel"/>
+		<panel classname="UserInputPanel"/>
+		<panel classname="InstallPanel"/>
+		<panel classname="SimpleFinishPanel"/>
+	</panels>
+
+	<packs>
+
+		<pack name="I18nExtension" required="yes">  <!--A SUSTITUIR POR LA EXTENSION, EJ: Extension VISOR_RUIDO-->
+			<description>Extensión de administración de traducciones multiidioma.</description> <!--A SUSTITUIR POR LA DESCRIPCION, EJ: Extension para manejo de... -->
+			<file targetdir="$INSTALL_PATH/bin/gvSIG/extensiones/" src="extensiones/org.gvsig.i18n" override="true"/> 
+			<!--SUSTITUR POR LA EXTENSION, ej: com.iver.ayto.visorRuido-->
+			<!--además, si hay que copiar algo fuera del directorio de la extension, hay que añadirlo-->
+			<!-- <file targetdir="$INSTALL_PATH/bin/gvSIG/extensiones/com.iver.cit.gvsig/lib" src="extensiones/com.iver.cit.gvsig/lib/driver-manager-1.1.jar" override="true"/> seria una copia de un jar dentro de gvSIG/extensiones/com.iver.cit.gvsig/lib -->
+			<!-- Sobreescribir con nueva versión de libInternationalization -->
+			<file targetdir="$INSTALL_PATH/bin/lib" src="../lib/gvsig-i18n.jar" override="true"/> 
+		</pack>
+
+
+	</packs>
+
+</installation>

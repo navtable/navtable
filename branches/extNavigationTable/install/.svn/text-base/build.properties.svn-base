@@ -1,0 +1,17 @@
+#SUSTITUIR POR EL DIRECTORIO DE EXTENSION, ej: com.iver.aytovalencia.visor1
+MAIN_INSTALL_PLUGIN=org.gvsig.i18n
+
+
+#VERIFICAR LOS NUMEROS DE VERSION
+EXTENSIONS=com.iver.cit.gvsig,${MAIN_INSTALL_PLUGIN}
+version=0.1.0
+bversion=0_1_0
+build=8
+gvSIG.version=1_1_2
+
+#SUSTITUIR POR EL NOMBRE DE PLUGIN, ej: visorRuido
+APPNAME=extI18n
+
+
+#SUSTITUIR POR EL DIRECTORIO DE SALIDA, ej: /tmp/myExtension
+OUTPUT_DIR=../instalables

@@ -1,0 +1,276 @@
+<project name="instalador-gvSIG" default="init" basedir=".">
+	
+	<dirname file="${ant.file.instalador-gvSIG}" property="base_dir"/>
+	<dirname file="${base_dir}" property="project_dir"/>
+	<dirname file="${project_dir}" property="workspace_dir"/>
+	
+	<import file="${workspace_dir}/binaries/ant/utilities.xml"/>
+	
+	<property file="build.properties"/>
+	<property file="${workspace_dir}/_fwAndami/gvSIG/extensiones/com.iver.cit.gvsig/build.number" prefix="gvSIG."/>
+	<property file="${project_dir}/build.number"/>
+	
+	<property name="dir_inst" location="/usr/local"/>
+	<!--<property name="base_dir" location="./"/>		-->
+	<property name="izpack_dir" location="${workspace_dir}/install/IzPack"/>
+	<property name="dir_libs" location="${izpack_dir}/lib"/>
+	
+	
+	<property name="GVSIG_INSTALLDIR" location="${workspace_dir}/install"/>
+	<property name="ANDAMI_DIR" location="${workspace_dir}/_fwAndami"/>
+	<property name="INSTALLER_DIR" value="${APPNAME}-${version}_installer"/>
+	<property name="JARNAME" value="${APPNAME}-${version}.jar"/>
+	<property name="DIR_LIN_GVSIG" location="${GVSIG_INSTALLDIR}/instalador-gvSIG-lin"/>
+	<property name="DIR_WIN_GVSIG" location="${GVSIG_INSTALLDIR}/instalador-gvSIG-win"/>
+	<property name="baseFileName" value="gvsig_${APPNAME}-${version}-${build}"/>
+	<property name="WINDOWSZIP" value="${baseFileName}-windows-i586.7z" />
+	<property name="LINUXBIN" value="${baseFileName}-linux-i586.bin"/>
+	<property name="WINDOWSEXE" value="${baseFileName}-windows-i586.exe"/>
+	<property name="MAC_10_ZIP" value="${baseFileName}-mac-10_4.zip"/>
+	<property name="autoinstalador" value="${APPNAME}_Installer" />
+	<property name="OUTPUT_DIR" location="./tmp/versiones/v${version}/${build.number}"/> <!--CAMBIAR ESTO SEGUN DIRECTORIO OUTPUT -->
+	
+	<condition property="LAUNCHER7Z" value="${GVSIG_INSTALLDIR}/launcher/7z/7za" else="${GVSIG_INSTALLDIR}/launcher/7z/7z.exe">
+		<os family="unix" />
+	</condition>
+	
+	<taskdef name="izpack" classpath="${dir_libs}/compiler.jar" classname="com.izforge.izpack.ant.IzPackTask"/>
+	
+	
+	<condition property="Lang.Is.Spanish">
+		<contains string="${env.LANG}" substring="es"/>
+	</condition>
+	<condition property="directorio.base">
+		<available file="${base_dir}/install.xml" type="file" />
+	</condition>
+	
+	<target name="E_Spanish" if="Lang.Is.Spanish">
+		<property name="ERROR_BASEDIR" value="En el directorio ${base_dir} no se encuentra el fichero install.xml" />
+	</target>
+	
+	<target name="E_notSpanish" unless="Lang.Is.Spanish">
+		<property name="ERROR_BASEDIR" value="Cannot find install.xml in ${base_dir} folder " />
+	</target>
+	
+	<target name="check" depends="E_Spanish,E_notSpanish">
+		<fail message="${ERROR_BASEDIR}" unless="directorio.base"/>
+	</target>
+	
+	
+	
+	<target name="init" depends="check,CopyFiles,CreateJar,Installation,InstallMac,CleanDir" >
+		
+	</target>
+	<target name="CopyFiles" description="Copia de ficheros de librerias y de las extensiones necesarias">
+		<delete dir="${base_dir}/bin"/>
+		<copy file="${base_dir}/resources/gpl.txt" todir="./bin"/>
+		<mkdir dir="${base_dir}/bin/lib"/>
+		<!-- 		copiamos los jar y zip que tenemos en _fwAndami/lib		 -->
+		<copy todir="${base_dir}/bin/lib">
+			<fileset dir="${ANDAMI_DIR}/lib">
+				<include name="*.jar"/>
+				<include name="*.zip"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${base_dir}/bin" file="${ANDAMI_DIR}/andami.jar"/>
+		<copy todir="${base_dir}/bin" file="${ANDAMI_DIR}/castor.properties"/>
+		
+		<!-- 		PARA WINDOWS -->
+		
+		
+		<delete dir="${base_dir}/tmpResources"/>
+		<mkdir dir="${base_dir}/tmpResources" />
+		
+		<!-- 	Copiamos el lanzador y sus traduciones al tmpResources,sin copiar el ini, manifest y los CVS (ANT excluye carpetas CVS por defecto -->
+		<copy todir="${base_dir}/tmpResources">
+			<fileset dir="${GVSIG_INSTALLDIR}/launcher/izpack-launcher-1.3/dist/">
+				<include name="**/"/>
+				<exclude name="**/*.ini"/>
+				<exclude name="**/*.manifest"/>
+			</fileset>
+		</copy>
+		<move file="${base_dir}/tmpResources/launcher-Win32.exe" tofile="./tmpResources/gvSIG.exe"/>
+		
+		
+		
+		
+		<for list="${EXTENSIONS}" param="extensions">
+			<sequential>
+				<copy todir="${base_dir}/extensiones/@{extensions}">
+					<fileset dir="${ANDAMI_DIR}/gvSIG/extensiones/@{extensions}"/>
+				</copy>
+				<echo>extension ----> @{extensions} </echo>
+			</sequential>
+		</for>
+	</target>
+	<target name="CreateJar" description="Generacion del instalador Jar">
+		<izpack input="${base_dir}/install.xml"
+			output="${base_dir}/${JARNAME}"
+			installerType="standard"
+			basedir="${base_dir}"
+			izPackDir="${izpack_dir}/"/>
+	</target>
+	<!-- 		generar el tar.gz para linux -->
+	<target name="Installation" description="Generacion de la distribucion">
+		
+		<mkdir dir="${OUTPUT_DIR}" />
+		<delete dir="${base_dir}/${INSTALLER_DIR}"/>
+		<mkdir dir="${base_dir}/${INSTALLER_DIR}/tmp_gvSIGInstall"/>
+		<copy file="${base_dir}/${JARNAME}" todir="./${INSTALLER_DIR}/tmp_gvSIGInstall"/>
+		
+		<!-- 		carpetas CVS no se copiaran, ANT las excluye por defecto -->
+		<copy todir="${base_dir}/${INSTALLER_DIR}/tmp_gvSIGInstall">
+			<fileset dir="${GVSIG_INSTALLDIR}/launcher/izpack-launcher-1.3_linux/dist/"/>
+		</copy>
+		
+		<chmod file="${base_dir}/${INSTALLER_DIR}/tmp_gvSIGInstall/launcher-Linux" perm="ugo+rx"/>
+		<delete file="${base_dir}/${INSTALLER_DIR}/tmp_gvSIGInstall/launcher.ini"/>
+		<copy file="${DIR_LIN_GVSIG}/resources/launcher.ini.j15" tofile="${base_dir}/${INSTALLER_DIR}/tmp_gvSIGInstall/launcher.ini"/>
+		<replace file="${base_dir}/${INSTALLER_DIR}/tmp_gvSIGInstall/launcher.ini" token="%JARNAME%" value="${JARNAME}"/>
+		
+		<!-- 		comprimimos la carpeta tmp_gvSIGInstall en tmp.tgz  -->
+		<tar destfile="${base_dir}/${INSTALLER_DIR}/tmp.tgz"  compression="gzip">
+			<tarfileset dir="${base_dir}/${INSTALLER_DIR}" mode="755" >
+				<include name="tmp_gvSIGInstall/launcher-Linux"/>
+			</tarfileset>
+			<tarfileset dir="${base_dir}/${INSTALLER_DIR}">
+				<include name="tmp_gvSIGInstall/*"/>
+				<exclude name="tmp_gvSIGInstall/launcher-Linux"/>
+			</tarfileset>
+		</tar>
+		<echo message="#!/bin/sh${line.separator}" file="./${INSTALLER_DIR}/xx.tmp" />
+		<echo message="lcount=59${line.separator}" file="./${INSTALLER_DIR}/xx.tmp" append="true" /> <!-- OJO SI SE TOCA EL FICHERO h_gvSIG-install.sh - 59 -> num de lineas del fichero + 2 -->
+    <copy todir="${base_dir}/${INSTALLER_DIR}" file="${GVSIG_INSTALLDIR}/launcher/izpack-launcher-1.3_linux/h_gvSIG-install.sh"/>
+    <!-- fixcrlf srcDir="${base_dir}/${INSTALLER_DIR}" includes="h_gvSIG-install.sh,xx.tmp"  eol="unix" eof=""/-->
+		<concat destfile="${base_dir}/${INSTALLER_DIR}/${LINUXBIN}" binary="true" >
+			<fileset file="${base_dir}/${INSTALLER_DIR}/xx.tmp"/>
+			<fileset file="${base_dir}/${INSTALLER_DIR}/h_gvSIG-install.sh"/>
+			<fileset file="${base_dir}/${INSTALLER_DIR}/tmp.tgz"/>
+		</concat>
+		<chmod file="${base_dir}/${INSTALLER_DIR}/${LINUXBIN}" perm="ugo+rx"/>
+		<delete file="${base_dir}/${INSTALLER_DIR}/xx.tmp"/>
+		<move file="${base_dir}/${INSTALLER_DIR}/${LINUXBIN}" todir="${OUTPUT_DIR}" />
+		<delete dir="${base_dir}/${INSTALLER_DIR}"/>
+		
+		
+		
+		<!-- 		PARA WINDOWS  -->
+		<delete dir="${base_dir}/${INSTALLER_DIR}"/>
+		<mkdir dir="${base_dir}/${INSTALLER_DIR}"/>
+		<copy todir="${base_dir}/${INSTALLER_DIR}">
+			<fileset dir="${GVSIG_INSTALLDIR}/launcher/izpack-launcher-1.3/dist"/>
+		</copy>
+		<delete file="${base_dir}/${INSTALLER_DIR}/launcher-Win32.ini"/>
+		<copy todir="${base_dir}/${INSTALLER_DIR}/" file="${DIR_WIN_GVSIG}/resources/launcher-Win32.ini.j15"/>
+		<move file="${base_dir}/${INSTALLER_DIR}/launcher-Win32.ini.j15" tofile="${base_dir}/${INSTALLER_DIR}/launcher-Win32.ini"/>
+		<replace file="${base_dir}/${INSTALLER_DIR}/launcher-Win32.ini" token="%JARNAME%" value="${JARNAME}"/>
+		<move file="${base_dir}/${JARNAME}" todir="./${INSTALLER_DIR}"/>
+		<delete file="${base_dir}/${WINDOWSZIP}"/>
+		<exec executable="${LAUNCHER7Z}">
+			<arg line="a -r ${WINDOWSZIP} ./${INSTALLER_DIR}/*"/>
+		</exec>
+		<copy file="${GVSIG_INSTALLDIR}/launcher/7z/dist_config.txt" tofile="./dist_config.txt"/>
+		<replace file="${base_dir}/dist_config.txt" token="%TITLE%" value="${APPNAME}-${bversion}_${build.number}" />
+		<concat destfile="${base_dir}/${WINDOWSEXE}" binary="true">
+			<fileset file="${GVSIG_INSTALLDIR}/launcher/7z/7zS.sfx"/>
+			<fileset file="${base_dir}/dist_config.txt"/>
+			<fileset file="${base_dir}/${WINDOWSZIP}"/>
+		</concat>
+		<move file="${WINDOWSEXE}" todir="${OUTPUT_DIR}"/>
+	</target>
+	
+	<target name="InstallMac" description="Actualizador para MAC">
+		<property name="tmp_mac" location="${base_dir}/tmpResources_mac"/>
+		
+		<delete dir="${tmp_mac}" failonerror="no"/>
+		
+		<mkdir dir="${tmp_mac}"/>
+		
+		
+		<ant antfile="build-updater.xml" dir="${GVSIG_INSTALLDIR}/instalador-gvSIG-mac">
+			<property name="NOMBRE_BUNDLE" value="${autoinstalador}"/>
+			<property name="DIR_DESTINO" value="${tmp_mac}"/>
+		</ant>
+		
+		<copy todir="${tmp_mac}/${autoinstalador}.app/Contents/Resources" file="./resources/configfile" overwrite="yes"/>
+		
+		<replace file="${tmp_mac}/${autoinstalador}.app/Contents/Resources/configfile"
+			 token="%BUILD.NUMBER%"
+			 value="${build.number}"/>
+		
+		
+		<property name="mac_install_path_bin" value="${tmp_mac}/${autoinstalador}.app/Contents/Resources/updates/gvSIGbin"/>
+		<property name="mac_install_path_gvsig" value="${mac_install_path_bin}/gvSIG"/>
+		<property name="mac_install_path_ext" value="${mac_install_path_gvsig}/extensiones"/>
+	
+		<copy todir="${mac_install_path_bin}/lib" file="../lib/gvsig-i18n.jar"/>
+
+		<!-- Copiar en los directorios los ficheros a instalar:   
+		     ${mac_install_path_bin} ==> directorio 'bin' de la instalacion (donde esta andami.jar)
+		     ${mac_install_path_gvsig} ==> directorio 'bin/gvSIG' de la instalacion
+		     ${mac_install_path_ext} ==> directorio 'bin/gvSIG/extensiones'
+		     
+		
+		
+		Ejemplos:
+		
+		* Actualizar andami.jar:
+		
+		<copy todir="${mac_install_path_bin}" file="bin/andami.jar"/>
+		
+		
+		* Copiar una libreria al directorio de lib del plugin de gvSIG:
+		
+		<copy todir="${mac_install_path_gvsig}">
+			<fileset dir=".">
+				<include name="extensiones/com.iver.cit.gvsig/lib/myLib.jar"/>
+			</fileset>
+		</copy>
+		
+		* Copiar el directorio entero del plugin 'myPlugin':
+		     
+		<copy todir="${mac_install_path_ext}">
+			<fileset dir="extensiones">
+				<include name="myPlugin/**/**"/>
+			</fileset>
+		</copy>
+
+		* Copiar todos los ficheros 'about.htm'
+		<copy todir="${mac_install_path_ext}">
+			<fileset dir="extensiones">
+				<include name="**/about.htm"/>
+			</fileset>
+		</copy>
+		
+		     
+		     -->
+		
+		
+		
+		<zip destfile="${OUTPUT_DIR}/${MAC_10_ZIP}">
+			<zipfileset dir="${tmp_mac}"
+				    includes="${autoinstalador}.app/**"
+				    excludes="${autoinstalador}.app/Contents/MacOS/*"
+				    />
+			<zipfileset dir="${tmp_mac}"
+				    includes="${autoinstalador}.app/Contents/MacOS/*"
+				    filemode="755"
+				    />
+			
+		</zip>
+		
+		<delete dir="${tmp_mac}"/>
+	</target>
+	
+	<target name="CleanDir" description="Limpiamos los directorios creados">
+		
+		<delete file="${base_dir}/${WINDOWSZIP}" />
+		<delete file="${base_dir}/dist_config.txt" />
+		<delete dir="${base_dir}/${INSTALLER_DIR}" />
+		<delete dir="${base_dir}/tmpResources" />
+		<delete dir="extensiones"/>
+		<delete dir="bin"/>
+	</target>
+	
+</project>
