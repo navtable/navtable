@@ -3,6 +3,8 @@ package es.udc.cartolab.gvsig.navtable;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -75,6 +77,28 @@ public class NavTable extends AbstractNavTable {
 		NavTableModel model = new NavTableModel();
 		table = new JTable(model);
 
+		table.addKeyListener(new KeyListener(){
+			public void keyPressed(KeyEvent e) {
+			}
+			public void keyReleased(KeyEvent e) {
+				//TODO If control + cursor ---> Inicio / Fin				
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT){
+					next();
+				}
+				if (e.getKeyCode() == KeyEvent.VK_LEFT){
+					before();
+				}				
+				if (e.getKeyCode() == KeyEvent.VK_HOME){
+					first();
+				}
+				if (e.getKeyCode() == KeyEvent.VK_END){
+					last();
+				}
+			}
+			public void keyTyped(KeyEvent e) {
+			}
+		});		
+		
 		model.addTableModelListener(new TableModelListener(){
 			//TODO
 			public void tableChanged(TableModelEvent e) {
@@ -83,9 +107,8 @@ public class NavTable extends AbstractNavTable {
 //				hasChanged = true;
 //				}
 			}
-
-		});
-
+		});		
+		
 		model.addColumn(PluginServices.getText(this, "headerTableAttribute"));
 		model.addColumn(PluginServices.getText(this, "headerTableValue"));
 
