@@ -7,9 +7,9 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Vector;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -110,6 +110,7 @@ public class NavTable extends AbstractNavTable implements MouseListener{
 				
 		try {
 			if (recordset.getRowCount() <= 0){
+				JOptionPane.showMessageDialog(this, PluginServices.getText(this, "emptyLayer"));
 				return false;
 			}
 		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
