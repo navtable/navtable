@@ -25,9 +25,13 @@ import com.hardcode.gdbms.engine.values.Value;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
+import com.iver.cit.gvsig.fmap.core.IGeometry;
+import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
+import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
+import com.vividsolutions.jts.geom.Geometry;
 
 import es.udc.cartolab.gvsig.navtable.ToggleEditing;
 
@@ -52,6 +56,7 @@ public class NavTable extends AbstractNavTable {
 	protected WindowInfo viewInfo = null;
 	
 	private JTable table = null;
+	private AttribTableCellRenderer cellRenderer = null;
 		
 	public NavTable(FLyrVect layer) {
 		super(layer);
@@ -109,11 +114,16 @@ public class NavTable extends AbstractNavTable {
 			}
 		});		
 		
+		this.cellRenderer = new AttribTableCellRenderer();
+		
 		model.addColumn(PluginServices.getText(this, "headerTableAttribute"));
-		model.addColumn(PluginServices.getText(this, "headerTableValue"));
+		model.addColumn(PluginServices.getText(this, "headerTableValue"));		
 
-		TableColumn attribColumn = table.getColumn(PluginServices.getText(this,"headerTableAttribute"));
-		attribColumn.setCellRenderer(new AttribTableCellRenderer());
+		TableColumn attribColumn = table.getColumn(PluginServices.getText(this,"headerTableAttribute"));		
+		attribColumn.setCellRenderer(this.cellRenderer);
+		attribColumn = table.getColumn(PluginServices.getText(this,"headerTableValue"));
+		attribColumn.setCellRenderer(this.cellRenderer);
+
 		
 		JScrollPane scrollPane = new JScrollPane(table);			
 		centerPanel.add(scrollPane, c);
@@ -232,7 +242,23 @@ public class NavTable extends AbstractNavTable {
 				aux.add(" ");				
 				model.addRow(aux);
 				model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);				
-			}				
+			}
+			// Geom_LENGTH
+			Vector aux = new Vector();
+			aux.add("Geom_LENGTH");
+			aux.add("0.0");		
+			model.addRow(aux);
+			model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
+			// Geom_AREA
+			aux = new Vector();
+			aux.add("Geom_AREA");
+			aux.add("0.0");		
+			model.addRow(aux);
+			model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
+
+			this.cellRenderer.addNoEditableRow(model.getRowCount()-2);
+			this.cellRenderer.addNoEditableRow(model.getRowCount()-1);
+
 		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
 			e.printStackTrace();
 		}
@@ -250,8 +276,38 @@ public class NavTable extends AbstractNavTable {
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
 			for (int i = 0; i < recordset.getFieldCount(); i++){
 				Value value = recordset.getFieldValue(rowPosition, i);
-				model.setValueAt(value, i, 1);										
+				model.setValueAt(value, i, 1);									
 			}
+			
+			if (layer instanceof AlphanumericData) {
+				try {
+					// Fill GEOM_LENGTH
+					String value = "0.0";
+					IGeometry g;
+					ReadableVectorial source = ((FLyrVect)layer).getSource();
+					source.start();
+					g = source.getShape(new Long(rowPosition).intValue());
+					source.stop();
+					Geometry geom = g.toJTSGeometry();
+					//TODO Format number (Set units in Preferences)
+					value = String.valueOf(Math.round(geom.getLength()));
+					model.setValueAt(value, recordset.getFieldCount(), 1);
+					// Fill GEOM_AREA
+					value = "0.0";
+					source.start();
+					g = source.getShape(new Long(rowPosition).intValue());
+					source.stop();
+					geom = g.toJTSGeometry();
+					//TODO Format number  (Set units in Preferences)	
+					value = String.valueOf(Math.round(geom.getArea()));
+					model.setValueAt(value, recordset.getFieldCount()+1, 1);
+					
+				} catch (DriverIOException e) {
+					e.printStackTrace();
+				}
+			} 			
+
+			
 			currentPosition = rowPosition;
 			refreshGUI();
 							
