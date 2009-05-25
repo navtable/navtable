@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -105,6 +106,7 @@ public class NavTable extends AbstractNavTable {
 				
 		try {
 			if (recordset.getRowCount() <= 0){
+				JOptionPane.showMessageDialog(this, PluginServices.getText(this, "emptyLayer"));
 				return false;
 			}
 		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
