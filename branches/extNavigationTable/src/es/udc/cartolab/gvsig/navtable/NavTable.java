@@ -21,7 +21,9 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.Value;
+import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
@@ -316,6 +318,25 @@ public class NavTable extends AbstractNavTable {
 		}
 	}	
 
+	private Vector checkChangedValues() {
+		Vector changedValues = new Vector();
+		for (int i=0; i<table.getRowCount()-2; i++) {
+			try {
+				String tableValue = table.getValueAt(i, 1).toString();
+				String layerValue = recordset.getFieldValue(currentPosition, i).getStringValue(ValueWriter.internalValueWriter);
+				layerValue = layerValue.replaceAll("'", "");
+				if (tableValue.compareTo(layerValue)!=0) {
+					changedValues.add(new Integer(i));
+				}
+			} catch (DriverException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		return changedValues;
+	}
+	
 	protected void saveRegister(){
 		//TODO check if the values type are correct
 		
@@ -328,30 +349,37 @@ public class NavTable extends AbstractNavTable {
 		} 
 			int currentPos = Long.valueOf(currentPosition).intValue();
 	
-			DefaultTableModel model = (DefaultTableModel)table.getModel();
-			ToggleEditing te = new ToggleEditing();
-			te.startEditing(layer);
-			for (int i = 0; i < model.getRowCount(); i++) {
-				Object value = model.getValueAt(i, 1);
-				
-				//only edit modified values, the cells that 
-				//contains String instead of Value
-				if (value instanceof String) {
-					try {
-						te.modifyValue(layer, currentPos, i, (String) value);
+			Vector changedValues = checkChangedValues();
+			if (changedValues.size()>0) {
+				DefaultTableModel model = (DefaultTableModel)table.getModel();
+				ToggleEditing te = new ToggleEditing();
+				te.startEditing(layer);
 
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+				for (int i = 0; i < model.getRowCount(); i++) {
+
+					if (changedValues.contains(new Integer(i))) {
+						Object value = model.getValueAt(i, 1);
+
+						//only edit modified values, the cells that 
+						//contains String instead of Value
+
+						try {
+							te.modifyValue(layer, currentPos, i, value.toString());
+
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 					}
+
 				}
 
+				te.stopEditing(layer, false);
+				layer.getMapContext().redraw();
+				layer.setActive(true);
+				refreshGUI();
 			}
-			te.stopEditing(layer, false);
-			layer.getMapContext().redraw();
-			layer.setActive(true);
-			refreshGUI();
-			
 			//Removes the ProjectTable of this layer if it exists.
 			//Currently commented for testing purposes...
 //			ProjectExtension pe = (ProjectExtension)PluginServices.getExtension(ProjectExtension.class);
