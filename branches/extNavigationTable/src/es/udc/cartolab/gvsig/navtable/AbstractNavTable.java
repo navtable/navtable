@@ -348,7 +348,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	private void lastSelected(){
-		showWarning();
 		FBitSet bitset= recordset.getSelection();
 		int pos = bitset.length();
 		if (pos != 0){
