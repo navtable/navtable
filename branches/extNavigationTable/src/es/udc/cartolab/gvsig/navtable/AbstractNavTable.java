@@ -28,6 +28,8 @@ import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
+import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
+import com.iver.cit.gvsig.fmap.layers.SelectionListener;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 
 /**
@@ -51,7 +53,7 @@ import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
  * @author Javier Estevez
  * 
  */
-public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener{
+public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener{
 
 	private static final long serialVersionUID = 1L;
 
@@ -81,7 +83,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	JLabel totalLabel = null;
 	JButton nextB = null;
 	JButton lastB = null;
-	JButton previousCopyB = null;
+	JButton copySelectedB = null;
 	JButton zoomB = null;
 	JButton selectionB = null;
 	JButton saveB = null;
@@ -102,6 +104,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		window.setTitle(title+": "+layer.getName());
 		try {
 			this.recordset = layer.getRecordset();
+			this.recordset.addSelectionListener(this);
 		} catch (DriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -228,9 +231,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		lastB.setToolTipText(PluginServices.getText(this, "goLastButtonTooltip"));
 		lastB.addActionListener(this);
 		ImageIcon imagenPreviousCopy = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/copy.png");
-		previousCopyB = new JButton(imagenPreviousCopy);
-		previousCopyB.setToolTipText(PluginServices.getText(this, "copyPreviousButtonTooltip"));
-		previousCopyB.addActionListener(this);
+		copySelectedB = new JButton(imagenPreviousCopy);
+		copySelectedB.setToolTipText(PluginServices.getText(this, "copySelectedButtonTooltip"));
+		copySelectedB.addActionListener(this);
 		ImageIcon imagenZoom = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/zoom.png");
 		zoomB = new JButton(imagenZoom);
 		zoomB.setToolTipText(PluginServices.getText(this, "zoomButtonTooltip"));
@@ -258,7 +261,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		navToolBar.add(lastB);
 
 		JPanel actionsToolBar = new JPanel(new FlowLayout());
-		actionsToolBar.add(previousCopyB);
+		actionsToolBar.add(copySelectedB);
 		actionsToolBar.add(zoomB);
 		actionsToolBar.add(selectionB);
 		actionsToolBar.add(saveB);
@@ -592,6 +595,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (fixScaleCB.isSelected()) {
 			fixScale();
 		}
+		FBitSet selection = recordset.getSelection();
+		if (selection.cardinality()==0) {
+			copySelectedB.setEnabled(false);
+		} else {
+			copySelectedB.setEnabled(true);
+		}
 
 	}
 
@@ -652,10 +661,24 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				e1.printStackTrace();
 			}
 		}
-		if (e.getSource() == previousCopyB){			
-			fillValues(currentPosition-1);
-			//TODO when it is extreme
-			currentPosition = currentPosition + 1;
+		if (e.getSource() == copySelectedB){			
+//			fillValues(currentPosition-1);
+//			currentPosition = currentPosition + 1;
+			
+			FBitSet selection = recordset.getSelection();
+			if (selection.cardinality()!=1) {
+				//lanzar error
+				JOptionPane.showMessageDialog(null,
+					    PluginServices.getText(this, "justOneRecordMessage"),
+					    PluginServices.getText(this, "justOneRecordTitle"),
+					    JOptionPane.WARNING_MESSAGE);
+			} else {
+				long current = currentPosition;
+				long selectedRow = selection.nextSetBit(0);
+				fillValues(selectedRow);
+				currentPosition = current;
+			}
+			
 		}
 		if (e.getSource() == zoomB){
 			zoom();
@@ -675,4 +698,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 	}
 
+	public void selectionChanged(SelectionEvent e) {
+		refreshGUI();
+	}
 }
