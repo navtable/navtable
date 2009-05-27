@@ -266,7 +266,7 @@ public class NavTable extends AbstractNavTable {
 		}
 	}
 
-	protected void fillValues(long rowPosition){
+	public void fillValues(long rowPosition){
 		try {	
 			if (rowPosition >= recordset.getRowCount()) {
 				rowPosition = recordset.getRowCount()-1;
@@ -335,6 +335,10 @@ public class NavTable extends AbstractNavTable {
 			
 		}
 		return changedValues;
+	}
+	
+	public void selectRow(int row){
+		table.setRowSelectionInterval(row, row);
 	}
 	
 	protected void saveRegister(){

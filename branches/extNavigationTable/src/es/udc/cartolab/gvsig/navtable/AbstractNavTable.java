@@ -119,8 +119,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * 
 	 * @param rowPosition the row of the data to be shown.
 	 */
-	protected abstract void fillValues(long rowPosition);
-
+	public abstract void fillValues(long rowPosition);
+	
+	/**
+	 * It selects a specific row into the table.
+	 * 
+	 * @param row
+	 */
+	public abstract void selectRow(int row);
 	/**
 	 * Saves the changes of the current data row.
 	 *
