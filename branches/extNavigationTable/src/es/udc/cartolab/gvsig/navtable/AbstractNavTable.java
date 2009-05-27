@@ -638,6 +638,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 		if (e.getSource() == posTF){
 			String pos = posTF.getText();
+			showWarning();
 			try {				
 				long posNumber = Long.parseLong(pos);
 				fillValues(posNumber-1);
