@@ -318,7 +318,7 @@ public class NavTable extends AbstractNavTable {
 		}
 	}	
 
-	private Vector checkChangedValues() {
+	protected Vector checkChangedValues() {
 		Vector changedValues = new Vector();
 		for (int i=0; i<table.getRowCount()-2; i++) {
 			try {

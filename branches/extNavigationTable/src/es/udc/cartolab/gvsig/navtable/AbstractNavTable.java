@@ -7,11 +7,13 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -127,6 +129,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @param row
 	 */
 	public abstract void selectRow(int row);
+	/**
+	 * Checks if there's changed values.
+	 * 
+	 * @return a vector with the position of the values that have changed.
+	 */
+	protected abstract Vector checkChangedValues();
+	
+	
 	/**
 	 * Saves the changes of the current data row.
 	 *
@@ -261,12 +271,36 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		return buttonsPanel;
 
 	}
+	
+	/**
+	 * Shows a warning to the user if there's unsaved data.
+	 *
+	 */
+	protected void showWarning() {
+		Vector changedValues = checkChangedValues();
+		if (changedValues.size()>0) {
+			Object[] options = {PluginServices.getText(this, "saveButtonTooltip"),
+					PluginServices.getText(this, "ignoreButton")};
+			int response = JOptionPane.showOptionDialog(this,
+					PluginServices.getText(this, "unsavedDataMessage"),
+					PluginServices.getText(this, "unsavedDataTitle"),
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,     //do not use a custom Icon
+					options,  //the titles of buttons
+					options[1]); //default button title
+			if (response == 0) {
+				saveRegister();
+			}
+		}
+	}
 
 	/**
 	 * Goes to the next row of the data.
 	 *
 	 */
 	protected void next(){
+		showWarning();
 		try {
 			if (onlySelectedCB.isSelected()){
 				nextSelected();
@@ -297,6 +331,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	protected void last(){
+		showWarning();
 		try {
 			if (onlySelectedCB.isSelected()){
 				lastSelected();
@@ -313,6 +348,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	private void lastSelected(){
+		showWarning();
 		FBitSet bitset= recordset.getSelection();
 		int pos = bitset.length();
 		if (pos != 0){
@@ -325,6 +361,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	protected void first(){
+		showWarning();
 		if (onlySelectedCB.isSelected()){
 			firstSelected();
 		} else {
@@ -348,7 +385,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * Goes to the previous row of the data.
 	 *
 	 */
-	protected void before() {		
+	protected void before() {
+		showWarning();
 		if (onlySelectedCB.isSelected()){
 			beforeSelected();
 		} else {
@@ -362,7 +400,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	protected void beforeSelected() {
-
 		FBitSet bitset= recordset.getSelection();
 		int currentPos = Long.valueOf(currentPosition).intValue()-1;
 		int pos = currentPos;
@@ -621,6 +658,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			selectCurrentFeature();
 		}
 		if (e.getSource() == cancelB){
+			showWarning();
 			PluginServices.getMDIManager().closeWindow(this);
 		}
 		if (e.getSource() == saveB){
