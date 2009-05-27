@@ -551,7 +551,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				return; 
 			}
 			long rows = recordset.getRowCount();
-			totalLabel.setText("/"+rows);			
+			FBitSet rowsBitSet = recordset.getSelection();
+			int selectedRows = rowsBitSet.cardinality();
+			if (onlySelectedCB.isSelected()){
+				totalLabel.setText("/" +"(" +selectedRows +") " +rows);
+			}else {
+				totalLabel.setText("/" +rows);
+			}
 		}
 		catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
 			// TODO Auto-generated catch block
