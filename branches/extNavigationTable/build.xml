@@ -35,12 +35,13 @@
   	    	<fileset dir="lib" includes="*"/>
   	</copy>  	
 
-
-
   	<jar jarfile="${dist}/lib/${plugin}.jar" basedir="${build}" includes="es/udc/cartolab/**"
     />
+  	<jar update="true" jarfile="${dist}/lib/${plugin}.jar" basedir="images" includes="*"/>
+  	
   	<copy todir="${dist}/images">
-  	    	<fileset dir="images" includes="*"/>
+  	    	<fileset dir="images" includes="table_refresh.png"/>
+  			<fileset dir="images" includes="logo_cartolab.png"/>
   	</copy>
 
   	<copy file="config/config.xml" todir="${dist}"/>

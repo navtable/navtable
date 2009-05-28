@@ -4,11 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -159,8 +165,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 		JPanel filterPanel = new JPanel(new FlowLayout());
 
-		ImageIcon filterImage = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/filter.png");
-		ImageIcon noFilterImage = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/nofilter.png");
+		java.net.URL imgURL = null;
+		imgURL = getClass().getResource("/filter.png");
+		ImageIcon filterImage = new ImageIcon(imgURL);
+		imgURL = getClass().getResource("/nofilter.png");
+		ImageIcon noFilterImage = new ImageIcon(imgURL);
 
 		filterB = new JButton(filterImage);
 		filterB.setToolTipText(PluginServices.getText(this, "filterTooltip"));
@@ -211,42 +220,54 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @return the panel.
 	 */
 	protected JPanel getSouthPanel(){
-		ImageIcon imagenFirst = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/go-first.png");
+		
+		java.net.URL imgURL = null;
+		
+		imgURL = getClass().getResource("/go-first.png");
+		ImageIcon imagenFirst = new ImageIcon(imgURL);
 		firstB = new JButton(imagenFirst);
 		firstB.setToolTipText(PluginServices.getText(this, "goFirstButtonTooltip"));
 		firstB.addActionListener(this);
-		ImageIcon imagenPrevious = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/go-previous.png");
+		imgURL = getClass().getResource("/go-previous.png");
+		ImageIcon imagenPrevious = new ImageIcon(imgURL);
 		beforeB = new JButton(imagenPrevious);
 		beforeB.setToolTipText(PluginServices.getText(this, "goPreviousButtonTooltip"));
 		beforeB.addActionListener(this);
 		posTF = new JTextField(5);
 		posTF.addActionListener(this);
 		totalLabel = new JLabel();
-		ImageIcon imagenNext = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/go-next.png");
+		imgURL = getClass().getResource("/go-next.png");
+		ImageIcon imagenNext = new ImageIcon(imgURL);
 		nextB = new JButton(imagenNext);
 		nextB.setToolTipText(PluginServices.getText(this, "goNextButtonTooltip"));
 		nextB.addActionListener(this);
-		ImageIcon imagenLast = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/go-last.png");
+		imgURL = getClass().getResource("/go-last.png");
+		ImageIcon imagenLast = new ImageIcon(imgURL);
 		lastB = new JButton(imagenLast);
 		lastB.setToolTipText(PluginServices.getText(this, "goLastButtonTooltip"));
 		lastB.addActionListener(this);
-		ImageIcon imagenPreviousCopy = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/copy.png");
+		imgURL = getClass().getResource("/copy.png");
+		ImageIcon imagenPreviousCopy = new ImageIcon(imgURL);
 		copySelectedB = new JButton(imagenPreviousCopy);
-		copySelectedB.setToolTipText(PluginServices.getText(this, "copySelectedButtonTooltip"));
+		copySelectedB.setToolTipText(PluginServices.getText(this, "copyPreviousButtonTooltip"));
 		copySelectedB.addActionListener(this);
-		ImageIcon imagenZoom = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/zoom.png");
+		imgURL = getClass().getResource("/zoom.png");
+		ImageIcon imagenZoom = new ImageIcon(imgURL);
 		zoomB = new JButton(imagenZoom);
 		zoomB.setToolTipText(PluginServices.getText(this, "zoomButtonTooltip"));
 		zoomB.addActionListener(this);
-		ImageIcon imagenSelect = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/Select.png");
+		imgURL = getClass().getResource("/Select.png");
+		ImageIcon imagenSelect = new ImageIcon(imgURL);
 		selectionB = new JButton(imagenSelect);
 		selectionB.setToolTipText(PluginServices.getText(this, "selectionButtonTooltip"));
 		selectionB.addActionListener(this);
-		ImageIcon imagenSave = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/save.png");
+		imgURL = getClass().getResource("/save.png");
+		ImageIcon imagenSave = new ImageIcon(imgURL);
 		saveB = new JButton(imagenSave);
 		saveB.setToolTipText(PluginServices.getText(this, "saveButtonTooltip"));
 		saveB.addActionListener(this);
-		ImageIcon imagenClose = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/close.png");
+		imgURL = getClass().getResource("/close.png");
+		ImageIcon imagenClose = new ImageIcon(imgURL);
 		cancelB = new JButton(imagenClose);
 		cancelB.setToolTipText(PluginServices.getText(this, "closeButtonTooltip"));
 		cancelB.addActionListener(this);
@@ -576,13 +597,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		} else {
 			selectionB.setEnabled(true);
 		}
-
+		
+		java.net.URL imgURL = null;
 		if (isRecordSelected()){
-			ImageIcon imagenUnselect = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/Unselect.png");
+			imgURL = getClass().getResource("/Unselect.png");
+			ImageIcon imagenUnselect = new ImageIcon(imgURL);
 			selectionB.setIcon(imagenUnselect);
 			posTF.setBackground(Color.YELLOW);
 		} else {
-			ImageIcon imagenSelect = new ImageIcon("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/Select.png");
+			imgURL = getClass().getResource("/Select.png");
+			ImageIcon imagenSelect = new ImageIcon(imgURL);
 			selectionB.setIcon(imagenSelect);
 			posTF.setBackground(Color.WHITE);
 		}
