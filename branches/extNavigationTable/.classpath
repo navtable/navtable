@@ -10,5 +10,6 @@
 	<classpathentry kind="src" path="/libDriverManager"/>
 	<classpathentry kind="src" path="/libIverUtiles"/>
 	<classpathentry kind="src" path="/libCq CMS for java"/>
+	<classpathentry kind="lib" path="/libFMap/lib/jts-1.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
