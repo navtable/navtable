@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
+import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.fmap.DriverException;
@@ -59,10 +60,12 @@ import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
  * @author Javier Estevez
  * 
  */
-public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener{
+public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
 	private static final long serialVersionUID = 1L;
 
+	private boolean closed = false;
+	
 	protected JPanel northPanel = null;
 	protected JPanel centerPanel = null;
 	protected JPanel southPanel = null;
@@ -558,7 +561,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.RESIZABLE | WindowInfo.PALETTE);
 			viewInfo.setTitle(PluginServices.getText(this, "NavTable"));
 			viewInfo.setWidth(400);
-			viewInfo.setHeight(525);			
+			viewInfo.setHeight(525);
 		}
 		return viewInfo;
 	}
@@ -711,7 +714,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			selectCurrentFeature();
 		}
 		if (e.getSource() == cancelB){
-			showWarning();
 			PluginServices.getMDIManager().closeWindow(this);
 		}
 		if (e.getSource() == saveB){
@@ -736,5 +738,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		} else {
 			refreshGUI();
 		}
+	}
+	
+	public void windowClosed() {
+		if (!closed) {
+			showWarning();
+			closed = true;
+		}
+	}
+	
+	public void windowActivated() {
+		
 	}
 }

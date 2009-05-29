@@ -23,7 +23,7 @@ public class AttribTableCellRenderer extends JTextArea implements TableCellRende
 	private Vector noEditableRows = new Vector();
 	
 	public void addNoEditableRow(int rowNumber){
-		noEditableRows.addElement(rowNumber);
+		noEditableRows.addElement(new Integer(rowNumber));
 	}
 	
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -37,7 +37,7 @@ public class AttribTableCellRenderer extends JTextArea implements TableCellRende
 			this.setFont(f);
 		}
 				
-		if (noEditableRows.contains(row)){
+		if (noEditableRows.contains(new Integer(row))){
 			if (column == 0){ 
 				this.setBackground(new Color(230, 200, 200));
 			} else {
@@ -53,7 +53,7 @@ public class AttribTableCellRenderer extends JTextArea implements TableCellRende
 		
 		if (isSelected){
 			this.setBackground(new Color(195, 212, 232));
-			if (noEditableRows.contains(row)){
+			if (noEditableRows.contains(new Integer(row))){
 				this.setBackground(new Color(220, 170, 200));
 			}
 		}		
