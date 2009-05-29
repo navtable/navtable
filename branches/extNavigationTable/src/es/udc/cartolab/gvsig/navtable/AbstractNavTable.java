@@ -724,16 +724,17 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 	public void selectionChanged(SelectionEvent e) {
 		if (onlySelectedCB.isSelected()) {
-		FBitSet bitset = null;
-		int pos = Long.valueOf(currentPosition).intValue();
-		//TODO gvSIG comment: Esta comprobacion se hacia con Selectable
-		if (layer instanceof AlphanumericData) {                                     
+			FBitSet bitset = null;
+			int pos = Long.valueOf(currentPosition).intValue();
+			//TODO gvSIG comment: Esta comprobacion se hacia con Selectable
+			if (layer instanceof AlphanumericData) {                                     
 				bitset = recordset.getSelection();
 				if (!bitset.get(pos)){
 					firstSelected();
 				}
+			}
+		} else {
+			refreshGUI();
 		}
-		}
-		refreshGUI();
 	}
 }
