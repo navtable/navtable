@@ -431,5 +431,10 @@ public class NavTable extends AbstractNavTable {
 		stopEdition();
 		super.first();
 	}
+	
+	public void windowClosed() {
+		stopEdition();
+		super.windowClosed();
+	}
 }
 
