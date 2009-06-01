@@ -891,6 +891,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	public void selectionChanged(SelectionEvent e) {
 		if (currentPosition == -1 && onlySelectedCB.isSelected()){
 			firstSelected();
+		} else {
+			if (!valuesMustBeFilled()){
+				fillEmptyValues();
+			}
 		}
 		refreshGUI();
 	}
