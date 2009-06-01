@@ -176,7 +176,9 @@ public class NavTable extends AbstractNavTable {
 		JPanel southPanel = getSouthPanel();
 		super.add(southPanel, c);
 
-		fillValues(0);
+		currentPosition = 0;
+		//fillValues();
+		refreshGUI();
 		super.repaint();		
 		super.setVisible(true);
 		return true;
@@ -196,13 +198,21 @@ public class NavTable extends AbstractNavTable {
 		String alias = null;
 		ReadableVectorial source = layer.getSource();
 		
+		System.out.println("Source de la layer es un " + source +" "+ source.getClass());
 		if (source != null && source instanceof VectorialFileAdapter) {
 			layerFile = ((VectorialFileAdapter) source).getFile();
 			filePath = layerFile.getAbsolutePath();
+		} else {
+			//[NachoV]
+			return fieldName;
 		}
 		
 		String pathToken = filePath.substring(0, filePath.lastIndexOf("."));
 		File fileAlias = new File(pathToken + ".alias");
+		
+		if (!fileAlias.exists()){
+			return fieldName;
+		}
 		
 		try {
 			String line;
@@ -265,19 +275,21 @@ public class NavTable extends AbstractNavTable {
 			e.printStackTrace();
 		}
 	}
+	
+	public void fillEmptyValues() {
+		super.fillEmptyValues();
+		DefaultTableModel model = (DefaultTableModel)table.getModel();
+		for (int i = 0; i < model.getRowCount(); i++){			
+			model.setValueAt("", i, 1);
+		}
+	}
 
-	public void fillValues(long rowPosition){
-		try {	
-			if (rowPosition >= recordset.getRowCount()) {
-				rowPosition = recordset.getRowCount()-1;
-			}
-			if (rowPosition < 0){
-				rowPosition = 0;
-			}
-
+	public void fillValues(){
+		try {
+			
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
 			for (int i = 0; i < recordset.getFieldCount(); i++){
-				Value value = recordset.getFieldValue(rowPosition, i);
+				Value value = recordset.getFieldValue(currentPosition, i);
 				model.setValueAt(value, i, 1);									
 			}
 			
@@ -288,7 +300,7 @@ public class NavTable extends AbstractNavTable {
 					IGeometry g;
 					ReadableVectorial source = ((FLyrVect)layer).getSource();
 					source.start();
-					g = source.getShape(new Long(rowPosition).intValue());
+					g = source.getShape(new Long(currentPosition).intValue());
 					source.stop();
 					Geometry geom = g.toJTSGeometry();
 					//TODO Format number (Set units in Preferences)
@@ -297,7 +309,7 @@ public class NavTable extends AbstractNavTable {
 					// Fill GEOM_AREA
 					value = "0.0";
 					source.start();
-					g = source.getShape(new Long(rowPosition).intValue());
+					g = source.getShape(new Long(currentPosition).intValue());
 					source.stop();
 					geom = g.toJTSGeometry();
 					//TODO Format number  (Set units in Preferences)	
@@ -307,11 +319,8 @@ public class NavTable extends AbstractNavTable {
 				} catch (DriverIOException e) {
 					e.printStackTrace();
 				}
-			} 			
-
-			
-			currentPosition = rowPosition;
-			refreshGUI();
+			}
+			//refreshGUI();
 							
 		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
 			e.printStackTrace();
@@ -374,15 +383,13 @@ public class NavTable extends AbstractNavTable {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-
 					}
-
 				}
 
 				te.stopEditing(layer, false);
 				layer.getMapContext().redraw();
 				layer.setActive(true);
-				refreshGUI();
+				//refreshGUI();
 			}
 			//Removes the ProjectTable of this layer if it exists.
 			//Currently commented for testing purposes...
@@ -436,5 +443,6 @@ public class NavTable extends AbstractNavTable {
 		stopEdition();
 		super.windowClosed();
 	}
+
 }
 
