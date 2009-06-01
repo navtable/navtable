@@ -23,7 +23,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import com.hardcode.gdbms.engine.data.driver.DriverException;
+import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
+import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
@@ -293,8 +295,8 @@ public class NavTable extends AbstractNavTable {
 				Value value = recordset.getFieldValue(currentPosition, i);
 				String textoValue = value.getStringValue(ValueWriter.internalValueWriter);
 				textoValue = textoValue.replaceAll("'", "");
-				if (textoValue.toLowerCase().compareTo("null")==0) {
-					textoValue = "";
+				if (value instanceof NullValue) {
+					textoValue ="";
 				}
 				model.setValueAt(textoValue, i, 1);									
 			}
@@ -338,9 +340,10 @@ public class NavTable extends AbstractNavTable {
 		for (int i=0; i<table.getRowCount()-2; i++) {
 			try {
 				String tableValue = table.getValueAt(i, 1).toString();
-				String layerValue = recordset.getFieldValue(currentPosition, i).getStringValue(ValueWriter.internalValueWriter);
+				Value value = recordset.getFieldValue(currentPosition, i);
+				String layerValue = value.getStringValue(ValueWriter.internalValueWriter);
 				layerValue = layerValue.replaceAll("'", "");
-				if (layerValue.toLowerCase().compareTo("null")==0) {
+				if (value instanceof NullValue) {
 					if (tableValue.compareTo("")!=0) {
 						changedValues.add(new Integer(i));
 					}
