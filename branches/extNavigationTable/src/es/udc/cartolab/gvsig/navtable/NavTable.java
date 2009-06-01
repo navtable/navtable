@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Types;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -290,7 +291,12 @@ public class NavTable extends AbstractNavTable {
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
 			for (int i = 0; i < recordset.getFieldCount(); i++){
 				Value value = recordset.getFieldValue(currentPosition, i);
-				model.setValueAt(value, i, 1);									
+				String textoValue = value.getStringValue(ValueWriter.internalValueWriter);
+				textoValue = textoValue.replaceAll("'", "");
+				if (textoValue.toLowerCase().compareTo("null")==0) {
+					textoValue = "";
+				}
+				model.setValueAt(textoValue, i, 1);									
 			}
 			
 			if (layer instanceof AlphanumericData) {
@@ -334,8 +340,14 @@ public class NavTable extends AbstractNavTable {
 				String tableValue = table.getValueAt(i, 1).toString();
 				String layerValue = recordset.getFieldValue(currentPosition, i).getStringValue(ValueWriter.internalValueWriter);
 				layerValue = layerValue.replaceAll("'", "");
-				if (tableValue.compareTo(layerValue)!=0) {
-					changedValues.add(new Integer(i));
+				if (layerValue.toLowerCase().compareTo("null")==0) {
+					if (tableValue.compareTo("")!=0) {
+						changedValues.add(new Integer(i));
+					}
+				} else {
+					if (tableValue.compareTo(layerValue)!=0) {
+						changedValues.add(new Integer(i));
+					}
 				}
 			} catch (DriverException e) {
 				// TODO Auto-generated catch block
@@ -377,7 +389,11 @@ public class NavTable extends AbstractNavTable {
 						//contains String instead of Value
 
 						try {
-							te.modifyValue(layer, currentPos, i, value.toString());
+							String text = value.toString();
+							if (recordset.getFieldType(i)==Types.DATE) {
+								text = text.replaceAll("-", "/");
+							}
+							te.modifyValue(layer, currentPos, i, text);
 
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
