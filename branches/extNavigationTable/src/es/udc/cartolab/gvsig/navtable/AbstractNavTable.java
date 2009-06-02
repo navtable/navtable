@@ -215,6 +215,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		return northPanel;
 
 	}
+	
+	public void fillValues(long rowPosition) {
+		currentPosition = rowPosition;
+		refreshGUI();
+	}
+
 
 	/**
 	 * Creates the main panel.

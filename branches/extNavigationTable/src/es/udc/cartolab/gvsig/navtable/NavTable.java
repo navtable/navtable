@@ -337,6 +337,7 @@ public class NavTable extends AbstractNavTable {
 
 	protected Vector checkChangedValues() {
 		Vector changedValues = new Vector();
+		System.out.println("Number of rows: " + table.getRowCount());
 		for (int i=0; i<table.getRowCount()-2; i++) {
 			try {
 				String tableValue = table.getValueAt(i, 1).toString();
