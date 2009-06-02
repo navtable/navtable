@@ -626,7 +626,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (viewInfo == null) {
 			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.RESIZABLE | WindowInfo.PALETTE);
 			viewInfo.setTitle(PluginServices.getText(this, "NavTable"));
-			viewInfo.setWidth(400);
+			viewInfo.setWidth(425);
 			viewInfo.setHeight(525);
 		}
 		return viewInfo;
