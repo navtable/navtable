@@ -171,7 +171,7 @@
 			<arg line="a -r ${WINDOWSZIP} ./${INSTALLER_DIR}/*"/>
 		</exec>
 		<copy file="${GVSIG_INSTALLDIR}/launcher/7z/dist_config.txt" tofile="./dist_config.txt"/>
-		<replace file="${base_dir}/dist_config.txt" token="%TITLE%" value="${APPNAME}-${bversion}_${build.number}" />
+		<replace file="${base_dir}/dist_config.txt" token="%TITLE%" value="${APPNAME}-${bversion}" />
 		<concat destfile="${base_dir}/${WINDOWSEXE}" binary="true">
 			<fileset file="${GVSIG_INSTALLDIR}/launcher/7z/7zS.sfx"/>
 			<fileset file="${base_dir}/dist_config.txt"/>
