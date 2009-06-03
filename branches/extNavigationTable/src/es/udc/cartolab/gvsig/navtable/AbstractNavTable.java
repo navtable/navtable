@@ -264,7 +264,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		imgURL = getClass().getResource("/copy.png");
 		ImageIcon imagenPreviousCopy = new ImageIcon(imgURL);
 		copySelectedB = new JButton(imagenPreviousCopy);
-		copySelectedB.setToolTipText(PluginServices.getText(this, "copyPreviousButtonTooltip"));
+		copySelectedB.setToolTipText(PluginServices.getText(this, "copySelectedButtonTooltip"));
 		copySelectedB.addActionListener(this);
 		imgURL = getClass().getResource("/zoom.png");
 		ImageIcon imagenZoom = new ImageIcon(imgURL);
