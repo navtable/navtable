@@ -34,6 +34,7 @@ import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
+import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.vividsolutions.jts.geom.Geometry;
@@ -65,6 +66,10 @@ public class NavTable extends AbstractNavTable {
 		
 	public NavTable(FLyrVect layer) {
 		super(layer);
+	}
+
+	public NavTable(SelectableDataSource recordset) {
+		super(recordset);
 	}
 
 	/**
@@ -199,6 +204,12 @@ public class NavTable extends AbstractNavTable {
 		File layerFile = null;
 		String filePath = null; 
 		String alias = null;
+		
+		// Added to tables without Layer support, but must be supported alias here also
+		if (layer == null) { 
+			return fieldName;
+		}
+		
 		ReadableVectorial source = layer.getSource();
 		
 		System.out.println("Source de la layer es un " + source +" "+ source.getClass());
@@ -258,21 +269,24 @@ public class NavTable extends AbstractNavTable {
 				model.addRow(aux);
 				model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);				
 			}
-			// Geom_LENGTH
-			Vector aux = new Vector();
-			aux.add("Geom_LENGTH");
-			aux.add("0.0");		
-			model.addRow(aux);
-			model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
-			// Geom_AREA
-			aux = new Vector();
-			aux.add("Geom_AREA");
-			aux.add("0.0");		
-			model.addRow(aux);
-			model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
+			
+			if (layer != null) {
+				// Geom_LENGTH
+				Vector aux = new Vector();
+				aux.add("Geom_LENGTH");
+				aux.add("0.0");		
+				model.addRow(aux);
+				model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
+				// Geom_AREA
+				aux = new Vector();
+				aux.add("Geom_AREA");
+				aux.add("0.0");		
+				model.addRow(aux);
+				model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
 
-			this.cellRenderer.addNoEditableRow(model.getRowCount()-2);
-			this.cellRenderer.addNoEditableRow(model.getRowCount()-1);
+				this.cellRenderer.addNoEditableRow(model.getRowCount()-2);
+				this.cellRenderer.addNoEditableRow(model.getRowCount()-1);
+			}
 
 		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
 			e.printStackTrace();
@@ -301,7 +315,7 @@ public class NavTable extends AbstractNavTable {
 				model.setValueAt(textoValue, i, 1);									
 			}
 			
-			if (layer instanceof AlphanumericData) {
+			if (layer != null && layer instanceof AlphanumericData) {
 				try {
 					// Fill GEOM_LENGTH
 					String value = "0.0";
@@ -310,8 +324,12 @@ public class NavTable extends AbstractNavTable {
 					source.start();
 					g = source.getShape(new Long(currentPosition).intValue());
 					source.stop();
+					if (g == null) {
+						model.setValueAt("0", recordset.getFieldCount(), 1);
+						model.setValueAt("0", recordset.getFieldCount()+1, 1);
+					}
 					Geometry geom = g.toJTSGeometry();
-					//TODO Format number (Set units in Preferences)
+					//	TODO Format number (Set units in Preferences)
 					value = String.valueOf(Math.round(geom.getLength()));
 					model.setValueAt(value, recordset.getFieldCount(), 1);
 					// Fill GEOM_AREA

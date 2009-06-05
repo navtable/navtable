@@ -14,5 +14,14 @@
 				action-command="NavTable"
 				icon="images/table_refresh.png" position="1501"/> 
 		</extension> 
+		<extension class-name="es.udc.cartolab.gvsig.navtable.AlphanumericNavTableExtension" description="TEST_NAVTABLE" active="true">
+			<tool-bar name="planSan2">
+				<action-tool icon="images/test.png" tooltip="Test NavTable tablas sueltas"
+					action-command="PSVisual" position="10"/>
+			</tool-bar>
+			<menu text="Capa/Test NavTable"
+				action-command="PSVisual"
+				icon="images/test.png" position="10"/>
+		</extension>
 	</extensions>
 </plugin-config>
