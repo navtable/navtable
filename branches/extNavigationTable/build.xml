@@ -42,6 +42,7 @@
   	<copy todir="${dist}/images">
   	    	<fileset dir="images" includes="table_refresh.png"/>
   			<fileset dir="images" includes="header_cartolab.png"/>
+  			<fileset dir="images" includes="test.png"/>
   	</copy>
 
   	<copy file="config/config.xml" todir="${dist}"/>
