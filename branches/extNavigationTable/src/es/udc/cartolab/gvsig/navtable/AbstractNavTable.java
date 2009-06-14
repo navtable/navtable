@@ -85,6 +85,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	JLabel totalLabel = null;
 	JButton nextB = null;
 	JButton lastB = null;
+	JButton copyPreviousB = null;
 	JButton copySelectedB = null;
 	JButton zoomB = null;
 	JButton selectionB = null;
@@ -277,11 +278,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		lastB = new JButton(imagenLast);
 		lastB.setToolTipText(PluginServices.getText(this, "goLastButtonTooltip"));
 		lastB.addActionListener(this);
-		imgURL = getClass().getResource("/copy.png");
-		ImageIcon imagenPreviousCopy = new ImageIcon(imgURL);
-		copySelectedB = new JButton(imagenPreviousCopy);
+		imgURL = getClass().getResource("/copy-selected.png");
+		ImageIcon imagenSelectedCopy = new ImageIcon(imgURL);
+		copySelectedB = new JButton(imagenSelectedCopy);
 		copySelectedB.setToolTipText(PluginServices.getText(this, "copySelectedButtonTooltip"));
 		copySelectedB.addActionListener(this);
+		imgURL = getClass().getResource("/copy.png");
+		ImageIcon imagenPreviousCopy = new ImageIcon(imgURL);
+		copyPreviousB = new JButton(imagenPreviousCopy);
+		copyPreviousB.setToolTipText(PluginServices.getText(this, "copyPreviousButtonTooltip"));
+		copyPreviousB.addActionListener(this);
 		imgURL = getClass().getResource("/zoom.png");
 		ImageIcon imagenZoom = new ImageIcon(imgURL);
 		zoomB = new JButton(imagenZoom);
@@ -314,6 +320,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 		JPanel actionsToolBar = new JPanel(new FlowLayout());
 		actionsToolBar.add(copySelectedB);
+		actionsToolBar.add(copyPreviousB);
 		actionsToolBar.add(zoomB);
 		actionsToolBar.add(selectionB);
 		actionsToolBar.add(saveB);
@@ -877,6 +884,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				currentPosition = current;
 			}
 			
+		}
+		
+		if (e.getSource() == copyPreviousB){
+			long current = currentPosition;
+			currentPosition = currentPosition -1;
+			fillValues();
+			currentPosition = current;
 		}
 		
 		if (e.getSource() == zoomB){
