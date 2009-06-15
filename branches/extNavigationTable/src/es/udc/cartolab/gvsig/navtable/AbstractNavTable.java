@@ -541,19 +541,19 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	private void selectCurrentFeature() {
 		FBitSet bitset = null;
 		int pos = Long.valueOf(currentPosition).intValue();
-		//TODO gvSIG comment: Esta comprobacion se hacia con Selectable
-		if (layer instanceof AlphanumericData) {                                     
-				bitset = recordset.getSelection();
-				if (!bitset.get(pos)){
-					bitset.set(pos);
-				} else {
-					bitset.clear(pos);
-					if (onlySelectedCB.isSelected()){
-						lastSelected();
-					}
-				}
-				recordset.setSelection(bitset);
-		}        
+		//		//TODO gvSIG comment: Esta comprobacion se hacia con Selectable
+		//		if (layer instanceof AlphanumericData) {                                     
+		bitset = recordset.getSelection();
+		if (!bitset.get(pos)){
+			bitset.set(pos);
+		} else {
+			bitset.clear(pos);
+			if (onlySelectedCB.isSelected()){
+				lastSelected();
+			}
+		}
+		recordset.setSelection(bitset);
+		//		}        
 
 	}
 
@@ -592,15 +592,15 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			return false;
 		}
 		int pos = Long.valueOf(position).intValue();
-		if (layer instanceof AlphanumericData) {
-			//TODO Esta comprobacion se hacia con Selectable                                     
-				if (recordset == null){
-					return false;
-				}
-				bitset = recordset.getSelection();
-				return bitset.get(pos);
-		}        
-		return false;
+		//		if (layer instanceof AlphanumericData) {
+		//			//TODO Esta comprobacion se hacia con Selectable                                     
+		if (recordset == null){
+			return false;
+		}
+		bitset = recordset.getSelection();
+		return bitset.get(pos);
+		//		}        
+		//		return false;
 
 	}
 
@@ -763,7 +763,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 	private boolean valuesMustBeFilled() {
 		FBitSet bitset= recordset.getSelection();
+		
 		int selectedNumber = bitset.cardinality();
+		
+		//TODO A veces da NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		if (onlySelectedCB == null) {
+			System.out.println("************************  onlySelectedCB: "+ onlySelectedCB);
+			return false;
+		}
 		if (onlySelectedCB.isSelected() && selectedNumber == 0){
 			return false;
 		} else {
