@@ -60,7 +60,7 @@ public class AlphanumericNavTableExtension extends Extension {
 		
 		SelectableDataSource recordset = table.getModel().getModelo().getRecordset();
 		
-		NavTable viewer = new NavTable(recordset);
+		AlphanumericNavTable viewer = new AlphanumericNavTable(recordset);
 		if (viewer.init()){
 			PluginServices.getMDIManager().addCentredWindow(viewer);
 		}
