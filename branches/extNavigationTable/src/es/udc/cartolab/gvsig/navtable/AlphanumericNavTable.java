@@ -7,12 +7,12 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 public class AlphanumericNavTable extends NavTable {
 
-	
 	JButton newB = null;	
 	
 	public AlphanumericNavTable(SelectableDataSource recordset) {
@@ -23,32 +23,29 @@ public class AlphanumericNavTable extends NavTable {
 		super.init();
 		
 		int index = -1;
-		for (int i = 0; i < zoomB.getParent().getComponentCount(); i++) {			
-			System.out.println(zoomB.getParent().getComponents()[i]);
-			if (zoomB.getParent().getComponents()[i] != zoomB){
-				index = i;
-			}
-		}
+		zoomB.setVisible(false);
+		alwaysZoomCB.setVisible(false);
+		fixScaleCB.setVisible(false);
 		
-		URL imgURL = getClass().getResource("/filter.png");
+		URL imgURL = getClass().getResource("/table_add.png");
 		ImageIcon imagenNewRegister = new ImageIcon(imgURL);
-		zoomB.setIcon(imagenNewRegister);
-		//zoomB = new JButton(imagenNewRegister);
+		newB = new JButton(imagenNewRegister);
+		//TODO Add the string to the i18n to traslate
+		newB.setToolTipText(PluginServices.getText(this,
+							"new_register"));
 		
-		//Change ZoomB for newB		
-		zoomB.removeActionListener(zoomB.getActionListeners()[0]);
-		//zoomB.setEnabled(false);
-		zoomB.addActionListener(new ActionListener(){
+		newB.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Prueba del Zoom para hacer de crear Nuevo");
+				// TODO Create a new register on the table
+				// Refresh recordset
+				// Go to the last record on the 
 			}			
 		});
-		alwaysZoomCB.setEnabled(false);
-		
+		zoomB.getParent().add(newB);
 		// We must to rewrite selectionB listener and the others
 
 		return true;
 	}
 
-	
 }
