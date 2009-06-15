@@ -388,7 +388,7 @@ public class NavTable extends AbstractNavTable {
 		//TODO check if the values type are correct
 		
 		//Stoping edition if some cell is being edited when the save button is clicked.
-		stopEdition();
+		stopCellEdition();
 		
 		// close all windows until get the view we're working on as the active window.
 		while (!window.equals(PluginServices.getMDIManager().getActiveWindow())) {
@@ -449,7 +449,7 @@ public class NavTable extends AbstractNavTable {
 	 * It stops the row editing when the save button is pressed.
 	 *
 	 */
-	private void stopEdition() {
+	private void stopCellEdition() {
 		if (table.isEditing()) {
 			if (table.getCellEditor() != null) {
 		        table.getCellEditor().stopCellEditing();
@@ -458,27 +458,27 @@ public class NavTable extends AbstractNavTable {
 	}
 	
 	protected void next(){
-		stopEdition();
+		stopCellEdition();
 		super.next();
 	}
 	
 	protected void before(){
-		stopEdition();
+		stopCellEdition();
 		super.before();
 	}
 	
 	protected void last(){
-		stopEdition();
+		stopCellEdition();
 		super.last();
 	}
 	
 	protected void first(){
-		stopEdition();
+		stopCellEdition();
 		super.first();
 	}
 	
 	public void windowClosed() {
-		stopEdition();
+		stopCellEdition();
 		super.windowClosed();
 	}
 
