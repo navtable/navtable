@@ -15,6 +15,7 @@ import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.DriverException;
 import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.core.DefaultFeature;
+import com.iver.cit.gvsig.fmap.core.DefaultRow;
 import com.iver.cit.gvsig.fmap.core.FShape;
 import com.iver.cit.gvsig.fmap.core.IFeature;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
@@ -26,6 +27,7 @@ import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
 import com.iver.cit.gvsig.fmap.drivers.shp.IndexedShpDriver;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.edition.EditionException;
+import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IRowEdited;
 import com.iver.cit.gvsig.fmap.edition.ISpatialWriter;
 import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
@@ -473,6 +475,33 @@ public class ToggleEditing {
 	    } else {
 	    	System.out.println("Tipo incorrecto: values es " + newValue.getSQLType() + " y el campo es " + type);
 	    }
+	}
+	
+	public void modifyValue(IEditableSource source, int rowPos, int colPos, String newValue) throws Exception {
+		
+		if (newValue == null) {
+			newValue = "";
+		}
+		ITableDefinition tableDef;
+		tableDef = source.getTableDefinition();               
+		FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
+		int type = fieldDesc[colPos].getFieldType();
+		if (type == 16) {
+			// in this case type is boolean
+			type = Types.BIT;
+		}
+		System.out.println("El valor " + newValue + " es de tipo " + FieldDescription.typeToString(type));
+		Value val;
+		if (newValue.length() == 0){
+			val = ValueFactory.createNullValue();
+		}else {
+			val = ValueFactory.createValueByType(newValue, type);
+		}
+		IRowEdited row = source.getRow(rowPos);
+		Value[] attributes = row.getAttributes();
+		attributes[colPos] = val;
+		IRow newRow = new DefaultRow(attributes);
+		source.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
 	}
 
 }

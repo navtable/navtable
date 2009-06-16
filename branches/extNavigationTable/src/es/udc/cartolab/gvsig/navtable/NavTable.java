@@ -61,7 +61,7 @@ public class NavTable extends AbstractNavTable {
 
 	protected WindowInfo viewInfo = null;
 	
-	private JTable table = null;
+	protected JTable table = null;
 	private AttribTableCellRenderer cellRenderer = null;
 		
 	public NavTable(FLyrVect layer) {
@@ -449,7 +449,7 @@ public class NavTable extends AbstractNavTable {
 	 * It stops the row editing when the save button is pressed.
 	 *
 	 */
-	private void stopCellEdition() {
+	protected void stopCellEdition() {
 		if (table.isEditing()) {
 			if (table.getCellEditor() != null) {
 		        table.getCellEditor().stopCellEditing();

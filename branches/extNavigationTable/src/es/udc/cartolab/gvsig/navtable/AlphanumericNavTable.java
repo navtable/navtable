@@ -3,20 +3,38 @@ package es.udc.cartolab.gvsig.navtable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.sql.Types;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.table.DefaultTableModel;
 
+import com.hardcode.driverManager.DriverLoadException;
+import com.hardcode.gdbms.engine.data.driver.DriverException;
+import com.hardcode.gdbms.engine.values.Value;
+import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
+import com.iver.andami.messages.NotificationManager;
+import com.iver.cit.gvsig.fmap.core.IRow;
+import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
+import com.iver.cit.gvsig.fmap.edition.EditionEvent;
+import com.iver.cit.gvsig.fmap.edition.EditionException;
+import com.iver.cit.gvsig.fmap.edition.IEditableSource;
+import com.iver.cit.gvsig.fmap.edition.IRowEdited;
+import com.iver.cit.gvsig.fmap.edition.IWriteable;
+import com.iver.cit.gvsig.fmap.edition.IWriter;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 public class AlphanumericNavTable extends NavTable {
 
-	JButton newB = null;	
+	JButton newB = null;
+	IEditableSource model;
 	
-	public AlphanumericNavTable(SelectableDataSource recordset) {
-		super(recordset);
+	public AlphanumericNavTable(IEditableSource model) {
+		super(model.getRecordset());
+		this.model = model;
 	}
 
 	public boolean init() {
@@ -46,6 +64,84 @@ public class AlphanumericNavTable extends NavTable {
 		// We must to rewrite selectionB listener and the others
 
 		return true;
+	}
+	
+	protected void saveRegister() {
+
+		//cerrar la edición de la celda
+		stopCellEdition();
+		ToggleEditing te = new ToggleEditing();
+		try {
+//			poner en edición la tabla
+			model.startEdition(EditionEvent.ALPHANUMERIC);
+			if (model instanceof IWriteable)
+			{
+
+				Vector changedValues = checkChangedValues();
+				if (changedValues.size()>0) {
+					DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
+
+					for (int i = 0; i < tableModel.getRowCount(); i++) {
+
+						if (changedValues.contains(new Integer(i))) {
+							Object value = tableModel.getValueAt(i, 1);
+
+							//only edit modified values, the cells that 
+							//contains String instead of Value
+
+							try {
+								String text = value.toString();
+								if (recordset.getFieldType(i)==Types.DATE) {
+									text = text.replaceAll("-", "/");
+								}
+								//te.modifyValue(layer, currentPos, i, text);
+								int currentPos = Long.valueOf(currentPosition).intValue();
+								te.modifyValue(model, currentPos, i, text);
+
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+
+
+
+					IWriteable w = (IWriteable) model;
+					IWriter writer = w.getWriter();
+					if (writer == null)
+					{
+						NotificationManager.addError("No existe driver de escritura para la tabla"
+								+ recordset.getName(), new EditionException());
+					}
+					else
+					{
+						ITableDefinition tableDef = model.getTableDefinition();
+						writer.initialize(tableDef);
+
+						model.stopEdition(writer,EditionEvent.ALPHANUMERIC);
+
+						// TODO: RELOAD
+//						EditableAdapter edAdapter = (EditableAdapter) ies;
+//						// Restaura el datasource a su estado original
+//						edAdapter.setOriginalDataSource(edAdapter.getRecordset());
+						model.getSelection().clear();
+						//refreshControls();
+					}
+
+
+				}
+			}
+		} catch (EditionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverLoadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

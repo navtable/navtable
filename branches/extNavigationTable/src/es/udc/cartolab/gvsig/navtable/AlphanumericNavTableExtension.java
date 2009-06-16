@@ -7,6 +7,7 @@ import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.fmap.DriverException;
 import com.iver.cit.gvsig.fmap.edition.EditableAdapter;
+import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -58,9 +59,9 @@ public class AlphanumericNavTableExtension extends Extension {
 
 		Table table = (Table) PluginServices.getMDIManager().getActiveWindow();
 		
-		SelectableDataSource recordset = table.getModel().getModelo().getRecordset();
+		IEditableSource model = table.getModel().getModelo();
 		
-		AlphanumericNavTable viewer = new AlphanumericNavTable(recordset);
+		AlphanumericNavTable viewer = new AlphanumericNavTable(model);
 		if (viewer.init()){
 			PluginServices.getMDIManager().addCentredWindow(viewer);
 		}
