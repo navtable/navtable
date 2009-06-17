@@ -2,6 +2,7 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Types;
 import java.util.Vector;
@@ -16,7 +17,9 @@ import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
+import com.iver.cit.gvsig.fmap.core.DefaultRow;
 import com.iver.cit.gvsig.fmap.core.IRow;
+import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
 import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.edition.EditionException;
@@ -52,14 +55,7 @@ public class AlphanumericNavTable extends NavTable {
 		newB.setToolTipText(PluginServices.getText(this,
 							"new_register"));
 		
-		newB.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Prueba del Zoom para hacer de crear Nuevo");
-				// TODO Create a new register on the table
-				// Refresh recordset
-				// Go to the last record on the 
-			}			
-		});
+		newB.addActionListener(this);
 		zoomB.getParent().add(newB);
 		// We must to rewrite selectionB listener and the others
 
@@ -125,7 +121,7 @@ public class AlphanumericNavTable extends NavTable {
 //						EditableAdapter edAdapter = (EditableAdapter) ies;
 //						// Restaura el datasource a su estado original
 //						edAdapter.setOriginalDataSource(edAdapter.getRecordset());
-						model.getSelection().clear();
+						//model.getSelection().clear();
 						//refreshControls();
 					}
 
@@ -141,6 +137,65 @@ public class AlphanumericNavTable extends NavTable {
 		} catch (DriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	private void addRow() {
+		//crear una row vacía
+		//showWarning();
+		if (onlySelectedCB.isSelected()) {
+			onlySelectedCB.setSelected(false);
+		}
+		try {
+			model.startEdition(EditionEvent.ALPHANUMERIC);
+
+			if (model instanceof IWriteable) {
+
+				IRow row;
+				int numAttr = recordset.getFieldCount();
+				Value[] values = new Value[numAttr];
+				for (int i=0; i<numAttr; i++) {
+					values[i] = ValueFactory.createNullValue();
+				}
+				row = new DefaultRow(values);
+				model.addRow(row, "NAVTABLE ADD", EditionEvent.ALPHANUMERIC);
+
+				IWriteable w = (IWriteable) model;
+				IWriter writer = w.getWriter();
+
+				ITableDefinition tableDef = model.getTableDefinition();
+				writer.initialize(tableDef);
+
+				model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
+				
+//				ir a ella en navtable
+				last();
+
+			}
+		} catch (EditionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 
+ 
+
+	}
+	
+	public void actionPerformed (ActionEvent e) {
+		
+		if (e.getSource()==newB) {
+			addRow();
+		} else {
+			super.actionPerformed(e);
 		}
 	}
 
