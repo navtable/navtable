@@ -158,7 +158,7 @@ public class AlphanumericNavTable extends NavTable {
 					values[i] = ValueFactory.createNullValue();
 				}
 				row = new DefaultRow(values);
-				model.addRow(row, "NAVTABLE ADD", EditionEvent.ALPHANUMERIC);
+				model.doAddRow(row, EditionEvent.ALPHANUMERIC);
 
 				IWriteable w = (IWriteable) model;
 				IWriter writer = w.getWriter();
