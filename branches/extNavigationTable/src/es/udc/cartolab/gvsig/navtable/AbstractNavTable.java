@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -48,6 +49,9 @@ import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
  * </ul>
  * 
  * <img src="images/NavTableWindow.png">
+ * 
+ * If there are a image on 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png' 
+ * is loaded on the NorthPanel. 
  * 
  * @author Nacho Varela
  * @author Javier Estevez
@@ -185,12 +189,24 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 */
 	protected JPanel getNorthPanel() {
 
-		northPanel = new JPanel(new BorderLayout());	
-
+		northPanel = new JPanel(new BorderLayout());
+		
 		JPanel northFirstRow = new JPanel(new BorderLayout());
 
-		JPanel filterPanel = new JPanel(new FlowLayout());
+		File iconPath = new File("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
+		if (iconPath.exists()) {
+			northFirstRow.setBackground(Color.WHITE);
+			ImageIcon logo = new ImageIcon(iconPath.getAbsolutePath());
+			JLabel icon = new JLabel();
+			icon.setIcon(logo);
+			northFirstRow.add(icon, BorderLayout.WEST);
+		}
 
+		JPanel filterPanel = new JPanel(new FlowLayout());
+		if (iconPath.exists()) {
+			filterPanel.setBackground(Color.WHITE);
+		}
+		
 		java.net.URL imgURL = null;
 		imgURL = getClass().getResource("/filter.png");
 		ImageIcon filterImage = new ImageIcon(imgURL);
