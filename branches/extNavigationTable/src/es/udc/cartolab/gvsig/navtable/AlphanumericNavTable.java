@@ -33,6 +33,7 @@ import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 public class AlphanumericNavTable extends NavTable {
 
 	JButton newB = null;
+	JButton removeB = null;
 	IEditableSource model;
 	
 	public AlphanumericNavTable(IEditableSource model) {
@@ -57,6 +58,14 @@ public class AlphanumericNavTable extends NavTable {
 		
 		newB.addActionListener(this);
 		zoomB.getParent().add(newB);
+		
+		imgURL = getClass().getResource("/delete.png");
+		ImageIcon imagenDeleteRegister = new ImageIcon(imgURL);
+		removeB = new JButton(imagenDeleteRegister);
+		removeB.setToolTipText(PluginServices.getText(this,
+							   "delete_register"));
+		removeB.addActionListener(this);
+		zoomB.getParent().add(removeB);
 		// We must to rewrite selectionB listener and the others
 
 		return true;
@@ -185,18 +194,54 @@ public class AlphanumericNavTable extends NavTable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
- 
- 
-
+	}
+	
+	private void deleteRow() {
+		try {
+			model.startEdition(EditionEvent.ALPHANUMERIC);
+			
+			IWriteable w = (IWriteable) model;
+			IWriter writer = w.getWriter();
+			
+			ITableDefinition tableDef = model.getTableDefinition();
+			writer.initialize(tableDef);
+			
+			model.doRemoveRow((int) currentPosition, EditionEvent.ALPHANUMERIC);
+			
+			model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
+			
+			//Refresh
+			currentPosition = currentPosition -1;
+			next();
+		
+		} catch (EditionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverLoadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void actionPerformed (ActionEvent e) {
 		
-		if (e.getSource()==newB) {
+		if (e.getSource() == newB) {
 			addRow();
-		} else {
+		}else if (e.getSource() == removeB) {
+			deleteRow();
+		}else {
 			super.actionPerformed(e);
 		}
 	}
 
-}
+}//Class
