@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import com.hardcode.driverManager.DriverLoadException;
@@ -17,6 +18,7 @@ import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
+import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.cit.gvsig.fmap.core.DefaultRow;
 import com.iver.cit.gvsig.fmap.core.IRow;
 import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
@@ -238,7 +240,10 @@ public class AlphanumericNavTable extends NavTable {
 		if (e.getSource() == newB) {
 			addRow();
 		}else if (e.getSource() == removeB) {
-			deleteRow();
+			int answer = JOptionPane.showConfirmDialog(null, PluginServices.getText(null, "confirm_delete_register"), null, JOptionPane.YES_NO_OPTION);
+			if (answer == 0) {
+				deleteRow();
+			}
 		}else {
 			super.actionPerformed(e);
 		}
