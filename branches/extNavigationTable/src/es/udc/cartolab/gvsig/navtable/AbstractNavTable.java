@@ -71,8 +71,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	protected long currentPosition = 0;
 
 	protected FLyrVect layer = null;
-	protected SelectableDataSource recordset = null;	
-
+	protected SelectableDataSource recordset = null;
+	
 	// NORTH
 	JCheckBox onlySelectedCB = null;
 	JCheckBox fixScaleCB = null;
@@ -200,6 +200,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			JLabel icon = new JLabel();
 			icon.setIcon(logo);
 			northFirstRow.add(icon, BorderLayout.WEST);
+			viewInfo.setHeight(575);
 		}
 
 		JPanel filterPanel = new JPanel(new FlowLayout());
