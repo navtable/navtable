@@ -35,7 +35,7 @@ import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 public class AlphanumericNavTable extends NavTable {
 
 	JButton newB = null;
-	JButton removeB = null;
+	//JButton removeB = null;
 	IEditableSource model;
 	
 	public AlphanumericNavTable(IEditableSource model) {
@@ -60,14 +60,6 @@ public class AlphanumericNavTable extends NavTable {
 		
 		newB.addActionListener(this);
 		zoomB.getParent().add(newB);
-		
-		imgURL = getClass().getResource("/delete.png");
-		ImageIcon imagenDeleteRegister = new ImageIcon(imgURL);
-		removeB = new JButton(imagenDeleteRegister);
-		removeB.setToolTipText(PluginServices.getText(this,
-							   "delete_register"));
-		removeB.addActionListener(this);
-		zoomB.getParent().add(removeB);
 		// We must to rewrite selectionB listener and the others
 
 		return true;

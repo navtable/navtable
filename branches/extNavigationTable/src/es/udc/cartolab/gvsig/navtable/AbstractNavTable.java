@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -17,14 +18,20 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.hardcode.gdbms.engine.values.Value;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
+import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.fmap.DriverException;
+import com.iver.cit.gvsig.fmap.MapControl;
+import com.iver.cit.gvsig.fmap.core.IFeature;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
+import com.iver.cit.gvsig.fmap.edition.EditionEvent;
+import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
@@ -32,6 +39,8 @@ import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
 import com.iver.cit.gvsig.fmap.layers.SelectionListener;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
+import com.iver.cit.gvsig.layers.VectorialLayerEdited;
+import com.iver.cit.gvsig.project.documents.view.gui.View;
 
 /**
  * 
@@ -94,6 +103,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	JButton zoomB = null;
 	JButton selectionB = null;
 	JButton saveB = null;
+	JButton removeB = null;
 	JButton cancelB = null;
 
 	/**
@@ -320,6 +330,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		saveB = new JButton(imagenSave);
 		saveB.setToolTipText(PluginServices.getText(this, "saveButtonTooltip"));
 		saveB.addActionListener(this);
+		imgURL = getClass().getResource("/delete.png");
+		ImageIcon imagenDeleteRegister = new ImageIcon(imgURL);
+		removeB = new JButton(imagenDeleteRegister);
+		removeB.setToolTipText(PluginServices.getText(this,
+							   "delete_register"));
+		removeB.addActionListener(this);
 		imgURL = getClass().getResource("/close.png");
 		ImageIcon imagenClose = new ImageIcon(imgURL);
 		cancelB = new JButton(imagenClose);
@@ -341,6 +357,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		actionsToolBar.add(zoomB);
 		actionsToolBar.add(selectionB);
 		actionsToolBar.add(saveB);
+		actionsToolBar.add(removeB);
 		actionsToolBar.add(cancelB);
 
 		JPanel buttonsPanel = new JPanel(new FlowLayout());
@@ -930,12 +947,66 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (e.getSource() == saveB){
 			saveRegister();			
 			refreshGUI();
-		}				
+		}
+		
+		if (e.getSource() == removeB){
+			int answer = JOptionPane.showConfirmDialog(null, PluginServices.getText(null, "confirm_delete_register"), null, JOptionPane.YES_NO_OPTION);
+			if (answer == 0) {
+				deleteRow();
+			}
+		}
 				
 		if (e.getSource() == cancelB){
 			PluginServices.getMDIManager().closeWindow(this);
 		}
 
+	}
+
+	private void deleteRow() {
+		try {
+			View view = (View) PluginServices.getMDIManager().getActiveWindow();
+			MapControl map = view.getMapControl();
+			IFeature feat;
+			ReadableVectorial feats = layer.getSource();
+
+			feats.start();
+			
+			if (currentPosition>-1) {
+				
+				feat = feats.getFeature((int)currentPosition);
+				
+				ToggleEditing te = new ToggleEditing();
+				te.startEditing(layer);
+				
+		        CADExtension.initFocus();
+				CADExtension.setCADTool("_selection",true);		        
+				CADExtension.getEditionManager().setMapControl(map);
+				CADExtension.getCADToolAdapter().configureMenu();
+							
+				VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
+				VectorialEditableAdapter vea = vle.getVEA();
+				
+				vea.removeRow((int)currentPosition, CADExtension.getCADTool().getName(), EditionEvent.GRAPHIC);
+			
+				te.stopEditing(layer, false);
+				
+				layer.setActive(true);
+				
+				//Refresh
+				currentPosition = currentPosition -1;
+				next();
+			}
+		} catch (DriverIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	private boolean isValidPosition(Long pos) {
