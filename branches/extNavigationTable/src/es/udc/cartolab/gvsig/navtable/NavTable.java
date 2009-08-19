@@ -79,7 +79,7 @@ public class NavTable extends AbstractNavTable {
 	 * 
 	 * @return the panel.
 	 */
-	protected JPanel getCenterPanel(){
+	public JPanel getCenterPanel(){
 
 		GridBagLayout glayout = new GridBagLayout();
 		GridBagConstraints c = new GridBagConstraints();		

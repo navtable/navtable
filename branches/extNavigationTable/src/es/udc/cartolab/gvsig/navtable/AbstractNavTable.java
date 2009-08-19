@@ -271,7 +271,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * 
 	 * @return the panel.
 	 */
-	protected abstract JPanel getCenterPanel();
+	public abstract JPanel getCenterPanel();
 
 	/**
 	 * Creates the bottom panel.
