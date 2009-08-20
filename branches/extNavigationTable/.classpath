@@ -6,10 +6,10 @@
 	<classpathentry kind="src" path="/appgvSIG"/>
 	<classpathentry kind="src" path="/libFMap"/>
 	<classpathentry kind="src" path="/libGDBMS"/>
-	<classpathentry kind="src" path="/extCAD"/>
 	<classpathentry kind="src" path="/libDriverManager"/>
 	<classpathentry kind="src" path="/libIverUtiles"/>
 	<classpathentry kind="src" path="/libCq CMS for java"/>
 	<classpathentry kind="lib" path="/libFMap/lib/jts-1.9.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/extCAD_conEIEL"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
