@@ -795,7 +795,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		
 	}
 
-	private boolean valuesMustBeFilled() {
+	protected boolean valuesMustBeFilled() {
 		FBitSet bitset= recordset.getSelection();
 		
 		int selectedNumber = bitset.cardinality();
