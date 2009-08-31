@@ -976,7 +976,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				feat = feats.getFeature((int)currentPosition);
 				
 				ToggleEditing te = new ToggleEditing();
-				te.startEditing(layer);
+				
+				if (!layer.isEditing())
+					te.startEditing(layer);
 				
 		        CADExtension.initFocus();
 				CADExtension.setCADTool("_selection",true);		        
