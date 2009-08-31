@@ -190,7 +190,7 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 	
-	private void deleteRow() {
+	protected void deleteRow() {
 		try {
 			model.startEdition(EditionEvent.ALPHANUMERIC);
 			
