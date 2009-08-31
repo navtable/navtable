@@ -36,7 +36,7 @@ public class AlphanumericNavTable extends NavTable {
 
 	JButton newB = null;
 	//JButton removeB = null;
-	IEditableSource model;
+	protected IEditableSource model;
 	
 	public AlphanumericNavTable(IEditableSource model) {
 		super(model.getRecordset());
