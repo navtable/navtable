@@ -811,6 +811,45 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			return true;
 		}
 	}
+	
+	protected void copyPrevious() {
+		String pos = posTF.getText();
+		Long posNumber = new Long(pos);
+		if (!isValidPosition(posNumber) ){
+			if (currentPosition == -1) {
+				posTF.setText("");
+			} else {
+				posTF.setText(String.valueOf(currentPosition+1));
+			}
+			return;
+		}
+		
+		showWarning();
+		try {
+			currentPosition = posNumber-1;
+			refreshGUI();
+		} catch (Exception e1){
+			e1.printStackTrace();
+		}
+	}
+	
+	protected void copySelected() {
+		FBitSet selection = recordset.getSelection();
+		if (selection.cardinality()!=1) {
+			//lanzar error
+			JOptionPane.showMessageDialog(null,
+				    PluginServices.getText(this, "justOneRecordMessage"),
+				    PluginServices.getText(this, "justOneRecordTitle"),
+				    JOptionPane.WARNING_MESSAGE);
+		} else {
+			//TODO Check this code
+			long current = currentPosition;
+			long selectedRow = selection.nextSetBit(0);
+			currentPosition = selectedRow;
+			fillValues();
+			currentPosition = current;
+		}
+	}
 
 	/**
 	 * Handles the user actions.
@@ -885,45 +924,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 		
 		if (e.getSource() == posTF){
-			String pos = posTF.getText();
-			Long posNumber = new Long(pos);
-			if (!isValidPosition(posNumber) ){
-				if (currentPosition == -1) {
-					posTF.setText("");
-				} else {
-					posTF.setText(String.valueOf(currentPosition+1));
-				}
-				return;
-			}
-			
-			showWarning();
-			try {
-				currentPosition = posNumber-1;
-				refreshGUI();
-			} catch (Exception e1){
-				e1.printStackTrace();
-			}
+			copyPrevious();
 		}
 		
 		if (e.getSource() == copySelectedB){			
 //			fillValues(currentPosition-1);
 //			currentPosition = currentPosition + 1;
 			
-			FBitSet selection = recordset.getSelection();
-			if (selection.cardinality()!=1) {
-				//lanzar error
-				JOptionPane.showMessageDialog(null,
-					    PluginServices.getText(this, "justOneRecordMessage"),
-					    PluginServices.getText(this, "justOneRecordTitle"),
-					    JOptionPane.WARNING_MESSAGE);
-			} else {
-				//TODO Check this code
-				long current = currentPosition;
-				long selectedRow = selection.nextSetBit(0);
-				currentPosition = selectedRow;
-				fillValues();
-				currentPosition = current;
-			}
+			copySelected();
 			
 		}
 		
