@@ -233,7 +233,7 @@ public class NavTable extends AbstractNavTable {
 			BufferedReader fileReader = new BufferedReader(new FileReader(fileAlias));
 			while ((line = fileReader.readLine())!=null) {
 				String tokens[] = line.split("=");
-				if (fieldName.compareTo(tokens[0]) == 0) {
+				if (fieldName.toUpperCase().compareTo(tokens[0].toUpperCase()) == 0) {
 					alias = tokens[1];
 					break;
 				}
