@@ -398,7 +398,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * Goes to the next row of the data.
 	 *
 	 */
-	protected void next(){
+	public void next(){
 		showWarning();
 		try {
 			if (onlySelectedCB.isSelected()){
@@ -432,7 +432,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * Goes to the last row of the data.
 	 *
 	 */
-	protected void last(){
+	public void last(){
 		showWarning();
 		try {
 			if (onlySelectedCB.isSelected()){
@@ -446,7 +446,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			e.printStackTrace();
 		}		
 	}
-
+	
 	/** 
 	 * Goes to the last selected row of the data.
 	 *
@@ -465,7 +465,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * Goes to the first row of the data.
 	 *
 	 */
-	protected void first(){
+	public void first(){
 		showWarning();
 		if (onlySelectedCB.isSelected()){
 			firstSelected();
@@ -493,7 +493,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * Goes to the previous row of the data.
 	 *
 	 */
-	protected void before() {
+	public void before() {
 		showWarning();
 		if (onlySelectedCB.isSelected()){
 			beforeSelected();
@@ -826,7 +826,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		
 		showWarning();
 		try {
-			currentPosition = posNumber-1;
+			currentPosition = posNumber.longValue()-1;
 			refreshGUI();
 		} catch (Exception e1){
 			e1.printStackTrace();
@@ -1020,11 +1020,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	private boolean isValidPosition(Long pos) {
-		if (pos == null || pos == 0) {
+		if (pos == null || pos.longValue() == 0) {
 			return false;
 		}
 		if (onlySelectedCB.isSelected()){
-			return isRecordSelected(pos);
+			return isRecordSelected(pos.longValue());
 		}
 		return true;
 	}

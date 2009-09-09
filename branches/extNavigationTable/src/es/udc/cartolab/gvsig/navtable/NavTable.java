@@ -386,6 +386,7 @@ public class NavTable extends AbstractNavTable {
 	
 	protected void saveRegister(){
 		//TODO check if the values type are correct
+		boolean layerEditing = true;
 		
 		//Stoping edition if some cell is being edited when the save button is clicked.
 		stopCellEdition();
@@ -400,8 +401,11 @@ public class NavTable extends AbstractNavTable {
 			if (changedValues.size()>0) {
 				DefaultTableModel model = (DefaultTableModel)table.getModel();
 				ToggleEditing te = new ToggleEditing();
-				te.startEditing(layer);
-
+				if (!layer.isEditing()) {
+					layerEditing = false;
+					te.startEditing(layer);
+				}
+					
 				for (int i = 0; i < model.getRowCount(); i++) {
 
 					if (changedValues.contains(new Integer(i))) {
@@ -423,8 +427,9 @@ public class NavTable extends AbstractNavTable {
 						}
 					}
 				}
-
-				te.stopEditing(layer, false);
+				
+				if (!layerEditing)
+					te.stopEditing(layer, false);
 				layer.getMapContext().redraw();
 				layer.setActive(true);
 				//refreshGUI();
@@ -457,22 +462,22 @@ public class NavTable extends AbstractNavTable {
 		}
 	}
 	
-	protected void next(){
+	public void next(){
 		stopCellEdition();
 		super.next();
 	}
 	
-	protected void before(){
+	public void before(){
 		stopCellEdition();
 		super.before();
 	}
 	
-	protected void last(){
+	public void last(){
 		stopCellEdition();
 		super.last();
 	}
 	
-	protected void first(){
+	public void first(){
 		stopCellEdition();
 		super.first();
 	}
