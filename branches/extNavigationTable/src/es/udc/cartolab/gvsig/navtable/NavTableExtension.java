@@ -10,6 +10,8 @@ import com.iver.cit.gvsig.fmap.layers.FLayers;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.gui.panels.FPanelAbout;
 import com.iver.cit.gvsig.project.documents.view.gui.View;
+import com.iver.utiles.extensionPoints.ExtensionPoints;
+import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
@@ -36,6 +38,10 @@ public class NavTableExtension extends Extension{
 		FPanelAbout panelAbout=about.getAboutPanel(); 
 		java.net.URL aboutURL = this.getClass().getResource("/about.htm");
 		panelAbout.addAboutUrl("NavTable", aboutURL);
+		
+		//Entry at TOC contextual menu
+		ExtensionPoints extensionPoints = ExtensionPointsSingleton.getInstance();
+		extensionPoints.add("View_TocActions", "NavTable", new NavTableTocMenuEntry());
 		// TODO Auto-generated method stub		
 	}
 
