@@ -22,7 +22,7 @@ public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
 
 	public String getText() {
 		// TODO Auto-generated method stub
-		return PluginServices.getText(this, "navigation_table");
+		return PluginServices.getText(this, "open_navigation_table");
 
 	}
 
