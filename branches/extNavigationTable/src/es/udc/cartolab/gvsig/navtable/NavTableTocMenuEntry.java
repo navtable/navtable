@@ -39,7 +39,10 @@ public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
 	}
 
 	public boolean isEnabled(ITocItem item, FLayer[] selectedItems) {
-		return true;
+		if (selectedItems[0].isAvailable()) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean isVisible(ITocItem item, FLayer[] selectedItems) {
