@@ -539,6 +539,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				source.start();
 				g = source.getShape(pos);
 				source.stop();
+				
+				/* fix to avoid zoom problems when layer and view 
+				 * projections aren't the same. */
+				g.reProject(layer.getProjection().getCT(layer.getMapContext().getProjection()));
+				
 				rectangle = g.getBounds2D();
 
 				if (rectangle.getWidth() < 200){
