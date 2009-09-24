@@ -790,6 +790,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		} else {
 			copySelectedB.setEnabled(true);
 		}
+		
+		if (currentPosition == 0) {
+			copyPreviousB.setEnabled(false);
+		} else {
+			copyPreviousB.setEnabled(true);
+		}
 
 		selectionB.setEnabled(navEnabled);
 		zoomB.setEnabled(navEnabled);
