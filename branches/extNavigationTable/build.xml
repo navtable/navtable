@@ -31,10 +31,6 @@
   	<copy file="config/about.htm" todir="${dist}" overwrite="yes"/>
   	  	
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-	<copy todir="${dist}/lib">
-  	    	<fileset dir="lib" includes="*"/>
-  	</copy>  	
-
   	<jar jarfile="${dist}/lib/${plugin}.jar" basedir="${build}" includes="es/udc/cartolab/**"
     />
   	<jar update="true" jarfile="${dist}/lib/${plugin}.jar" basedir="images" includes="*"/>
