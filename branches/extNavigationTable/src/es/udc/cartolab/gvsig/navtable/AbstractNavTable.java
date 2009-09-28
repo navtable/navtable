@@ -786,13 +786,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 		
 		FBitSet selection = recordset.getSelection();
-		if (selection.cardinality()==0) {
+		if (selection.cardinality()==0 || !navEnabled) {
 			copySelectedB.setEnabled(false);
 		} else {
 			copySelectedB.setEnabled(true);
 		}
 		
-		if (currentPosition == 0) {
+		if (currentPosition == 0 || !navEnabled) {
 			copyPreviousB.setEnabled(false);
 		} else {
 			copyPreviousB.setEnabled(true);
