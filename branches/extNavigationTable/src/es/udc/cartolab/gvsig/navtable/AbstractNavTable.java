@@ -825,7 +825,15 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	
 	protected void copyPrevious() {
 		String pos = posTF.getText();
-		Long posNumber = new Long(pos);
+		Long posNumber = null;
+		
+		try {
+			posNumber = new Long(pos);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			posNumber = currentPosition; 
+		}
+		
 		if (!isValidPosition(posNumber) ){
 			if (currentPosition == -1) {
 				posTF.setText("");
