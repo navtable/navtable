@@ -844,6 +844,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			return;
 		}
 		
+		if (onlySelectedCB.isSelected()){
+			if (!isRecordSelected(posNumber)){
+				posTF.setText(String.valueOf(currentPosition+1));
+				return;
+			}
+		}
+		
 		showWarning();
 		try {
 			currentPosition = posNumber.longValue()-1;
