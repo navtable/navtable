@@ -134,14 +134,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		this.layer = null;
 		WindowInfo window = this.getWindowInfo();
 		String title = window.getTitle();
-		window.setTitle(title+": "+" NavTable de DBFs sueltos" /*layer.getName()*/);
-//		try {
-			this.recordset = recordset;
-			this.recordset.addSelectionListener(this);
-//		} catch (DriverException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		window.setTitle(title+"*: "+ recordset.getName());
+
+		this.recordset = recordset;
+		this.recordset.addSelectionListener(this);
 
 	}
 
