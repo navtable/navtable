@@ -1,7 +1,6 @@
 package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Types;
@@ -18,7 +17,6 @@ import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
-import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.cit.gvsig.fmap.core.DefaultRow;
 import com.iver.cit.gvsig.fmap.core.IRow;
 import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
@@ -26,11 +24,8 @@ import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.edition.EditionException;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
-import com.iver.cit.gvsig.fmap.edition.IRowEdited;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
-import com.iver.cit.gvsig.fmap.layers.FBitSet;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 public class AlphanumericNavTable extends NavTable {
 
