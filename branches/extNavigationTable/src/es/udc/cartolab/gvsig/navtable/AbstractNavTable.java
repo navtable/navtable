@@ -726,7 +726,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			nextB.setEnabled(navEnabled);
 			lastB.setEnabled(navEnabled);
 			firstB.setEnabled(navEnabled);
-			beforeB.setEnabled(navEnabled);			
+			beforeB.setEnabled(navEnabled);
+			removeB.setEnabled(navEnabled);
 			
 			long rows = recordset.getRowCount();
 			FBitSet rowsBitSet = recordset.getSelection();
