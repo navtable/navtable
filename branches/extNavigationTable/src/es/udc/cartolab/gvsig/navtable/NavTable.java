@@ -397,6 +397,8 @@ public class NavTable extends AbstractNavTable {
 		} 
 			int currentPos = Long.valueOf(currentPosition).intValue();
 	
+			if (layer.isWritable()) {
+			
 			Vector changedValues = checkChangedValues();
 			if (changedValues.size()>0) {
 				DefaultTableModel model = (DefaultTableModel)table.getModel();
@@ -433,6 +435,10 @@ public class NavTable extends AbstractNavTable {
 				layer.getMapContext().redraw();
 				layer.setActive(true);
 				//refreshGUI();
+			} 
+			} else {
+				JOptionPane.showMessageDialog(this, String.format(PluginServices.getText(this, "non_editable"),
+						layer.getName()));
 			}
 			//Removes the ProjectTable of this layer if it exists.
 			//Currently commented for testing purposes...
