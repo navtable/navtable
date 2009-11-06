@@ -1,0 +1,31 @@
+NEWS from NavTable 0.4 2009-09-18
+------------------------------------------------
+Added Open NavTable action to popup menu in TOC.
+Create and eliminate registers.
+Improved behaviour when the layer is being edited.
+
+Bugs Fixed:
+
+	- Bug #592: Error when deleting features when 
+		    layer is on edition.
+	- Bug #525: Mistake with register unselection
+
+NEWS from NavTable 0.2.2 2009-06-02
+------------------------------------------------
+Created a system to give longer names to the 
+attributes.
+Arrow keys navigation.
+Added info about the geometry.
+It shows a warning when there's unsaved data.
+Copy from selected record instead of the 
+previous one.
+Better behaviour wiht selections in gvSIG.
+Added to gvSIG menus.
+Added French Translation by Gonzalo Martínez Crespo.
+
+
+NEWS from NavTable 0.2 2009-05-11
+------------------------------------------------
+Initial import
+Official Release of NavTable 0.2 for gvSIG
+
