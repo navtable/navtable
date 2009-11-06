@@ -3,6 +3,7 @@ package es.udc.cartolab.gvsig.navtable;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -22,6 +23,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
@@ -152,7 +154,11 @@ public class NavTable extends AbstractNavTable {
 				JOptionPane.showMessageDialog(this, PluginServices.getText(this, "emptyLayer"));
 				return false;
 			}
-		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
+		} catch (HeadlessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ReadDriverException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -288,7 +294,8 @@ public class NavTable extends AbstractNavTable {
 				this.cellRenderer.addNoEditableRow(model.getRowCount()-1);
 			}
 
-		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
+		} catch (ReadDriverException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -316,39 +323,35 @@ public class NavTable extends AbstractNavTable {
 			}
 			
 			if (layer != null && layer instanceof AlphanumericData) {
-				try {
-					// Fill GEOM_LENGTH
-					String value = "0.0";
-					IGeometry g;
-					ReadableVectorial source = ((FLyrVect)layer).getSource();
-					source.start();
-					g = source.getShape(new Long(currentPosition).intValue());
-					source.stop();
-					if (g == null) {
-						model.setValueAt("0", recordset.getFieldCount(), 1);
-						model.setValueAt("0", recordset.getFieldCount()+1, 1);
-					}
-					Geometry geom = g.toJTSGeometry();
-					//	TODO Format number (Set units in Preferences)
-					value = String.valueOf(Math.round(geom.getLength()));
-					model.setValueAt(value, recordset.getFieldCount(), 1);
-					// Fill GEOM_AREA
-					value = "0.0";
-					source.start();
-					g = source.getShape(new Long(currentPosition).intValue());
-					source.stop();
-					geom = g.toJTSGeometry();
-					//TODO Format number  (Set units in Preferences)	
-					value = String.valueOf(Math.round(geom.getArea()));
-					model.setValueAt(value, recordset.getFieldCount()+1, 1);
-					
-				} catch (DriverIOException e) {
-					e.printStackTrace();
+				// Fill GEOM_LENGTH
+				String value = "0.0";
+				IGeometry g;
+				ReadableVectorial source = ((FLyrVect)layer).getSource();
+				source.start();
+				g = source.getShape(new Long(currentPosition).intValue());
+				source.stop();
+				if (g == null) {
+					model.setValueAt("0", recordset.getFieldCount(), 1);
+					model.setValueAt("0", recordset.getFieldCount()+1, 1);
 				}
+				Geometry geom = g.toJTSGeometry();
+				//	TODO Format number (Set units in Preferences)
+				value = String.valueOf(Math.round(geom.getLength()));
+				model.setValueAt(value, recordset.getFieldCount(), 1);
+				// Fill GEOM_AREA
+				value = "0.0";
+				source.start();
+				g = source.getShape(new Long(currentPosition).intValue());
+				source.stop();
+				geom = g.toJTSGeometry();
+				//TODO Format number  (Set units in Preferences)	
+				value = String.valueOf(Math.round(geom.getArea()));
+				model.setValueAt(value, recordset.getFieldCount()+1, 1);
 			}
 			//refreshGUI();
 							
-		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
+		} catch (ReadDriverException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}	
@@ -371,7 +374,7 @@ public class NavTable extends AbstractNavTable {
 						changedValues.add(new Integer(i));
 					}
 				}
-			} catch (DriverException e) {
+			} catch (ReadDriverException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -432,7 +435,7 @@ public class NavTable extends AbstractNavTable {
 				
 				if (!layerEditing)
 					te.stopEditing(layer, false);
-				layer.getMapContext().redraw();
+//				layer.getMapContext().redraw();
 				layer.setActive(true);
 				//refreshGUI();
 			} 
@@ -491,6 +494,11 @@ public class NavTable extends AbstractNavTable {
 	public void windowClosed() {
 		stopCellEdition();
 		super.windowClosed();
+	}
+
+	public Object getWindowProfile() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

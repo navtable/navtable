@@ -1,5 +1,6 @@
 package es.udc.cartolab.gvsig.navtable;
 
+import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.andami.ui.mdiManager.IWindow;
@@ -46,10 +47,17 @@ public class AlphanumericNavTableExtension extends Extension {
 		
 		IEditableSource model = table.getModel().getModelo();
 		
-		AlphanumericNavTable viewer = new AlphanumericNavTable(model);
+		AlphanumericNavTable viewer;
+		try {
+			viewer = new AlphanumericNavTable(model);
+	
 		if (viewer.init()){
 			PluginServices.getMDIManager().addCentredWindow(viewer);
 		}
+	} catch (ReadDriverException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	}
 	
 	

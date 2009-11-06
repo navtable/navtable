@@ -3,6 +3,9 @@ package es.udc.cartolab.gvsig.navtable;
 import java.io.IOException;
 import java.sql.Types;
 
+import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
+import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
+import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.instruction.FieldNotFoundException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
@@ -12,7 +15,11 @@ import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.EditionManager;
 import com.iver.cit.gvsig.EditionUtilities;
 import com.iver.cit.gvsig.ProjectExtension;
-import com.iver.cit.gvsig.fmap.DriverException;
+import com.iver.cit.gvsig.exceptions.layers.CancelEditingLayerException;
+import com.iver.cit.gvsig.exceptions.layers.LegendLayerException;
+import com.iver.cit.gvsig.exceptions.layers.StartEditionLayerException;
+import com.iver.cit.gvsig.exceptions.table.CancelEditingTableException;
+import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.core.DefaultFeature;
 import com.iver.cit.gvsig.fmap.core.DefaultRow;
@@ -26,7 +33,7 @@ import com.iver.cit.gvsig.fmap.drivers.ILayerDefinition;
 import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
 import com.iver.cit.gvsig.fmap.drivers.shp.IndexedShpDriver;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
-import com.iver.cit.gvsig.fmap.edition.EditionException;
+import com.iver.cit.gvsig.fmap.edition.EditionExceptionOld;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IRowEdited;
 import com.iver.cit.gvsig.fmap.edition.ISpatialWriter;
@@ -36,8 +43,8 @@ import com.iver.cit.gvsig.fmap.edition.rules.RulePolygon;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLayers;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.fmap.rendering.Legend;
-import com.iver.cit.gvsig.fmap.rendering.VectorialLegend;
+import com.iver.cit.gvsig.fmap.rendering.ILegend;
+import com.iver.cit.gvsig.fmap.rendering.IVectorLegend;
 import com.iver.cit.gvsig.layers.VectorialLayerEdited;
 import com.iver.cit.gvsig.project.documents.table.ProjectTable;
 import com.iver.cit.gvsig.project.documents.table.gui.Table;
@@ -90,7 +97,7 @@ public class ToggleEditing {
 
 			if (layer instanceof FLyrVect) {
 				layer.setActive(true);
-				mapControl.getMapContext().clearAllCachingImageDrawnLayers();
+//				mapControl.getMapContext().clearAllCachingImageDrawnLayers();
 //				vista.showConsole();
 				EditionManager editionManager = CADExtension.getEditionManager();
 				editionManager.setMapControl(mapControl);
@@ -98,45 +105,48 @@ public class ToggleEditing {
 				FLyrVect lv = (FLyrVect) layer;
 
 				lv.addLayerListener(editionManager);
+				ILegend legendOriginal=lv.getLegend();
+
 				try {
-					Legend legendOriginal=lv.getLegend();
-
 					lv.setEditing(true);
-					VectorialEditableAdapter vea = (VectorialEditableAdapter) lv
-					.getSource();
+				} catch (StartEditionLayerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				VectorialEditableAdapter vea = (VectorialEditableAdapter) lv
+				.getSource();
 
-					vea.getRules().clear();
+				vea.getRules().clear();
+				try {
 					if (vea.getShapeType() == FShape.POLYGON)
 					{
 						IRule rulePol = new RulePolygon();
 						vea.getRules().add(rulePol);
 					}
-
-					if (!(lv.getSource().getDriver() instanceof IndexedShpDriver)){
-						VectorialLayerEdited vle=(VectorialLayerEdited)editionManager.getLayerEdited(lv);
-						vle.setLegend(legendOriginal);
-					}
-					vea.getCommandRecord().addCommandListener(mapControl);
-					// If there's a table linked to this layer, its model is changed
-					// to VectorialEditableAdapter.
-					ProjectExtension pe = (ProjectExtension) PluginServices
-					.getExtension(ProjectExtension.class);
-					ProjectTable pt = pe.getProject().getTable(lv);
-					if (pt != null){
-						pt.setModel(vea);
-						changeModelTable(pt,vea);
-					}
-
-					//COMENTADA POR NACHO
-					//startCommandsApplicable(vista,lv);
-					vista.repaintMap();
-					vista.hideConsole();
-
-				} catch (EditionException e) {
-					NotificationManager.addError(e.getMessage(),e);
-				} catch (DriverIOException e) {
-					NotificationManager.addError(e.getMessage(),e);
+				} catch (ReadDriverException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+
+				if (!(lv.getSource().getDriver() instanceof IndexedShpDriver)){
+					VectorialLayerEdited vle=(VectorialLayerEdited)editionManager.getLayerEdited(lv);
+					vle.setLegend(legendOriginal);
+				}
+				vea.getCommandRecord().addCommandListener(mapControl);
+				// If there's a table linked to this layer, its model is changed
+				// to VectorialEditableAdapter.
+				ProjectExtension pe = (ProjectExtension) PluginServices
+				.getExtension(ProjectExtension.class);
+				ProjectTable pt = pe.getProject().getTable(lv);
+				if (pt != null){
+					pt.setModel(vea);
+					changeModelTable(pt,vea);
+				}
+
+				//COMENTADA POR NACHO
+				//startCommandsApplicable(vista,lv);
+				vista.repaintMap();
+				vista.hideConsole();
 
 			}
 		}
@@ -179,23 +189,26 @@ public class ToggleEditing {
 				vea.getCommandRecord().removeCommandListener(mapControl);
 				if (!(layer.getSource().getDriver() instanceof IndexedShpDriver)){
 					VectorialLayerEdited vle=(VectorialLayerEdited)CADExtension.getEditionManager().getLayerEdited(layer);
-					layer.setLegend((VectorialLegend)vle.getLegend());
+					layer.setLegend((IVectorLegend)vle.getLegend());
 				}
 				layer.setEditing(false);
 				// The layer should be the active one and the view must be repainted
-				layer.getMapContext().redraw();
+//				layer.getMapContext().redraw();
 				layer.setActive(true);
 			}
-		} catch (EditionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FieldNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (DriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LegendLayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StartEditionLayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (EditionExceptionOld e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -223,20 +236,30 @@ public class ToggleEditing {
 		.getMDIManager().getAllWindows();
 		VectorialEditableAdapter vea = (VectorialEditableAdapter) layer
 		.getSource();
-		vea.cancelEdition(EditionEvent.GRAPHIC);
+		try {
+			vea.cancelEdition(EditionEvent.GRAPHIC);
+		} catch (CancelEditingLayerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		for (int j = 0; j < views.length; j++) {
 			if (views[j] instanceof Table) {
 				Table table = (Table) views[j];
 				if (table.getModel().getAssociatedTable() != null
 						&& table.getModel().getAssociatedTable().equals(layer)) {
-					table.cancelEditing();
+					try {
+						table.cancelEditing();
+					} catch (CancelEditingTableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
 		layer.setProperty("stoppingEditing",new Boolean(false));
 	}
 
-	private void saveLayer(FLyrVect layer) throws DriverException, EditionException {
+	private void saveLayer(FLyrVect layer) throws DriverException, EditionExceptionOld {
 		layer.setProperty("stoppingEditing",new Boolean(true));
 		VectorialEditableAdapter vea = (VectorialEditableAdapter) layer
 		.getSource();
@@ -254,20 +277,37 @@ public class ToggleEditing {
 			}
 		}
 		vea.cleanSelectableDatasource();
-		layer.setRecordset(vea.getRecordset()); 
+		try {
+			layer.setRecordset(vea.getRecordset());
+		} catch (ReadDriverException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		// The layer recordset must have the changes we made
-		ILayerDefinition lyrDef = EditionUtilities.createLayerDefinition(layer);
-		String aux="FIELDS:";
-		FieldDescription[] flds = lyrDef.getFieldsDesc();
-		for (int i=0; i < flds.length; i++) {
-			aux = aux + ", " + flds[i].getFieldAlias();
-		}
-		System.err.println("Escribiendo la capa " + lyrDef.getName() +
-				" con los campos " + aux);
-		lyrDef.setShapeType(layer.getShapeType());
-		writer.initialize(lyrDef);
-		vea.stopEdition(writer, EditionEvent.GRAPHIC);
-		layer.setProperty("stoppingEditing",new Boolean(false));
+		ILayerDefinition lyrDef;
+		try {
+			lyrDef = EditionUtilities.createLayerDefinition(layer);
+			String aux="FIELDS:";
+			FieldDescription[] flds = lyrDef.getFieldsDesc();
+			for (int i=0; i < flds.length; i++) {
+				aux = aux + ", " + flds[i].getFieldAlias();
+			}
+			System.err.println("Escribiendo la capa " + lyrDef.getName() +
+					" con los campos " + aux);
+			lyrDef.setShapeType(layer.getShapeType());
+			writer.initialize(lyrDef);
+			vea.stopEdition(writer, EditionEvent.GRAPHIC);
+			layer.setProperty("stoppingEditing",new Boolean(false));
+	} catch (ReadDriverException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (InitializeWriterException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (StopWriterVisitorException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	}
 
 

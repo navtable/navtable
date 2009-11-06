@@ -12,17 +12,21 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import com.hardcode.driverManager.DriverLoadException;
+import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
+import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
+import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
+import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.core.DefaultRow;
 import com.iver.cit.gvsig.fmap.core.IRow;
 import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
 import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
-import com.iver.cit.gvsig.fmap.edition.EditionException;
+import com.iver.cit.gvsig.fmap.edition.EditionExceptionOld;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
@@ -33,7 +37,7 @@ public class AlphanumericNavTable extends NavTable {
 	//JButton removeB = null;
 	protected IEditableSource model;
 	
-	public AlphanumericNavTable(IEditableSource model) {
+	public AlphanumericNavTable(IEditableSource model) throws ReadDriverException {
 		super(model.getRecordset());
 		this.model = model;
 	}
@@ -106,7 +110,7 @@ public class AlphanumericNavTable extends NavTable {
 					if (writer == null)
 					{
 						NotificationManager.addError("No existe driver de escritura para la tabla"
-								+ recordset.getName(), new EditionException());
+								+ recordset.getName(), new EditionExceptionOld());
 					}
 					else
 					{
@@ -126,13 +130,16 @@ public class AlphanumericNavTable extends NavTable {
 
 				}
 			}
-		} catch (EditionException e) {
+		} catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (DriverLoadException e) {
+		} catch (StartWriterVisitorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (DriverException e) {
+		} catch (InitializeWriterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StopWriterVisitorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -170,16 +177,16 @@ public class AlphanumericNavTable extends NavTable {
 				last();
 
 			}
-		} catch (EditionException e) {
+		} catch (StartWriterVisitorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (DriverException e) {
+		} catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (DriverIOException e) {
+		} catch (InitializeWriterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (StopWriterVisitorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -203,19 +210,16 @@ public class AlphanumericNavTable extends NavTable {
 			currentPosition = currentPosition -1;
 			next();
 		
-		} catch (EditionException e) {
+		} catch (StartWriterVisitorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (DriverIOException e) {
+		} catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (InitializeWriterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (DriverLoadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DriverException e) {
+		} catch (StopWriterVisitorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

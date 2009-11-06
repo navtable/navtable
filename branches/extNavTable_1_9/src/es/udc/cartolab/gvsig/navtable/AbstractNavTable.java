@@ -18,6 +18,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.hardcode.gdbms.driver.exceptions.InitializeDriverException;
+import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
@@ -25,7 +27,8 @@ import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.FiltroExtension;
-import com.iver.cit.gvsig.fmap.DriverException;
+import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
+import com.iver.cit.gvsig.fmap.DriverExceptionOld;
 import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.core.IFeature;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
@@ -122,7 +125,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		try {
 			this.recordset = layer.getRecordset();
 			this.recordset.addSelectionListener(this);
-		} catch (DriverException e) {
+		} catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -406,7 +409,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				}
 			}
 			refreshGUI();
-		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
+		} catch (ReadDriverException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -438,7 +442,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				//fillValues();				
 			}
 			refreshGUI();
-		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
+		} catch (ReadDriverException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 	}
@@ -553,7 +558,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 					layer.getMapContext().getViewPort().setExtent(rectangle);				
 				}
 
-			} catch (DriverIOException e) {
+			} catch (InitializeDriverException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ReadDriverException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}        
@@ -695,7 +704,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	protected void refreshGUI(){
-		boolean navEnabled;		
+		boolean navEnabled = false;		
 		try {
 			if (recordset == null){
 				// TODO 
@@ -734,10 +743,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				totalLabel.setText("/" +rows);
 			}
 		}
-		catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
+		catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return;
 		}
 
 		if (valuesMustBeFilled()){
@@ -1021,7 +1029,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				
 				vea.removeRow((int)currentPosition, CADExtension.getCADTool().getName(), EditionEvent.GRAPHIC);
 			
-				te.stopEditing(layer, false);
+				te.stopEditing(layer, false);	
 				
 				layer.setActive(true);
 				
@@ -1029,13 +1037,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				currentPosition = currentPosition -1;
 				next();
 			}
-		} catch (DriverIOException e) {
+		} catch (ExpansionFileReadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (DriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
