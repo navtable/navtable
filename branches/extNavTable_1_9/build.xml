@@ -9,8 +9,8 @@
   <property name="mainplugin" value="com.iver.cit.gvsig"/>
   <property name="plugin" value="es.udc.cartolab.gvsig.navtable"/>
   <property name="gvsiglibjar" value="es.udc.cartolab.gvsig.navtable"/>
-  <property name="andami" location="/home/psanxiao/cartolab/workspace/gvSIG1.9/_fwAndami" />
-	<property name="extensionsDir" location="/home/psanxiao/cartolab/workspace/gvSIG1.9/_fwAndami/gvSIG/extensiones"/>
+  <property name="andami" location="../_fwAndami" />
+	<property name="extensionsDir" location="../_fwAndami/gvSIG/extensiones"/>
 	<property name="lib-dir" location="${extensionsDir}/${mainplugin}/lib"/>
 
   <target name="init">
