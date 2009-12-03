@@ -46,7 +46,7 @@ import com.iver.cit.gvsig.project.documents.view.gui.View;
 
 /**
  * Class for start, stop or toggle the editing on a vector layer. 
- * Based on the StartingEditing Extension of gvSIG
+ * Based on the StartEditing/StopEditing Extensions of gvSIG
  * 
  * @author Nacho Varela
  * @author Javier Estevez
