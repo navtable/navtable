@@ -1,3 +1,8 @@
+NEWS from NavTable 0.4.1_beta 2009-12-3
+------------------------------------------------
+Adapted NavTable to gvSIG 1.9.
+Added Portuguese translation by Joaquim Rocha.
+
 NEWS from NavTable 0.4 2009-09-18
 ------------------------------------------------
 Added Open NavTable action to popup menu in TOC.
@@ -9,7 +14,7 @@ Bugs Fixed:
 	- Bug #592: Error when deleting features when 
 		    layer is on edition.
 	- Bug #525: Mistake with register unselection
-
+X
 NEWS from NavTable 0.2.2 2009-06-02
 ------------------------------------------------
 Created a system to give longer names to the 
