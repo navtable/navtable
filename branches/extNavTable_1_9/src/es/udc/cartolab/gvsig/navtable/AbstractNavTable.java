@@ -695,8 +695,18 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (viewInfo == null) {
 			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.RESIZABLE | WindowInfo.PALETTE);
 			viewInfo.setTitle(PluginServices.getText(this, "NavTable"));
-			viewInfo.setWidth(425);
-			viewInfo.setHeight(525);
+			
+			//[NachoV] This Frame is just a trick to get the packed size
+			java.awt.Frame f = new java.awt.Frame();
+			f.setLayout(new BorderLayout());
+			f.add(getNorthPanel(), BorderLayout.NORTH);
+			f.pack();
+			viewInfo.setWidth(f.getWidth()+25);
+			f.add(getSouthPanel(), BorderLayout.SOUTH);
+			f.add(getCenterPanel(), BorderLayout.CENTER);
+			f.pack();
+			viewInfo.setHeight(f.getHeight());
+			
 		}
 		return viewInfo;
 	}
