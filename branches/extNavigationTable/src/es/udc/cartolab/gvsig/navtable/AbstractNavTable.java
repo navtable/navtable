@@ -651,6 +651,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			//TODO Esta comprobacion se hacia con Selectable                                     
 				bitset = recordset.getSelection();
 				bitset.clear();
+				recordset.setSelection(bitset);
 				//TODO
 				// Deberia repintar el view
 		}
