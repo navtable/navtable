@@ -6,11 +6,9 @@ import java.sql.Types;
 import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.data.driver.DriverException;
-import com.hardcode.gdbms.engine.instruction.FieldNotFoundException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
-import com.iver.andami.messages.NotificationManager;
 import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.EditionManager;
 import com.iver.cit.gvsig.EditionUtilities;
@@ -27,7 +25,6 @@ import com.iver.cit.gvsig.fmap.core.FShape;
 import com.iver.cit.gvsig.fmap.core.IFeature;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.core.IRow;
-import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
 import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
 import com.iver.cit.gvsig.fmap.drivers.ILayerDefinition;
 import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
@@ -49,7 +46,7 @@ import com.iver.cit.gvsig.layers.VectorialLayerEdited;
 import com.iver.cit.gvsig.project.documents.table.ProjectTable;
 import com.iver.cit.gvsig.project.documents.table.gui.Table;
 import com.iver.cit.gvsig.project.documents.view.IProjectView;
-import com.iver.cit.gvsig.project.documents.view.gui.View;
+import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
 /**
  * Class for start, stop or toggle the editing on a vector layer. 
@@ -85,20 +82,20 @@ public class ToggleEditing {
 		com.iver.andami.ui.mdiManager.IWindow f = PluginServices.getMDIManager()
 		.getActiveWindow();
 
-		if (f instanceof View) {
-			View vista = (View) f;
+		if (f instanceof BaseView) {
+			BaseView vista = (BaseView) f;
 
 			MapControl mapControl = vista.getMapControl();
 
 			IProjectView model = vista.getModel();
-			FLayers layers = model.getMapContext().getLayers();			
+			FLayers layers = model.getMapContext().getLayers();
 			layers.setAllActives(false);
-			FLayer layer = layers.getLayer(layerName); 			
+			FLayer layer = layers.getLayer(layerName);
 
 			if (layer instanceof FLyrVect) {
 				layer.setActive(true);
-//				mapControl.getMapContext().clearAllCachingImageDrawnLayers();
-//				vista.showConsole();
+				//				mapControl.getMapContext().clearAllCachingImageDrawnLayers();
+				//				vista.showConsole();
 				EditionManager editionManager = CADExtension.getEditionManager();
 				editionManager.setMapControl(mapControl);
 
@@ -143,10 +140,8 @@ public class ToggleEditing {
 					changeModelTable(pt,vea);
 				}
 
-				//COMENTADA POR NACHO
-				//startCommandsApplicable(vista,lv);
 				vista.repaintMap();
-				vista.hideConsole();
+				//vista.hideConsole();
 
 			}
 		}
@@ -170,15 +165,15 @@ public class ToggleEditing {
 		.getActiveWindow();
 
 		try {
-			if (f instanceof View) {
-				View vista = (View) f;
+			if (f instanceof BaseView) {
+				BaseView vista = (BaseView) f;
 
 				MapControl mapControl = vista.getMapControl();
 
 				IProjectView model = vista.getModel();
-				FLayers layers = model.getMapContext().getLayers();			
+				FLayers layers = model.getMapContext().getLayers();
 				layers.setAllActives(false);
-				FLyrVect layer = (FLyrVect)layers.getLayer(layerName); 			
+				FLyrVect layer = (FLyrVect)layers.getLayer(layerName);
 				if (cancel){
 					cancelEdition(layer);
 				} else {
@@ -193,7 +188,7 @@ public class ToggleEditing {
 				}
 				layer.setEditing(false);
 				// The layer should be the active one and the view must be repainted
-//				layer.getMapContext().redraw();
+				// layer.getMapContext().redraw();
 				layer.setActive(true);
 			}
 		} catch (DriverException e) {
@@ -298,142 +293,19 @@ public class ToggleEditing {
 			writer.initialize(lyrDef);
 			vea.stopEdition(writer, EditionEvent.GRAPHIC);
 			layer.setProperty("stoppingEditing",new Boolean(false));
-	} catch (ReadDriverException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (InitializeWriterException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (StopWriterVisitorException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+		} catch (ReadDriverException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InitializeWriterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StopWriterVisitorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
-	/**
-	 * Modidify a single value of a register. 
-	 * IMPORTANT: StartEditing and StopEditing is required before and after call this method.
-	 * 
-	 * @param layer		the layer that contains the feature to be changed.
-	 * @param rowIdx	the data row to be changed.
-	 * @param attrIdx	the attribute to be changed.
-	 * @param newValue	the value to be stored on the table.
-	 * 
-	 * @deprecated It'll be replaced by modifyValue2
-	 */
-//	public void modifyValue(FLyrVect layer, int rowIdx, int attrIdx, Object newValue){
-//	    // NachoV IDEA: Podemos meter los datos en el Table asociado mediante su getModel,
-//	    //               sin hacer show, pero en edicion...para que se
-//	    //                  se encargue de guardarlo gvSIG.
-//
-//	    // It should be done out of this method
-//	    boolean stopEditRequired = false;
-//	    if (!layer.isEditing()) {
-//	    	startEditing(layer);
-//	    	stopEditRequired = true;
-//	    }
-//	    
-//	    ////////////////////////////////
-//	    // Copied from ShowTable de gvSIG
-//	    ////////////////////////////////
-//	    Table t = null;
-//	    ProjectTable projectTable = null;
-//
-//	    BaseView vista = (BaseView) PluginServices.getMDIManager().getActiveWindow();
-//	    FLayer[] actives = vista.getModel().getMapContext().getLayers().getActives();
-//
-//	    try {
-//	    for (int i = 0; i < actives.length; i++) {
-//	        if (actives[i] instanceof AlphanumericData) {
-//	        AlphanumericData co = (AlphanumericData) actives[i];
-//
-//	        //SelectableDataSource dataSource;
-//	        //dataSource = co.getRecordset();
-//
-//	        ProjectExtension ext = (ProjectExtension) PluginServices.getExtension(ProjectExtension.class);
-//	        projectTable = ext.getProject().getTable(co);
-//	        EditableAdapter ea=null;
-//	        ReadableVectorial rv=((FLyrVect)actives[i]).getSource();
-//	        if (rv instanceof VectorialEditableAdapter){
-//	            ea=(EditableAdapter)((FLyrVect)actives[i]).getSource();
-//	        } else {
-//	            ea=new EditableAdapter();
-//	            SelectableDataSource sds=((FLyrVect)actives[i]).getRecordset();
-//	            ea.setOriginalDataSource(sds);
-//	        }
-//
-//	        if (projectTable == null) {
-//	            projectTable = ProjectFactory.createTable(PluginServices.getText(this, "Tabla_de_Atributos") + ": " + actives[i].getName(),
-//	                                  ea);
-//	            projectTable.setProjectDocumentFactory(new ProjectTableFactory());
-//	            projectTable.setAssociatedTable(co);
-//	            ext.getProject().addDocument(projectTable);
-//	        }
-//	        projectTable.setModel(ea);
-//	        t = new Table();
-//	        t.setModel(projectTable);
-//	        t.getModel().setModified(true);
-//	        if (ea.isEditing()){
-//	            ea.getCommandRecord().addCommandListener(t);
-//	        }
-//	        //PluginServices.getMDIManager().addWindow(t);
-//	        }
-//	    }
-//	    } catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
-//	    NotificationManager.addError(PluginServices.getText(this,"errorGettingTable"), e);
-//	    } catch (DriverException e) {
-//	    e.printStackTrace();
-//	    NotificationManager.addError(PluginServices.getText(this,"errorGettingTable"), e);
-//	    }   
-//
-//	    ///////////////////////////////
-//	    // END ShowTable de gvSIG
-//	    ///////////////////////////////
-//
-//	    ProjectTable pt = t.getModel();
-//	       
-//	    try {
-//	    if (pt != null) {
-//	        IEditableSource tableModel= pt.getModelo();                               
-//	        IRow row;           
-//	        row = tableModel.getRow(rowIdx).getLinkedRow();
-//	        Value[] attributes = row.getAttributes();
-//	        ITableDefinition tableDef;
-//	        tableDef = tableModel.getTableDefinition();               
-//	        FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
-//	        int type = fieldDesc[attrIdx].getFieldType();
-//	        if (type == 16) {
-//	        	// in this case type is boolean
-//	        	type = Types.BIT;
-//	        }
-//	        System.out.println("El valor " + newValue + " es de tipo " + FieldDescription.typeToString(type));	        
-//	        attributes[attrIdx] = ValueFactory.createValueByType(newValue.toString(), type); 
-//	        row.setAttributes(attributes);
-//	        tableModel.doModifyRow(rowIdx, row, EditionEvent.ALPHANUMERIC);
-//	        pt.setModel(tableModel);
-//	    }
-//	    if (stopEditRequired){
-//	    	stopEditing(layer, false);
-//	    }
-//	    } catch (DriverIOException e) {
-//	    // TODO Auto-generated catch block
-//	    e.printStackTrace();
-//	    } catch (IOException e) {
-//	    // TODO Auto-generated catch block
-//	    e.printStackTrace();
-//	    } catch (DriverLoadException e) {
-//	    // TODO Auto-generated catch block
-//	    e.printStackTrace();
-//	    } catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
-//	    // TODO Auto-generated catch block
-//	    e.printStackTrace();
-//	    } catch (ParseException e) {
-//	    // TODO Auto-generated catch block
-//	    e.printStackTrace();
-//	    }
-//	}
-	
 	/**
 	 * Modidify a single value of a register. It creates the new value from its
 	 * String representation. 
@@ -451,7 +323,7 @@ public class ToggleEditing {
 			newValue = "";
 		}
 		ITableDefinition tableDef;
-		tableDef = edAdapter.getTableDefinition();               
+		tableDef = edAdapter.getTableDefinition();
 		FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
 		int type = fieldDesc[colPos].getFieldType();
 		if (type == 16) {
@@ -467,7 +339,7 @@ public class ToggleEditing {
 		}
 		modifyValue(layer, rowPos, colPos, val);
 	}
-	
+
 	/**
 	 * Modidify a single value of a register. 
 	 * IMPORTANT: StartEditing and StopEditing is required before and after call this method.
@@ -486,44 +358,44 @@ public class ToggleEditing {
 		if (newValue == null) {
 			newValue = ValueFactory.createNullValue();
 		}
-		
-		VectorialEditableAdapter edAdapter = (VectorialEditableAdapter) layer.getSource();
-	    IRowEdited row;     
-	    row = edAdapter.getRow(rowPos);
-	    Value[] attributes = row.getAttributes();
-	    ITableDefinition tableDef;
-	    tableDef = edAdapter.getTableDefinition();
-	    FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
-	    int type = fieldDesc[colPos].getFieldType();
-	    if (type == 16) {
-	    	// in this case type is boolean
-	    	type = Types.BIT;
-	    }
 
-	    int valueType = newValue.getSQLType();
-	    if (valueType == 0 || valueType == -1 || valueType == type) {
-	    	if (row.getLinkedRow() instanceof IFeature) {
-	    		attributes[colPos] = newValue;
-	    		IGeometry geometry = ((DefaultFeature) row.getLinkedRow())
-	    		.getGeometry();
-	    		IRow newRow = new DefaultFeature(geometry, attributes, 
-	    				row.getID());
-	    		edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
-	    	} else {
-	    		System.out.println("This is not a geometry!");
-	    	}
-	    } else {
-	    	System.out.println("Tipo incorrecto: values es " + newValue.getSQLType() + " y el campo es " + type);
-	    }
+		VectorialEditableAdapter edAdapter = (VectorialEditableAdapter) layer.getSource();
+		IRowEdited row;
+		row = edAdapter.getRow(rowPos);
+		Value[] attributes = row.getAttributes();
+		ITableDefinition tableDef;
+		tableDef = edAdapter.getTableDefinition();
+		FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
+		int type = fieldDesc[colPos].getFieldType();
+		if (type == 16) {
+			// in this case type is boolean
+			type = Types.BIT;
+		}
+
+		int valueType = newValue.getSQLType();
+		if (valueType == 0 || valueType == -1 || valueType == type) {
+			if (row.getLinkedRow() instanceof IFeature) {
+				attributes[colPos] = newValue;
+				IGeometry geometry = ((DefaultFeature) row.getLinkedRow())
+				.getGeometry();
+				IRow newRow = new DefaultFeature(geometry, attributes, 
+						row.getID());
+				edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
+			} else {
+				System.out.println("This is not a geometry!");
+			}
+		} else {
+			System.out.println("Tipo incorrecto: values es " + newValue.getSQLType() + " y el campo es " + type);
+		}
 	}
-	
+
 	public void modifyValue(IEditableSource source, int rowPos, int colPos, String newValue) throws Exception {
-		
+
 		if (newValue == null) {
 			newValue = "";
 		}
 		ITableDefinition tableDef;
-		tableDef = source.getTableDefinition();               
+		tableDef = source.getTableDefinition();
 		FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
 		int type = fieldDesc[colPos].getFieldType();
 		if (type == 16) {

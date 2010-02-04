@@ -9,7 +9,7 @@ import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLayers;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.gui.panels.FPanelAbout;
-import com.iver.cit.gvsig.project.documents.view.gui.View;
+import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
@@ -21,7 +21,7 @@ public class NavTableExtension extends Extension{
 	
 	public void execute(String actionCommand) {
 		
-		View view = (View)PluginServices.getMDIManager().getActiveWindow();
+		BaseView view = (BaseView)PluginServices.getMDIManager().getActiveWindow();
 		MapControl mapControl = view.getMapControl();
 		FLayers flayers = mapControl.getMapContext().getLayers();	
 		int pos = flayers.getActives().length - 1;
@@ -51,9 +51,9 @@ public class NavTableExtension extends Extension{
 		if (( status == EditionUtilities.EDITION_STATUS_ONE_VECTORIAL_LAYER_ACTIVE|| status == EditionUtilities.EDITION_STATUS_ONE_VECTORIAL_LAYER_ACTIVE_AND_EDITABLE)
 				|| (status == EditionUtilities.EDITION_STATUS_MULTIPLE_VECTORIAL_LAYER_ACTIVE)|| (status == EditionUtilities.EDITION_STATUS_MULTIPLE_VECTORIAL_LAYER_ACTIVE_AND_EDITABLE))
 		{
-			View view = (View) PluginServices.getMDIManager().getActiveWindow();
+			BaseView view = (BaseView) PluginServices.getMDIManager().getActiveWindow();
 			MapControl mapControl = view.getMapControl();
-			FLayers flayers = mapControl.getMapContext().getLayers();	
+			FLayers flayers = mapControl.getMapContext().getLayers();
 			int pos = flayers.getActives().length - 1;
 			FLayer actLayer = flayers.getActives()[pos];
 			if (actLayer instanceof FLyrVect) {
@@ -87,7 +87,7 @@ public class NavTableExtension extends Extension{
 		if (f == null) {
 			return false;
 		}
-		if (f instanceof View) {
+		if (f instanceof BaseView) {
 			return true;
 		}
 		return false;

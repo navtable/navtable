@@ -497,8 +497,7 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	public Object getWindowProfile() {
-		// TODO Auto-generated method stub
-		return null;
+		return WindowInfo.PROPERTIES_PROFILE;
 	}
 
 }
