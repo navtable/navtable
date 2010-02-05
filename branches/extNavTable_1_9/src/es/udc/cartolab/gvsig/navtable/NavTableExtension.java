@@ -1,5 +1,7 @@
 package es.udc.cartolab.gvsig.navtable;
 
+import java.io.File;
+
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.cit.gvsig.About;
@@ -42,7 +44,11 @@ public class NavTableExtension extends Extension{
 		//Entry at TOC contextual menu
 		ExtensionPoints extensionPoints = ExtensionPointsSingleton.getInstance();
 		extensionPoints.add("View_TocActions", "NavTable", new NavTableTocMenuEntry());
-		// TODO Auto-generated method stub		
+		
+		//Creating config Dir
+		String configDirStr = System.getProperty("user.home") + File.separator + "gvSIG" + File.separator + "navTable";
+		File configDir = new File(configDirStr);
+		Preferences p = new Preferences(configDir);
 	}
 
 	public boolean isEnabled() {

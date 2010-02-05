@@ -37,6 +37,7 @@ import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
+import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.vividsolutions.jts.geom.Geometry;
@@ -217,18 +218,28 @@ public class NavTable extends AbstractNavTable {
 		}
 		
 		ReadableVectorial source = layer.getSource();
-		
-		System.out.println("Source de la layer es un " + source +" "+ source.getClass());
+		String pathToken = null;
+		File fileAlias = null;
+
 		if (source != null && source instanceof VectorialFileAdapter) {
 			layerFile = ((VectorialFileAdapter) source).getFile();
 			filePath = layerFile.getAbsolutePath();
-		} else {
-			//[NachoV]
+			pathToken = filePath.substring(0, filePath.lastIndexOf("."));
+			fileAlias = new File(pathToken + ".alias");
+
+			if (!fileAlias.exists()) {
+				pathToken = Preferences.getAliasDir() + File.separator + layer.getName();
+				fileAlias = new File(pathToken + ".alias");
+			}
+		}else if (source instanceof VectorialDBAdapter) {
+			pathToken = Preferences.getAliasDir() + File.separator + layer.getName();
+			fileAlias = new File(pathToken + ".alias");
+		}else {
 			return fieldName;
 		}
 		
-		String pathToken = filePath.substring(0, filePath.lastIndexOf("."));
-		File fileAlias = new File(pathToken + ".alias");
+		//pathToken = Preferences.getAliasDir() + File.separator + layer.getName();
+		//fileAlias = new File(pathToken + ".alias");
 		
 		if (!fileAlias.exists()){
 			return fieldName;
