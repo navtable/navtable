@@ -82,6 +82,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	protected FLyrVect layer = null;
 	protected SelectableDataSource recordset = null;
 	
+	private boolean delete = false;
+	
 	// NORTH
 	JCheckBox onlySelectedCB = null;
 	JCheckBox fixScaleCB = null;
@@ -369,7 +371,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	protected void showWarning() {
-		if (currentPosition == -1) {
+		if (currentPosition == -1 || delete) {
 			return;
 		}
 		Vector changedValues = checkChangedValues();
@@ -995,6 +997,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	private void deleteRow() {
+		delete = true;
 		try {
 			View view = (View) PluginServices.getMDIManager().getActiveWindow();
 			MapControl map = view.getMapControl();
