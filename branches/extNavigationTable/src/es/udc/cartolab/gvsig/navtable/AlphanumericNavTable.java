@@ -32,41 +32,45 @@ public class AlphanumericNavTable extends NavTable {
 	JButton newB = null;
 	//JButton removeB = null;
 	protected IEditableSource model;
-	
+
 	public AlphanumericNavTable(IEditableSource model) {
 		super(model.getRecordset());
 		this.model = model;
 	}
 
+	@Override
 	public boolean init() {
-		super.init();
-		
+		if (super.init() == false) {
+			return false;
+		}
+
 		int index = -1;
 		zoomB.setVisible(false);
 		alwaysZoomCB.setVisible(false);
 		fixScaleCB.setVisible(false);
-		
+
 		URL imgURL = getClass().getResource("/table_add.png");
 		ImageIcon imagenNewRegister = new ImageIcon(imgURL);
 		newB = new JButton(imagenNewRegister);
 		//TODO Add the string to the i18n to traslate
 		newB.setToolTipText(PluginServices.getText(this,
-							"new_register"));
-		
+		"new_register"));
+
 		newB.addActionListener(this);
 		zoomB.getParent().add(newB);
 		// We must to rewrite selectionB listener and the others
 
 		return true;
 	}
-	
+
+	@Override
 	protected void saveRegister() {
 
 		//cerrar la edición de la celda
 		stopCellEdition();
 		ToggleEditing te = new ToggleEditing();
 		try {
-//			poner en edición la tabla
+			//			poner en edición la tabla
 			model.startEdition(EditionEvent.ALPHANUMERIC);
 			if (model instanceof IWriteable)
 			{
@@ -80,7 +84,7 @@ public class AlphanumericNavTable extends NavTable {
 						if (changedValues.contains(new Integer(i))) {
 							Object value = tableModel.getValueAt(i, 1);
 
-							//only edit modified values, the cells that 
+							//only edit modified values, the cells that
 							//contains String instead of Value
 
 							try {
@@ -116,9 +120,9 @@ public class AlphanumericNavTable extends NavTable {
 						model.stopEdition(writer,EditionEvent.ALPHANUMERIC);
 
 						// TODO: RELOAD
-//						EditableAdapter edAdapter = (EditableAdapter) ies;
-//						// Restaura el datasource a su estado original
-//						edAdapter.setOriginalDataSource(edAdapter.getRecordset());
+						//						EditableAdapter edAdapter = (EditableAdapter) ies;
+						//						// Restaura el datasource a su estado original
+						//						edAdapter.setOriginalDataSource(edAdapter.getRecordset());
 						//model.getSelection().clear();
 						//refreshControls();
 					}
@@ -137,7 +141,7 @@ public class AlphanumericNavTable extends NavTable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void addRow() {
 		//crear una row vacía
 		//showWarning();
@@ -165,8 +169,8 @@ public class AlphanumericNavTable extends NavTable {
 				writer.initialize(tableDef);
 
 				model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
-				
-//				ir a ella en navtable
+
+				//				ir a ella en navtable
 				last();
 
 			}
@@ -184,25 +188,25 @@ public class AlphanumericNavTable extends NavTable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	protected void deleteRow() {
 		try {
 			model.startEdition(EditionEvent.ALPHANUMERIC);
-			
+
 			IWriteable w = (IWriteable) model;
 			IWriter writer = w.getWriter();
-			
+
 			ITableDefinition tableDef = model.getTableDefinition();
 			writer.initialize(tableDef);
-			
+
 			model.doRemoveRow((int) currentPosition, EditionEvent.ALPHANUMERIC);
-			
+
 			model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
-			
+
 			//Refresh
 			currentPosition = currentPosition -1;
 			next();
-		
+
 		} catch (EditionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -219,11 +223,12 @@ public class AlphanumericNavTable extends NavTable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
+	@Override
 	public void actionPerformed (ActionEvent e) {
-		
+
 		if (e.getSource() == newB) {
 			addRow();
 		}else if (e.getSource() == removeB) {

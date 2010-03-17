@@ -43,7 +43,9 @@ public class AlphanumericNavTable extends NavTable {
 	}
 
 	public boolean init() {
-		super.init();
+		if (super.init() == false) {
+			return false;
+		}
 		
 		int index = -1;
 		zoomB.setVisible(false);
