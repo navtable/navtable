@@ -26,12 +26,16 @@ public class NavTableExtension extends Extension{
 		BaseView view = (BaseView)PluginServices.getMDIManager().getActiveWindow();
 		MapControl mapControl = view.getMapControl();
 		FLayers flayers = mapControl.getMapContext().getLayers();	
-		int pos = flayers.getActives().length - 1;
-		FLyrVect actLayer = (FLyrVect)flayers.getActives()[pos];
-		viewer = new NavTable(actLayer);
-		if (viewer.init()){
-			PluginServices.getMDIManager().addCentredWindow(viewer);
-		} // TODO: throw a message on the else (when there's no data)
+		FLyrVect actLayer = null;
+		for (int i=0; i<flayers.getActives().length; i++) {
+			actLayer = (FLyrVect)flayers.getActives()[i];
+			viewer = new NavTable(actLayer);
+			if (viewer.init()){
+				PluginServices.getMDIManager().addCentredWindow(viewer);
+			}
+		}
+		
+		 // TODO: throw a message on the else (when there's no data)
 		  // or something like that
 	}
 
