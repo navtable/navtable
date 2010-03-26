@@ -1011,7 +1011,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (e.getSource() == removeB){
 			int answer = JOptionPane.showConfirmDialog(null, PluginServices.getText(null, "confirm_delete_register"), null, JOptionPane.YES_NO_OPTION);
 			if (answer == 0) {
-				deleteRow();
+				deleteRecord();
 			}
 		}
 
@@ -1021,7 +1021,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 	}
 
+	@Deprecated
 	private void deleteRow() {
+		deleteRecord();
+	}
+
+	private void deleteRecord() {
 		try {
 			BaseView view = (BaseView) PluginServices.getMDIManager().getActiveWindow();
 			MapControl map = view.getMapControl();
