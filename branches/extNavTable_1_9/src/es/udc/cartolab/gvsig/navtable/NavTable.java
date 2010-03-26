@@ -344,6 +344,7 @@ public class NavTable extends AbstractNavTable {
 				if (g == null) {
 					model.setValueAt("0", recordset.getFieldCount(), 1);
 					model.setValueAt("0", recordset.getFieldCount()+1, 1);
+					return;
 				}
 				Geometry geom = g.toJTSGeometry();
 				//	TODO Format number (Set units in Preferences)

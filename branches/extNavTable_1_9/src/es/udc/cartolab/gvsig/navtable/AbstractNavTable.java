@@ -1044,10 +1044,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				te.stopEditing(layer, false);
 
 				layer.setActive(true);
-
+				
 				//Refresh
-				currentPosition = currentPosition -1;
-				next();
+				refreshGUI();
 			}
 		} catch (ExpansionFileReadException e) {
 			// TODO Auto-generated catch block
@@ -1056,7 +1055,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	private boolean isValidPosition(Long pos) {

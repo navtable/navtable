@@ -209,8 +209,7 @@ public class AlphanumericNavTable extends NavTable {
 			model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
 			
 			//Refresh
-			currentPosition = currentPosition -1;
-			next();
+			refreshGUI();
 		
 		} catch (StartWriterVisitorException e) {
 			// TODO Auto-generated catch block
