@@ -161,7 +161,6 @@ public class AlphanumericNavTable extends NavTable {
 						//refreshControls();
 					}
 
-
 				}
 			}
 		} catch (ReadDriverException e) {
@@ -179,8 +178,14 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 
+	@Deprecated
 	private void addRow() {
-		//crear una row vac�a
+		addRecord();
+	}
+
+	private void addRecord() {
+
+		//Create a new empty record
 		//showWarning();
 		if (onlySelectedCB.isSelected()) {
 			onlySelectedCB.setSelected(false);
@@ -226,7 +231,7 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 
-	protected void deleteRow() {
+	protected void deleteRecord() {
 		try {
 			model.startEdition(EditionEvent.ALPHANUMERIC);
 
@@ -263,11 +268,11 @@ public class AlphanumericNavTable extends NavTable {
 	public void actionPerformed (ActionEvent e) {
 
 		if (e.getSource() == newB) {
-			addRow();
+			addRecord();
 		}else if (e.getSource() == removeB) {
 			int answer = JOptionPane.showConfirmDialog(null, PluginServices.getText(null, "confirm_delete_register"), null, JOptionPane.YES_NO_OPTION);
 			if (answer == 0) {
-				deleteRow();
+				deleteRecord();
 			}
 		}else {
 			super.actionPerformed(e);
