@@ -401,7 +401,28 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	@Override
+	@Deprecated
 	protected void saveRegister(){
+
+		saveRecord();
+
+		//Removes the ProjectTable of this layer if it exists.
+		//Currently commented for testing purposes...
+		//			ProjectExtension pe = (ProjectExtension)PluginServices.getExtension(ProjectExtension.class);
+		//			Project project = pe.getProject();
+		//			ArrayList views = project.getDocumentsByType("ProjectTable");
+		//			for (int i=0; i < views.size(); i++){
+		//				ProjectTable pTable = (ProjectTable)views.get(i);
+		//				System.out.println(i+" TableName: " + pTable.getName());
+		//				if (pTable.getName().endsWith(" ET")){
+		//					project.delDocument(pTable);
+		//					break;
+		//				}
+		//			}
+
+	}
+
+	protected void saveRecord(){
 		//TODO check if the values type are correct
 		boolean layerEditing = true;
 
@@ -458,21 +479,9 @@ public class NavTable extends AbstractNavTable {
 			JOptionPane.showMessageDialog(this, String.format(PluginServices.getText(this, "non_editable"),
 					layer.getName()));
 		}
-		//Removes the ProjectTable of this layer if it exists.
-		//Currently commented for testing purposes...
-		//			ProjectExtension pe = (ProjectExtension)PluginServices.getExtension(ProjectExtension.class);
-		//			Project project = pe.getProject();
-		//			ArrayList views = project.getDocumentsByType("ProjectTable");
-		//			for (int i=0; i < views.size(); i++){
-		//				ProjectTable pTable = (ProjectTable)views.get(i);
-		//				System.out.println(i+" TableName: " + pTable.getName());
-		//				if (pTable.getName().endsWith(" ET")){
-		//					project.delDocument(pTable);
-		//					break;
-		//				}
-		//			}
 
 	}
+
 
 	/**
 	 * It stops the row editing when the save button is pressed.

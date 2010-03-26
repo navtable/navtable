@@ -93,9 +93,14 @@ public class AlphanumericNavTable extends NavTable {
 		return changedValues;
 	}
 
+	@Override
+	@Deprecated
+	protected void saveRegister() {
+		saveRecord();
+	}
 
 	@Override
-	protected void saveRegister() {
+	protected void saveRecord() {
 
 		stopCellEdition();
 		ToggleEditing te = new ToggleEditing();
