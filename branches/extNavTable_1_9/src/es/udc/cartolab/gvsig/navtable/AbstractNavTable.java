@@ -103,7 +103,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	JButton selectionB = null;
 	JButton saveB = null;
 	JButton removeB = null;
-	JButton cancelB = null;
 
 	/**
 	 * 
@@ -332,7 +331,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		saveB = new JButton(imagenSave);
 		saveB.setToolTipText(PluginServices.getText(this, "saveButtonTooltip"));
 		saveB.addActionListener(this);
-		if (layer.isEditing()) {
+		if (layer != null && layer.isEditing()) {
 			System.out.println("====Capa en edicion");
 			saveB.setEnabled(false);
 		}
@@ -344,9 +343,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		removeB.addActionListener(this);
 		imgURL = getClass().getResource("/close.png");
 		ImageIcon imagenClose = new ImageIcon(imgURL);
-		cancelB = new JButton(imagenClose);
-		cancelB.setToolTipText(PluginServices.getText(this, "closeButtonTooltip"));
-		cancelB.addActionListener(this);
 
 		//Buttons Panels
 		JPanel navToolBar = new JPanel(new FlowLayout());
@@ -364,7 +360,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		actionsToolBar.add(selectionB);
 		actionsToolBar.add(saveB);
 		actionsToolBar.add(removeB);
-		actionsToolBar.add(cancelB);
 
 		JPanel buttonsPanel = new JPanel(new FlowLayout());
 		buttonsPanel.add(navToolBar);
@@ -828,7 +823,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 		selectionB.setEnabled(navEnabled);
 		zoomB.setEnabled(navEnabled);
-		if (layer.isEditing()){
+		if (layer != null && layer.isEditing()){
 			saveB.setEnabled(false);
 		}else {
 			saveB.setEnabled(navEnabled);
@@ -1022,11 +1017,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				deleteRecord();
 			}
 		}
-
-		if (e.getSource() == cancelB){
-			PluginServices.getMDIManager().closeWindow(this);
-		}
-
 	}
 
 	@Deprecated
