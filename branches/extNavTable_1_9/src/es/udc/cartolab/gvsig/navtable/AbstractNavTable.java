@@ -332,6 +332,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		saveB = new JButton(imagenSave);
 		saveB.setToolTipText(PluginServices.getText(this, "saveButtonTooltip"));
 		saveB.addActionListener(this);
+		if (layer.isEditing()) {
+			System.out.println("====Capa en edicion");
+			saveB.setEnabled(false);
+		}
 		imgURL = getClass().getResource("/delete.png");
 		ImageIcon imagenDeleteRegister = new ImageIcon(imgURL);
 		removeB = new JButton(imagenDeleteRegister);
@@ -542,7 +546,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			//TODO gvSIG comment: Esta comprobacion se hacia con Selectable
 			try {
 				IGeometry g;
-				ReadableVectorial source = ((FLyrVect)layer).getSource();
+				ReadableVectorial source = (layer).getSource();
 				source.start();
 				g = source.getShape(pos);
 				source.stop();
@@ -824,7 +828,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 		selectionB.setEnabled(navEnabled);
 		zoomB.setEnabled(navEnabled);
-		saveB.setEnabled(navEnabled);
+		if (layer.isEditing()){
+			saveB.setEnabled(false);
+		}else {
+			saveB.setEnabled(navEnabled);
+		}
 		alwaysZoomCB.setEnabled(navEnabled);
 		alwaysSelectCB.setEnabled(navEnabled);
 		fixScaleCB.setEnabled(navEnabled);
@@ -1028,6 +1036,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 	private void deleteRecord() {
 		try {
+			boolean layerEditing = true;
 			BaseView view = (BaseView) PluginServices.getMDIManager().getActiveWindow();
 			MapControl map = view.getMapControl();
 			IFeature feat;
@@ -1042,6 +1051,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				ToggleEditing te = new ToggleEditing();
 
 				if (!layer.isEditing()) {
+					layerEditing = false;
 					te.startEditing(layer);
 				}
 
@@ -1057,7 +1067,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 						CADExtension.getCADTool().getName(),
 						EditionEvent.GRAPHIC);
 
-				te.stopEditing(layer, false);
+				if (!layerEditing) {
+					te.stopEditing(layer, false);
+				}
 
 				layer.setActive(true);
 
