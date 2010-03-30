@@ -49,7 +49,7 @@ import com.iver.cit.gvsig.project.documents.view.IProjectView;
 import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
 /**
- * Class for start, stop or toggle the editing on a vector layer. 
+ * Class for start, stop or toggle the editing on a vector layer.
  * Based on the StartingEditing Extension of gvSIG
  * 
  * @author Nacho Varela
@@ -68,16 +68,7 @@ public class ToggleEditing {
 	 * @param layer The vectorial layer to be edited.
 	 */
 	public void startEditing(FLayer layer){
-		startEditing(layer.getName());
-	}
-
-	/**
-	 * Checks the layers from the TOC and get the
-	 * layer to be edited with its name.
-	 * 
-	 * @param layerName The name of the layer to be edited.
-	 */
-	public void startEditing(String layerName){
+		//startEditing(layer.getName());
 		CADExtension.initFocus();
 		com.iver.andami.ui.mdiManager.IWindow f = PluginServices.getMDIManager()
 		.getActiveWindow();
@@ -90,7 +81,7 @@ public class ToggleEditing {
 			IProjectView model = vista.getModel();
 			FLayers layers = model.getMapContext().getLayers();
 			layers.setAllActives(false);
-			FLayer layer = layers.getLayer(layerName);
+			//FLayer layer = layers.getLayer(layerName);
 
 			if (layer instanceof FLyrVect) {
 				layer.setActive(true);
@@ -147,20 +138,36 @@ public class ToggleEditing {
 		}
 	}
 
+	/**
+	 * Checks the layers from the TOC and get the
+	 * layer to be edited with its name.
+	 * 
+	 * @param layerName The name of the layer to be edited.
+	 */
+	@Deprecated
+	public void startEditing(String layerName){
+		FLayer layer = null;
+
+		com.iver.andami.ui.mdiManager.IWindow f = PluginServices.getMDIManager()
+		.getActiveWindow();
+
+		if (f instanceof BaseView) {
+			BaseView vista = (BaseView) f;
+			IProjectView model = vista.getModel();
+			FLayers layers = model.getMapContext().getLayers();
+			layers.setAllActives(false);
+			layer = layers.getLayer(layerName);
+		}
+
+		startEditing(layer);
+	}
+
 
 	/**
 	 * @param layer  The layer wich edition will be stoped.
 	 * @param cancel false if we want to save the layer, true if we don't.
 	 */
 	public void stopEditing(FLayer layer, boolean cancel){
-		stopEditing(layer.getName(), cancel);
-	}
-
-	/**
-	 * @param layer  The name of the layer wich edition will be stoped.
-	 * @param cancel false if we want to save the layer, true if we don't.
-	 */
-	public void stopEditing(String layerName, boolean cancel){
 		com.iver.andami.ui.mdiManager.IWindow f = PluginServices.getMDIManager()
 		.getActiveWindow();
 
@@ -173,18 +180,17 @@ public class ToggleEditing {
 				IProjectView model = vista.getModel();
 				FLayers layers = model.getMapContext().getLayers();
 				layers.setAllActives(false);
-				FLyrVect layer = (FLyrVect)layers.getLayer(layerName);
+				//FLyrVect layer = (FLyrVect)layers.getLayer(layerName);
 				if (cancel){
-					cancelEdition(layer);
+					cancelEdition((FLyrVect) layer);
 				} else {
-					saveLayer(layer);
+					saveLayer((FLyrVect) layer);
 				}
-				VectorialEditableAdapter vea = (VectorialEditableAdapter) layer
-				.getSource();
+				VectorialEditableAdapter vea = (VectorialEditableAdapter) ((FLyrVect) layer).getSource();
 				vea.getCommandRecord().removeCommandListener(mapControl);
-				if (!(layer.getSource().getDriver() instanceof IndexedShpDriver)){
+				if (!(((FLyrVect) layer).getSource().getDriver() instanceof IndexedShpDriver)){
 					VectorialLayerEdited vle=(VectorialLayerEdited)CADExtension.getEditionManager().getLayerEdited(layer);
-					layer.setLegend((IVectorLegend)vle.getLegend());
+					((FLyrVect) layer).setLegend((IVectorLegend)vle.getLegend());
 				}
 				layer.setEditing(false);
 				// The layer should be the active one and the view must be repainted
@@ -207,7 +213,28 @@ public class ToggleEditing {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
 
+	/**
+	 * @param layer  The name of the layer wich edition will be stoped.
+	 * @param cancel false if we want to save the layer, true if we don't.
+	 */
+	@Deprecated
+	public void stopEditing(String layerName, boolean cancel){
+		FLayer layer = null;
+
+		com.iver.andami.ui.mdiManager.IWindow f = PluginServices.getMDIManager()
+		.getActiveWindow();
+
+		if (f instanceof BaseView) {
+			BaseView vista = (BaseView) f;
+			IProjectView model = vista.getModel();
+			FLayers layers = model.getMapContext().getLayers();
+			layers.setAllActives(false);
+			layer = layers.getLayer(layerName);
+		}
+
+		stopEditing(layer, cancel);
 	}
 
 	private void changeModelTable(ProjectTable pt, VectorialEditableAdapter vea){
@@ -277,7 +304,7 @@ public class ToggleEditing {
 		} catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 		// The layer recordset must have the changes we made
 		ILayerDefinition lyrDef;
 		try {
@@ -308,7 +335,7 @@ public class ToggleEditing {
 
 	/**
 	 * Modidify a single value of a register. It creates the new value from its
-	 * String representation. 
+	 * String representation.
 	 * IMPORTANT: StartEditing and StopEditing is required before and after call this method.
 	 * 
 	 * @param layer		the layer that contains the feature to be changed.
@@ -341,7 +368,7 @@ public class ToggleEditing {
 	}
 
 	/**
-	 * Modidify a single value of a register. 
+	 * Modidify a single value of a register.
 	 * IMPORTANT: StartEditing and StopEditing is required before and after call this method.
 	 * 
 	 * @param layer		the layer that contains the feature to be changed.
@@ -378,7 +405,7 @@ public class ToggleEditing {
 				attributes[colPos] = newValue;
 				IGeometry geometry = ((DefaultFeature) row.getLinkedRow())
 				.getGeometry();
-				IRow newRow = new DefaultFeature(geometry, attributes, 
+				IRow newRow = new DefaultFeature(geometry, attributes,
 						row.getID());
 				edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
 			} else {
