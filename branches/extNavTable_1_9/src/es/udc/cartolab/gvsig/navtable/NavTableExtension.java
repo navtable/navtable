@@ -1,3 +1,26 @@
+/*
+ * This file is part of NavTable
+ * Copyright (C) 2009 - 2010  Cartolab (Universidade da Coruña)
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * 
+ * Authors:
+ *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
+ *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
+ *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
+ */
 package es.udc.cartolab.gvsig.navtable;
 
 import java.io.File;
@@ -15,17 +38,15 @@ import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
-import es.udc.cartolab.gvsig.navtable.NavTable;
-
 public class NavTableExtension extends Extension{
 
 	private NavTable viewer = null;
-	
+
 	public void execute(String actionCommand) {
-		
+
 		BaseView view = (BaseView)PluginServices.getMDIManager().getActiveWindow();
 		MapControl mapControl = view.getMapControl();
-		FLayers flayers = mapControl.getMapContext().getLayers();	
+		FLayers flayers = mapControl.getMapContext().getLayers();
 		FLyrVect actLayer = null;
 		for (int i=0; i<flayers.getActives().length; i++) {
 			actLayer = (FLyrVect)flayers.getActives()[i];
@@ -34,21 +55,21 @@ public class NavTableExtension extends Extension{
 				PluginServices.getMDIManager().addCentredWindow(viewer);
 			}
 		}
-		
-		 // TODO: throw a message on the else (when there's no data)
-		  // or something like that
+
+		// TODO: throw a message on the else (when there's no data)
+		// or something like that
 	}
 
 	public void initialize() {
-		About about=(About)PluginServices.getExtension(About.class); 
-		FPanelAbout panelAbout=about.getAboutPanel(); 
+		About about=(About)PluginServices.getExtension(About.class);
+		FPanelAbout panelAbout=about.getAboutPanel();
 		java.net.URL aboutURL = this.getClass().getResource("/about.htm");
 		panelAbout.addAboutUrl("NavTable", aboutURL);
-		
+
 		//Entry at TOC contextual menu
 		ExtensionPoints extensionPoints = ExtensionPointsSingleton.getInstance();
 		extensionPoints.add("View_TocActions", "NavTable", new NavTableTocMenuEntry());
-		
+
 		//Creating config Dir
 		String configDirStr = System.getProperty("user.home") + File.separator + "gvSIG" + File.separator + "navTable";
 		File configDir = new File(configDirStr);
@@ -68,22 +89,22 @@ public class NavTableExtension extends Extension{
 			FLayer actLayer = flayers.getActives()[pos];
 			if (actLayer instanceof FLyrVect) {
 				// Too much files created for getRecordset()
-//				try {
-//					SelectableDataSource recordset = ((FLyrVect) actLayer).getRecordset();
-//					if (recordset == null){
-//						return false;
-//					}
-//					if (recordset.getRowCount() > 0) {
-//						return true; 
-//					}
-//				} catch (DriverException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (com.iver.cit.gvsig.fmap.DriverException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-				
+				//				try {
+				//					SelectableDataSource recordset = ((FLyrVect) actLayer).getRecordset();
+				//					if (recordset == null){
+				//						return false;
+				//					}
+				//					if (recordset.getRowCount() > 0) {
+				//						return true;
+				//					}
+				//				} catch (DriverException e) {
+				//					// TODO Auto-generated catch block
+				//					e.printStackTrace();
+				//				} catch (com.iver.cit.gvsig.fmap.DriverException e) {
+				//					// TODO Auto-generated catch block
+				//					e.printStackTrace();
+				//				}
+
 				//TODO Check if the layer has at least one element
 				enabled = true;
 			}
@@ -92,7 +113,7 @@ public class NavTableExtension extends Extension{
 	}
 
 	public boolean isVisible() {
-		com.iver.andami.ui.mdiManager.IWindow f = 
+		com.iver.andami.ui.mdiManager.IWindow f =
 			PluginServices.getMDIManager().getActiveWindow();
 		if (f == null) {
 			return false;
