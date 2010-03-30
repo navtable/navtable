@@ -63,13 +63,12 @@ import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
  * 
  * @author Nacho Varela
  * @author Javier Estevez
+ * @author Pablo Sanxiao
  * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
 	private static final long serialVersionUID = 1L;
-
-	private boolean closed = false;
 
 	protected JPanel northPanel = null;
 	protected JPanel centerPanel = null;
@@ -109,7 +108,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * Constructor of the class. It gets the data from the layer
 	 * and stores it in recordset to later uses.
 	 * 
-	 * @param layer		Vectorial layer whose data will be accessed.
+	 * @param layer	Vectorial layer whose data will be accessed.
 	 */
 	public AbstractNavTable(FLyrVect layer) {
 		super();
@@ -124,19 +123,25 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
+	/**
+	 * Constructor of the class. This constructor is used by
+	 * AlphanumericNavTable
+	 * 
+	 * @param recordset
+	 */
 	public AbstractNavTable(SelectableDataSource recordset) {
 		super();
 		this.layer = null;
 		WindowInfo window = this.getWindowInfo();
 		String title = window.getTitle();
+		// TODO When the table is on edition, on title window
+		// is shown a weird identify instead of the layer name
 		window.setTitle(title+"*: "+ recordset.getName());
 
 		this.recordset = recordset;
 		this.recordset.addSelectionListener(this);
-
 	}
 
 	/**
@@ -162,7 +167,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	public void fillEmptyValues(){
 		currentPosition = -1;
 		//TODO Set not enabled all navButtons, seleccion, etc.
-
 	}
 
 
@@ -258,7 +262,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		northPanel.add(optionsPanel, BorderLayout.SOUTH);
 
 		return northPanel;
-
 	}
 
 	public void fillValues(long rowPosition) {
@@ -366,7 +369,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		buttonsPanel.add(actionsToolBar);
 
 		return buttonsPanel;
-
 	}
 
 	/**
@@ -429,6 +431,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			currentPosition = pos;
 			//fillValues();
 		}
+
 	}
 
 	/**
@@ -573,7 +576,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	/**
@@ -605,7 +607,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 		recordset.setSelection(bitset);
 		//		}
-
 	}
 
 	/**
@@ -629,7 +630,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		//		}
 		//		return false;
 		return isRecordSelected(currentPosition);
-
 	}
 
 	/**
@@ -652,7 +652,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		return bitset.get(pos);
 		//		}
 		//		return false;
-
 	}
 
 
@@ -671,7 +670,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			// Deberia repintar el view
 			recordset.setSelection(bitset);
 		}
-
 	}
 
 	/**
@@ -690,7 +688,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			System.out.println("View only selected... getFirstSelected");
 			firstSelected();
 		}
-
 	}
 
 	/**
@@ -831,7 +828,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		alwaysZoomCB.setEnabled(navEnabled);
 		alwaysSelectCB.setEnabled(navEnabled);
 		fixScaleCB.setEnabled(navEnabled);
-
 	}
 
 	protected boolean valuesMustBeFilled() {
@@ -1045,17 +1041,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 					te.startEditing(layer);
 				}
 
-				CADExtension.initFocus();
-				CADExtension.setCADTool("_selection",true);
-				CADExtension.getEditionManager().setMapControl(map);
-				CADExtension.getCADToolAdapter().configureMenu();
-
 				VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
 				VectorialEditableAdapter vea = vle.getVEA();
 
 				vea.removeRow((int)currentPosition,
 						CADExtension.getCADTool().getName(),
 						EditionEvent.GRAPHIC);
+
+				layer.getSelectionSupport().removeSelectionListener(vle);
 
 				if (!layerEditing) {
 					te.stopEditing(layer, false);
@@ -1100,14 +1093,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	public void windowClosed() {
-		if (!closed) {
-			showWarning();
-			closed = true;
-		}
+		showWarning();
+		this.recordset.removeSelectionListener(this);
 	}
 
 	public void windowActivated() {
 
 	}
-
 }
