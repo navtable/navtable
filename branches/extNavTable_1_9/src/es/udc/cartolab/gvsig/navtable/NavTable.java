@@ -221,8 +221,8 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	/**
-	 * It gets the alias name of the attributes if exists in the
-	 * alias file
+	 * It gets the alias name of the attributes in the
+	 * alias file if exists
 	 * 
 	 * @param fieldName
 	 * @return alias
@@ -258,9 +258,6 @@ public class NavTable extends AbstractNavTable {
 			return fieldName;
 		}
 
-		//pathToken = Preferences.getAliasDir() + File.separator + layer.getName();
-		//fileAlias = new File(pathToken + ".alias");
-
 		if (!fileAlias.exists()){
 			return fieldName;
 		}
@@ -270,9 +267,12 @@ public class NavTable extends AbstractNavTable {
 			BufferedReader fileReader = new BufferedReader(new FileReader(fileAlias));
 			while ((line = fileReader.readLine())!=null) {
 				String tokens[] = line.split("=");
-				if (fieldName.toUpperCase().compareTo(tokens[0].toUpperCase()) == 0) {
-					alias = tokens[1];
-					break;
+				if (tokens.length == 2) {
+					String attrName = tokens[0].toUpperCase();
+					if (fieldName.toUpperCase().compareTo(attrName) == 0) {
+						alias = tokens[1];
+						break;
+					}
 				}
 			}
 		} catch (FileNotFoundException e) {
