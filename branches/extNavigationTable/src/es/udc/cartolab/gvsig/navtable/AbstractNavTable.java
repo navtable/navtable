@@ -18,7 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.hardcode.gdbms.engine.values.Value;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.IWindowListener;
@@ -50,17 +49,17 @@ import com.iver.cit.gvsig.project.documents.view.gui.View;
  * 
  * It has three panels:
  * <ul>
- * <li>The north panel, with the controls to handle the 
+ * <li>The north panel, with the controls to handle the
  * navigation behavior.
- * <li>The main panel, with the representation of the 
+ * <li>The main panel, with the representation of the
  * layer data, it must be implemented in the subclasses.
  * <li>The south panel, with the navigation controls.
  * </ul>
  * 
  * <img src="images/NavTableWindow.png">
  * 
- * If there are a image on 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png' 
- * is loaded on the NorthPanel. 
+ * If there are a image on 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png'
+ * is loaded on the NorthPanel.
  * 
  * @author Nacho Varela
  * @author Javier Estevez
@@ -71,7 +70,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	private static final long serialVersionUID = 1L;
 
 	private boolean closed = false;
-	
+
 	protected JPanel northPanel = null;
 	protected JPanel centerPanel = null;
 	protected JPanel southPanel = null;
@@ -81,14 +80,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 	protected FLyrVect layer = null;
 	protected SelectableDataSource recordset = null;
-	
+
 	private boolean delete = false;
-	
+
 	// NORTH
 	JCheckBox onlySelectedCB = null;
 	JCheckBox fixScaleCB = null;
 	JCheckBox alwaysZoomCB = null;
-	JCheckBox alwaysSelectCB = null;	
+	JCheckBox alwaysSelectCB = null;
 
 	JButton filterB = null;
 	JButton noFilterB = null;
@@ -130,7 +129,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 
 	}
-	
+
 	public AbstractNavTable(SelectableDataSource recordset) {
 		super();
 		this.layer = null;
@@ -156,34 +155,35 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @param rowPosition the row of the data to be shown.
 	 */
 	public abstract void fillValues();
-	
-	
+
+
 	/**
-	 * It fills NavTable with empty values. Used when "Selected" option is set on, but 
-	 *    there are any selection registers.  
+	 * It fills NavTable with empty values. Used when "Selected" option is set on, but
+	 *    there are any selection registers.
 	 * 
 	 */
 	public void fillEmptyValues(){
 		currentPosition = -1;
 		//TODO Set not enabled all navButtons, seleccion, etc.
-		
+
 	}
 
-	
+
 	/**
 	 * It selects a specific row into the table.
 	 * 
 	 * @param row
 	 */
 	public abstract void selectRow(int row);
+
 	/**
 	 * Checks if there's changed values.
 	 * 
 	 * @return a vector with the position of the values that have changed.
 	 */
-	protected abstract Vector checkChangedValues();
-	
-	
+	public abstract Vector checkChangedValues();
+
+
 	/**
 	 * Saves the changes of the current data row.
 	 *
@@ -198,7 +198,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	protected JPanel getNorthPanel() {
 
 		northPanel = new JPanel(new BorderLayout());
-		
+
 		JPanel northFirstRow = new JPanel(new BorderLayout());
 
 		File iconPath = new File("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
@@ -215,7 +215,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (iconPath.exists()) {
 			filterPanel.setBackground(Color.WHITE);
 		}
-		
+
 		java.net.URL imgURL = null;
 		imgURL = getClass().getResource("/filter.png");
 		ImageIcon filterImage = new ImageIcon(imgURL);
@@ -231,7 +231,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 		filterPanel.add(filterB);
 		filterPanel.add(noFilterB);
-		northFirstRow.add(filterPanel, BorderLayout.EAST);				
+		northFirstRow.add(filterPanel, BorderLayout.EAST);
 
 		JPanel optionsPanel = new JPanel(new FlowLayout());
 
@@ -257,7 +257,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		return northPanel;
 
 	}
-	
+
 	public void fillValues(long rowPosition) {
 		currentPosition = rowPosition;
 		refreshGUI();
@@ -277,9 +277,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @return the panel.
 	 */
 	protected JPanel getSouthPanel(){
-		
+
 		java.net.URL imgURL = null;
-		
+
 		imgURL = getClass().getResource("/go-first.png");
 		ImageIcon imagenFirst = new ImageIcon(imgURL);
 		firstB = new JButton(imagenFirst);
@@ -332,7 +332,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		ImageIcon imagenDeleteRegister = new ImageIcon(imgURL);
 		removeB = new JButton(imagenDeleteRegister);
 		removeB.setToolTipText(PluginServices.getText(this,
-							   "delete_register"));
+		"delete_register"));
 		removeB.addActionListener(this);
 		imgURL = getClass().getResource("/close.png");
 		ImageIcon imagenClose = new ImageIcon(imgURL);
@@ -346,7 +346,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		navToolBar.add(beforeB);
 		navToolBar.add(posTF);
 		navToolBar.add(totalLabel);
-		navToolBar.add(nextB);		
+		navToolBar.add(nextB);
 		navToolBar.add(lastB);
 
 		JPanel actionsToolBar = new JPanel(new FlowLayout());
@@ -359,19 +359,19 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		actionsToolBar.add(cancelB);
 
 		JPanel buttonsPanel = new JPanel(new FlowLayout());
-		buttonsPanel.add(navToolBar);		
+		buttonsPanel.add(navToolBar);
 		buttonsPanel.add(actionsToolBar);
 
 		return buttonsPanel;
 
 	}
-	
+
 	/**
 	 * Shows a warning to the user if there's unsaved data.
 	 *
 	 */
 	protected void showWarning() {
-		if (currentPosition == -1 || delete) {
+		if ((currentPosition == -1) || delete) {
 			return;
 		}
 		Vector changedValues = checkChangedValues();
@@ -403,7 +403,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				nextSelected();
 			} else {
 				if (currentPosition < recordset.getRowCount()){
-					currentPosition = currentPosition + 1; 
+					currentPosition = currentPosition + 1;
 					//fillValues();
 				}
 			}
@@ -436,16 +436,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			if (onlySelectedCB.isSelected()){
 				lastSelected();
 			} else {
-				currentPosition = recordset.getRowCount()-1; 
-				//fillValues();				
+				currentPosition = recordset.getRowCount()-1;
+				//fillValues();
 			}
 			refreshGUI();
 		} catch (com.hardcode.gdbms.engine.data.driver.DriverException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
-	
-	/** 
+
+	/**
 	 * Goes to the last selected row of the data.
 	 *
 	 */
@@ -454,7 +454,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		int pos = bitset.length();
 		if (pos != 0){
 			currentPosition = pos -1;
-			//fillValues();	
+			//fillValues();
 		}
 		refreshGUI();
 	}
@@ -479,7 +479,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	private void firstSelected(){
-		FBitSet bitset= recordset.getSelection();		
+		FBitSet bitset= recordset.getSelection();
 		int pos = bitset.nextSetBit(0);
 		if (pos != -1){
 			currentPosition = pos;
@@ -513,7 +513,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		FBitSet bitset= recordset.getSelection();
 		int currentPos = Long.valueOf(currentPosition).intValue()-1;
 		int pos = currentPos;
-		for (; pos>= 0 && !bitset.get(pos); pos--);		
+		for (; (pos>= 0) && !bitset.get(pos); pos--) {
+			;
+		}
 		if (pos != -1){
 			currentPosition = pos;
 			//fillValues();
@@ -521,51 +523,51 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	/**
-	 * Zooms to the current feature. The feature will fill the 
-	 * visualization area. 
+	 * Zooms to the current feature. The feature will fill the
+	 * visualization area.
 	 *
 	 */
 	private void zoom(){
 
-		Rectangle2D rectangle = null;		
+		Rectangle2D rectangle = null;
 		int pos = Long.valueOf(currentPosition).intValue();
 		if (layer instanceof AlphanumericData) {
 			//TODO gvSIG comment: Esta comprobacion se hacia con Selectable
-			try {				
+			try {
 				IGeometry g;
 				ReadableVectorial source = ((FLyrVect)layer).getSource();
 				source.start();
 				g = source.getShape(pos);
 				source.stop();
-				
-				/* fix to avoid zoom problems when layer and view 
+
+				/* fix to avoid zoom problems when layer and view
 				 * projections aren't the same. */
 				g.reProject(layer.getProjection().getCT(layer.getMapContext().getProjection()));
-				
+
 				rectangle = g.getBounds2D();
 
 				if (rectangle.getWidth() < 200){
-					rectangle.setFrameFromCenter(rectangle.getCenterX(), 
+					rectangle.setFrameFromCenter(rectangle.getCenterX(),
 							rectangle.getCenterY(),
 							rectangle.getCenterX()+100,
 							rectangle.getCenterY()+100);
 				}
 
-				if (rectangle != null) {					
-					layer.getMapContext().getViewPort().setExtent(rectangle);				
+				if (rectangle != null) {
+					layer.getMapContext().getViewPort().setExtent(rectangle);
 				}
 
 			} catch (DriverIOException e) {
 				e.printStackTrace();
 			}
-		}        
+		}
 
 	}
 
 	/**
 	 * It forces the application to use the current scale when navigating
 	 * between features. It also centers the visualization to the feature
-	 * when navigating. 
+	 * when navigating.
 	 *
 	 */
 	private void fixScale() {
@@ -573,13 +575,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		zoom();
 		layer.getMapContext().setScaleView(scale);
 	}
-	
-	
+
+
 	private void selectCurrentFeature() {
 		FBitSet bitset = null;
 		int pos = Long.valueOf(currentPosition).intValue();
 		//		//TODO gvSIG comment: Esta comprobacion se hacia con Selectable
-		//		if (layer instanceof AlphanumericData) {                                     
+		//		if (layer instanceof AlphanumericData) {
 		bitset = recordset.getSelection();
 		if (!bitset.get(pos)){
 			bitset.set(pos);
@@ -590,7 +592,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 		}
 		recordset.setSelection(bitset);
-		//		}        
+		//		}
 
 	}
 
@@ -600,20 +602,20 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 */
 	private boolean isRecordSelected() {
 
-//		FBitSet bitset = null;
-//		if (currentPosition == -1){
-//			return false;
-//		}
-//		int pos = Long.valueOf(currentPosition).intValue();
-//		if (layer instanceof AlphanumericData) {
-//			//TODO Esta comprobacion se hacia con Selectable                                     
-//				if (recordset == null){
-//					return false;
-//				}
-//				bitset = recordset.getSelection();
-//				return bitset.get(pos);
-//		}        
-//		return false;
+		//		FBitSet bitset = null;
+		//		if (currentPosition == -1){
+		//			return false;
+		//		}
+		//		int pos = Long.valueOf(currentPosition).intValue();
+		//		if (layer instanceof AlphanumericData) {
+		//			//TODO Esta comprobacion se hacia con Selectable
+		//				if (recordset == null){
+		//					return false;
+		//				}
+		//				bitset = recordset.getSelection();
+		//				return bitset.get(pos);
+		//		}
+		//		return false;
 		return isRecordSelected(currentPosition);
 
 	}
@@ -630,19 +632,19 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 		int pos = Long.valueOf(position).intValue();
 		//		if (layer instanceof AlphanumericData) {
-		//			//TODO Esta comprobacion se hacia con Selectable                                     
+		//			//TODO Esta comprobacion se hacia con Selectable
 		if (recordset == null){
 			return false;
 		}
 		bitset = recordset.getSelection();
 		return bitset.get(pos);
-		//		}        
+		//		}
 		//		return false;
 
 	}
 
-	
-	
+
+
 	/**
 	 * Removes all selections of the layer.
 	 *
@@ -650,12 +652,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	private void clearSelection() {
 		FBitSet bitset = null;
 		if (layer instanceof AlphanumericData) {
-			//TODO Esta comprobacion se hacia con Selectable                                     
-				bitset = recordset.getSelection();
-				bitset.clear();
-				recordset.setSelection(bitset);
-				//TODO
-				// Deberia repintar el view
+			//TODO Esta comprobacion se hacia con Selectable
+			bitset = recordset.getSelection();
+			bitset.clear();
+			recordset.setSelection(bitset);
+			//TODO
+			// Deberia repintar el view
 		}
 	}
 
@@ -670,7 +672,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (bitset.cardinality() == 0){
 			currentPosition = -1;
 		}
-		
+
 		if (!isRecordSelected()){
 			System.out.println("View only selected... getFirstSelected");
 			firstSelected();
@@ -698,14 +700,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	protected void refreshGUI(){
-		boolean navEnabled;		
+		boolean navEnabled;
 		try {
 			if (recordset == null){
-				// TODO 
+				// TODO
 				// If there is some problem with the recordset don't do anything.
-				return; 
+				return;
 			}
-						
+
 			if (currentPosition >= recordset.getRowCount()) {
 				currentPosition = recordset.getRowCount()-1;
 			}
@@ -718,7 +720,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				posTF.setText("");
 				navEnabled = false;
 				fillEmptyValues();
-			} else {				
+			} else {
 				navEnabled = true;
 				fillValues();
 			}
@@ -727,7 +729,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			firstB.setEnabled(navEnabled);
 			beforeB.setEnabled(navEnabled);
 			removeB.setEnabled(navEnabled);
-			
+
 			long rows = recordset.getRowCount();
 			FBitSet rowsBitSet = recordset.getSelection();
 			int selectedRows = rowsBitSet.cardinality();
@@ -770,7 +772,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			posTF.setText("");
 		}
 
-		
+
 		java.net.URL imgURL = null;
 		if (isRecordSelected()){
 			imgURL = getClass().getResource("/Unselect.png");
@@ -783,15 +785,15 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			selectionB.setIcon(imagenSelect);
 			posTF.setBackground(Color.WHITE);
 		}
-		
+
 		FBitSet selection = recordset.getSelection();
-		if (selection.cardinality()==0 || !navEnabled) {
+		if ((selection.cardinality()==0) || !navEnabled) {
 			copySelectedB.setEnabled(false);
 		} else {
 			copySelectedB.setEnabled(true);
 		}
-		
-		if (currentPosition == 0 || !navEnabled) {
+
+		if ((currentPosition == 0) || !navEnabled) {
 			copyPreviousB.setEnabled(false);
 		} else {
 			copyPreviousB.setEnabled(true);
@@ -803,37 +805,37 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		alwaysZoomCB.setEnabled(navEnabled);
 		alwaysSelectCB.setEnabled(navEnabled);
 		fixScaleCB.setEnabled(navEnabled);
-		
+
 	}
 
 	protected boolean valuesMustBeFilled() {
 		FBitSet bitset= recordset.getSelection();
-		
+
 		int selectedNumber = bitset.cardinality();
-		
+
 		//TODO A veces da NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (onlySelectedCB == null) {
 			System.out.println("************************  onlySelectedCB: "+ onlySelectedCB);
 			return false;
 		}
-		if (onlySelectedCB.isSelected() && selectedNumber == 0){
+		if (onlySelectedCB.isSelected() && (selectedNumber == 0)){
 			return false;
 		} else {
 			return true;
 		}
 	}
-	
+
 	protected void copyPrevious() {
 		String pos = posTF.getText();
 		Long posNumber = null;
-		
+
 		try {
 			posNumber = new Long(pos);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
-			posNumber = currentPosition; 
+			posNumber = currentPosition;
 		}
-		
+
 		if (!isValidPosition(posNumber) ){
 			if (currentPosition == -1) {
 				posTF.setText("");
@@ -842,14 +844,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 			return;
 		}
-		
+
 		if (onlySelectedCB.isSelected()){
 			if (!isRecordSelected(posNumber)){
 				posTF.setText(String.valueOf(currentPosition+1));
 				return;
 			}
 		}
-		
+
 		showWarning();
 		try {
 			currentPosition = posNumber.longValue()-1;
@@ -858,15 +860,15 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			e1.printStackTrace();
 		}
 	}
-	
+
 	protected void copySelected() {
 		FBitSet selection = recordset.getSelection();
 		if (selection.cardinality()!=1) {
 			//lanzar error
 			JOptionPane.showMessageDialog(null,
-				    PluginServices.getText(this, "justOneRecordMessage"),
-				    PluginServices.getText(this, "justOneRecordTitle"),
-				    JOptionPane.WARNING_MESSAGE);
+					PluginServices.getText(this, "justOneRecordMessage"),
+					PluginServices.getText(this, "justOneRecordTitle"),
+					JOptionPane.WARNING_MESSAGE);
 		} else {
 			//TODO Check this code
 			long current = currentPosition;
@@ -887,14 +889,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			// If there is an error on the recordset of the layer do nothing.
 			return;
 		}
-		
+
 		if (e.getSource() == onlySelectedCB){
-			alwaysSelectCB.setSelected(false);			
+			alwaysSelectCB.setSelected(false);
 			if (onlySelectedCB.isSelected()){
 				// areSelectedRows()
 				if (currentPosition != -1 ) {
 					viewOnlySelected();
-				} 
+				}
 			} else {
 				if (currentPosition == -1 ) {
 					currentPosition = 0;
@@ -902,17 +904,17 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 			refreshGUI();
 		}
-		
+
 		if (e.getSource() == alwaysZoomCB){
 			fixScaleCB.setSelected(false);
 			refreshGUI();
 		}
-		
+
 		if (e.getSource() == fixScaleCB) {
 			alwaysZoomCB.setSelected(false);
 			refreshGUI();
 		}
-		
+
 		if (e.getSource() == alwaysSelectCB){
 			onlySelectedCB.setSelected(false);
 			if (alwaysSelectCB.isSelected()){
@@ -922,74 +924,74 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 			refreshGUI();
 		}
-		
+
 		if (e.getSource() == filterB){
-			FiltroExtension fe = new FiltroExtension();			
+			FiltroExtension fe = new FiltroExtension();
 			fe.initialize();
-			fe.execute("FILTRO");			
+			fe.execute("FILTRO");
 		}
-		
+
 		if (e.getSource() == noFilterB){
 			clearSelection();
 		}
-		
+
 		if (e.getSource() == nextB){
 			next();
 		}
-		
+
 		if (e.getSource() == lastB){
 			last();
 		}
-		
+
 		if (e.getSource() == firstB){
 			first();
 		}
-		
+
 		if (e.getSource() == beforeB){
-			before();			
+			before();
 		}
-		
+
 		if (e.getSource() == posTF){
 			copyPrevious();
 		}
-		
-		if (e.getSource() == copySelectedB){			
-//			fillValues(currentPosition-1);
-//			currentPosition = currentPosition + 1;
-			
+
+		if (e.getSource() == copySelectedB){
+			//			fillValues(currentPosition-1);
+			//			currentPosition = currentPosition + 1;
+
 			copySelected();
-			
+
 		}
-		
+
 		if (e.getSource() == copyPreviousB){
 			long current = currentPosition;
 			currentPosition = currentPosition -1;
 			fillValues();
 			currentPosition = current;
 		}
-		
+
 		if (e.getSource() == zoomB){
 			zoom();
 			//refreshGUI();
 		}
-		
+
 		if (e.getSource() == selectionB){
 			selectCurrentFeature();
 			refreshGUI();
 		}
-		
+
 		if (e.getSource() == saveB){
-			saveRegister();			
+			saveRegister();
 			refreshGUI();
 		}
-		
+
 		if (e.getSource() == removeB){
 			int answer = JOptionPane.showConfirmDialog(null, PluginServices.getText(null, "confirm_delete_register"), null, JOptionPane.YES_NO_OPTION);
 			if (answer == 0) {
 				deleteRow();
 			}
 		}
-				
+
 		if (e.getSource() == cancelB){
 			PluginServices.getMDIManager().closeWindow(this);
 		}
@@ -1005,30 +1007,31 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			ReadableVectorial feats = layer.getSource();
 
 			feats.start();
-			
+
 			if (currentPosition>-1) {
-				
+
 				feat = feats.getFeature((int)currentPosition);
-				
+
 				ToggleEditing te = new ToggleEditing();
-				
-				if (!layer.isEditing())
+
+				if (!layer.isEditing()) {
 					te.startEditing(layer);
-				
-		        CADExtension.initFocus();
-				CADExtension.setCADTool("_selection",true);		        
+				}
+
+				CADExtension.initFocus();
+				CADExtension.setCADTool("_selection",true);
 				CADExtension.getEditionManager().setMapControl(map);
 				CADExtension.getCADToolAdapter().configureMenu();
-							
+
 				VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
 				VectorialEditableAdapter vea = vle.getVEA();
-				
+
 				vea.removeRow((int)currentPosition, CADExtension.getCADTool().getName(), EditionEvent.GRAPHIC);
-			
+
 				te.stopEditing(layer, false);
-				
+
 				layer.setActive(true);
-				
+
 				//Refresh
 				currentPosition = currentPosition -1;
 				next();
@@ -1043,11 +1046,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private boolean isValidPosition(Long pos) {
-		if (pos == null || pos.longValue() == 0) {
+		if ((pos == null) || (pos.longValue() == 0)) {
 			return false;
 		}
 		if (onlySelectedCB.isSelected()){
@@ -1057,7 +1060,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	public void selectionChanged(SelectionEvent e) {
-		if (currentPosition == -1 && onlySelectedCB.isSelected()){
+		if ((currentPosition == -1) && onlySelectedCB.isSelected()){
 			firstSelected();
 		} else {
 			if (onlySelectedCB.isSelected() && !isRecordSelected()){
@@ -1069,16 +1072,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 		refreshGUI();
 	}
-	
+
 	public void windowClosed() {
 		if (!closed) {
 			showWarning();
 			closed = true;
 		}
 	}
-	
+
 	public void windowActivated() {
-		
+
 	}
-	
+
 }
