@@ -163,7 +163,12 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 
+	@Deprecated
 	private void addRow() {
+		deleteRecord();
+	}
+
+	private void addRecord() {
 
 		//showWarning();
 		if (onlySelectedCB.isSelected()) {
@@ -208,7 +213,12 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 
-	protected void deleteRow() {
+	@Deprecated
+	private void deleteRow() {
+		deleteRecord();
+	}
+
+	protected void deleteRecord() {
 		try {
 			model.startEdition(EditionEvent.ALPHANUMERIC);
 
@@ -249,7 +259,7 @@ public class AlphanumericNavTable extends NavTable {
 	public void actionPerformed (ActionEvent e) {
 
 		if (e.getSource() == newB) {
-			addRow();
+			addRecord();
 		} else if (e.getSource() == removeB) {
 			int answer = JOptionPane.showConfirmDialog(null,
 					PluginServices.getText(null, "confirm_delete_register"),
@@ -257,7 +267,7 @@ public class AlphanumericNavTable extends NavTable {
 					JOptionPane.YES_NO_OPTION);
 
 			if (answer == 0) {
-				deleteRow();
+				deleteRecord();
 			}
 		}else {
 			super.actionPerformed(e);
