@@ -686,7 +686,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 
 		if (!isRecordSelected()){
-			System.out.println("View only selected... getFirstSelected");
+			//System.out.println("View only selected... getFirstSelected");
 			firstSelected();
 		}
 
@@ -701,7 +701,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (viewInfo == null) {
 			viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.RESIZABLE | WindowInfo.PALETTE);
 			viewInfo.setTitle(PluginServices.getText(this, "NavTable"));
-			viewInfo.setWidth(425);
+			viewInfo.setWidth(480);
 			viewInfo.setHeight(525);
 		}
 		return viewInfo;
