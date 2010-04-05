@@ -63,13 +63,12 @@ import com.iver.cit.gvsig.project.documents.view.gui.View;
  * 
  * @author Nacho Varela
  * @author Javier Estevez
+ * @author Pablo Sanxiao
  * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
 	private static final long serialVersionUID = 1L;
-
-	private boolean closed = false;
 
 	protected JPanel northPanel = null;
 	protected JPanel centerPanel = null;
@@ -130,11 +129,19 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 	}
 
+	/**
+	 * Constructor of the class. This constructor is used by
+	 * AlphanumericNavTable
+	 * 
+	 * @param recordset
+	 */
 	public AbstractNavTable(SelectableDataSource recordset) {
 		super();
 		this.layer = null;
 		WindowInfo window = this.getWindowInfo();
 		String title = window.getTitle();
+		// TODO When the table is on edition, on title window
+		// is shown a weird identify instead of the layer name
 		window.setTitle(title+"*: "+ recordset.getName());
 
 		this.recordset = recordset;
@@ -1074,10 +1081,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	public void windowClosed() {
-		if (!closed) {
-			showWarning();
-			closed = true;
-		}
+
+		showWarning();
+
 	}
 
 	public void windowActivated() {
