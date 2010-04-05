@@ -25,8 +25,6 @@ import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.fmap.DriverException;
-import com.iver.cit.gvsig.fmap.MapControl;
-import com.iver.cit.gvsig.fmap.core.IFeature;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.drivers.DriverIOException;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
@@ -1017,15 +1015,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		delete = true;
 		try {
 			View view = (View) PluginServices.getMDIManager().getActiveWindow();
-			MapControl map = view.getMapControl();
-			IFeature feat;
 			ReadableVectorial feats = layer.getSource();
 
 			feats.start();
 
 			if (currentPosition>-1) {
-
-				feat = feats.getFeature((int)currentPosition);
 
 				ToggleEditing te = new ToggleEditing();
 
@@ -1047,9 +1041,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				next();
 			}
 		} catch (DriverIOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
