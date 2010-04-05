@@ -1025,11 +1025,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 					te.startEditing(layer);
 				}
 
-				CADExtension.initFocus();
-				CADExtension.setCADTool("_selection",true);
-				CADExtension.getEditionManager().setMapControl(map);
-				CADExtension.getCADToolAdapter().configureMenu();
-
 				VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
 				VectorialEditableAdapter vea = vle.getVEA();
 
