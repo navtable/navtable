@@ -13,8 +13,10 @@ import javax.swing.table.DefaultTableModel;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.hardcode.gdbms.engine.data.driver.DriverException;
+import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
+import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
 import com.iver.cit.gvsig.fmap.core.DefaultRow;
@@ -30,7 +32,6 @@ import com.iver.cit.gvsig.fmap.edition.IWriter;
 public class AlphanumericNavTable extends NavTable {
 
 	JButton newB = null;
-	//JButton removeB = null;
 	protected IEditableSource model;
 
 	public AlphanumericNavTable(IEditableSource model) {
@@ -52,9 +53,7 @@ public class AlphanumericNavTable extends NavTable {
 		URL imgURL = getClass().getResource("/table_add.png");
 		ImageIcon imagenNewRegister = new ImageIcon(imgURL);
 		newB = new JButton(imagenNewRegister);
-		//TODO Add the string to the i18n to traslate
-		newB.setToolTipText(PluginServices.getText(this,
-		"new_register"));
+		newB.setToolTipText(PluginServices.getText(this, "new_register"));
 
 		newB.addActionListener(this);
 		zoomB.getParent().add(newB);
@@ -64,13 +63,40 @@ public class AlphanumericNavTable extends NavTable {
 	}
 
 	@Override
+	public Vector checkChangedValues() {
+
+		Vector changedValues = new Vector();
+		for (int i=0; i<table.getRowCount(); i++) {
+			try {
+				String tableValue = table.getValueAt(i, 1).toString();
+				Value value = recordset.getFieldValue(currentPosition, i);
+				String layerValue = value.getStringValue(ValueWriter.internalValueWriter);
+				layerValue = layerValue.replaceAll("'", "");
+				if (value instanceof NullValue) {
+					if (tableValue.compareTo("")!=0) {
+						changedValues.add(new Integer(i));
+					}
+				} else {
+					if (tableValue.compareTo(layerValue)!=0) {
+						changedValues.add(new Integer(i));
+					}
+				}
+			} catch (DriverException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return changedValues;
+	}
+
+	@Override
 	protected void saveRegister() {
 
-		//cerrar la edición de la celda
 		stopCellEdition();
 		ToggleEditing te = new ToggleEditing();
 		try {
-			//			poner en edición la tabla
+
 			model.startEdition(EditionEvent.ALPHANUMERIC);
 			if (model instanceof IWriteable)
 			{
@@ -86,7 +112,6 @@ public class AlphanumericNavTable extends NavTable {
 
 							//only edit modified values, the cells that
 							//contains String instead of Value
-
 							try {
 								String text = value.toString();
 								if (recordset.getFieldType(i)==Types.DATE) {
@@ -102,8 +127,6 @@ public class AlphanumericNavTable extends NavTable {
 							}
 						}
 					}
-
-
 
 					IWriteable w = (IWriteable) model;
 					IWriter writer = w.getWriter();
@@ -126,8 +149,6 @@ public class AlphanumericNavTable extends NavTable {
 						//model.getSelection().clear();
 						//refreshControls();
 					}
-
-
 				}
 			}
 		} catch (EditionException e) {
@@ -143,7 +164,7 @@ public class AlphanumericNavTable extends NavTable {
 	}
 
 	private void addRow() {
-		//crear una row vacía
+
 		//showWarning();
 		if (onlySelectedCB.isSelected()) {
 			onlySelectedCB.setSelected(false);
@@ -170,9 +191,7 @@ public class AlphanumericNavTable extends NavTable {
 
 				model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
 
-				//				ir a ella en navtable
 				last();
-
 			}
 		} catch (EditionException e) {
 			// TODO Auto-generated catch block
@@ -231,8 +250,12 @@ public class AlphanumericNavTable extends NavTable {
 
 		if (e.getSource() == newB) {
 			addRow();
-		}else if (e.getSource() == removeB) {
-			int answer = JOptionPane.showConfirmDialog(null, PluginServices.getText(null, "confirm_delete_register"), null, JOptionPane.YES_NO_OPTION);
+		} else if (e.getSource() == removeB) {
+			int answer = JOptionPane.showConfirmDialog(null,
+					PluginServices.getText(null, "confirm_delete_register"),
+					null,
+					JOptionPane.YES_NO_OPTION);
+
 			if (answer == 0) {
 				deleteRow();
 			}
@@ -241,4 +264,4 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 
-}//Class
+}
