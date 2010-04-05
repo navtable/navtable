@@ -211,12 +211,11 @@ public class NavTable extends AbstractNavTable {
 
 		ReadableVectorial source = layer.getSource();
 
-		System.out.println("Source de la layer es un " + source +" "+ source.getClass());
+		//System.out.println("Source de la layer es un " + source +" "+ source.getClass());
 		if ((source != null) && (source instanceof VectorialFileAdapter)) {
 			layerFile = ((VectorialFileAdapter) source).getFile();
 			filePath = layerFile.getAbsolutePath();
 		} else {
-			//[NachoV]
 			return fieldName;
 		}
 
@@ -232,9 +231,12 @@ public class NavTable extends AbstractNavTable {
 			BufferedReader fileReader = new BufferedReader(new FileReader(fileAlias));
 			while ((line = fileReader.readLine())!=null) {
 				String tokens[] = line.split("=");
-				if (fieldName.toUpperCase().compareTo(tokens[0].toUpperCase()) == 0) {
-					alias = tokens[1];
-					break;
+				if (tokens.length == 2) {
+					String attrName = tokens[0].toUpperCase();
+					if (fieldName.toUpperCase().compareTo(attrName) == 0) {
+						alias = tokens[1];
+						break;
+					}
 				}
 			}
 		} catch (FileNotFoundException e) {
