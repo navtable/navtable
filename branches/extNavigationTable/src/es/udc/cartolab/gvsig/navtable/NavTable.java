@@ -390,7 +390,13 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	@Override
+	@Deprecated
 	protected void saveRegister(){
+		saveRecord();
+	}
+
+	@Override
+	protected void saveRecord(){
 		//TODO check if the values type are correct
 		boolean layerEditing = true;
 

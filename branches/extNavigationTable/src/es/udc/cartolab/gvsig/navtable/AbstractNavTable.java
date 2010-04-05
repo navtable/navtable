@@ -193,7 +193,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * Saves the changes of the current data row.
 	 *
 	 */
+	@Deprecated
 	protected abstract void saveRegister();
+
+	/**
+	 * Saves the changes of the current data row.
+	 *
+	 */
+	protected abstract void saveRecord();
 
 	/**
 	 * Creates the upper panel.
@@ -392,7 +399,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 					options,  //the titles of buttons
 					options[1]); //default button title
 			if (response == 0) {
-				saveRegister();
+				saveRecord();
 			}
 		}
 	}
@@ -986,7 +993,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 
 		if (e.getSource() == saveB){
-			saveRegister();
+			saveRecord();
 			refreshGUI();
 		}
 
@@ -996,7 +1003,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 					null,
 					JOptionPane.YES_NO_OPTION);
 			if (answer == 0) {
-				deleteRow();
+				deleteRecord();
 			}
 		}
 

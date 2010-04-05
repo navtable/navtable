@@ -91,7 +91,13 @@ public class AlphanumericNavTable extends NavTable {
 	}
 
 	@Override
+	@Deprecated
 	protected void saveRegister() {
+		saveRecord();
+	}
+
+	@Override
+	protected void saveRecord() {
 
 		stopCellEdition();
 		ToggleEditing te = new ToggleEditing();
@@ -165,7 +171,7 @@ public class AlphanumericNavTable extends NavTable {
 
 	@Deprecated
 	private void addRow() {
-		deleteRecord();
+		addRecord();
 	}
 
 	private void addRecord() {
