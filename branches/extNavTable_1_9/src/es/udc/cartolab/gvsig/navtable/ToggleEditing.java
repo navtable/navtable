@@ -91,7 +91,6 @@ public class ToggleEditing {
 	 * @param layer The vectorial layer to be edited.
 	 */
 	public void startEditing(FLayer layer){
-		//startEditing(layer.getName());
 		CADExtension.initFocus();
 		com.iver.andami.ui.mdiManager.IWindow f = PluginServices.getMDIManager()
 		.getActiveWindow();
@@ -104,12 +103,9 @@ public class ToggleEditing {
 			IProjectView model = vista.getModel();
 			FLayers layers = model.getMapContext().getLayers();
 			layers.setAllActives(false);
-			//FLayer layer = layers.getLayer(layerName);
 
 			if (layer instanceof FLyrVect) {
 				layer.setActive(true);
-				//				mapControl.getMapContext().clearAllCachingImageDrawnLayers();
-				//				vista.showConsole();
 				EditionManager editionManager = CADExtension.getEditionManager();
 				editionManager.setMapControl(mapControl);
 
@@ -155,8 +151,6 @@ public class ToggleEditing {
 				}
 
 				vista.repaintMap();
-				//vista.hideConsole();
-
 			}
 		}
 	}
@@ -203,7 +197,6 @@ public class ToggleEditing {
 				IProjectView model = vista.getModel();
 				FLayers layers = model.getMapContext().getLayers();
 				layers.setAllActives(false);
-				//FLyrVect layer = (FLyrVect)layers.getLayer(layerName);
 				if (cancel){
 					cancelEdition((FLyrVect) layer);
 				} else {
@@ -216,8 +209,6 @@ public class ToggleEditing {
 					((FLyrVect) layer).setLegend((IVectorLegend)vle.getLegend());
 				}
 				layer.setEditing(false);
-				// The layer should be the active one and the view must be repainted
-				// layer.getMapContext().redraw();
 				layer.setActive(true);
 			}
 		} catch (DriverException e) {

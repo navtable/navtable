@@ -49,8 +49,6 @@ import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
-import com.iver.cit.gvsig.fmap.MapControl;
-import com.iver.cit.gvsig.fmap.core.IFeature;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
@@ -62,7 +60,6 @@ import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
 import com.iver.cit.gvsig.fmap.layers.SelectionListener;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.cit.gvsig.layers.VectorialLayerEdited;
-import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
 /**
  * 
@@ -858,7 +855,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 		int selectedNumber = bitset.cardinality();
 
-		//TODO A veces da NULL!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (onlySelectedCB == null) {
 			System.out.println("************************  onlySelectedCB: "+ onlySelectedCB);
 			return false;
@@ -909,7 +905,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	protected void copySelected() {
 		FBitSet selection = recordset.getSelection();
 		if (selection.cardinality()!=1) {
-			//lanzar error
+			//show error
 			JOptionPane.showMessageDialog(null,
 					PluginServices.getText(this, "justOneRecordMessage"),
 					PluginServices.getText(this, "justOneRecordTitle"),
@@ -1001,11 +997,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 
 		if (e.getSource() == copySelectedB){
-			//			fillValues(currentPosition-1);
-			//			currentPosition = currentPosition + 1;
-
 			copySelected();
-
 		}
 
 		if (e.getSource() == copyPreviousB){
@@ -1046,16 +1038,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	private void deleteRecord() {
 		try {
 			boolean layerEditing = true;
-			BaseView view = (BaseView) PluginServices.getMDIManager().getActiveWindow();
-			MapControl map = view.getMapControl();
-			IFeature feat;
 			ReadableVectorial feats = layer.getSource();
 
 			feats.start();
 
 			if (currentPosition>-1) {
-
-				feat = feats.getFeature((int)currentPosition);
 
 				ToggleEditing te = new ToggleEditing();
 

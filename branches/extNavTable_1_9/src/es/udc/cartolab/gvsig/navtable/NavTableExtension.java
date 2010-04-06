@@ -88,24 +88,6 @@ public class NavTableExtension extends Extension{
 			int pos = flayers.getActives().length - 1;
 			FLayer actLayer = flayers.getActives()[pos];
 			if (actLayer instanceof FLyrVect) {
-				// Too much files created for getRecordset()
-				//				try {
-				//					SelectableDataSource recordset = ((FLyrVect) actLayer).getRecordset();
-				//					if (recordset == null){
-				//						return false;
-				//					}
-				//					if (recordset.getRowCount() > 0) {
-				//						return true;
-				//					}
-				//				} catch (DriverException e) {
-				//					// TODO Auto-generated catch block
-				//					e.printStackTrace();
-				//				} catch (com.iver.cit.gvsig.fmap.DriverException e) {
-				//					// TODO Auto-generated catch block
-				//					e.printStackTrace();
-				//				}
-
-				//TODO Check if the layer has at least one element
 				enabled = true;
 			}
 		}
