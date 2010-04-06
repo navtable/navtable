@@ -1042,8 +1042,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	private void deleteRecord() {
-		delete = true;
+		//delete = true;
 		try {
+			boolean layerEditing = true;
 			View view = (View) PluginServices.getMDIManager().getActiveWindow();
 			ReadableVectorial feats = layer.getSource();
 
@@ -1054,6 +1055,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				ToggleEditing te = new ToggleEditing();
 
 				if (!layer.isEditing()) {
+					layerEditing = false;
 					te.startEditing(layer);
 				}
 
@@ -1062,13 +1064,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 				vea.removeRow((int)currentPosition, CADExtension.getCADTool().getName(), EditionEvent.GRAPHIC);
 
-				te.stopEditing(layer, false);
+				if (!layerEditing) {
+					te.stopEditing(layer, false);
+				}
 
 				layer.setActive(true);
 
 				//Refresh
-				currentPosition = currentPosition -1;
-				next();
+				refreshGUI();
 			}
 		} catch (DriverIOException e) {
 			// TODO Auto-generated catch block
