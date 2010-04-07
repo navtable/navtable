@@ -368,7 +368,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		ImageIcon imagenClose = new ImageIcon(imgURL);
 
 		//Buttons Panels
-		JPanel navToolBar = new JPanel(new FlowLayout());
+		JPanel navToolBar = new JPanel(new BorderLayout());
 		navToolBar.add(firstB);
 		navToolBar.add(beforeB);
 		navToolBar.add(posTF);
@@ -385,8 +385,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		actionsToolBar.add(removeB);
 
 		JPanel buttonsPanel = new JPanel(new FlowLayout());
-		buttonsPanel.add(navToolBar);
-		buttonsPanel.add(actionsToolBar);
+		buttonsPanel.add(navToolBar, BorderLayout.SOUTH);
+		buttonsPanel.add(actionsToolBar, BorderLayout.NORTH);
 
 		return buttonsPanel;
 	}

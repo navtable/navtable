@@ -23,6 +23,9 @@
  */
 package es.udc.cartolab.gvsig.navtable;
 
+import info.clearthought.layout.TableLayout;
+
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -85,12 +88,57 @@ public class NavTable extends AbstractNavTable {
 	protected JTable table = null;
 	private AttribTableCellRenderer cellRenderer = null;
 
+	private JPanel CenterPanel;
+	private JPanel SouthPanel;
+	private JPanel NorthPanel;
+
 	public NavTable(FLyrVect layer) {
 		super(layer);
 	}
 
 	public NavTable(SelectableDataSource recordset) {
 		super(recordset);
+	}
+
+	private JPanel getThisNorthPanel() {
+		if(NorthPanel == null) {
+			NorthPanel = new JPanel();
+		}
+		return NorthPanel;
+	}
+
+	private JPanel getThisSouthPanel() {
+		if(SouthPanel == null) {
+			SouthPanel = new JPanel();
+		}
+		return SouthPanel;
+	}
+
+	private JPanel getThisCenterPanel() {
+		if(CenterPanel == null) {
+			CenterPanel = new JPanel();
+			BorderLayout CenterPanelLayout = new BorderLayout();
+			CenterPanel.setLayout(CenterPanelLayout);
+		}
+		return CenterPanel;
+	}
+
+	private void initGUI() {
+		TableLayout thisLayout = new TableLayout(new double[][] {
+				{TableLayout.FILL, TableLayout.FILL, TableLayout.FILL, TableLayout.FILL},
+				{TableLayout.MINIMUM, TableLayout.FILL, TableLayout.MINIMUM}
+		});
+		thisLayout.setHGap(5);
+		thisLayout.setVGap(5);
+		this.setLayout(thisLayout);
+		try {
+			this.add(getThisNorthPanel(), "0, 0, 3, 0");
+			this.add(getThisCenterPanel(),"0, 1, 3, 1");
+			this.add(getThisSouthPanel(), "0, 2, 3, 2");
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -183,33 +231,50 @@ public class NavTable extends AbstractNavTable {
 			e.printStackTrace();
 		}
 
-		GridBagLayout layout = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
+		//		GridBagLayout layout = new GridBagLayout();
+		//		GridBagConstraints c = new GridBagConstraints();
+		//
+		//		super.setLayout(layout);
+		//
+		//		c.gridy = 0;
+		//		c.gridx = 0;
+		//		c.anchor = GridBagConstraints.NORTH;
+		//		c.fill = GridBagConstraints.BOTH;
+		//		JPanel northPanel = getNorthPanel();
+		//		super.add(northPanel, c);
+		//
+		//		c.gridy = 1;
+		//		c.fill = GridBagConstraints.BOTH;
+		//		c.anchor = GridBagConstraints.CENTER;
+		//		JPanel centerPanel = getCenterPanel();
+		//		fillAttributes();
+		//		super.add(centerPanel, c);
+		//
+		//		c.gridy = 11;
+		//		c.weightx = 1.0;
+		//		c.weighty = 1.0;
+		//		c.gridheight = 1;
+		//		c.fill = GridBagConstraints.BOTH;
+		//		c.anchor = GridBagConstraints.SOUTH;
+		//		JPanel southPanel = getSouthPanel();
+		//		super.add(southPanel, c);
 
-		super.setLayout(layout);
+		initGUI();
 
-		c.gridy = 0;
-		c.gridx = 0;
-		c.anchor = GridBagConstraints.NORTH;
-		c.fill = GridBagConstraints.BOTH;
+		//I get NavTable parent panels and I add them on the tableLayoutPanels
 		JPanel northPanel = getNorthPanel();
-		super.add(northPanel, c);
+		getThisNorthPanel().add(northPanel);
+		//super.add(northPanel, BorderLayout.NORTH);
 
-		c.gridy = 1;
-		c.fill = GridBagConstraints.BOTH;
-		c.anchor = GridBagConstraints.CENTER;
 		JPanel centerPanel = getCenterPanel();
-		fillAttributes();
-		super.add(centerPanel, c);
+		getThisCenterPanel().add(centerPanel);
+		//super.add(centerPanel, BorderLayout.CENTER);
 
-		c.gridy = 11;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		c.gridheight = 1;
-		c.fill = GridBagConstraints.BOTH;
-		c.anchor = GridBagConstraints.SOUTH;
 		JPanel southPanel = getSouthPanel();
-		super.add(southPanel, c);
+		getThisSouthPanel().add(southPanel);
+		//super.add(southPanel, BorderLayout.SOUTH);
+
+		fillAttributes();
 
 		currentPosition = 0;
 		//fillValues();
