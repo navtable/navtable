@@ -391,9 +391,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		actionsToolBar.add(removeB);
 		actionsToolBar.add(cancelB);
 
-		JPanel buttonsPanel = new JPanel(new FlowLayout());
-		buttonsPanel.add(navToolBar);
-		buttonsPanel.add(actionsToolBar);
+		JPanel buttonsPanel = new JPanel(new BorderLayout());
+		buttonsPanel.add(navToolBar, BorderLayout.SOUTH);
+		buttonsPanel.add(actionsToolBar, BorderLayout.NORTH);
 
 		return buttonsPanel;
 

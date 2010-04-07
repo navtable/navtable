@@ -27,6 +27,7 @@ import info.clearthought.layout.TableLayout;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
@@ -179,7 +180,7 @@ public class NavTable extends AbstractNavTable {
 
 	private JPanel getThisSouthPanel() {
 		if(SouthPanel == null) {
-			SouthPanel = new JPanel();
+			SouthPanel = new JPanel(new FlowLayout());
 		}
 		return SouthPanel;
 	}
@@ -203,8 +204,9 @@ public class NavTable extends AbstractNavTable {
 		this.setLayout(thisLayout);
 		try {
 			this.add(getThisNorthPanel(), "0, 0, 3, 0");
-			this.add(getThisSouthPanel(), "0, 2, 3, 2");
 			this.add(getThisCenterPanel(), "0, 1, 3, 1");
+			this.add(getThisSouthPanel(), "0, 2, 3, 2");
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
