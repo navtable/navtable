@@ -1,6 +1,6 @@
 /*
  * This file is part of NavTable
- * Copyright (C) 2009 - 2010  Cartolab (Universidade da Coruña)
+ * Copyright (C) 2009 - 2010  Cartolab (Universidade da Coruï¿½a)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  * 
  * 
  * Authors:
- *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
+ *   Juan Ignacio Varela Garcï¿½a <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
- *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
+ *   Javier Estï¿½vez Valiï¿½as <valdaris (at) gmail (dot) com>
  */
 package es.udc.cartolab.gvsig.navtable;
 
@@ -123,7 +123,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	JButton selectionB = null;
 	JButton saveB = null;
 	JButton removeB = null;
-	JButton cancelB = null;
+	//	JButton cancelB = null;
 
 	/**
 	 * 
@@ -367,11 +367,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		removeB.setToolTipText(PluginServices.getText(this,
 		"delete_register"));
 		removeB.addActionListener(this);
-		imgURL = getClass().getResource("/close.png");
-		ImageIcon imagenClose = new ImageIcon(imgURL);
-		cancelB = new JButton(imagenClose);
-		cancelB.setToolTipText(PluginServices.getText(this, "closeButtonTooltip"));
-		cancelB.addActionListener(this);
+		//		imgURL = getClass().getResource("/close.png");
+		//		ImageIcon imagenClose = new ImageIcon(imgURL);
+		//		cancelB = new JButton(imagenClose);
+		//		cancelB.setToolTipText(PluginServices.getText(this, "closeButtonTooltip"));
+		//		cancelB.addActionListener(this);
 
 		//Buttons Panels
 		JPanel navToolBar = new JPanel(new FlowLayout());
@@ -389,7 +389,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		actionsToolBar.add(selectionB);
 		actionsToolBar.add(saveB);
 		actionsToolBar.add(removeB);
-		actionsToolBar.add(cancelB);
+		//		actionsToolBar.add(cancelB);
 
 		JPanel buttonsPanel = new JPanel(new BorderLayout());
 		buttonsPanel.add(navToolBar, BorderLayout.SOUTH);
@@ -1024,9 +1024,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 		}
 
-		if (e.getSource() == cancelB){
-			PluginServices.getMDIManager().closeWindow(this);
-		}
+		//		if (e.getSource() == cancelB){
+		//			PluginServices.getMDIManager().closeWindow(this);
+		//		}
 
 	}
 
