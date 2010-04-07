@@ -364,8 +364,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		removeB.setToolTipText(PluginServices.getText(this,
 		"delete_register"));
 		removeB.addActionListener(this);
-		imgURL = getClass().getResource("/close.png");
-		ImageIcon imagenClose = new ImageIcon(imgURL);
 
 		//Buttons Panels
 		JPanel navToolBar = new JPanel(new BorderLayout());
