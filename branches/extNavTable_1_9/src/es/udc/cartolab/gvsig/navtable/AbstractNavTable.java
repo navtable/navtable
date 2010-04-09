@@ -366,7 +366,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		removeB.addActionListener(this);
 
 		//Buttons Panels
-		JPanel navToolBar = new JPanel(new BorderLayout());
+		JPanel navToolBar = new JPanel(new FlowLayout());
 		navToolBar.add(firstB);
 		navToolBar.add(beforeB);
 		navToolBar.add(posTF);
@@ -382,7 +382,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		actionsToolBar.add(saveB);
 		actionsToolBar.add(removeB);
 
-		JPanel buttonsPanel = new JPanel(new FlowLayout());
+		JPanel buttonsPanel = new JPanel(new BorderLayout());
 		buttonsPanel.add(navToolBar, BorderLayout.SOUTH);
 		buttonsPanel.add(actionsToolBar, BorderLayout.NORTH);
 
