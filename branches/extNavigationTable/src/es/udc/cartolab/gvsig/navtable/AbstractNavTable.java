@@ -1101,9 +1101,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	public void windowClosed() {
-
 		showWarning();
-
+		this.recordset.removeSelectionListener(this);
 	}
 
 	public void windowActivated() {
