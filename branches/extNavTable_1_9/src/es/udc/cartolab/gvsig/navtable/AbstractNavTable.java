@@ -612,8 +612,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	private void selectCurrentFeature() {
 		FBitSet bitset = null;
 		int pos = Long.valueOf(currentPosition).intValue();
-		//		//TODO gvSIG comment: Esta comprobacion se hacia con Selectable
-		//		if (layer instanceof AlphanumericData) {
+
 		bitset = recordset.getSelection();
 		if (!bitset.get(pos)){
 			bitset.set(pos);
@@ -633,21 +632,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 */
 	private boolean isRecordSelected() {
 
-		//		FBitSet bitset = null;
-		//		if (currentPosition == -1){
-		//			return false;
-		//		}
-		//		int pos = Long.valueOf(currentPosition).intValue();
-		//		if (layer instanceof AlphanumericData) {
-		//			//TODO Esta comprobacion se hacia con Selectable
-		//				if (recordset == null){
-		//					return false;
-		//				}
-		//				bitset = recordset.getSelection();
-		//				return bitset.get(pos);
-		//		}
-		//		return false;
 		return isRecordSelected(currentPosition);
+
 	}
 
 	/**
@@ -661,15 +647,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			return false;
 		}
 		int pos = Long.valueOf(position).intValue();
-		//		if (layer instanceof AlphanumericData) {
-		//			//TODO Esta comprobacion se hacia con Selectable
 		if (recordset == null){
 			return false;
 		}
 		bitset = recordset.getSelection();
 		return bitset.get(pos);
-		//		}
-		//		return false;
+
 	}
 
 
@@ -681,11 +664,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	private void clearSelection() {
 		FBitSet bitset = null;
 		if (layer instanceof AlphanumericData) {
-			//TODO Esta comprobacion se hacia con Selectable
 			bitset = recordset.getSelection();
 			bitset.clear();
-			//TODO
-			// Deberia repintar el view
 			recordset.setSelection(bitset);
 		}
 	}
@@ -703,7 +683,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 
 		if (!isRecordSelected()){
-			System.out.println("View only selected... getFirstSelected");
+			//System.out.println("View only selected... getFirstSelected");
 			firstSelected();
 		}
 	}

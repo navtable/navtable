@@ -12,7 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/extCAD"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/libExceptions"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/libProjection"/>
-	<classpathentry kind="lib" path="lib/TableLayout.jar"/>
 	<classpathentry kind="lib" path="lib/miglayout-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

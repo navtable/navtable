@@ -132,21 +132,6 @@ public class NavTable extends AbstractNavTable {
 		this.add(getThisCenterPanel(), "shrink, growx, growy, wrap");
 		this.add(getThisSouthPanel(), "shrink, align center" );
 
-		//		TableLayout thisLayout = new TableLayout(new double[][] {
-		//				{TableLayout.FILL, TableLayout.FILL, TableLayout.FILL, TableLayout.FILL},
-		//				{TableLayout.MINIMUM, TableLayout.FILL, TableLayout.MINIMUM}
-		//		});
-		//		thisLayout.setHGap(5);
-		//		thisLayout.setVGap(5);
-		//		this.setLayout(thisLayout);
-		//		try {
-		//			this.add(getThisNorthPanel(), "0, 0, 3, 0");
-		//			this.add(getThisCenterPanel(),"0, 1, 3, 1");
-		//			this.add(getThisSouthPanel(), "0, 2, 3, 2");
-		//
-		//		} catch(Exception e) {
-		//			e.printStackTrace();
-		//		}
 	}
 
 	/**
@@ -193,8 +178,9 @@ public class NavTable extends AbstractNavTable {
 		});
 
 		model.addTableModelListener(new TableModelListener(){
-			//TODO
+
 			public void tableChanged(TableModelEvent e) {
+				//TODO
 				//System.out.println(e.getType() );
 				//				if (e.getType() == TableModelEvent.UPDATE){
 				//				hasChanged = true;
@@ -239,53 +225,21 @@ public class NavTable extends AbstractNavTable {
 			e.printStackTrace();
 		}
 
-		//		GridBagLayout layout = new GridBagLayout();
-		//		GridBagConstraints c = new GridBagConstraints();
-		//
-		//		super.setLayout(layout);
-		//
-		//		c.gridy = 0;
-		//		c.gridx = 0;
-		//		c.anchor = GridBagConstraints.NORTH;
-		//		c.fill = GridBagConstraints.BOTH;
-		//		JPanel northPanel = getNorthPanel();
-		//		super.add(northPanel, c);
-		//
-		//		c.gridy = 1;
-		//		c.fill = GridBagConstraints.BOTH;
-		//		c.anchor = GridBagConstraints.CENTER;
-		//		JPanel centerPanel = getCenterPanel();
-		//		fillAttributes();
-		//		super.add(centerPanel, c);
-		//
-		//		c.gridy = 11;
-		//		c.weightx = 1.0;
-		//		c.weighty = 1.0;
-		//		c.gridheight = 1;
-		//		c.fill = GridBagConstraints.BOTH;
-		//		c.anchor = GridBagConstraints.SOUTH;
-		//		JPanel southPanel = getSouthPanel();
-		//		super.add(southPanel, c);
-
 		initGUI();
 
-		//I get NavTable parent panels and I add them on the tableLayoutPanels
+		//Getting NavTable parent panels and add them on the tableLayoutPanels
 		JPanel northPanel = getNorthPanel();
 		getThisNorthPanel().add(northPanel);
-		//super.add(northPanel, BorderLayout.NORTH);
 
 		JPanel centerPanel = getCenterPanel();
 		getThisCenterPanel().add(centerPanel);
-		//super.add(centerPanel, BorderLayout.CENTER);
 
 		JPanel southPanel = getSouthPanel();
 		getThisSouthPanel().add(southPanel);
-		//super.add(southPanel, BorderLayout.SOUTH);
 
 		fillAttributes();
-
 		currentPosition = 0;
-		//fillValues();
+
 		refreshGUI();
 		super.repaint();
 		super.setVisible(true);
@@ -455,7 +409,6 @@ public class NavTable extends AbstractNavTable {
 				value = String.valueOf(Math.round(geom.getArea()));
 				model.setValueAt(value, recordset.getFieldCount()+1, 1);
 			}
-			//refreshGUI();
 
 		} catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
@@ -466,7 +419,6 @@ public class NavTable extends AbstractNavTable {
 	@Override
 	public Vector checkChangedValues() {
 		Vector changedValues = new Vector();
-		//System.out.println("Number of rows: " + table.getRowCount());
 		for (int i=0; i<table.getRowCount()-2; i++) {
 			try {
 				String tableValue = table.getValueAt(i, 1).toString();
@@ -501,20 +453,6 @@ public class NavTable extends AbstractNavTable {
 	protected void saveRegister(){
 
 		saveRecord();
-
-		//Removes the ProjectTable of this layer if it exists.
-		//Currently commented for testing purposes...
-		//			ProjectExtension pe = (ProjectExtension)PluginServices.getExtension(ProjectExtension.class);
-		//			Project project = pe.getProject();
-		//			ArrayList views = project.getDocumentsByType("ProjectTable");
-		//			for (int i=0; i < views.size(); i++){
-		//				ProjectTable pTable = (ProjectTable)views.get(i);
-		//				System.out.println(i+" TableName: " + pTable.getName());
-		//				if (pTable.getName().endsWith(" ET")){
-		//					project.delDocument(pTable);
-		//					break;
-		//				}
-		//			}
 
 	}
 
@@ -568,7 +506,6 @@ public class NavTable extends AbstractNavTable {
 				if (!layerEditing) {
 					te.stopEditing(layer, false);
 				}
-				//				layer.getMapContext().redraw();
 				layer.setActive(true);
 				//refreshGUI();
 			}

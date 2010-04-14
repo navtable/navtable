@@ -56,7 +56,6 @@ import com.iver.cit.gvsig.fmap.edition.IWriter;
 public class AlphanumericNavTable extends NavTable {
 
 	JButton newB = null;
-	//JButton removeB = null;
 	protected IEditableSource model;
 
 	public AlphanumericNavTable(IEditableSource model) throws ReadDriverException {
@@ -78,9 +77,7 @@ public class AlphanumericNavTable extends NavTable {
 		URL imgURL = getClass().getResource("/table_add.png");
 		ImageIcon imagenNewRegister = new ImageIcon(imgURL);
 		newB = new JButton(imagenNewRegister);
-		//TODO Add the string to the i18n to traslate
-		newB.setToolTipText(PluginServices.getText(this,
-		"new_register"));
+		newB.setToolTipText(PluginServices.getText(this, "new_register"));
 
 		newB.addActionListener(this);
 		zoomB.getParent().add(newB);
@@ -92,7 +89,6 @@ public class AlphanumericNavTable extends NavTable {
 	@Override
 	public Vector checkChangedValues() {
 		Vector changedValues = new Vector();
-		//System.out.println("Number of rows: " + table.getRowCount());
 		for (int i=0; i<table.getRowCount(); i++) {
 			try {
 				String tableValue = table.getValueAt(i, 1).toString();
@@ -161,8 +157,6 @@ public class AlphanumericNavTable extends NavTable {
 						}
 					}
 
-
-
 					IWriteable w = (IWriteable) model;
 					IWriter writer = w.getWriter();
 					if (writer == null)
@@ -176,15 +170,7 @@ public class AlphanumericNavTable extends NavTable {
 						writer.initialize(tableDef);
 
 						model.stopEdition(writer,EditionEvent.ALPHANUMERIC);
-
-						// TODO: RELOAD
-						//						EditableAdapter edAdapter = (EditableAdapter) ies;
-						//						// Restaura el datasource a su estado original
-						//						edAdapter.setOriginalDataSource(edAdapter.getRecordset());
-						//model.getSelection().clear();
-						//refreshControls();
 					}
-
 				}
 			}
 		} catch (ReadDriverException e) {
@@ -235,10 +221,7 @@ public class AlphanumericNavTable extends NavTable {
 				writer.initialize(tableDef);
 
 				model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
-
-				//				ir a ella en navtable
 				last();
-
 			}
 		} catch (StartWriterVisitorException e) {
 			// TODO Auto-generated catch block
@@ -266,7 +249,6 @@ public class AlphanumericNavTable extends NavTable {
 			writer.initialize(tableDef);
 
 			model.doRemoveRow((int) currentPosition, EditionEvent.ALPHANUMERIC);
-
 			model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
 
 			//Refresh
@@ -303,4 +285,4 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 
-}//Class
+}
