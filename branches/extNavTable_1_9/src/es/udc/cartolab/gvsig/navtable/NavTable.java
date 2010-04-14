@@ -23,10 +23,7 @@
  */
 package es.udc.cartolab.gvsig.navtable;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
@@ -48,6 +45,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import net.miginfocom.swing.MigLayout;
 
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.values.NullValue;
@@ -124,21 +123,30 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	private void initGUI() {
-		TableLayout thisLayout = new TableLayout(new double[][] {
-				{TableLayout.FILL, TableLayout.FILL, TableLayout.FILL, TableLayout.FILL},
-				{TableLayout.MINIMUM, TableLayout.FILL, TableLayout.MINIMUM}
-		});
-		thisLayout.setHGap(5);
-		thisLayout.setVGap(5);
+		MigLayout thisLayout = new MigLayout("inset 0, align center",
+				"[grow]",
+		"[][grow][]");
 		this.setLayout(thisLayout);
-		try {
-			this.add(getThisNorthPanel(), "0, 0, 3, 0");
-			this.add(getThisCenterPanel(),"0, 1, 3, 1");
-			this.add(getThisSouthPanel(), "0, 2, 3, 2");
 
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		this.add(getThisNorthPanel(), "shrink, wrap, align center");
+		this.add(getThisCenterPanel(), "shrink, growx, growy, wrap");
+		this.add(getThisSouthPanel(), "shrink, align center" );
+
+		//		TableLayout thisLayout = new TableLayout(new double[][] {
+		//				{TableLayout.FILL, TableLayout.FILL, TableLayout.FILL, TableLayout.FILL},
+		//				{TableLayout.MINIMUM, TableLayout.FILL, TableLayout.MINIMUM}
+		//		});
+		//		thisLayout.setHGap(5);
+		//		thisLayout.setVGap(5);
+		//		this.setLayout(thisLayout);
+		//		try {
+		//			this.add(getThisNorthPanel(), "0, 0, 3, 0");
+		//			this.add(getThisCenterPanel(),"0, 1, 3, 1");
+		//			this.add(getThisSouthPanel(), "0, 2, 3, 2");
+		//
+		//		} catch(Exception e) {
+		//			e.printStackTrace();
+		//		}
 	}
 
 	/**
@@ -207,7 +215,7 @@ public class NavTable extends AbstractNavTable {
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		centerPanel.add(scrollPane, c);
-		centerPanel.setMinimumSize(new Dimension(300, 400));
+		//centerPanel.setMinimumSize(new Dimension(300, 400));
 		return centerPanel;
 
 	}
