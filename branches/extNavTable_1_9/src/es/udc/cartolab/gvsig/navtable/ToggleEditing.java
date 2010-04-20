@@ -32,6 +32,7 @@ import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
+import com.iver.andami.messages.NotificationManager;
 import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.EditionManager;
 import com.iver.cit.gvsig.EditionUtilities;
@@ -185,6 +186,7 @@ public class ToggleEditing {
 	 * @param cancel false if we want to save the layer, true if we don't.
 	 */
 	public void stopEditing(FLayer layer, boolean cancel){
+		EditionManager edMan = CADExtension.getEditionManager();
 		com.iver.andami.ui.mdiManager.IWindow f = PluginServices.getMDIManager()
 		.getActiveWindow();
 
@@ -202,6 +204,14 @@ public class ToggleEditing {
 				} else {
 					saveLayer((FLyrVect) layer);
 				}
+
+				VectorialLayerEdited lyrEd = (VectorialLayerEdited)	edMan.getActiveLayerEdited();
+				try {
+					((FLyrVect)layer).getRecordset().removeSelectionListener(lyrEd);
+				} catch (ReadDriverException e) {
+					NotificationManager.addError("Remove Selection Listener",e);
+				}
+
 				VectorialEditableAdapter vea = (VectorialEditableAdapter) ((FLyrVect) layer).getSource();
 				vea.getCommandRecord().removeCommandListener(mapControl);
 				if (!(((FLyrVect) layer).getSource().getDriver() instanceof IndexedShpDriver)){
