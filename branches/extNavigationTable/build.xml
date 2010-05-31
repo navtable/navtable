@@ -34,8 +34,9 @@
 	<copy todir="${dist}/lib">
   	    	<fileset dir="lib" includes="*"/>
   	</copy>
-  	<jar jarfile="${dist}/lib/${plugin}.jar" basedir="${build}" includes="es/udc/cartolab/**"
-    />
+  	<jar jarfile="${dist}/lib/${plugin}.jar" basedir="${build}" includes="es/udc/cartolab/**">
+  		<fileset dir="src" includes="**" />
+  	</jar>
   	<jar update="true" jarfile="${dist}/lib/${plugin}.jar" basedir="images" includes="*"/>
   	
   	<copy todir="${dist}/images">
