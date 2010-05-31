@@ -25,6 +25,7 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.io.IOException;
 import java.sql.Types;
+import java.text.ParseException;
 
 import com.hardcode.gdbms.engine.instruction.FieldNotFoundException;
 import com.hardcode.gdbms.engine.values.Value;
