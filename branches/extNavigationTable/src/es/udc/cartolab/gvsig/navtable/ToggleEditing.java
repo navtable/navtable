@@ -554,4 +554,57 @@ public class ToggleEditing {
 		source.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
 	}
 
+	public void modifyValues(IEditableSource source, int rowPos, int[] colPos, String[] newStringValues) {
+
+		// just aux vars
+		int type;
+		FieldDescription[] fieldDesc;
+		Value[] attributes;
+		try {
+			ITableDefinition tableDef;
+			tableDef = source.getTableDefinition();
+			fieldDesc = tableDef.getFieldsDesc();
+			IRowEdited row = source.getRow(rowPos);
+			attributes = row.getAttributes();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+
+		// iterate throw the values that changed creating an array with all the new values of the row
+		for (int i=0; i<colPos.length; i++) {
+
+			// get the type of the layer's field
+			type = fieldDesc[colPos[i]].getFieldType();
+			if (type == 16) { // in this case type is boolean
+				type = Types.BIT;
+			}
+
+			// modify the value that changed
+			if (newStringValues[i] == null || newStringValues[i].length() == 0) {
+				attributes[colPos[i]] = ValueFactory.createNullValue();
+			} else {
+				try {
+					attributes[colPos[i]] = ValueFactory.createValueByType(newStringValues[i], type);
+					System.out.println("El valor " + newStringValues[i] + " es de tipo " + FieldDescription.typeToString(type));
+				} catch (ParseException e) {
+					System.out.println("Tipo incorrecto: El valor " + newStringValues[i] + "debería ser " + FieldDescription.typeToString(type));
+				} catch (NumberFormatException nfe) {
+					System.out.println("Tipo incorrecto: El valor " + newStringValues[i] + "debería ser " + FieldDescription.typeToString(type));
+				}
+			}
+		}
+
+		// change the file on memory
+		IRow newRow = new DefaultRow(attributes);
+		try {
+			source.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+
 }

@@ -130,33 +130,32 @@ public class AlphanumericNavTable extends NavTable {
 			model.startEdition(EditionEvent.ALPHANUMERIC);
 			if (model instanceof IWriteable)
 			{
-
 				Vector changedValues = checkChangedValues();
 				if (changedValues.size()>0) {
 					DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
 
+					int[] newValuesPosition = new int[changedValues.size()];
+					String[] newValues = new String[changedValues.size()];
+					int j = 0;
+
 					for (int i = 0; i < tableModel.getRowCount(); i++) {
 
-						if (changedValues.contains(new Integer(i))) {
-							Object value = tableModel.getValueAt(i, 1);
 
+						if (changedValues.contains(new Integer(i))) {
 							//only edit modified values, the cells that
 							//contains String instead of Value
-							try {
-								String text = value.toString();
-								if (recordset.getFieldType(i)==Types.DATE) {
-									text = text.replaceAll("-", "/");
-								}
-								//te.modifyValue(layer, currentPos, i, text);
-								int currentPos = Long.valueOf(currentPosition).intValue();
-								te.modifyValue(model, currentPos, i, text);
-
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							Object value = tableModel.getValueAt(i, 1);
+							newValuesPosition[j] = i;
+							newValues[j] = value.toString();
+							if (recordset.getFieldType(i)==Types.DATE) {
+								newValues[j] = newValues[j].replaceAll("-", "/");
 							}
+							j++;
 						}
 					}
+
+					int currentPos = Long.valueOf(currentPosition).intValue();
+					te.modifyValues(model, currentPos, newValuesPosition, newValues);
 
 					IWriteable w = (IWriteable) model;
 					IWriter writer = w.getWriter();
@@ -173,11 +172,11 @@ public class AlphanumericNavTable extends NavTable {
 						model.stopEdition(writer,EditionEvent.ALPHANUMERIC);
 
 						// TODO: RELOAD
-						//						EditableAdapter edAdapter = (EditableAdapter) ies;
-						//						// Restaura el datasource a su estado original
-						//						edAdapter.setOriginalDataSource(edAdapter.getRecordset());
-						//model.getSelection().clear();
-						//refreshControls();
+						// EditableAdapter edAdapter = (EditableAdapter) ies;
+						// Restaura el datasource a su estado original
+						// edAdapter.setOriginalDataSource(edAdapter.getRecordset());
+						// model.getSelection().clear();
+						// refreshControls();
 					}
 				}
 			}
