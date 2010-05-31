@@ -1058,7 +1058,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				vea.removeRow((int)currentPosition, CADExtension.getCADTool().getName(), EditionEvent.GRAPHIC);
 
 				if (!layerEditing) {
+					recordset.removeSelectionListener(this);
 					te.stopEditing(layer, false);
+					recordset.addSelectionListener(this);
 				}
 
 				layer.setActive(true);
