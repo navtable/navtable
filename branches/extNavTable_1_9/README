@@ -1,0 +1,74 @@
+Introduction
+===============
+
+This document covers the description of:
+
+* Version information.
+
+* Build instructions.
+
+* Packaging instructions.
+
+* Internationalization notes.
+
+
+Version information
+============================
+
+The version number is specified in the file "install/intall.xml" 
+on the tag: <appversion> 0.6 </ AppVersion> 
+
+It should also be changed in the file "config/about.htm" in tag: 
+<h2> NavTable Extension v0.6 </h2> 
+
+Build instructions
+===============================
+
+The code is compatible with the 1.5 JVM. 
+Setting up a workspace to version 1.9 of gvSIG and then include this project into that workspace. 
+
+Packaging instructions
+===============================
+
+To run it from the workspace can be launched build.xml to generate the necessary packaging within _fwAndami. 
+
+To build an installer packaged with this plugin you can run the ant file "install/buildExt.xml."
+
+To create a new tag we will have to do a Team/tags and use as tag name:
+
+NavTable_[MAJOR]_[MINOR]_[MICRO]
+
+Internationalization notes
+===================================
+
+* Where you can find the translation strings. 
+
+Translation strings are inside the files "text_*.properties", where * is the ISO 639-1 language code, 
+in the "config". The languages that are currently translated NavTable are:
+
++------------+--------------------+
+| *Language* | *ISO 639-1 code*   |
++------------+--------------------+
+| Spanish    | es		          |
++------------+--------------------+
+| Galician   | gl	              |
++------------+--------------------+
+| English    | en	              |
++------------+--------------------+
+| French     | fr	              |
++------------+--------------------+
+| Portuguese | pt	              |
++------------+--------------------+
+| Italian    | it	              |
++------------+--------------------+
+| German     | de	              |
++------------+--------------------+
+
+* What should I do to include a new language
+
+To add a new language, create a file, with the keys of one that already exists, with the language name 
+followed by an underscore and the ISO 639-1 language code followed by the extension ".properties" 
+
+Ex: For Galician: "text_gl.properties"
+
+You can get the list of ISO 639-1 codes on the following link: http://es.wikipedia.org/wiki/ISO_639-1

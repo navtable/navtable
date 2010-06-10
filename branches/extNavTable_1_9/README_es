@@ -1,0 +1,75 @@
+Introduccion
+===============
+
+Este documento cubre la descripcion de:
+
+* Informacion de version.
+
+* Instrucciones de compilacion.
+
+* Instrucciones de empaquetado.
+
+* Notas sobre internacionalizacion.
+
+
+Informacion sobre version
+============================
+
+El número de versión está especificado en el fichero "install/intall.xml" 
+en el tag: <appversion>0.6</appversion>
+
+Debe cambiarse también en el fichero "config/about.htm" en el tag:
+<h2> Extensión NavTable v0.6</h2>
+
+Instrucciones de compilacion
+===============================
+
+El código es compatible con la 1.5 JVM.
+Configurar previamente un workspace con la versión 1.9 de gvSIG y en este workspace incorporar este proyecto.
+
+Instrucciones de empaquetado
+===============================
+
+Para su ejecución desde el workspace se puede lanzar build.xml para generar el empaquetado necesario dentro de _fwAndami.
+
+Para generar un empaquetado con el instalador de este plugin podemos ejecutar el fichero ant "install/buildExt.xml". 
+    
+Para establecer un nuevo tag de versión tendremos que hacer un Team/tags y especificar como nombre de tag:
+
+NavTable_[MAJOR]_[MINOR]_[MICRO]
+
+Notas sobre internacionalizacion
+===================================
+
+* Donde se encuentran las cadenas de traduccion.
+
+Las cadenas de traducción se encuentran dentro de los ficheros "text_*.properties", donde * es el código ISO 639-1 del idioma,
+en el directorio "config". Los idiomas a los que está traducido actualmente NavTable son:
+
++------------+--------------------+
+| *Idioma*   | *Código ISO 639-1* |
++------------+--------------------+
+| Castellano | es		          |
++------------+--------------------+
+| Gallego    | gl	              |
++------------+--------------------+
+| Inglés     | en	              | 
++------------+--------------------+
+| Francés    | fr	              |
++------------+--------------------+
+| Portugués  | pt	              |
++------------+--------------------+
+| Italiano   | it	              |
++------------+--------------------+
+| Alemán     | de	              |
++------------+--------------------+
+
+* Que hay que hacer para incluir un nuevo idioma
+
+Para añadir un nuevo idioma, hay que crear un fichero con las claves de cualquiera de los que existe ahora mismo con el nombre 
+del idioma seguido de un guión bajo y el código ISO 639-1 del idioma y la extensión ".properties"
+
+Ej: Para el gallego será: "text_gl.properties"
+
+Se puede consultar la lista de códigos ISO 639-1 en el siguiente enlace: http://es.wikipedia.org/wiki/ISO_639-1
+
