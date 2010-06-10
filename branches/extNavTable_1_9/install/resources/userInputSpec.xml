@@ -14,13 +14,13 @@
   			<choice value="$USER_HOME/gvSIG_1.0" os="unix" />
   			<choice value="$USER_HOME/gvSIG_1.1" os="unix" />
   			<choice value="$USER_HOME/gvSIG_1.1.1" os="unix" />
-  			<choice value="$USER_HOME/gvSIG_1.1.2" os="unix" />
+  			<choice value="$USER_HOME/gvSIG_1.9" os="unix" />
   			<choice value="C:\Archivos de Programa\gvSIG_1.0" os="windows" />
   			<choice value="C:\Archivos de Programa\gvSIG_1.1" os="windows" />
-  			<choice value="C:\Archivos de Programa\gvSIG_1.1.2" os="windows" />
+  			<choice value="C:\Archivos de Programa\gvSIG_1.9" os="windows" />
   			<choice value="C:\Program Files\gvSIG_1.0" os="windows" />
   			<choice value="C:\Program Files\gvSIG_1.1" os="windows" />
-  			<choice value="C:\Program Files\gvSIG_1.1.2" os="windows" />
+  			<choice value="C:\Program Files\gvSIG_1.9" os="windows" />
   			</spec>
 		</field>
 	</panel>
