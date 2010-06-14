@@ -15,6 +15,16 @@ Este documento cubre la descripcion de:
 Informacion sobre version
 ============================
 
+La política seguida para incrementar el número de versión es la misma que sigue gvSIG pero teniendo en cuenta lo siguiente:
+
+- Cambios en el número micro sólamente indica que la versión es compatible hacia adelante y hacia atrás.
+
+- Cambios en el número menor indica que la versión es compatible hacia atrás.
+
+- Cambios en el número mayor indica que la versión puede no ser compatible ni hacia atrás ni hacia adelante.
+
+- La paridad en el número menor indica la estabilidad de la versión: par indica versión estable, impar indica inestable.
+
 El número de versión está especificado en el fichero "install/intall.xml" 
 en el tag: <appversion>0.6</appversion>
 
@@ -25,12 +35,13 @@ Instrucciones de compilacion
 ===============================
 
 El código es compatible con la 1.5 JVM.
+
 Configurar previamente un workspace con la versión 1.9 de gvSIG y en este workspace incorporar este proyecto.
+
+Para su compilación desde el workspace se puede lanzar build.xml para generar el empaquetado necesario dentro de _fwAndami.
 
 Instrucciones de empaquetado
 ===============================
-
-Para su ejecución desde el workspace se puede lanzar build.xml para generar el empaquetado necesario dentro de _fwAndami.
 
 Para generar un empaquetado con el instalador de este plugin podemos ejecutar el fichero ant "install/buildExt.xml". 
     

@@ -15,6 +15,16 @@ This document covers the description of:
 Version information
 ============================
 
+The policy carried out in order to increment the version number is the same as gvSIG but taking into account the following:
+
+- Changes to the micro number only must be both forward- and backward-compatible.
+
+- Changes to the minor number must be backward-compatible.
+
+- Changes to the major number indicates that the version can not be forward- and backward-compatible.
+
+- The parity of the minor number indicates the stability of the software: even means stable, odd means unstable.
+
 The version number is specified in the file "install/intall.xml" 
 on the tag: <appversion> 0.6 </ AppVersion> 
 
@@ -25,12 +35,13 @@ Build instructions
 ===============================
 
 The code is compatible with the 1.5 JVM. 
-Setting up a workspace to version 1.9 of gvSIG and then include this project into that workspace. 
+
+Setting up a workspace to version 1.9 of gvSIG and then include this project into that workspace.
+
+To build it from the workspace can be launched build.xml to generate the necessary packaging within _fwAndami.
 
 Packaging instructions
-===============================
-
-To run it from the workspace can be launched build.xml to generate the necessary packaging within _fwAndami. 
+=============================== 
 
 To build an installer packaged with this plugin you can run the ant file "install/buildExt.xml."
 
