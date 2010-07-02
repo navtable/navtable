@@ -49,6 +49,7 @@ import javax.swing.table.TableColumn;
 import net.miginfocom.swing.MigLayout;
 
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
+import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
@@ -481,28 +482,39 @@ public class NavTable extends AbstractNavTable {
 					te.startEditing(layer);
 				}
 
+				// attPos: the index of columns of the values that changed
+				int[] attPos = new int[changedValues.size()];
+				// attValues: The values that changed themselves
+				String[] attValues = new String[changedValues.size()];
+				int j = 0;
 				for (int i = 0; i < model.getRowCount(); i++) {
 
 					if (changedValues.contains(new Integer(i))) {
-						Object value = model.getValueAt(i, 1);
-
 						//only edit modified values, the cells that
 						//contains String instead of Value
 
 						try {
-							String text = value.toString();
+							Object value = model.getValueAt(i, 1);
+							attPos[j] = i;
+							attValues[j] = value.toString();
 							if (recordset.getFieldType(i)==Types.DATE) {
-								text = text.replaceAll("-", "/");
+								attValues[j] = attValues[j].replaceAll("-", "/");
 							}
-							te.modifyValue(layer, currentPos, i, text);
-
-						} catch (Exception e) {
+						} catch (ReadDriverException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
+						} finally {
+							j++;
 						}
 					}
 				}
 
+				try {
+					te.modifyValues(layer, currentPos, attPos, attValues);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				if (!layerEditing) {
 					te.stopEditing(layer, false);
 				}

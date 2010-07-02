@@ -31,6 +31,7 @@ import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
+import com.hardcode.gdbms.parser.ParseException;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
 import com.iver.cit.gvsig.CADExtension;
@@ -79,6 +80,7 @@ import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
  * @author Nacho Varela
  * @author Javier Estevez
  * @author Pablo Sanxiao
+ * @author Francisco Puga
  */
 
 public class ToggleEditing {
@@ -465,6 +467,71 @@ public class ToggleEditing {
 		attributes[colPos] = val;
 		IRow newRow = new DefaultRow(attributes);
 		source.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
+	}
+	
+	/**
+	 * Modify an the desired of values of a register
+	 * IMPORTANT: StartEditing and StopEditing is required before and after call this method.
+	 *
+	 * @param layer		the layer that contains the feature to be changed.
+	 * @param rowPos	the data row to be changed.
+	 * @param attPos	An array that contains the index of the columns that will be modified.
+	 * @param attStringValues	the new values to save (in correlative order with attPos)
+	 *
+	 * @throws DriverException
+	 * @throws IOException
+	 *
+	 */
+	public void modifyValues(FLyrVect layer, int rowPos, int[] attPos, String[] attStringValues) {
+		// definition of needed variables
+		int type;
+		Value[] attValues;
+		FieldDescription[] fieldDesc;
+		IGeometry geometry;
+		IRowEdited row;
+		VectorialEditableAdapter edAdapter;
+		try {
+			// instantiate the needed classes and initialize vars
+			edAdapter = (VectorialEditableAdapter) layer.getSource();
+			row = edAdapter.getRow(rowPos);
+			geometry = ((DefaultFeature) row.getLinkedRow()).getGeometry();
+			attValues = row.getAttributes();
+			ITableDefinition tableDef = edAdapter.getTableDefinition();
+			fieldDesc = tableDef.getFieldsDesc();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		// iterate throw the values that changed creating an array with all the new values of the row
+		for (int i=0; i<attPos.length; i++) {
+			// get the type of the layer's field
+			type = fieldDesc[attPos[i]].getFieldType();
+			if (type == 16) { // in this case type is boolean
+				type = Types.BIT;
+			}
+			// modify the value that changed
+			if (attStringValues[i] == null || attStringValues[i].length() == 0) {
+				attValues[attPos[i]] = ValueFactory.createNullValue();
+			} else {
+				try {
+					attValues[attPos[i]] = ValueFactory.createValueByType(attStringValues[i], type);
+					System.out.println("El valor " + attStringValues[i] + " es de tipo " + FieldDescription.typeToString(type));
+				} catch (NumberFormatException nfe) {
+					System.out.println("Tipo incorrecto: El valor " + attStringValues[i] + "debería ser " + FieldDescription.typeToString(type));
+				} catch (java.text.ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		// change the file on memory
+		row.setAttributes(attValues);
+		IRow newRow = new DefaultFeature(geometry, attValues, row.getID());
+		try {
+			edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
+		} catch (Exception e) {
+			e.printStackTrace();
+			}
 	}
 
 }
