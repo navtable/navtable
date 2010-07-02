@@ -1013,7 +1013,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		deleteRecord();
 	}
 
-	private void deleteRecord() {
+	protected void deleteRecord() {
 		try {
 			boolean layerEditing = true;
 			ReadableVectorial feats = layer.getSource();
