@@ -49,10 +49,12 @@ public class NavTableExtension extends Extension{
 		FLayers flayers = mapControl.getMapContext().getLayers();
 		FLyrVect actLayer = null;
 		for (int i=0; i<flayers.getActives().length; i++) {
-			actLayer = (FLyrVect)flayers.getActives()[i];
-			viewer = new NavTable(actLayer);
-			if (viewer.init()){
-				PluginServices.getMDIManager().addCentredWindow(viewer);
+			if (!(flayers.getActives()[i] instanceof FLayers)) {
+				actLayer = (FLyrVect)flayers.getActives()[i];
+				viewer = new NavTable(actLayer);
+				if (viewer.init()){
+					PluginServices.getMDIManager().addCentredWindow(viewer);
+				}
 			}
 		}
 
