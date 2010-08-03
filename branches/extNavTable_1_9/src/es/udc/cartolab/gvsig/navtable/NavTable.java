@@ -49,7 +49,6 @@ import javax.swing.table.TableColumn;
 import net.miginfocom.swing.MigLayout;
 
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
@@ -258,7 +257,7 @@ public class NavTable extends AbstractNavTable {
 	private String getAlias(String fieldName) {
 		File layerFile = null;
 		String filePath = null;
-		String alias = null;
+		String alias = fieldName;
 
 		// Added to tables without Layer support, but must be supported alias here also
 		if (layer == null) {
@@ -320,34 +319,28 @@ public class NavTable extends AbstractNavTable {
 	 */
 	private void fillAttributes(){
 		try {
-			String auxString = null;
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
-			for (int i = 0; i < recordset.getFieldCount(); i++){
-				Vector aux = new Vector();
-				auxString = getAlias(recordset.getFieldName(i));
-				if (auxString != null) {
-					aux.add(auxString);
-				}else {
-					aux.add(recordset.getFieldName(i));
-				}
+			Vector<String> aux = null;
+
+			for (String attName: recordset.getFieldNames()) {
+				aux = new Vector<String>(2);
+				aux.add(getAlias(attName));
 				aux.add(" ");
 				model.addRow(aux);
-				model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
 			}
 
 			if (layer != null) {
 				// Geom_LENGTH
-				Vector aux = new Vector();
+				aux = new Vector<String>(2);
 				aux.add("Geom_LENGTH");
 				aux.add("0.0");
 				model.addRow(aux);
-				model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
+
 				// Geom_AREA
-				aux = new Vector();
+				aux = new Vector<String>(2);
 				aux.add("Geom_AREA");
 				aux.add("0.0");
 				model.addRow(aux);
-				model.fireTableRowsInserted(model.getRowCount()-1, model.getRowCount()-1);
 
 				this.cellRenderer.addNoEditableRow(model.getRowCount()-2);
 				this.cellRenderer.addNoEditableRow(model.getRowCount()-1);
@@ -514,7 +507,7 @@ public class NavTable extends AbstractNavTable {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 				if (!layerEditing) {
 					te.stopEditing(layer, false);
 				}
