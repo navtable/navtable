@@ -332,13 +332,13 @@ public class NavTable extends AbstractNavTable {
 			if (layer != null) {
 				// Geom_LENGTH
 				aux = new Vector<String>(2);
-				aux.add("Geom_LENGTH");
+				aux.add(PluginServices.getText(this, "Geom_LENGTH"));
 				aux.add("0.0");
 				model.addRow(aux);
 
 				// Geom_AREA
 				aux = new Vector<String>(2);
-				aux.add("Geom_AREA");
+				aux.add(PluginServices.getText(this, "Geom_AREA"));
 				aux.add("0.0");
 				model.addRow(aux);
 
