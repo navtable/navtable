@@ -414,8 +414,9 @@ public class NavTable extends AbstractNavTable {
 	public Vector<Integer> checkChangedValues() {
 		Vector<Integer> changedValues = new Vector<Integer>();
 		DefaultTableModel model = (DefaultTableModel)table.getModel();
-		for (int i=0; i<model.getRowCount()-2; i++) {
-			try {
+		try {
+			for (int i=0; i<recordset.getFieldCount(); i++) {
+
 				String tableValue = model.getValueAt(i, 1).toString();
 				Value value = recordset.getFieldValue(currentPosition, i);
 				String layerValue = value.getStringValue(ValueWriter.internalValueWriter);
@@ -429,12 +430,13 @@ public class NavTable extends AbstractNavTable {
 						changedValues.add(new Integer(i));
 					}
 				}
-			} catch (ReadDriverException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-
+		} catch (ReadDriverException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
+
 		return changedValues;
 	}
 

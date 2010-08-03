@@ -36,10 +36,8 @@ import javax.swing.table.DefaultTableModel;
 
 import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
-import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
 import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
@@ -86,32 +84,7 @@ public class AlphanumericNavTable extends NavTable {
 		return true;
 	}
 
-	@Override
-	public Vector checkChangedValues() {
-		Vector changedValues = new Vector();
-		for (int i=0; i<table.getRowCount(); i++) {
-			try {
-				String tableValue = table.getValueAt(i, 1).toString();
-				Value value = recordset.getFieldValue(currentPosition, i);
-				String layerValue = value.getStringValue(ValueWriter.internalValueWriter);
-				layerValue = layerValue.replaceAll("'", "");
-				if (value instanceof NullValue) {
-					if (tableValue.compareTo("")!=0) {
-						changedValues.add(new Integer(i));
-					}
-				} else {
-					if (tableValue.compareTo(layerValue)!=0) {
-						changedValues.add(new Integer(i));
-					}
-				}
-			} catch (ReadDriverException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
-		}
-		return changedValues;
-	}
 
 	@Override
 	@Deprecated
@@ -129,7 +102,7 @@ public class AlphanumericNavTable extends NavTable {
 			if (model instanceof IWriteable)
 			{
 
-				Vector changedValues = checkChangedValues();
+				Vector<Integer> changedValues = checkChangedValues();
 				if (changedValues.size()>0) {
 					DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
 
@@ -238,6 +211,7 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 
+	@Override
 	protected void deleteRecord() {
 		try {
 			model.startEdition(EditionEvent.ALPHANUMERIC);
