@@ -411,11 +411,12 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	@Override
-	public Vector checkChangedValues() {
-		Vector changedValues = new Vector();
-		for (int i=0; i<table.getRowCount()-2; i++) {
+	public Vector<Integer> checkChangedValues() {
+		Vector<Integer> changedValues = new Vector<Integer>();
+		DefaultTableModel model = (DefaultTableModel)table.getModel();
+		for (int i=0; i<model.getRowCount()-2; i++) {
 			try {
-				String tableValue = table.getValueAt(i, 1).toString();
+				String tableValue = model.getValueAt(i, 1).toString();
 				Value value = recordset.getFieldValue(currentPosition, i);
 				String layerValue = value.getStringValue(ValueWriter.internalValueWriter);
 				layerValue = layerValue.replaceAll("'", "");
@@ -466,7 +467,7 @@ public class NavTable extends AbstractNavTable {
 
 		if (layer.isWritable()) {
 
-			Vector changedValues = checkChangedValues();
+			Vector<Integer> changedValues = checkChangedValues();
 			if (changedValues.size()>0) {
 				DefaultTableModel model = (DefaultTableModel)table.getModel();
 				ToggleEditing te = new ToggleEditing();
@@ -474,6 +475,7 @@ public class NavTable extends AbstractNavTable {
 					layerEditing = false;
 					te.startEditing(layer);
 				}
+
 
 				// attPos: the index of columns of the values that changed
 				int[] attPos = new int[changedValues.size()];
