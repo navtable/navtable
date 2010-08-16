@@ -73,8 +73,15 @@ public class NavTableExtension extends Extension{
 		extensionPoints.add("View_TocActions", "NavTable", new NavTableTocMenuEntry());
 
 		//Creating config Dir
-		String configDirStr = com.iver.andami.Launcher.getAppHomeDir() + "navTable";
-		File configDir = new File(configDirStr);
+		File configDir;
+		String configDirStr;
+		try {
+			configDirStr = com.iver.andami.Launcher.getAppHomeDir() + "NavTable";
+		}catch (java.lang.NoSuchMethodError e) {
+			configDirStr = System.getProperty("user.home") + File.separator + "gvSIG" + File.separator + "navTable";
+			
+		}
+		configDir = new File(configDirStr);
 		Preferences p = new Preferences(configDir);
 	}
 
