@@ -215,7 +215,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * Saves the changes of the current data row.
 	 *
 	 */
-	protected abstract void saveRecord();
+	protected abstract boolean saveRecord();
 
 	/**
 	 * Creates the upper panel.
@@ -996,8 +996,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 
 		if (e.getSource() == saveB){
-			saveRecord();
-			refreshGUI();
+			if (saveRecord()) {
+				refreshGUI();
+			} else {
+				JOptionPane.showMessageDialog(this, 
+						PluginServices.getText(this, "errorSavingData"), "", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 
 		if (e.getSource() == removeB){

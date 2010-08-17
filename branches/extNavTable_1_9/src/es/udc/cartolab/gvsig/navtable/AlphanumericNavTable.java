@@ -93,8 +93,9 @@ public class AlphanumericNavTable extends NavTable {
 	}
 
 	@Override
-	protected void saveRecord() {
+	protected boolean saveRecord() {
 
+		boolean saved = true;
 		stopCellEdition();
 		ToggleEditing te = new ToggleEditing();
 		try {
@@ -148,17 +149,23 @@ public class AlphanumericNavTable extends NavTable {
 			}
 		} catch (ReadDriverException e) {
 			// TODO Auto-generated catch block
+			saved = false;
 			e.printStackTrace();
 		} catch (StartWriterVisitorException e) {
 			// TODO Auto-generated catch block
+			saved = false;
 			e.printStackTrace();
 		} catch (InitializeWriterException e) {
 			// TODO Auto-generated catch block
+			saved = false;
 			e.printStackTrace();
 		} catch (StopWriterVisitorException e) {
 			// TODO Auto-generated catch block
+			saved = false;
 			e.printStackTrace();
 		}
+		
+		return saved;
 	}
 
 	@Deprecated

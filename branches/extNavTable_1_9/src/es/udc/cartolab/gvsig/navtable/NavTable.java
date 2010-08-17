@@ -454,9 +454,11 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	@Override
-	protected void saveRecord(){
+	protected boolean saveRecord(){
 		//TODO check if the values type are correct
 		boolean layerEditing = true;
+		
+		boolean saved = true;
 
 		//Stoping edition if some cell is being edited when the save button is clicked.
 		stopCellEdition();
@@ -509,6 +511,7 @@ public class NavTable extends AbstractNavTable {
 				try {
 					te.modifyValues(layer, currentPos, attPos, attValues);
 				} catch (Exception e) {
+					saved = false;
 					e.printStackTrace();
 				}
 
@@ -522,6 +525,8 @@ public class NavTable extends AbstractNavTable {
 			JOptionPane.showMessageDialog(this, String.format(PluginServices.getText(this, "non_editable"),
 					layer.getName()));
 		}
+		
+		return saved;
 
 	}
 
