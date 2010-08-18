@@ -26,10 +26,10 @@ La política seguida para incrementar el número de versión es la misma que sigue 
 - La paridad en el número menor indica la estabilidad de la versión: par indica versión estable, impar indica inestable.
 
 El número de versión está especificado en el fichero "install/intall.xml" 
-en el tag: <appversion>0.6</appversion>
+en el tag: <appversion>0.6.2</appversion>
 
 Debe cambiarse también en el fichero "config/about.htm" en el tag:
-<h2> Extensión NavTable v0.6</h2>
+<h2> Extensión NavTable v0.6.2</h2>
 
 Instrucciones de compilacion
 ===============================

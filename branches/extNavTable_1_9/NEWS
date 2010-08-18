@@ -1,3 +1,10 @@
+NEWS from NavTable 0.6 2010-08-18
+------------------------------------------------
+- Use "appHomeDir" as provided by com.iver.andami.Launcher (Nacho Brodin)
+- Fixed problem when there are agrupations among selected layers (Daniel González)
+- Function for modifying multiple values of a row in one time
+- Misc Bugfixes
+
 NEWS from NavTable 0.6 2010-05-19
 ------------------------------------------------
 - Changed TableLayout library to MiGLayout in order to improve the resize behaviour.
