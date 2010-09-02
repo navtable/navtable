@@ -705,7 +705,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			f.pack();
 			viewInfo.setWidth(f.getWidth()+25);
 			f.add(getSouthPanel(), BorderLayout.SOUTH);
-			f.add(getCenterPanel(), BorderLayout.CENTER);
+			JPanel centerPanel = getCenterPanel();
+			if (centerPanel != null) {
+				f.add(centerPanel, BorderLayout.CENTER);
+			}
 			f.pack();
 			viewInfo.setHeight(f.getHeight());
 
