@@ -101,10 +101,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	protected SelectableDataSource recordset = null;
 
 	// NORTH
-	JCheckBox onlySelectedCB = null;
-	JCheckBox fixScaleCB = null;
-	JCheckBox alwaysZoomCB = null;
-	JCheckBox alwaysSelectCB = null;
+	protected JCheckBox onlySelectedCB = null;
+	protected JCheckBox fixScaleCB = null;
+	protected JCheckBox alwaysZoomCB = null;
+	protected JCheckBox alwaysSelectCB = null;
 
 	JButton filterB = null;
 	JButton noFilterB = null;
