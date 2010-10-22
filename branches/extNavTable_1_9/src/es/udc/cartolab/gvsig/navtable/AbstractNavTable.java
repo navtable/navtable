@@ -227,7 +227,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	@Deprecated
-	protected abstract void saveRegister();
+	protected void saveRegister(){
+		saveRecord();
+	}
 
 	/**
 	 * Saves the changes of the current data row.
