@@ -402,7 +402,6 @@ public class NavTable extends AbstractNavTable {
 		}
 	}
 
-	@Override
 	protected Vector<Integer> getChangedValues() {
 		Vector<Integer> changedValues = new Vector<Integer>();
 		DefaultTableModel model = (DefaultTableModel)table.getModel();

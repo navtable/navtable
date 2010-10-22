@@ -30,8 +30,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.util.Vector;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -218,13 +216,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @param row
 	 */
 	public abstract void selectRow(int row);
-
-	/**
-	 * Checks if there's changed values.
-	 * 
-	 * @return a vector with the position of the values that have changed.
-	 */
-	protected abstract Vector<Integer> getChangedValues();
 
 	/**
 	 * @return true is some value has changed, false otherwise
