@@ -177,17 +177,6 @@ public class NavTable extends AbstractNavTable {
 			}
 		});
 
-		model.addTableModelListener(new TableModelListener(){
-
-			public void tableChanged(TableModelEvent e) {
-				//TODO
-				//System.out.println(e.getType() );
-				//				if (e.getType() == TableModelEvent.UPDATE){
-				//				hasChanged = true;
-				//				}
-			}
-		});
-
 		this.cellRenderer = new AttribTableCellRenderer();
 
 		model.addColumn(PluginServices.getText(this, "headerTableAttribute"));
@@ -198,6 +187,15 @@ public class NavTable extends AbstractNavTable {
 		attribColumn = table.getColumn(PluginServices.getText(this,"headerTableValue"));
 		attribColumn.setCellRenderer(this.cellRenderer);
 
+		model.addTableModelListener(new TableModelListener(){
+
+			public void tableChanged(TableModelEvent e) {
+				if (e.getType() == TableModelEvent.UPDATE){
+					setChangedValues();
+					enableSaveButton(isChangedValues());
+				}
+			}
+		});
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		centerPanel.add(scrollPane, c);
@@ -405,7 +403,7 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	@Override
-	public Vector<Integer> checkChangedValues() {
+	protected Vector<Integer> getChangedValues() {
 		Vector<Integer> changedValues = new Vector<Integer>();
 		DefaultTableModel model = (DefaultTableModel)table.getModel();
 		try {
@@ -429,8 +427,16 @@ public class NavTable extends AbstractNavTable {
 			logger.error(e.getMessage(), e);
 		}
 
-
 		return changedValues;
+	}
+
+	protected void setChangedValues(){
+		Vector<Integer> changedValues = getChangedValues();
+		if(changedValues.size()>0){
+			setChangedValues(true);
+		} else {
+			setChangedValues(false);
+		}
 	}
 
 	@Override
@@ -468,10 +474,10 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	protected int[] getIndexes(){
-		Vector<Integer> changedValues = checkChangedValues();
+		Vector<Integer> changedValues = getChangedValues();
 		int[] attIndexes = new int[changedValues.size()];
 
-		if (changedValues.size()>0) {
+		if (isChangedValues()) {
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
 
 			int j = 0;
@@ -486,10 +492,10 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	protected String[] getValues(){
-		Vector<Integer> changedValues = checkChangedValues();
+		Vector<Integer> changedValues = getChangedValues();
 		String[] attValues = new String[changedValues.size()];
 
-		if (changedValues.size()>0) {
+		if (isChangedValues()) {
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
 
 			int j = 0;

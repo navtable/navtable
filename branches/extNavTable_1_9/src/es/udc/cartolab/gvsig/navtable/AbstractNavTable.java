@@ -103,6 +103,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	protected FLyrVect layer = null;
 	protected SelectableDataSource recordset = null;
 
+	protected boolean changedValues = false;
+
 	// NORTH
 	protected JCheckBox onlySelectedCB = null;
 	protected JCheckBox fixScaleCB = null;
@@ -198,13 +200,27 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @param row
 	 */
 	public abstract void selectRow(int row);
+
 	/**
 	 * Checks if there's changed values.
 	 * 
 	 * @return a vector with the position of the values that have changed.
 	 */
-	protected abstract Vector checkChangedValues();
+	protected abstract Vector<Integer> getChangedValues();
 
+	/**
+	 * @return true is some value has changed, false otherwise
+	 */
+	protected boolean isChangedValues(){
+		return changedValues;
+	}
+
+	/**
+	 * Set true or false the boolean variable changedValues
+	 */
+	protected void setChangedValues(boolean bool){
+		changedValues = bool;
+	}
 
 	/**
 	 * Saves the changes of the current data row.
@@ -218,6 +234,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	protected abstract boolean saveRecord();
+
+	/**
+	 * 
+	 * @param true to enable the save button, false to disable it
+	 */
+	protected void enableSaveButton(boolean bool){
+		saveB.setEnabled(bool);
+	}
 
 	/**
 	 * Creates the upper panel.
@@ -357,7 +381,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		saveB.setToolTipText(PluginServices.getText(this, "saveButtonTooltip"));
 		saveB.addActionListener(this);
 		if (layer != null && layer.isEditing()) {
-			System.out.println("====Capa en edicion");
 			saveB.setEnabled(false);
 		}
 		imgURL = getClass().getResource("/delete.png");
@@ -399,8 +422,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		if (currentPosition == -1) {
 			return;
 		}
-		Vector changedValues = checkChangedValues();
-		if (changedValues.size() > 0) {
+		if (isChangedValues()) {
 			Object[] options = {PluginServices.getText(this, "saveButtonTooltip"),
 					PluginServices.getText(this, "ignoreButton")};
 			int response = JOptionPane.showOptionDialog(this,
@@ -818,7 +840,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 		selectionB.setEnabled(navEnabled);
 		zoomB.setEnabled(navEnabled);
-		if (layer != null && layer.isEditing()){
+		if ((layer != null && layer.isEditing()) ||
+				!isChangedValues()){
 			saveB.setEnabled(false);
 		}else {
 			saveB.setEnabled(navEnabled);
@@ -1079,6 +1102,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 		}
 		refreshGUI();
+
 	}
 
 	public void windowClosed() {
