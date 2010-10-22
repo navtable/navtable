@@ -40,6 +40,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
 import com.hardcode.gdbms.driver.exceptions.InitializeDriverException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
@@ -89,6 +91,7 @@ import com.iver.cit.gvsig.layers.VectorialLayerEdited;
 public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
 	private static final long serialVersionUID = 1L;
+	protected static Logger logger = Logger.getLogger("NavTable");
 
 	protected JPanel northPanel = null;
 	protected JPanel centerPanel = null;
@@ -140,8 +143,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			this.recordset = layer.getRecordset();
 			this.recordset.addSelectionListener(this);
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -433,8 +435,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 			refreshGUI();
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -467,8 +468,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 			refreshGUI();
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -587,11 +587,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				}
 
 			} catch (InitializeDriverException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			} catch (ReadDriverException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -761,8 +759,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 		}
 		catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 
 		if (valuesMustBeFilled()){
@@ -837,7 +834,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		int selectedNumber = bitset.cardinality();
 
 		if (onlySelectedCB == null) {
-			System.out.println("************************  onlySelectedCB: "+ onlySelectedCB);
+			//System.out.println("************************  onlySelectedCB: "+ onlySelectedCB);
 			return false;
 		}
 		if (onlySelectedCB.isSelected() && selectedNumber == 0){
@@ -854,7 +851,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		try {
 			posNumber = new Long(pos);
 		} catch (NumberFormatException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			posNumber = currentPosition;
 		}
 
@@ -1002,7 +999,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			if (saveRecord()) {
 				refreshGUI();
 			} else {
-				JOptionPane.showMessageDialog(this, 
+				JOptionPane.showMessageDialog(this,
 						PluginServices.getText(this, "errorSavingData"), "", JOptionPane.ERROR_MESSAGE);
 			}
 		}
@@ -1051,15 +1048,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 				layer.setActive(true);
 
-				//Refresh
 				refreshGUI();
 			}
 		} catch (ExpansionFileReadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 

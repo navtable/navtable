@@ -218,11 +218,9 @@ public class NavTable extends AbstractNavTable {
 				return false;
 			}
 		} catch (HeadlessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 
 		initGUI();
@@ -303,11 +301,9 @@ public class NavTable extends AbstractNavTable {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return alias;
 	}
@@ -347,8 +343,7 @@ public class NavTable extends AbstractNavTable {
 			}
 
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -405,8 +400,7 @@ public class NavTable extends AbstractNavTable {
 			}
 
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -432,8 +426,7 @@ public class NavTable extends AbstractNavTable {
 				}
 			}
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 
 
@@ -457,7 +450,7 @@ public class NavTable extends AbstractNavTable {
 	protected boolean saveRecord(){
 		//TODO check if the values type are correct
 		boolean layerEditing = true;
-		
+
 		boolean saved = true;
 
 		//Stoping edition if some cell is being edited when the save button is clicked.
@@ -500,8 +493,7 @@ public class NavTable extends AbstractNavTable {
 								attValues[j] = attValues[j].replaceAll("-", "/");
 							}
 						} catch (ReadDriverException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							logger.error(e.getMessage(), e);
 						} finally {
 							j++;
 						}
@@ -512,7 +504,7 @@ public class NavTable extends AbstractNavTable {
 					te.modifyValues(layer, currentPos, attPos, attValues);
 				} catch (Exception e) {
 					saved = false;
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 
 				if (!layerEditing) {
@@ -525,7 +517,7 @@ public class NavTable extends AbstractNavTable {
 			JOptionPane.showMessageDialog(this, String.format(PluginServices.getText(this, "non_editable"),
 					layer.getName()));
 		}
-		
+
 		return saved;
 
 	}

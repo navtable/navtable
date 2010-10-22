@@ -125,8 +125,7 @@ public class AlphanumericNavTable extends NavTable {
 								te.modifyValue(model, currentPos, i, text);
 
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								logger.error(e.getMessage(), e);
 							}
 						}
 					}
@@ -148,23 +147,19 @@ public class AlphanumericNavTable extends NavTable {
 				}
 			}
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
 			saved = false;
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (StartWriterVisitorException e) {
-			// TODO Auto-generated catch block
 			saved = false;
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (InitializeWriterException e) {
-			// TODO Auto-generated catch block
 			saved = false;
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (StopWriterVisitorException e) {
-			// TODO Auto-generated catch block
 			saved = false;
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
-		
+
 		return saved;
 	}
 
@@ -204,17 +199,13 @@ public class AlphanumericNavTable extends NavTable {
 				last();
 			}
 		} catch (StartWriterVisitorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (InitializeWriterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (StopWriterVisitorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -236,17 +227,13 @@ public class AlphanumericNavTable extends NavTable {
 			refreshGUI();
 
 		} catch (StartWriterVisitorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (InitializeWriterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (StopWriterVisitorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 
 	}
