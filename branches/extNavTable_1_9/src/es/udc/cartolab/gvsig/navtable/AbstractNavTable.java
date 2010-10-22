@@ -251,7 +251,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @param true to enable the save button, false to disable it
 	 */
 	protected void enableSaveButton(boolean bool){
-		saveB.setEnabled(bool);
+		if (layer != null && layer.isEditing()) {
+			saveB.setEnabled(false);
+		}
+		else {
+			saveB.setEnabled(bool);
+		}
 	}
 
 	protected void initNorthPanelButtons(){
@@ -381,9 +386,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
 		selectionB = getNavTableButton(selectionB, "/Select.png", "selectionButtonTooltip");
 		saveB = getNavTableButton(saveB, "/save.png", "saveButtonTooltip");
-		if (layer != null && layer.isEditing()) {
-			saveB.setEnabled(false);
-		}
+		saveB.setEnabled(false);
 		removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
 	}
 
@@ -826,10 +829,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 		selectionB.setEnabled(navEnabled);
 		zoomB.setEnabled(navEnabled);
-		if (layer != null && layer.isEditing()){
-			saveB.setEnabled(false);
-		}else {
-			saveB.setEnabled(navEnabled);
+		if (isChangedValues()){
+			enableSaveButton(navEnabled);
 		}
 		alwaysZoomCB.setEnabled(navEnabled);
 		alwaysSelectCB.setEnabled(navEnabled);

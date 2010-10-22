@@ -84,6 +84,16 @@ public class NavTable extends AbstractNavTable {
 
 	protected WindowInfo viewInfo = null;
 
+	private boolean isFillingValues = false;
+
+	public boolean isFillingValues() {
+		return isFillingValues;
+	}
+
+	public void setFillingValues(boolean isFillingValues) {
+		this.isFillingValues = isFillingValues;
+	}
+
 	protected JTable table = null;
 	private AttribTableCellRenderer cellRenderer = null;
 
@@ -190,7 +200,7 @@ public class NavTable extends AbstractNavTable {
 		model.addTableModelListener(new TableModelListener(){
 
 			public void tableChanged(TableModelEvent e) {
-				if (e.getType() == TableModelEvent.UPDATE){
+				if (e.getType() == TableModelEvent.UPDATE && !isFillingValues()){
 					setChangedValues();
 					enableSaveButton(isChangedValues());
 				}
@@ -357,7 +367,7 @@ public class NavTable extends AbstractNavTable {
 	@Override
 	public void fillValues(){
 		try {
-
+			setFillingValues(true);
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
 			for (int i = 0; i < recordset.getFieldCount(); i++){
 				Value value = recordset.getFieldValue(currentPosition, i);
@@ -399,6 +409,9 @@ public class NavTable extends AbstractNavTable {
 
 		} catch (ReadDriverException e) {
 			logger.error(e.getMessage(), e);
+		}
+		finally {
+			setFillingValues(false);
 		}
 	}
 
