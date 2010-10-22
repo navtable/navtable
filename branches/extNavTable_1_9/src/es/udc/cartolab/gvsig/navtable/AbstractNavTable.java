@@ -90,6 +90,12 @@ import com.iver.cit.gvsig.layers.VectorialLayerEdited;
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
+	private static final int BUTTON_REMOVE = 0;
+	private static final int BUTTON_SAVE = 1;
+	public static final int BUTTON_SELECTION = 2;
+	private static final int BUTTON_ZOOM = 3;
+	public static final int BUTTON_COPY_PREVIOUS = 4;
+	public static final int BUTTON_COPY_SELECTED = 5;
 	private static final long serialVersionUID = 1L;
 	protected static Logger logger = Logger.getLogger("NavTable");
 
@@ -168,26 +174,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		this.recordset.addSelectionListener(this);
 	}
 
-	protected JButton getButton(String buttonName){
-		if (buttonName.equals("copySelectedB")){
-			return copySelectedB;
+	protected JButton getButton(int buttonName){
+		switch(buttonName) {
+		case BUTTON_COPY_SELECTED: return copySelectedB;
+		case BUTTON_COPY_PREVIOUS: return copyPreviousB;
+		case BUTTON_ZOOM: return zoomB;
+		case BUTTON_SELECTION: return selectionB;
+		case BUTTON_SAVE: return saveB;
+		case BUTTON_REMOVE:	return removeB;
+		default: return null;
 		}
-		else if (buttonName.equals("copyPreviousB")){
-			return copyPreviousB;
-		}
-		else if (buttonName.equals("zoomB")){
-			return zoomB;
-		}
-		else if(buttonName.equals("selectionB")){
-			return selectionB;
-		}
-		else if (buttonName.equals("saveB")){
-			return saveB;
-		}
-		else if (buttonName.equals("removeB")){
-			return removeB;
-		}
-		return null;
 	}
 
 	/**
