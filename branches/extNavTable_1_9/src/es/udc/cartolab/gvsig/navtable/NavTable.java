@@ -446,82 +446,98 @@ public class NavTable extends AbstractNavTable {
 
 	}
 
-	@Override
-	protected boolean saveRecord(){
-		//TODO check if the values type are correct
-		boolean layerEditing = true;
+	protected boolean isSaveable(){
 
-		boolean saved = true;
-
-		//Stoping edition if some cell is being edited when the save button is clicked.
 		stopCellEdition();
 
 		// close all windows until get the view we're working on as the active window.
 		while (!window.equals(PluginServices.getMDIManager().getActiveWindow())) {
 			PluginServices.getMDIManager().closeWindow(PluginServices.getMDIManager().getActiveWindow());
 		}
-		int currentPos = Long.valueOf(currentPosition).intValue();
 
 		if (layer.isWritable()) {
-
-			Vector<Integer> changedValues = checkChangedValues();
-			if (changedValues.size()>0) {
-				DefaultTableModel model = (DefaultTableModel)table.getModel();
-				ToggleEditing te = new ToggleEditing();
-				if (!layer.isEditing()) {
-					layerEditing = false;
-					te.startEditing(layer);
-				}
-
-
-				// attPos: the index of columns of the values that changed
-				int[] attPos = new int[changedValues.size()];
-				// attValues: The values that changed themselves
-				String[] attValues = new String[changedValues.size()];
-				int j = 0;
-				for (int i = 0; i < model.getRowCount(); i++) {
-
-					if (changedValues.contains(new Integer(i))) {
-						//only edit modified values, the cells that
-						//contains String instead of Value
-
-						try {
-							Object value = model.getValueAt(i, 1);
-							attPos[j] = i;
-							attValues[j] = value.toString();
-							if (recordset.getFieldType(i)==Types.DATE) {
-								attValues[j] = attValues[j].replaceAll("-", "/");
-							}
-						} catch (ReadDriverException e) {
-							logger.error(e.getMessage(), e);
-						} finally {
-							j++;
-						}
-					}
-				}
-
-				try {
-					te.modifyValues(layer, currentPos, attPos, attValues);
-				} catch (Exception e) {
-					saved = false;
-					logger.error(e.getMessage(), e);
-				}
-
-				if (!layerEditing) {
-					te.stopEditing(layer, false);
-				}
-				layer.setActive(true);
-				//refreshGUI();
-			}
-		} else {
-			JOptionPane.showMessageDialog(this, String.format(PluginServices.getText(this, "non_editable"),
-					layer.getName()));
+			return true;
 		}
-
-		return saved;
-
+		else {
+			JOptionPane.showMessageDialog(
+					this,
+					String.format(PluginServices.getText(this, "non_editable"),
+							layer.getName()));
+			return false;
+		}
 	}
 
+	protected int[] getIndexes(){
+		Vector<Integer> changedValues = checkChangedValues();
+		int[] attIndexes = new int[changedValues.size()];
+
+		if (changedValues.size()>0) {
+			DefaultTableModel model = (DefaultTableModel)table.getModel();
+
+			int j = 0;
+			for (int i = 0; i < model.getRowCount(); i++) {
+				if (changedValues.contains(new Integer(i))) {
+					attIndexes[j] = i;
+					j++;
+				}
+			}
+		}
+		return attIndexes;
+	}
+
+	protected String[] getValues(){
+		Vector<Integer> changedValues = checkChangedValues();
+		String[] attValues = new String[changedValues.size()];
+
+		if (changedValues.size()>0) {
+			DefaultTableModel model = (DefaultTableModel)table.getModel();
+
+			int j = 0;
+			for (int i = 0; i < model.getRowCount(); i++) {
+				if (changedValues.contains(new Integer(i))) {
+					try {
+						Object value = model.getValueAt(i, 1);
+						attValues[j] = value.toString();
+						if (recordset.getFieldType(i)==Types.DATE) {
+							attValues[j] = attValues[j].replaceAll("-", "/");
+						}
+					} catch (ReadDriverException e) {
+						logger.error(e.getMessage(), e);
+					} finally {
+						j++;
+					}
+				}
+			}
+		}
+		return attValues;
+	}
+
+	@Override
+	protected boolean saveRecord(){
+
+		if(isSaveable()){
+
+			int[] attIndexes = getIndexes();
+			String[] attValues = getValues();
+			int currentPos = Long.valueOf(currentPosition).intValue();
+
+			try {
+				ToggleEditing te = new ToggleEditing();
+				if(!layer.isEditing()){
+					te.startEditing(layer);
+				}
+				te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
+				if(layer.isEditing()){
+					te.stopEditing(layer, false);
+				}
+				return true;
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return false;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * It stops the row editing when the save button is pressed.

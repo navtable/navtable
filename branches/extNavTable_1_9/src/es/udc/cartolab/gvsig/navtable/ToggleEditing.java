@@ -25,23 +25,28 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.io.IOException;
 import java.sql.Types;
+import java.text.ParseException;
+
+import org.apache.log4j.Logger;
 
 import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
-import com.hardcode.gdbms.parser.ParseException;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
 import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.EditionManager;
 import com.iver.cit.gvsig.EditionUtilities;
 import com.iver.cit.gvsig.ProjectExtension;
+import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
 import com.iver.cit.gvsig.exceptions.layers.CancelEditingLayerException;
 import com.iver.cit.gvsig.exceptions.layers.LegendLayerException;
 import com.iver.cit.gvsig.exceptions.layers.StartEditionLayerException;
 import com.iver.cit.gvsig.exceptions.table.CancelEditingTableException;
+import com.iver.cit.gvsig.exceptions.validate.ValidateRowException;
+import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
 import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.core.DefaultFeature;
@@ -59,6 +64,8 @@ import com.iver.cit.gvsig.fmap.edition.EditionExceptionOld;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IRowEdited;
 import com.iver.cit.gvsig.fmap.edition.ISpatialWriter;
+import com.iver.cit.gvsig.fmap.edition.IWriteable;
+import com.iver.cit.gvsig.fmap.edition.IWriter;
 import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
 import com.iver.cit.gvsig.fmap.edition.rules.IRule;
 import com.iver.cit.gvsig.fmap.edition.rules.RulePolygon;
@@ -84,6 +91,8 @@ import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
  */
 
 public class ToggleEditing {
+
+	protected static Logger logger = Logger.getLogger("ToggleEditing");
 
 	public boolean toggle(FLayer layer){
 
@@ -120,8 +129,7 @@ public class ToggleEditing {
 				try {
 					lv.setEditing(true);
 				} catch (StartEditionLayerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 				VectorialEditableAdapter vea = (VectorialEditableAdapter) lv
 				.getSource();
@@ -134,8 +142,7 @@ public class ToggleEditing {
 						vea.getRules().add(rulePol);
 					}
 				} catch (ReadDriverException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 
 				if (!(lv.getSource().getDriver() instanceof IndexedShpDriver)){
@@ -155,6 +162,14 @@ public class ToggleEditing {
 
 				vista.repaintMap();
 			}
+		}
+	}
+
+	public void startEditing(IEditableSource source){
+		try {
+			source.startEdition(EditionEvent.ALPHANUMERIC);
+		} catch (StartWriterVisitorException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -224,20 +239,15 @@ public class ToggleEditing {
 				layer.setActive(true);
 			}
 		} catch (DriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (LegendLayerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (StartEditionLayerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (EditionExceptionOld e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -261,6 +271,29 @@ public class ToggleEditing {
 		}
 
 		stopEditing(layer, cancel);
+	}
+
+	public void stopEditing(IEditableSource source){
+
+		try {
+			IWriteable w = (IWriteable) source;
+			IWriter writer = w.getWriter();
+			if (writer == null) {
+				NotificationManager.addError("No existe driver de escritura para la tabla"
+						+ source.getRecordset().getName(), new EditionExceptionOld());
+			}
+			else {
+				ITableDefinition tableDef = source.getTableDefinition();
+				writer.initialize(tableDef);
+				source.stopEdition(writer,EditionEvent.ALPHANUMERIC);
+			}
+		} catch (ReadDriverException e) {
+			logger.error(e.getMessage(), e);
+		} catch (InitializeWriterException e) {
+			logger.error(e.getMessage(), e);
+		} catch (StopWriterVisitorException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	private void changeModelTable(ProjectTable pt, VectorialEditableAdapter vea){
@@ -287,8 +320,7 @@ public class ToggleEditing {
 		try {
 			vea.cancelEdition(EditionEvent.GRAPHIC);
 		} catch (CancelEditingLayerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		for (int j = 0; j < views.length; j++) {
 			if (views[j] instanceof Table) {
@@ -298,8 +330,7 @@ public class ToggleEditing {
 					try {
 						table.cancelEditing();
 					} catch (CancelEditingTableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(e.getMessage(), e);
 					}
 				}
 			}
@@ -328,8 +359,7 @@ public class ToggleEditing {
 		try {
 			layer.setRecordset(vea.getRecordset());
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		// The layer recordset must have the changes we made
 		ILayerDefinition lyrDef;
@@ -340,21 +370,17 @@ public class ToggleEditing {
 			for (int i=0; i < flds.length; i++) {
 				aux = aux + ", " + flds[i].getFieldAlias();
 			}
-			System.err.println("Escribiendo la capa " + lyrDef.getName() +
-					" con los campos " + aux);
+			//System.err.println("Escribiendo la capa " + lyrDef.getName() + " con los campos " + aux);
 			lyrDef.setShapeType(layer.getShapeType());
 			writer.initialize(lyrDef);
 			vea.stopEdition(writer, EditionEvent.GRAPHIC);
 			layer.setProperty("stoppingEditing",new Boolean(false));
 		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (InitializeWriterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (StopWriterVisitorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -383,7 +409,7 @@ public class ToggleEditing {
 			// in this case type is boolean
 			type = Types.BIT;
 		}
-		System.out.println("El valor " + newValue + " es de tipo " + FieldDescription.typeToString(type));
+		//System.out.println("El valor " + newValue + " es de tipo " + FieldDescription.typeToString(type));
 		Value val;
 		if (newValue.length() == 0){
 			val = ValueFactory.createNullValue();
@@ -435,10 +461,10 @@ public class ToggleEditing {
 						row.getID());
 				edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
 			} else {
-				System.out.println("This is not a geometry!");
+				logger.error("This is not a geometry");
 			}
 		} else {
-			System.out.println("Tipo incorrecto: values es " + newValue.getSQLType() + " y el campo es " + type);
+			logger.error("Tipo incorrecto: values es " + newValue.getSQLType() + " y el campo es " + type);
 		}
 	}
 
@@ -455,7 +481,7 @@ public class ToggleEditing {
 			// in this case type is boolean
 			type = Types.BIT;
 		}
-		System.out.println("El valor " + newValue + " es de tipo " + FieldDescription.typeToString(type));
+		//System.out.println("El valor " + newValue + " es de tipo " + FieldDescription.typeToString(type));
 		Value val;
 		if (newValue.length() == 0){
 			val = ValueFactory.createNullValue();
@@ -468,7 +494,7 @@ public class ToggleEditing {
 		IRow newRow = new DefaultRow(attributes);
 		source.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
 	}
-	
+
 	/**
 	 * Modify an the desired of values of a register
 	 * IMPORTANT: StartEditing and StopEditing is required before and after call this method.
@@ -499,7 +525,7 @@ public class ToggleEditing {
 			ITableDefinition tableDef = edAdapter.getTableDefinition();
 			fieldDesc = tableDef.getFieldsDesc();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			return;
 		}
 		// iterate throw the values that changed creating an array with all the new values of the row
@@ -515,12 +541,11 @@ public class ToggleEditing {
 			} else {
 				try {
 					attValues[attPos[i]] = ValueFactory.createValueByType(attStringValues[i], type);
-					System.out.println("El valor " + attStringValues[i] + " es de tipo " + FieldDescription.typeToString(type));
-				} catch (NumberFormatException nfe) {
-					System.out.println("Tipo incorrecto: El valor " + attStringValues[i] + "debería ser " + FieldDescription.typeToString(type));
+					//System.out.println("El valor " + attStringValues[i] + " es de tipo " + FieldDescription.typeToString(type));
+				} catch (NumberFormatException e) {
+					logger.error("Tipo incorrecto: El valor " + attStringValues[i] + "debería ser " + FieldDescription.typeToString(type), e);
 				} catch (java.text.ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 		}
@@ -531,7 +556,42 @@ public class ToggleEditing {
 			edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void modifyValues(IEditableSource source, int rowPosition, int[] attIndexes, String[] attValues) {
+		try {
+			IRowEdited row;
+			row = source.getRow(rowPosition);
+			Value[] attributes = row.getAttributes();
+			Value val;
+			int type;
+			ITableDefinition tableDef;
+			tableDef = source.getTableDefinition();
+			FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
+			for (int i=0; i<attIndexes.length; i++){
+				if (attValues[i].length() == 0 || attValues[i] == null){
+					val = ValueFactory.createNullValue();
+				}else {
+					type = fieldDesc[attIndexes[i]].getFieldType();
+					if (type == 16) {// in this case type is boolean
+						type = Types.BIT;
+					}
+					val = ValueFactory.createValueByType(attValues[i], type);
+				}
+				attributes[attIndexes[i]] = val;
 			}
+			IRow newRow = new DefaultRow(attributes);
+			source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY", EditionEvent.ALPHANUMERIC);
+		} catch (ExpansionFileReadException e) {
+			logger.error(e.getMessage(), e);
+		} catch (ReadDriverException e) {
+			logger.error(e.getMessage(), e);
+		} catch (ParseException e) {
+			logger.error(e.getMessage(), e);
+		} catch (ValidateRowException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 }

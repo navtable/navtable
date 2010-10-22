@@ -26,27 +26,20 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.event.ActionEvent;
 import java.net.URL;
-import java.sql.Types;
-import java.util.Vector;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-
 import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
-import com.iver.andami.messages.NotificationManager;
 import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
 import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.core.DefaultRow;
 import com.iver.cit.gvsig.fmap.core.IRow;
 import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
-import com.iver.cit.gvsig.fmap.edition.EditionExceptionOld;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
@@ -84,7 +77,22 @@ public class AlphanumericNavTable extends NavTable {
 		return true;
 	}
 
+	@Override
+	protected boolean isSaveable(){
 
+		stopCellEdition();
+
+		if(model instanceof IWriteable) {
+			return true;
+		}
+		else {
+			JOptionPane.showMessageDialog(
+					this,
+					String.format(PluginServices.getText(this, "non_editable"),
+							layer.getName()));
+			return false;
+		}
+	}
 
 	@Override
 	@Deprecated
@@ -95,72 +103,29 @@ public class AlphanumericNavTable extends NavTable {
 	@Override
 	protected boolean saveRecord() {
 
-		boolean saved = true;
-		stopCellEdition();
-		ToggleEditing te = new ToggleEditing();
-		try {
-			model.startEdition(EditionEvent.ALPHANUMERIC);
-			if (model instanceof IWriteable)
-			{
 
-				Vector<Integer> changedValues = checkChangedValues();
-				if (changedValues.size()>0) {
-					DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
+		if (isSaveable()) {
 
-					for (int i = 0; i < tableModel.getRowCount(); i++) {
+			int[] attIndexes = getIndexes();
+			String[] attValues = getValues();
+			int currentPos = Long.valueOf(currentPosition).intValue();
 
-						if (changedValues.contains(new Integer(i))) {
-							Object value = tableModel.getValueAt(i, 1);
-
-							//only edit modified values, the cells that
-							//contains String instead of Value
-
-							try {
-								String text = value.toString();
-								if (recordset.getFieldType(i)==Types.DATE) {
-									text = text.replaceAll("-", "/");
-								}
-								//te.modifyValue(layer, currentPos, i, text);
-								int currentPos = Long.valueOf(currentPosition).intValue();
-								te.modifyValue(model, currentPos, i, text);
-
-							} catch (Exception e) {
-								logger.error(e.getMessage(), e);
-							}
-						}
-					}
-
-					IWriteable w = (IWriteable) model;
-					IWriter writer = w.getWriter();
-					if (writer == null)
-					{
-						NotificationManager.addError("No existe driver de escritura para la tabla"
-								+ recordset.getName(), new EditionExceptionOld());
-					}
-					else
-					{
-						ITableDefinition tableDef = model.getTableDefinition();
-						writer.initialize(tableDef);
-
-						model.stopEdition(writer,EditionEvent.ALPHANUMERIC);
-					}
+			try {
+				ToggleEditing te = new ToggleEditing();
+				if (!model.isEditing()){
+					te.startEditing(model);
 				}
+				te.modifyValues(model, currentPos, attIndexes, attValues);
+				if (model.isEditing()){
+					te.stopEditing(model);
+				}
+				return true;
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return false;
 			}
-		} catch (ReadDriverException e) {
-			saved = false;
-			logger.error(e.getMessage(), e);
-		} catch (StartWriterVisitorException e) {
-			saved = false;
-			logger.error(e.getMessage(), e);
-		} catch (InitializeWriterException e) {
-			saved = false;
-			logger.error(e.getMessage(), e);
-		} catch (StopWriterVisitorException e) {
-			saved = false;
-			logger.error(e.getMessage(), e);
 		}
-
-		return saved;
+		return false;
 	}
 
 	@Deprecated
