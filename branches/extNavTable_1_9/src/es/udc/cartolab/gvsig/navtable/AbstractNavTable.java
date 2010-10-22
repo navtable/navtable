@@ -168,6 +168,28 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		this.recordset.addSelectionListener(this);
 	}
 
+	protected JButton getButton(String buttonName){
+		if (buttonName.equals("copySelectedB")){
+			return copySelectedB;
+		}
+		else if (buttonName.equals("copyPreviousB")){
+			return copyPreviousB;
+		}
+		else if (buttonName.equals("zoomB")){
+			return zoomB;
+		}
+		else if(buttonName.equals("selectionB")){
+			return selectionB;
+		}
+		else if (buttonName.equals("saveB")){
+			return saveB;
+		}
+		else if (buttonName.equals("removeB")){
+			return removeB;
+		}
+		return null;
+	}
+
 	/**
 	 * It initializes the window.
 	 * 
@@ -245,70 +267,63 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		saveB.setEnabled(bool);
 	}
 
+	protected void initNorthPanelButtons(){
+		filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
+		noFilterB = getNavTableButton(noFilterB, "/nofilter.png", "noFilterTooltip");
+		onlySelectedCB = getNavTableCheckBox(onlySelectedCB, "selectedCheckBox");
+		alwaysSelectCB = getNavTableCheckBox(alwaysSelectCB, "selectCheckBox");
+		alwaysZoomCB = getNavTableCheckBox(alwaysZoomCB, "alwaysZoomCheckBox");
+		fixScaleCB = getNavTableCheckBox(fixScaleCB, "fixedScaleCheckBox");
+	}
+
+	private JPanel getFilterPanel(File iconPath){
+		JPanel filterPanel = new JPanel(new FlowLayout());
+		if (iconPath.exists()) {
+			filterPanel.setBackground(Color.WHITE);
+		}
+		filterPanel.add(filterB);
+		filterPanel.add(noFilterB);
+		return filterPanel;
+	}
+
+	private JPanel getOptionsPanel(){
+		JPanel optionsPanel = new JPanel(new FlowLayout());
+		optionsPanel.add(onlySelectedCB);
+		optionsPanel.add(alwaysSelectCB);
+		optionsPanel.add(alwaysZoomCB);
+		optionsPanel.add(fixScaleCB);
+		return optionsPanel;
+	}
+
+	private JLabel getIcon(File iconPath){
+		ImageIcon logo = new ImageIcon(iconPath.getAbsolutePath());
+		JLabel icon = new JLabel();
+		icon.setIcon(logo);
+		return icon;
+	}
+
+	private JPanel getNorthFirstRow(){
+		File iconPath = new File("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
+		JPanel northFirstRow = new JPanel(new BorderLayout());
+		if (iconPath.exists()) {
+			northFirstRow.setBackground(Color.WHITE);
+			northFirstRow.add(getIcon(iconPath), BorderLayout.WEST);
+			viewInfo.setHeight(575);
+		}
+		northFirstRow.add(getFilterPanel(iconPath), BorderLayout.EAST);
+		return northFirstRow;
+	}
+
 	/**
 	 * Creates the upper panel.
 	 * 
 	 * @return the panel.
 	 */
 	protected JPanel getNorthPanel() {
-
+		initNorthPanelButtons();
 		northPanel = new JPanel(new BorderLayout());
-
-		JPanel northFirstRow = new JPanel(new BorderLayout());
-
-		File iconPath = new File("gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
-		if (iconPath.exists()) {
-			northFirstRow.setBackground(Color.WHITE);
-			ImageIcon logo = new ImageIcon(iconPath.getAbsolutePath());
-			JLabel icon = new JLabel();
-			icon.setIcon(logo);
-			northFirstRow.add(icon, BorderLayout.WEST);
-			viewInfo.setHeight(575);
-		}
-
-		JPanel filterPanel = new JPanel(new FlowLayout());
-		if (iconPath.exists()) {
-			filterPanel.setBackground(Color.WHITE);
-		}
-
-		java.net.URL imgURL = null;
-		imgURL = getClass().getResource("/filter.png");
-		ImageIcon filterImage = new ImageIcon(imgURL);
-		imgURL = getClass().getResource("/nofilter.png");
-		ImageIcon noFilterImage = new ImageIcon(imgURL);
-
-		filterB = new JButton(filterImage);
-		filterB.setToolTipText(PluginServices.getText(this, "filterTooltip"));
-		filterB.addActionListener(this);
-		noFilterB = new JButton(noFilterImage);
-		noFilterB.setToolTipText(PluginServices.getText(this, "noFilterTooltip"));
-		noFilterB.addActionListener(this);
-
-		filterPanel.add(filterB);
-		filterPanel.add(noFilterB);
-		northFirstRow.add(filterPanel, BorderLayout.EAST);
-
-		JPanel optionsPanel = new JPanel(new FlowLayout());
-
-		onlySelectedCB = new JCheckBox(PluginServices.getText(this, "selectedCheckBox"));
-		onlySelectedCB.addActionListener(this);
-		optionsPanel.add(onlySelectedCB);
-
-		alwaysSelectCB = new JCheckBox(PluginServices.getText(this, "selectCheckBox"));
-		alwaysSelectCB.addActionListener(this);
-		optionsPanel.add(alwaysSelectCB);
-
-		alwaysZoomCB = new JCheckBox(PluginServices.getText(this, "alwaysZoomCheckBox"));
-		alwaysZoomCB.addActionListener(this);
-		optionsPanel.add(alwaysZoomCB);
-
-		fixScaleCB = new JCheckBox(PluginServices.getText(this, "fixedScaleCheckBox"));
-		fixScaleCB.addActionListener(this);
-		optionsPanel.add(fixScaleCB);
-
-		northPanel.add(northFirstRow, BorderLayout.NORTH);
-		northPanel.add(optionsPanel, BorderLayout.SOUTH);
-
+		northPanel.add(getNorthFirstRow(), BorderLayout.NORTH);
+		northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
 		return northPanel;
 	}
 
@@ -317,7 +332,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		refreshGUI();
 	}
 
-
 	/**
 	 * Creates the main panel.
 	 * 
@@ -325,74 +339,27 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 */
 	public abstract JPanel getCenterPanel();
 
-	/**
-	 * Creates the bottom panel.
-	 * 
-	 * @return the panel.
-	 */
-	protected JPanel getSouthPanel(){
-
+	private ImageIcon getIcon(String iconName){
 		java.net.URL imgURL = null;
+		imgURL = getClass().getResource(iconName);
+		ImageIcon icon = new ImageIcon(imgURL);
+		return icon;
+	}
 
-		imgURL = getClass().getResource("/go-first.png");
-		ImageIcon imagenFirst = new ImageIcon(imgURL);
-		firstB = new JButton(imagenFirst);
-		firstB.setToolTipText(PluginServices.getText(this, "goFirstButtonTooltip"));
-		firstB.addActionListener(this);
-		imgURL = getClass().getResource("/go-previous.png");
-		ImageIcon imagenPrevious = new ImageIcon(imgURL);
-		beforeB = new JButton(imagenPrevious);
-		beforeB.setToolTipText(PluginServices.getText(this, "goPreviousButtonTooltip"));
-		beforeB.addActionListener(this);
-		posTF = new JTextField(5);
-		posTF.addActionListener(this);
-		totalLabel = new JLabel();
-		imgURL = getClass().getResource("/go-next.png");
-		ImageIcon imagenNext = new ImageIcon(imgURL);
-		nextB = new JButton(imagenNext);
-		nextB.setToolTipText(PluginServices.getText(this, "goNextButtonTooltip"));
-		nextB.addActionListener(this);
-		imgURL = getClass().getResource("/go-last.png");
-		ImageIcon imagenLast = new ImageIcon(imgURL);
-		lastB = new JButton(imagenLast);
-		lastB.setToolTipText(PluginServices.getText(this, "goLastButtonTooltip"));
-		lastB.addActionListener(this);
-		imgURL = getClass().getResource("/copy-selected.png");
-		ImageIcon imagenSelectedCopy = new ImageIcon(imgURL);
-		copySelectedB = new JButton(imagenSelectedCopy);
-		copySelectedB.setToolTipText(PluginServices.getText(this, "copySelectedButtonTooltip"));
-		copySelectedB.addActionListener(this);
-		imgURL = getClass().getResource("/copy.png");
-		ImageIcon imagenPreviousCopy = new ImageIcon(imgURL);
-		copyPreviousB = new JButton(imagenPreviousCopy);
-		copyPreviousB.setToolTipText(PluginServices.getText(this, "copyPreviousButtonTooltip"));
-		copyPreviousB.addActionListener(this);
-		imgURL = getClass().getResource("/zoom.png");
-		ImageIcon imagenZoom = new ImageIcon(imgURL);
-		zoomB = new JButton(imagenZoom);
-		zoomB.setToolTipText(PluginServices.getText(this, "zoomButtonTooltip"));
-		zoomB.addActionListener(this);
-		imgURL = getClass().getResource("/Select.png");
-		ImageIcon imagenSelect = new ImageIcon(imgURL);
-		selectionB = new JButton(imagenSelect);
-		selectionB.setToolTipText(PluginServices.getText(this, "selectionButtonTooltip"));
-		selectionB.addActionListener(this);
-		imgURL = getClass().getResource("/save.png");
-		ImageIcon imagenSave = new ImageIcon(imgURL);
-		saveB = new JButton(imagenSave);
-		saveB.setToolTipText(PluginServices.getText(this, "saveButtonTooltip"));
-		saveB.addActionListener(this);
-		if (layer != null && layer.isEditing()) {
-			saveB.setEnabled(false);
-		}
-		imgURL = getClass().getResource("/delete.png");
-		ImageIcon imagenDeleteRegister = new ImageIcon(imgURL);
-		removeB = new JButton(imagenDeleteRegister);
-		removeB.setToolTipText(PluginServices.getText(this,
-		"delete_register"));
-		removeB.addActionListener(this);
+	protected JButton getNavTableButton(JButton button, String iconName, String toolTipName){
+		JButton but = new JButton (getIcon(iconName));
+		but.setToolTipText(PluginServices.getText(this, toolTipName));
+		but.addActionListener(this);
+		return but;
+	}
 
-		//Buttons Panels
+	private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName){
+		cb = new JCheckBox(PluginServices.getText(this, toolTipName));
+		cb.addActionListener(this);
+		return cb;
+	}
+
+	private JPanel getNavToolBar(){
 		JPanel navToolBar = new JPanel(new FlowLayout());
 		navToolBar.add(firstB);
 		navToolBar.add(beforeB);
@@ -400,7 +367,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		navToolBar.add(totalLabel);
 		navToolBar.add(nextB);
 		navToolBar.add(lastB);
+		return navToolBar;
+	}
 
+	protected JPanel getActionsToolBar(){
 		JPanel actionsToolBar = new JPanel(new FlowLayout());
 		actionsToolBar.add(copySelectedB);
 		actionsToolBar.add(copyPreviousB);
@@ -408,12 +378,39 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		actionsToolBar.add(selectionB);
 		actionsToolBar.add(saveB);
 		actionsToolBar.add(removeB);
+		return actionsToolBar;
+	}
 
-		JPanel buttonsPanel = new JPanel(new BorderLayout());
-		buttonsPanel.add(navToolBar, BorderLayout.SOUTH);
-		buttonsPanel.add(actionsToolBar, BorderLayout.NORTH);
+	protected void initNavTableSouthPanelButtons(){
+		firstB = getNavTableButton(firstB, "/go-first.png", "goFirstButtonTooltip");
+		beforeB = getNavTableButton(beforeB, "/go-previous.png", "goPreviousButtonTooltip");
+		posTF = new JTextField(5);
+		posTF.addActionListener(this);
+		totalLabel = new JLabel();
+		nextB = getNavTableButton(nextB, "/go-next.png", "goNextButtonTooltip");
+		lastB = getNavTableButton(lastB, "/go-last.png", "goLastButtonTooltip");
+		copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png", "copySelectedButtonTooltip");
+		copyPreviousB = getNavTableButton(copyPreviousB, "/copy.png", "copyPreviousButtonTooltip");
+		zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
+		selectionB = getNavTableButton(selectionB, "/Select.png", "selectionButtonTooltip");
+		saveB = getNavTableButton(saveB, "/save.png", "saveButtonTooltip");
+		if (layer != null && layer.isEditing()) {
+			saveB.setEnabled(false);
+		}
+		removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
+	}
 
-		return buttonsPanel;
+	/**
+	 * Creates the bottom panel.
+	 * 
+	 * @return the panel.
+	 */
+	protected JPanel getSouthPanel(){
+		initNavTableSouthPanelButtons();
+		southPanel = new JPanel(new BorderLayout());
+		southPanel.add(getNavToolBar(), BorderLayout.SOUTH);
+		southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
+		return southPanel;
 	}
 
 	/**
