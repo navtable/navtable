@@ -77,25 +77,25 @@ import com.iver.cit.gvsig.layers.VectorialLayerEdited;
  * layer data, it must be implemented in the subclasses.
  * <li>The south panel, with the navigation controls.
  * </ul>
- * 
+ *
  * <img src="images/NavTableWindow.png">
- * 
+ *
  * If there are a image on 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png'
  * is loaded on the NorthPanel.
- * 
+ *
  * @author Nacho Varela
  * @author Javier Estevez
  * @author Pablo Sanxiao
- * 
+ *
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
-	private static final int BUTTON_REMOVE = 0;
-	private static final int BUTTON_SAVE = 1;
-	public static final int BUTTON_SELECTION = 2;
-	private static final int BUTTON_ZOOM = 3;
-	public static final int BUTTON_COPY_PREVIOUS = 4;
-	public static final int BUTTON_COPY_SELECTED = 5;
+	protected static final int BUTTON_REMOVE = 0;
+	protected static final int BUTTON_SAVE = 1;
+	protected static final int BUTTON_SELECTION = 2;
+	protected static final int BUTTON_ZOOM = 3;
+	protected static final int BUTTON_COPY_PREVIOUS = 4;
+	protected static final int BUTTON_COPY_SELECTED = 5;
 	private static final long serialVersionUID = 1L;
 	protected static Logger logger = Logger.getLogger("NavTable");
 
