@@ -225,7 +225,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @return a vector with the position of the values that have changed.
 	 */
 	@Deprecated
-	protected abstract Vector checkChangedValues();
+	protected Vector checkChangedValues(){
+		return new Vector();
+	}
 
 	/**
 	 * @return true is some value has changed, false otherwise
