@@ -1,12 +1,9 @@
 /*
  * Copyright (c) 2010. Cartolab (Universidade da Coruña)
  *
- * This file is part of extEIELForms
+ * This file is part of NavTable
  *
- * extEIELForms is based on the forms application of GisEIEL <http://giseiel.forge.osor.eu/>
- * devoloped by Laboratorio de Bases de Datos (Universidade da Coruña)
- *
- * extEIELForms is free software: you can redistribute it and/or modify it under the terms
+ * This program is free software: you can redistribute it and/or modify it under the terms
  * of the GNU General Public License as published by the Free Software Foundation, either
  * version 3 of the License, or any later version.
  *
@@ -33,26 +30,37 @@ import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.listeners.CADListenerManager;
 import com.iver.cit.gvsig.listeners.EndGeometryListener;
+import com.iver.utiles.XMLEntity;
 
 /**
  * This extension enables or disables automatic NavTable execution after creating a new
  * geometry on a layer. It is compatible only with openCADTools.
+ *
  * @author Javier Estevez
  *
  */
 public class AutoNavTableExtension extends Extension {
 
+	public static final String LAUNCH_NAVTABLE_ON_CREATE_GEOMETRY_KEY_NAME = "AutoLaunchOnCreateGeom";
+	public static final String PLUGIN_AND_LISTENER_NAME = "es.udc.cartolab.gvsig.navtable";
+
 	private boolean formsEnabled = false;
 	private final URL offIcon = this.getClass().getClassLoader().getResource("images/forms.png");
 	private final URL onIcon = this.getClass().getClassLoader().getResource("images/forms-active.png");
-	private final String listenerKey = NavTable.class.getName();
 
 	@Override
 	public void initialize() {
 		// TODO get formsEnabled from properties...
+
+		PluginServices ps = PluginServices.getPluginServices(this);
+		XMLEntity xml = ps.getPersistentXML();
+		if (xml.contains(LAUNCH_NAVTABLE_ON_CREATE_GEOMETRY_KEY_NAME)) {
+			formsEnabled = xml.getBooleanProperty(LAUNCH_NAVTABLE_ON_CREATE_GEOMETRY_KEY_NAME);
+		}
+
 		if (formsEnabled) {
 			NTEndGeometryListener listener = new NTEndGeometryListener();
-			CADListenerManager.addEndGeometryListener(listenerKey, listener);
+			CADListenerManager.addEndGeometryListener(PLUGIN_AND_LISTENER_NAME, listener);
 		}
 
 		registerIcons();
@@ -74,17 +82,25 @@ public class AutoNavTableExtension extends Extension {
 		//TODO set conf properties, internationalization and localization.
 		if (!formsEnabled) {
 			NTEndGeometryListener listener = new NTEndGeometryListener();
-			CADListenerManager.addEndGeometryListener(listenerKey, listener);
+			CADListenerManager.addEndGeometryListener(PLUGIN_AND_LISTENER_NAME, listener);
 			NotificationManager.addInfo("NavTable automático activado");
 			formsEnabled = true;
 			setIcon(onIcon, "Desactivar NavTable automático");
 		} else {
-			CADListenerManager.removeEndGeometryListener(listenerKey);
+			CADListenerManager.removeEndGeometryListener(PLUGIN_AND_LISTENER_NAME);
 			NotificationManager.addInfo("NavTable automático desactivado");
 			formsEnabled = false;
 			setIcon(offIcon, "Activar NavTable automático");
 		}
 
+		savePreferences(formsEnabled);
+
+	}
+
+	private void savePreferences(boolean value) {
+		PluginServices ps = PluginServices.getPluginServices(this);
+		XMLEntity xml = ps.getPersistentXML();
+		xml.putProperty(LAUNCH_NAVTABLE_ON_CREATE_GEOMETRY_KEY_NAME, value);
 	}
 
 	private void setIcon(URL iconURL, String tooltip) {
@@ -98,13 +114,11 @@ public class AutoNavTableExtension extends Extension {
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isVisible() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
