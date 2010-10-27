@@ -15,13 +15,19 @@
 				icon="images/table_refresh.png" position="1501"/> 
 		</extension> 
 		<extension class-name="es.udc.cartolab.gvsig.navtable.AlphanumericNavTableExtension" description="TEST_NAVTABLE" active="true">
-			<tool-bar name="planSan2">
+			<tool-bar name="NavTable">
 				<action-tool icon="images/test.png" tooltip="Test NavTable tablas sueltas"
-					action-command="PSVisual" position="10"/>
+					action-command="PSVisual" position="2"/>
 			</tool-bar>
 			<menu text="Capa/Test NavTable"
 				action-command="PSVisual"
 				icon="images/test.png" position="10"/>
+		</extension>
+		<extension class-name="es.udc.cartolab.gvsig.navtable.AutoNavTableExtension" description="AutoNavTable" active="true">
+			<tool-bar name="NavTable">
+				<action-tool icon="auto-navtable" tooltip="Activar/Desactivar NavTable automático"
+					action-command="PSVisual" position="2" name="auto-navtable"/>
+			</tool-bar>
 		</extension>
 	</extensions>
 </plugin-config>

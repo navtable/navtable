@@ -49,6 +49,8 @@
 		<copy todir="${dist}/images">
 			<fileset dir="images" includes="table_refresh.png" />
 			<fileset dir="images" includes="header_cartolab.png" />
+			<fileset dir="images" includes="forms-active.png" />
+			<fileset dir="images" includes="forms.png" />
 			<fileset dir="images" includes="test.png" />
 		</copy>
 
