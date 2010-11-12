@@ -65,17 +65,22 @@ import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * <p>NavTable's main panel is a two-column table that shows
- * data row of the layer. The first column contains the
- * attributes names and the second one contais its values.</p>
+ * <p>
+ * NavTable's main panel is a two-column table that shows data row of the layer.
+ * The first column contains the attributes names and the second one contains
+ * its values.
+ * </p>
  * 
  * <img src="images/NavTable.png" />
- *
- * <p>NOTE: the <i>data table</i> is the original data storage, not
- * the table to be shown in this window.</p>
+ * 
+ * <p>
+ * NOTE: the <i>data table</i> is the original data storage, not the table to be
+ * shown in this window.
+ * </p>
  * 
  * @author Nacho Varela
  * @author Pablo Sanxiao
+ * @author Andres Maneiro
  */
 public class NavTable extends AbstractNavTable {
 

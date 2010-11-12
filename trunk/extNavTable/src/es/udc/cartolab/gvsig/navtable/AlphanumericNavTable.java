@@ -26,9 +26,11 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.event.ActionEvent;
 import java.net.URL;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+
 import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.values.Value;
@@ -44,6 +46,13 @@ import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
 
+
+/**
+ * @author Nacho Varela
+ * @author Javier Estevez
+ * @author Pablo Sanxiao
+ * @author Andres Maneiro
+ */
 public class AlphanumericNavTable extends NavTable {
 
 	JButton newB = null;

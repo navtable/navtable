@@ -81,13 +81,14 @@ import com.iver.cit.gvsig.project.documents.view.IProjectView;
 import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
 /**
- * Class for start, stop or toggle the editing on a vector layer.
- * Based on the StartingEditing Extension of gvSIG
+ * Class for start, stop or toggle the editing on a vector layer. Based on the
+ * StartingEditing Extension of gvSIG
  * 
  * @author Nacho Varela
  * @author Javier Estevez
  * @author Pablo Sanxiao
  * @author Francisco Puga
+ * @author Andres Maneiro
  */
 
 public class ToggleEditing {

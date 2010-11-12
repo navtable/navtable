@@ -65,28 +65,28 @@ import com.iver.cit.gvsig.layers.VectorialLayerEdited;
 
 /**
  * 
- * AbstractNavTable is the base class that defines the
- * layout of the window that allows to navigate between
- * the elements of the layer.
+ * AbstractNavTable is the base class that defines the layout of the window that
+ * allows to navigate between the elements of the layer.
  * 
  * It has three panels:
  * <ul>
- * <li>The north panel, with the controls to handle the
- * navigation behavior.
- * <li>The main panel, with the representation of the
- * layer data, it must be implemented in the subclasses.
+ * <li>The north panel, with the controls to handle the navigation behavior.
+ * <li>The main panel, with the representation of the layer data, it must be
+ * implemented in the subclasses.
  * <li>The south panel, with the navigation controls.
  * </ul>
- *
+ * 
  * <img src="images/NavTableWindow.png">
- *
- * If there are a image on 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png'
+ * 
+ * If there are a image on
+ * 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png'
  * is loaded on the NorthPanel.
- *
+ * 
  * @author Nacho Varela
  * @author Javier Estevez
  * @author Pablo Sanxiao
- *
+ * @author Andres Maneiro
+ * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
