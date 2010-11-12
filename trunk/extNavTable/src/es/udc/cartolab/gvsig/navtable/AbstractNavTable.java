@@ -290,7 +290,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		return filterPanel;
 	}
 
-	private JPanel getOptionsPanel(){
+    protected JPanel getOptionsPanel() {
 		JPanel optionsPanel = new JPanel(new FlowLayout());
 		optionsPanel.add(onlySelectedCB);
 		optionsPanel.add(alwaysSelectCB);
