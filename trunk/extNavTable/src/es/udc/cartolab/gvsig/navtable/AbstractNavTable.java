@@ -696,10 +696,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	private void viewOnlySelected() {
-
-		// areSelectedRows()
-		FBitSet bitset= recordset.getSelection();
-		if (bitset.cardinality() == 0){
+        if (getNumberOfRowsSelected() == 0) {
 			currentPosition = -1;
 		}
 
@@ -773,10 +770,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			removeB.setEnabled(navEnabled);
 
 			long rows = recordset.getRowCount();
-			FBitSet rowsBitSet = recordset.getSelection();
-			int selectedRows = rowsBitSet.cardinality();
 			if (onlySelectedCB.isSelected()){
-				totalLabel.setText("/" +"(" +selectedRows +") " +rows);
+				totalLabel.setText("/" + "(" + getNumberOfRowsSelected() + ") " + rows);
 			}else {
 				totalLabel.setText("/" +rows);
 			}
@@ -826,8 +821,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			posTF.setBackground(Color.WHITE);
 		}
 
-		FBitSet selection = recordset.getSelection();
-		if (selection.cardinality()==0 || !navEnabled) {
+        if (getNumberOfRowsSelected() == 0 || !navEnabled) {
 			copySelectedB.setEnabled(false);
 		} else {
 			copySelectedB.setEnabled(true);
@@ -852,20 +846,20 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	protected boolean valuesMustBeFilled() {
-		FBitSet bitset= recordset.getSelection();
-
-		int selectedNumber = bitset.cardinality();
-
 		if (onlySelectedCB == null) {
-			//System.out.println("************************  onlySelectedCB: "+ onlySelectedCB);
 			return false;
 		}
-		if (onlySelectedCB.isSelected() && selectedNumber == 0){
+        if (onlySelectedCB.isSelected() && getNumberOfRowsSelected() == 0) {
 			return false;
 		} else {
 			return true;
 		}
 	}
+
+    private int getNumberOfRowsSelected() {
+        FBitSet bitset= recordset.getSelection();
+        return bitset.cardinality();
+    }
 
 	protected void copyPrevious() {
 		String pos = posTF.getText();
@@ -904,8 +898,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	protected void copySelected() {
-		FBitSet selection = recordset.getSelection();
-		if (selection.cardinality()!=1) {
+        if (getNumberOfRowsSelected() != 1) {
 			//show error
 			JOptionPane.showMessageDialog(null,
 					PluginServices.getText(this, "justOneRecordMessage"),
@@ -914,6 +907,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		} else {
 			//TODO Check this code
 			long current = currentPosition;
+            FBitSet selection = recordset.getSelection();
 			long selectedRow = selection.nextSetBit(0);
 			currentPosition = selectedRow;
 			fillValues();
