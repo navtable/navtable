@@ -1001,6 +1001,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
         else if (e.getSource() == copySelectedB) {
 			copySelected();
+            setChangedValues(true);
+            refreshGUI();
 		}
 
         else if (e.getSource() == copyPreviousB) {
@@ -1008,6 +1010,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			currentPosition = currentPosition -1;
 			fillValues();
 			currentPosition = current;
+            setChangedValues(true);
+            refreshGUI();
 		}
 
         else if (e.getSource() == zoomB) {
