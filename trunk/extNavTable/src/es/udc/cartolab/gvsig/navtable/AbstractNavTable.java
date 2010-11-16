@@ -947,17 +947,17 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			refreshGUI();
 		}
 
-		if (e.getSource() == alwaysZoomCB){
+        else if (e.getSource() == alwaysZoomCB) {
 			fixScaleCB.setSelected(false);
 			refreshGUI();
 		}
 
-		if (e.getSource() == fixScaleCB) {
+        else if (e.getSource() == fixScaleCB) {
 			alwaysZoomCB.setSelected(false);
 			refreshGUI();
 		}
 
-		if (e.getSource() == alwaysSelectCB){
+        else if (e.getSource() == alwaysSelectCB) {
 			onlySelectedCB.setSelected(false);
 			if (alwaysSelectCB.isSelected()){
 				this.recordset.removeSelectionListener(this);
@@ -967,58 +967,58 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			refreshGUI();
 		}
 
-		if (e.getSource() == filterB){
+        else if (e.getSource() == filterB) {
 			FiltroExtension fe = new FiltroExtension();
 			fe.initialize();
 			fe.execute("FILTRO");
 		}
 
-		if (e.getSource() == noFilterB){
+        else if (e.getSource() == noFilterB) {
 			clearSelection();
 		}
 
-		if (e.getSource() == nextB){
+        else if (e.getSource() == nextB) {
 			next();
 		}
 
-		if (e.getSource() == lastB){
+        else if (e.getSource() == lastB) {
 			last();
 		}
 
-		if (e.getSource() == firstB){
+        else if (e.getSource() == firstB) {
 			first();
 		}
 
-		if (e.getSource() == beforeB){
+        else if (e.getSource() == beforeB) {
 			before();
 		}
 
-		if (e.getSource() == posTF){
+        else if (e.getSource() == posTF) {
 			copyPrevious();
 		}
 
-		if (e.getSource() == copySelectedB){
+        else if (e.getSource() == copySelectedB) {
 			copySelected();
 		}
 
-		if (e.getSource() == copyPreviousB){
+        else if (e.getSource() == copyPreviousB) {
 			long current = currentPosition;
 			currentPosition = currentPosition -1;
 			fillValues();
 			currentPosition = current;
 		}
 
-		if (e.getSource() == zoomB){
+        else if (e.getSource() == zoomB) {
 			zoom();
 			//refreshGUI();
 		}
 
-		if (e.getSource() == selectionB){
+        else if (e.getSource() == selectionB) {
 			selectCurrentFeature();
 			refreshGUI();
 		}
 
-		if (e.getSource() == saveB){
+        else if (e.getSource() == saveB) {
 			if (saveRecord()) {
 				refreshGUI();
 			} else {
@@ -1027,7 +1027,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 		}
 
-		if (e.getSource() == removeB){
+        else if (e.getSource() == removeB) {
 			int answer = JOptionPane.showConfirmDialog(null, PluginServices.getText(null, "confirm_delete_register"), null, JOptionPane.YES_NO_OPTION);
 			if (answer == 0) {
 				deleteRecord();
