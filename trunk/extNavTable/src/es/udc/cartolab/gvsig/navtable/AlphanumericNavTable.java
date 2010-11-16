@@ -228,4 +228,9 @@ public class AlphanumericNavTable extends NavTable {
 		}
 	}
 
+    @Override
+    public void windowClosed() {
+        this.newB.removeActionListener(this);
+        super.windowClosed();
+    }
 }

@@ -91,20 +91,14 @@ public class NavTable extends AbstractNavTable {
 
 	private boolean isFillingValues = false;
 
-	public boolean isFillingValues() {
-		return isFillingValues;
-	}
-
-	public void setFillingValues(boolean isFillingValues) {
-		this.isFillingValues = isFillingValues;
-	}
-
 	protected JTable table = null;
 	private AttribTableCellRenderer cellRenderer = null;
 
 	private JPanel CenterPanel;
 	private JPanel SouthPanel;
 	private JPanel NorthPanel;
+    private MyTableModelListener myTableModelListener;
+    private MyKeyListener myKeyListener;
 
 	public NavTable(FLyrVect layer) {
 		super(layer);
@@ -113,6 +107,14 @@ public class NavTable extends AbstractNavTable {
 	public NavTable(SelectableDataSource recordset) {
 		super(recordset);
 	}
+
+    public boolean isFillingValues() {
+        return isFillingValues;
+    }
+
+    public void setFillingValues(boolean isFillingValues) {
+        this.isFillingValues = isFillingValues;
+    }
 
 	private JPanel getThisNorthPanel() {
 		if(NorthPanel == null) {
@@ -170,27 +172,8 @@ public class NavTable extends AbstractNavTable {
 		NavTableModel model = new NavTableModel();
 		table = new JTable(model);
 
-		table.addKeyListener(new KeyListener(){
-			public void keyPressed(KeyEvent e) {
-			}
-			public void keyReleased(KeyEvent e) {
-				//TODO If control + cursor ---> Inicio / Fin
-				if (e.getKeyCode() == KeyEvent.VK_RIGHT){
-					next();
-				}
-				if (e.getKeyCode() == KeyEvent.VK_LEFT){
-					before();
-				}
-				if (e.getKeyCode() == KeyEvent.VK_HOME){
-					first();
-				}
-				if (e.getKeyCode() == KeyEvent.VK_END){
-					last();
-				}
-			}
-			public void keyTyped(KeyEvent e) {
-			}
-		});
+        myKeyListener = new MyKeyListener();
+        table.addKeyListener(myKeyListener);
 
 		this.cellRenderer = new AttribTableCellRenderer();
 
@@ -202,15 +185,8 @@ public class NavTable extends AbstractNavTable {
 		attribColumn = table.getColumn(PluginServices.getText(this,"headerTableValue"));
 		attribColumn.setCellRenderer(this.cellRenderer);
 
-		model.addTableModelListener(new TableModelListener(){
-
-			public void tableChanged(TableModelEvent e) {
-				if (e.getType() == TableModelEvent.UPDATE && !isFillingValues()){
-					setChangedValues();
-					enableSaveButton(isChangedValues());
-				}
-			}
-		});
+        myTableModelListener = new MyTableModelListener();
+        model.addTableModelListener(myTableModelListener);
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		centerPanel.add(scrollPane, c);
@@ -219,6 +195,36 @@ public class NavTable extends AbstractNavTable {
 
 	}
 
+    class MyKeyListener implements KeyListener {
+        public void keyPressed(KeyEvent e) {
+        }
+        public void keyReleased(KeyEvent e) {
+            //TODO If control + cursor ---> Inicio / Fin
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT){
+                next();
+            }
+            if (e.getKeyCode() == KeyEvent.VK_LEFT){
+                before();
+            }
+            if (e.getKeyCode() == KeyEvent.VK_HOME){
+                first();
+            }
+            if (e.getKeyCode() == KeyEvent.VK_END){
+                last();
+            }
+        }
+        public void keyTyped(KeyEvent e) {
+        }
+    }
+
+    class MyTableModelListener implements TableModelListener {
+        public void tableChanged(TableModelEvent e) {
+            if (e.getType() == TableModelEvent.UPDATE && !isFillingValues()){
+                setChangedValues();
+                enableSaveButton(isChangedValues());
+            }
+        }
+    }
 
 	@Override
 	public boolean init() {
@@ -604,6 +610,8 @@ public class NavTable extends AbstractNavTable {
 	@Override
 	public void windowClosed() {
 		stopCellEdition();
+        this.table.getModel().removeTableModelListener(myTableModelListener);
+        this.table.removeKeyListener(myKeyListener);
 		super.windowClosed();
 	}
 
