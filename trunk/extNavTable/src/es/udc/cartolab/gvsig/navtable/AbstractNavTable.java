@@ -266,8 +266,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	protected void enableSaveButton(boolean bool){
 		if (layer != null && layer.isEditing()) {
 			saveB.setEnabled(false);
-		}
-		else {
+        } else if (!isChangedValues()) {
+            saveB.setEnabled(false);
+        } else {
 			saveB.setEnabled(bool);
 		}
 	}
@@ -736,102 +737,112 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	protected void refreshGUI(){
 		boolean navEnabled = false;
 		try {
-			if (recordset == null){
-				// TODO
-				// If there is some problem with the recordset don't do anything.
-				return;
-			}
+			if (recordset == null) return;
 
-			checkAndUpdateCurrentPositionBoundaries();
+            checkAndUpdateCurrentPositionBoundaries();
+            navEnabled = checkNavEnabledAndFillValues();
 
-            if (currentPosition == EMPTY_REGISTER) {
-				posTF.setText("");
-				navEnabled = false;
-				fillEmptyValues();
-			} else {
-				navEnabled = true;
-				fillValues();
-			}
-			nextB.setEnabled(navEnabled);
-			lastB.setEnabled(navEnabled);
-			firstB.setEnabled(navEnabled);
-			beforeB.setEnabled(navEnabled);
-			removeB.setEnabled(navEnabled);
+            // north panel buttons
+            alwaysZoomCB.setEnabled(navEnabled);
+            alwaysSelectCB.setEnabled(navEnabled);
+            fixScaleCB.setEnabled(navEnabled);
 
-			long rows = recordset.getRowCount();
-			if (onlySelectedCB.isSelected()){
-				totalLabel.setText("/" + "(" + getNumberOfRowsSelected() + ") " + rows);
-			}else {
-				totalLabel.setText("/" +rows);
-			}
+            if (isSomeRowToWorkOn()) {
+                posTF.setText(String.valueOf(currentPosition + 1));
+                if (alwaysSelectCB.isSelected()) {
+                    selectionB.setEnabled(false);
+                    clearSelection();
+                    selectCurrentFeature();
+                } else {
+                    selectionB.setEnabled(true);
+                }
+                if (alwaysZoomCB.isSelected()) {
+                    zoomB.setEnabled(false);
+                    zoom();
+                } else {
+                    zoomB.setEnabled(true);
+                }
+                if (fixScaleCB.isSelected()) {
+                    fixScale();
+                }
+            } else {
+                fillEmptyValues();
+                posTF.setText("");
+            }
+
+            // south panel option buttons
+            enableCopySelectedButton(navEnabled);
+            enableCopyPreviousButton(navEnabled);
+            zoomB.setEnabled(navEnabled);
+            selectionB.setEnabled(navEnabled);
+            setIconAndPositionBackgroundForSelection();
+            enableSaveButton(navEnabled);
+            removeB.setEnabled(navEnabled);
+
+            // south panel navigation buttons
+            firstB.setEnabled(navEnabled);
+            beforeB.setEnabled(navEnabled);
+            setTotalLabelText();
+            nextB.setEnabled(navEnabled);
+            lastB.setEnabled(navEnabled);
+
+        } catch (ReadDriverException e) {
+            logger.error(e.getMessage(), e);
 		}
-		catch (ReadDriverException e) {
-			logger.error(e.getMessage(), e);
-		}
-
-		if (isSomeRowToWorkOn()){
-			posTF.setText(String.valueOf(currentPosition+1));
-
-			if (alwaysSelectCB.isSelected()){
-				selectionB.setEnabled(false);
-				clearSelection();
-				selectCurrentFeature();
-			} else {
-				selectionB.setEnabled(true);
-			}
-
-			if (alwaysZoomCB.isSelected()){
-				zoomB.setEnabled(false);
-				zoom();
-			} else {
-				zoomB.setEnabled(true);
-			}
-
-			if (fixScaleCB.isSelected()) {
-				fixScale();
-			}
-
-		} else {
-			fillEmptyValues();
-			posTF.setText("");
-		}
-
-		java.net.URL imgURL = null;
-		if (isRecordSelected()){
-			imgURL = getClass().getResource("/Unselect.png");
-			ImageIcon imagenUnselect = new ImageIcon(imgURL);
-			selectionB.setIcon(imagenUnselect);
-			posTF.setBackground(Color.YELLOW);
-		} else {
-			imgURL = getClass().getResource("/Select.png");
-			ImageIcon imagenSelect = new ImageIcon(imgURL);
-			selectionB.setIcon(imagenSelect);
-			posTF.setBackground(Color.WHITE);
-		}
-
-        if (getNumberOfRowsSelected() == 0 || !navEnabled) {
-			copySelectedB.setEnabled(false);
-		} else {
-			copySelectedB.setEnabled(true);
-		}
-
-		if (currentPosition == 0 || !navEnabled) {
-			copyPreviousB.setEnabled(false);
-		} else {
-			copyPreviousB.setEnabled(true);
-		}
-
-		selectionB.setEnabled(navEnabled);
-		zoomB.setEnabled(navEnabled);
-		if (isChangedValues()){
-			enableSaveButton(navEnabled);
-        } else {
-            enableSaveButton(false);
-        }
-		alwaysZoomCB.setEnabled(navEnabled);
-		alwaysSelectCB.setEnabled(navEnabled);
-		fixScaleCB.setEnabled(navEnabled);
 	}
+
+    private void setTotalLabelText() throws ReadDriverException {
+        long numberOfRowsInRecordset = recordset.getRowCount();
+        if (onlySelectedCB.isSelected()) {
+            totalLabel.setText("/" + "(" + getNumberOfRowsSelected() + ") " + numberOfRowsInRecordset);
+        } else {
+            totalLabel.setText("/" + numberOfRowsInRecordset);
+        }
+    }
+
+    private void enableCopyPreviousButton(boolean navEnabled) {
+        if (currentPosition == 0 || !navEnabled) {
+            copyPreviousB.setEnabled(false);
+        } else {
+            copyPreviousB.setEnabled(true);
+        }
+    }
+
+    private void enableCopySelectedButton(boolean navEnabled) {
+        if (getNumberOfRowsSelected() == 0 || !navEnabled) {
+            copySelectedB.setEnabled(false);
+        } else {
+            copySelectedB.setEnabled(true);
+        }
+    }
+
+    private boolean checkNavEnabledAndFillValues() {
+        boolean navEnabled;
+        if (currentPosition == EMPTY_REGISTER) {
+            posTF.setText("");
+            navEnabled = false;
+            fillEmptyValues();
+        } else {
+            navEnabled = true;
+            fillValues();
+        }
+        return navEnabled;
+    }
+
+    private void setIconAndPositionBackgroundForSelection() {
+        java.net.URL imgURL = null;
+        if (isRecordSelected()) {
+            imgURL = getClass().getResource("/Unselect.png");
+            ImageIcon imagenUnselect = new ImageIcon(imgURL);
+            selectionB.setIcon(imagenUnselect);
+            posTF.setBackground(Color.YELLOW);
+        } else {
+            imgURL = getClass().getResource("/Select.png");
+            ImageIcon imagenSelect = new ImageIcon(imgURL);
+            selectionB.setIcon(imagenSelect);
+            posTF.setBackground(Color.WHITE);
+        }
+    }
 
     private void checkAndUpdateCurrentPositionBoundaries() throws ReadDriverException {
         if (currentPosition >= recordset.getRowCount()) {
