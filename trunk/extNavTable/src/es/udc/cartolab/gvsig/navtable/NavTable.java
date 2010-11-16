@@ -553,6 +553,7 @@ public class NavTable extends AbstractNavTable {
 				if(layer.isEditing()){
 					te.stopEditing(layer, false);
 				}
+                setChangedValues(false);
 				return true;
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);

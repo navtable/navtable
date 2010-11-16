@@ -128,6 +128,7 @@ public class AlphanumericNavTable extends NavTable {
 				if (model.isEditing()){
 					te.stopEditing(model);
 				}
+                setChangedValues(false);
 				return true;
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);

@@ -843,7 +843,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		zoomB.setEnabled(navEnabled);
 		if (isChangedValues()){
 			enableSaveButton(navEnabled);
-		}
+        } else {
+            enableSaveButton(false);
+        }
 		alwaysZoomCB.setEnabled(navEnabled);
 		alwaysSelectCB.setEnabled(navEnabled);
 		fixScaleCB.setEnabled(navEnabled);
