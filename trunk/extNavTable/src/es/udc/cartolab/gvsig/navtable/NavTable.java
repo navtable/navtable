@@ -363,10 +363,12 @@ public class NavTable extends AbstractNavTable {
 	@Override
 	public void fillEmptyValues() {
 		super.fillEmptyValues();
+        setFillingValues(true);
 		DefaultTableModel model = (DefaultTableModel)table.getModel();
 		for (int i = 0; i < model.getRowCount(); i++){
 			model.setValueAt("", i, 1);
 		}
+        setFillingValues(false);
 	}
 
 	@Override
