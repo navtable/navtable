@@ -90,6 +90,7 @@ import com.iver.cit.gvsig.layers.VectorialLayerEdited;
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
+    private static final int EMPTY_REGISTER = -1;
 	protected static final int BUTTON_REMOVE = 0;
 	protected static final int BUTTON_SAVE = 1;
 	protected static final int BUTTON_SELECTION = 2;
@@ -207,7 +208,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * 
 	 */
 	public void fillEmptyValues(){
-		currentPosition = -1;
+        currentPosition = EMPTY_REGISTER;
 		//TODO Set not enabled all navButtons, seleccion, etc.
 	}
 
@@ -420,7 +421,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 *
 	 */
 	protected void showWarning() {
-		if (currentPosition == -1) {
+        if (currentPosition == EMPTY_REGISTER) {
 			return;
 		}
 		if (isChangedValues()) {
@@ -469,7 +470,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		FBitSet bitset= recordset.getSelection();
 		int currentPos = Long.valueOf(currentPosition).intValue();
 		int pos = bitset.nextSetBit(currentPos+1);
-		if (pos != -1) {
+        if (pos != EMPTY_REGISTER) {
 			currentPosition = pos;
 			//fillValues();
 		}
@@ -531,7 +532,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	private void firstSelected(){
 		FBitSet bitset= recordset.getSelection();
 		int pos = bitset.nextSetBit(0);
-		if (pos != -1){
+        if (pos != EMPTY_REGISTER) {
 			currentPosition = pos;
 			//fillValues();
 		}
@@ -566,7 +567,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		for (; pos>= 0 && !bitset.get(pos); pos--) {
 			;
 		}
-		if (pos != -1){
+        if (pos != EMPTY_REGISTER) {
 			currentPosition = pos;
 			//fillValues();
 		}
@@ -644,7 +645,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			}
 		}
 		recordset.setSelection(bitset);
-		//		}
 	}
 
 	/**
@@ -652,9 +652,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @return true if the current row is selected, false if not.
 	 */
 	private boolean isRecordSelected() {
-
 		return isRecordSelected(currentPosition);
-
 	}
 
 	/**
@@ -662,9 +660,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 * @return true if the current row is selected, false if not.
 	 */
 	private boolean isRecordSelected(long position) {
-
 		FBitSet bitset = null;
-		if (position == -1){
+        if (position == EMPTY_REGISTER) {
 			return false;
 		}
 		int pos = Long.valueOf(position).intValue();
@@ -673,9 +670,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 		bitset = recordset.getSelection();
 		return bitset.get(pos);
-
 	}
-
 
 
 	/**
@@ -697,7 +692,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	 */
 	private void viewOnlySelected() {
         if (getNumberOfRowsSelected() == 0) {
-			currentPosition = -1;
+            currentPosition = EMPTY_REGISTER;
 		}
 
 		if (!isRecordSelected()){
@@ -747,15 +742,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 				return;
 			}
 
-			if (currentPosition >= recordset.getRowCount()) {
-				currentPosition = recordset.getRowCount()-1;
-			}
-			// -1 means no register
-			if (currentPosition < -1 ){
-				currentPosition = 0;
-			}
+			checkAndUpdateCurrentPositionBoundaries();
 
-			if (currentPosition == -1) {
+            if (currentPosition == EMPTY_REGISTER) {
 				posTF.setText("");
 				navEnabled = false;
 				fillEmptyValues();
@@ -780,7 +769,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			logger.error(e.getMessage(), e);
 		}
 
-		if (valuesMustBeFilled()){
+		if (isSomeRowToWorkOn()){
 			posTF.setText(String.valueOf(currentPosition+1));
 
 			if (alwaysSelectCB.isSelected()){
@@ -806,7 +795,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			fillEmptyValues();
 			posTF.setText("");
 		}
-
 
 		java.net.URL imgURL = null;
 		if (isRecordSelected()){
@@ -845,7 +833,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		fixScaleCB.setEnabled(navEnabled);
 	}
 
-	protected boolean valuesMustBeFilled() {
+    private void checkAndUpdateCurrentPositionBoundaries() throws ReadDriverException {
+        if (currentPosition >= recordset.getRowCount()) {
+            currentPosition = recordset.getRowCount() - 1;
+        }
+        if (currentPosition < EMPTY_REGISTER) {
+            currentPosition = 0;
+        }
+    }
+
+	protected boolean isSomeRowToWorkOn() {
 		if (onlySelectedCB == null) {
 			return false;
 		}
@@ -873,7 +870,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		}
 
 		if (!isValidPosition(posNumber) ){
-			if (currentPosition == -1) {
+            if (currentPosition == EMPTY_REGISTER) {
 				posTF.setText("");
 			} else {
 				posTF.setText(String.valueOf(currentPosition+1));
@@ -930,11 +927,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 			alwaysSelectCB.setSelected(false);
 			if (onlySelectedCB.isSelected()){
 				// areSelectedRows()
-				if (currentPosition != -1 ) {
+                if (currentPosition != EMPTY_REGISTER) {
 					viewOnlySelected();
 				}
 			} else {
-				if (currentPosition == -1 ) {
+                if (currentPosition == EMPTY_REGISTER) {
 					currentPosition = 0;
 				}
 			}
@@ -1041,7 +1038,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
 			feats.start();
 
-			if (currentPosition>-1) {
+            if (currentPosition > EMPTY_REGISTER) {
 
 				ToggleEditing te = new ToggleEditing();
 
@@ -1085,13 +1082,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
 
 	public void selectionChanged(SelectionEvent e) {
-		if (currentPosition == -1 && onlySelectedCB.isSelected()){
+        if (currentPosition == EMPTY_REGISTER && onlySelectedCB.isSelected()) {
 			firstSelected();
 		} else {
 			if (onlySelectedCB.isSelected() && !isRecordSelected()){
 				firstSelected();
 			}
-			if (!valuesMustBeFilled()){
+			if (!isSomeRowToWorkOn()){
 				fillEmptyValues();
 			}
 		}
