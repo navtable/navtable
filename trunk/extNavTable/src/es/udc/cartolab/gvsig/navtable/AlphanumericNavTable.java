@@ -162,6 +162,8 @@ public class AlphanumericNavTable extends NavTable {
 
 		model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
 		last();
+		setChangedValues(true);
+		refreshGUI();
 	    }
 	} catch (StartWriterVisitorException e) {
 	    logger.error(e.getMessage(), e);
