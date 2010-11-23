@@ -34,13 +34,13 @@ import javax.swing.table.DefaultTableModel;
  */
 class NavTableModel extends DefaultTableModel {
 
-	@Override
-	public boolean isCellEditable(int row, int col) {
-		if (col == 1) {
-			return true;
-		} else {
-			return false;
-		}
+    @Override
+    public boolean isCellEditable(int row, int col) {
+	if (col == 1) {
+	    return true;
+	} else {
+	    return false;
 	}
+    }
 
 }

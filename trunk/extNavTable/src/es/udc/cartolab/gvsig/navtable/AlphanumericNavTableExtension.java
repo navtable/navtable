@@ -32,58 +32,44 @@ import com.iver.cit.gvsig.project.documents.table.gui.Table;
 
 public class AlphanumericNavTableExtension extends Extension {
 
-	public boolean isEnabled() {
-
-		IWindow v = PluginServices.getMDIManager().getActiveWindow();
-
-		if (v == null) {
-			return false;
-		}
-
-		if (v.getClass() == Table.class) {
-			Table t = (Table) v;
-			return true;
-		}
-
-		return false;
+    public boolean isEnabled() {
+	IWindow v = PluginServices.getMDIManager().getActiveWindow();
+	if (v == null) {
+	    return false;
 	}
-
-	public boolean isVisible() {
-		IWindow v = PluginServices.getMDIManager().getActiveWindow();
-
-		if (v == null) {
-			return false;
-		}
-
-		if (v instanceof Table) {
-			return true;
-		} else {
-			return false;
-		}
-
-
+	if (v.getClass() == Table.class) {
+	    Table t = (Table) v;
+	    return true;
 	}
+	return false;
+    }
 
-	public void execute(String s) {
-
-		Table table = (Table) PluginServices.getMDIManager().getActiveWindow();
-
-		IEditableSource model = table.getModel().getModelo();
-
-		AlphanumericNavTable viewer;
-		try {
-			viewer = new AlphanumericNavTable(model);
-
-			if (viewer.init()){
-				PluginServices.getMDIManager().addCentredWindow(viewer);
-			}
-		} catch (ReadDriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public boolean isVisible() {
+	IWindow v = PluginServices.getMDIManager().getActiveWindow();
+	if (v == null) {
+	    return false;
 	}
-
-
-	public void initialize() {
+	if (v instanceof Table) {
+	    return true;
+	} else {
+	    return false;
 	}
+    }
+
+    public void execute(String s) {
+	Table table = (Table) PluginServices.getMDIManager().getActiveWindow();
+	IEditableSource model = table.getModel().getModelo();
+	AlphanumericNavTable viewer;
+	try {
+	    viewer = new AlphanumericNavTable(model);
+	    if (viewer.init()) {
+		PluginServices.getMDIManager().addCentredWindow(viewer);
+	    }
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    public void initialize() {
+    }
 }

@@ -40,79 +40,85 @@ import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
 public class NavTableExtension extends Extension{
 
-	private NavTable viewer = null;
+    private NavTable viewer = null;
 
-	public void execute(String actionCommand) {
+    public void execute(String actionCommand) {
 
-		BaseView view = (BaseView)PluginServices.getMDIManager().getActiveWindow();
-		MapControl mapControl = view.getMapControl();
-		FLayers flayers = mapControl.getMapContext().getLayers();
-		FLyrVect actLayer = null;
-		for (int i=0; i<flayers.getActives().length; i++) {
-			if (!(flayers.getActives()[i] instanceof FLayers)) {
-				actLayer = (FLyrVect)flayers.getActives()[i];
-				viewer = new NavTable(actLayer);
-				if (viewer.init()){
-					PluginServices.getMDIManager().addCentredWindow(viewer);
-				}
-			}
+	BaseView view = (BaseView) PluginServices.getMDIManager()
+		.getActiveWindow();
+	MapControl mapControl = view.getMapControl();
+	FLayers flayers = mapControl.getMapContext().getLayers();
+	FLyrVect actLayer = null;
+	for (int i = 0; i < flayers.getActives().length; i++) {
+	    if (!(flayers.getActives()[i] instanceof FLayers)) {
+		actLayer = (FLyrVect) flayers.getActives()[i];
+		viewer = new NavTable(actLayer);
+		if (viewer.init()) {
+		    PluginServices.getMDIManager().addCentredWindow(viewer);
 		}
-
-		// TODO: throw a message on the else (when there's no data)
-		// or something like that
+	    }
 	}
 
-	public void initialize() {
-		About about=(About)PluginServices.getExtension(About.class);
-		FPanelAbout panelAbout=about.getAboutPanel();
-		java.net.URL aboutURL = this.getClass().getResource("/about.htm");
-		panelAbout.addAboutUrl("NavTable", aboutURL);
+	// TODO: throw a message on the else (when there's no data)
+	// or something like that
+    }
 
-		//Entry at TOC contextual menu
-		ExtensionPoints extensionPoints = ExtensionPointsSingleton.getInstance();
-		extensionPoints.add("View_TocActions", "NavTable", new NavTableTocMenuEntry());
+    public void initialize() {
+	About about = (About) PluginServices.getExtension(About.class);
+	FPanelAbout panelAbout = about.getAboutPanel();
+	java.net.URL aboutURL = this.getClass().getResource("/about.htm");
+	panelAbout.addAboutUrl("NavTable", aboutURL);
 
-		//Creating config Dir
-		File configDir;
-		String configDirStr;
-		try {
-			configDirStr = com.iver.andami.Launcher.getAppHomeDir() + "NavTable";
-		}catch (java.lang.NoSuchMethodError e) {
-			configDirStr = System.getProperty("user.home") + File.separator + "gvSIG" + File.separator + "navTable";
-			
-		}
-		configDir = new File(configDirStr);
-		Preferences p = new Preferences(configDir);
+	// Entry at TOC contextual menu
+	ExtensionPoints extensionPoints = ExtensionPointsSingleton
+		.getInstance();
+	extensionPoints.add("View_TocActions", "NavTable",
+		new NavTableTocMenuEntry());
+
+	// Creating config Dir
+	File configDir;
+	String configDirStr;
+	try {
+	    configDirStr = com.iver.andami.Launcher.getAppHomeDir()
+		    + "NavTable";
+	} catch (java.lang.NoSuchMethodError e) {
+	    configDirStr = System.getProperty("user.home") + File.separator
+		    + "gvSIG" + File.separator + "navTable";
+
 	}
+	configDir = new File(configDirStr);
+	Preferences p = new Preferences(configDir);
+    }
 
-	public boolean isEnabled() {
-		boolean enabled = false;
-		int status = EditionUtilities.getEditionStatus();
-		if (( status == EditionUtilities.EDITION_STATUS_ONE_VECTORIAL_LAYER_ACTIVE|| status == EditionUtilities.EDITION_STATUS_ONE_VECTORIAL_LAYER_ACTIVE_AND_EDITABLE)
-				|| (status == EditionUtilities.EDITION_STATUS_MULTIPLE_VECTORIAL_LAYER_ACTIVE)|| (status == EditionUtilities.EDITION_STATUS_MULTIPLE_VECTORIAL_LAYER_ACTIVE_AND_EDITABLE))
-		{
-			BaseView view = (BaseView) PluginServices.getMDIManager().getActiveWindow();
-			MapControl mapControl = view.getMapControl();
-			FLayers flayers = mapControl.getMapContext().getLayers();
-			int pos = flayers.getActives().length - 1;
-			FLayer actLayer = flayers.getActives()[pos];
-			if (actLayer instanceof FLyrVect) {
-				enabled = true;
-			}
-		}
-		return enabled;
+    public boolean isEnabled() {
+	boolean enabled = false;
+	int status = EditionUtilities.getEditionStatus();
+	if ((status == EditionUtilities.EDITION_STATUS_ONE_VECTORIAL_LAYER_ACTIVE || status == EditionUtilities.EDITION_STATUS_ONE_VECTORIAL_LAYER_ACTIVE_AND_EDITABLE)
+		|| (status == EditionUtilities.EDITION_STATUS_MULTIPLE_VECTORIAL_LAYER_ACTIVE)
+		|| (status == EditionUtilities.EDITION_STATUS_MULTIPLE_VECTORIAL_LAYER_ACTIVE_AND_EDITABLE)) {
+	    BaseView view = (BaseView) PluginServices.getMDIManager()
+		    .getActiveWindow();
+	    MapControl mapControl = view.getMapControl();
+	    FLayers flayers = mapControl.getMapContext().getLayers();
+	    int pos = flayers.getActives().length - 1;
+	    FLayer actLayer = flayers.getActives()[pos];
+	    if (actLayer instanceof FLyrVect) {
+		enabled = true;
+	    }
 	}
+	return enabled;
+    }
 
-	public boolean isVisible() {
-		com.iver.andami.ui.mdiManager.IWindow f =
-			PluginServices.getMDIManager().getActiveWindow();
-		if (f == null) {
-			return false;
-		}
-		if (f instanceof BaseView) {
-			return true;
-		}
-		return false;
+    public boolean isVisible() {
+	com.iver.andami.ui.mdiManager.IWindow f = PluginServices
+		.getMDIManager().getActiveWindow();
+	if (f == null) {
+	    return false;
 	}
+	if (f instanceof BaseView) {
+	    return true;
+	}
+	return false;
+    }
 
 }

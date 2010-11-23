@@ -31,56 +31,53 @@ import com.iver.cit.gvsig.project.documents.view.toc.ITocItem;
 
 public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
 
-	private NavTable viewer = null;
+    private NavTable viewer = null;
 
-	@Override
-	public void execute(ITocItem item, FLayer[] selectedItems) {
-
-
-		viewer = new NavTable((FLyrVect) selectedItems[0]);
-		if (viewer.init()){
-			PluginServices.getMDIManager().addCentredWindow(viewer);
-		}
-
+    @Override
+    public void execute(ITocItem item, FLayer[] selectedItems) {
+	viewer = new NavTable((FLyrVect) selectedItems[0]);
+	if (viewer.init()) {
+	    PluginServices.getMDIManager().addCentredWindow(viewer);
 	}
+    }
 
-	public String getText() {
-		// TODO Auto-generated method stub
-		return PluginServices.getText(this, "open_navigation_table");
+    public String getText() {
+	return PluginServices.getText(this, "open_navigation_table");
+    }
 
+    @Override
+    public String getGroup() {
+	return "navtable"; // FIXME
+    }
+
+    @Override
+    public int getGroupOrder() {
+	return 100;
+    }
+
+    @Override
+    public int getOrder() {
+	return 1;
+    }
+
+    @Override
+    public boolean isEnabled(ITocItem item, FLayer[] selectedItems) {
+	if (selectedItems[0].isAvailable()) {
+	    return true;
 	}
+	return false;
+    }
 
-	@Override
-	public String getGroup() {
-		return "navtable"; //FIXME
+    @Override
+    public boolean isVisible(ITocItem item, FLayer[] selectedItems) {
+	if (isTocItemBranch(item)
+		&& !(selectedItems == null || selectedItems.length <= 0)) {
+	    if (selectedItems.length == 1
+		    && selectedItems[0] instanceof FLyrVect) {
+		return true;
+	    }
 	}
-
-	@Override
-	public int getGroupOrder() {
-		return 100;
-	}
-
-	@Override
-	public int getOrder() {
-		return 1;
-	}
-
-	@Override
-	public boolean isEnabled(ITocItem item, FLayer[] selectedItems) {
-		if (selectedItems[0].isAvailable()) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean isVisible(ITocItem item, FLayer[] selectedItems) {
-		if (isTocItemBranch(item) && ! (selectedItems == null || selectedItems.length <= 0)) {
-			if (selectedItems.length == 1 && selectedItems[0] instanceof FLyrVect) {
-				return true;
-			}
-		}
-		return false;
-	}
+	return false;
+    }
 
 }

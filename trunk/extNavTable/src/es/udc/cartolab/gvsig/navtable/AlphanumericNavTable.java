@@ -55,182 +55,173 @@ import com.iver.cit.gvsig.fmap.edition.IWriter;
  */
 public class AlphanumericNavTable extends NavTable {
 
-	JButton newB = null;
-	protected IEditableSource model;
+    JButton newB = null;
+    protected IEditableSource model;
 
-	public AlphanumericNavTable(IEditableSource model) throws ReadDriverException {
-		super(model.getRecordset());
-		this.model = model;
+    public AlphanumericNavTable(IEditableSource model)
+	    throws ReadDriverException {
+	super(model.getRecordset());
+	this.model = model;
+    }
+
+    @Override
+    public boolean init() {
+	if (super.init() == false) {
+	    return false;
 	}
 
-	@Override
-	public boolean init() {
-		if (super.init() == false) {
-			return false;
+	int index = -1;
+	zoomB.setVisible(false);
+	alwaysZoomCB.setVisible(false);
+	fixScaleCB.setVisible(false);
+
+	URL imgURL = getClass().getResource("/table_add.png");
+	ImageIcon imagenNewRegister = new ImageIcon(imgURL);
+	newB = new JButton(imagenNewRegister);
+	newB.setToolTipText(PluginServices.getText(this, "new_register"));
+
+	newB.addActionListener(this);
+	zoomB.getParent().add(newB);
+	// We must to rewrite selectionB listener and the others
+
+	return true;
+    }
+
+    @Override
+    protected boolean isSaveable() {
+	stopCellEdition();
+	if (model instanceof IWriteable) {
+	    return true;
+	} else {
+	    JOptionPane.showMessageDialog(this, String.format(
+		    PluginServices.getText(this, "non_editable"),
+		    layer.getName()));
+	    return false;
+	}
+    }
+
+    @Override
+    @Deprecated
+    protected void saveRegister() {
+	saveRecord();
+    }
+
+    @Override
+    protected boolean saveRecord() {
+	if (isSaveable()) {
+	    int[] attIndexes = getIndexes();
+	    String[] attValues = getValues();
+	    int currentPos = Long.valueOf(currentPosition).intValue();
+	    try {
+		ToggleEditing te = new ToggleEditing();
+		if (!model.isEditing()) {
+		    te.startEditing(model);
 		}
-
-		int index = -1;
-		zoomB.setVisible(false);
-		alwaysZoomCB.setVisible(false);
-		fixScaleCB.setVisible(false);
-
-		URL imgURL = getClass().getResource("/table_add.png");
-		ImageIcon imagenNewRegister = new ImageIcon(imgURL);
-		newB = new JButton(imagenNewRegister);
-		newB.setToolTipText(PluginServices.getText(this, "new_register"));
-
-		newB.addActionListener(this);
-		zoomB.getParent().add(newB);
-		// We must to rewrite selectionB listener and the others
-
+		te.modifyValues(model, currentPos, attIndexes, attValues);
+		if (model.isEditing()) {
+		    te.stopEditing(model);
+		}
+		setChangedValues(false);
 		return true;
-	}
-
-	@Override
-	protected boolean isSaveable(){
-
-		stopCellEdition();
-
-		if(model instanceof IWriteable) {
-			return true;
-		}
-		else {
-			JOptionPane.showMessageDialog(
-					this,
-					String.format(PluginServices.getText(this, "non_editable"),
-							layer.getName()));
-			return false;
-		}
-	}
-
-	@Override
-	@Deprecated
-	protected void saveRegister() {
-		saveRecord();
-	}
-
-	@Override
-	protected boolean saveRecord() {
-
-
-		if (isSaveable()) {
-
-			int[] attIndexes = getIndexes();
-			String[] attValues = getValues();
-			int currentPos = Long.valueOf(currentPosition).intValue();
-
-			try {
-				ToggleEditing te = new ToggleEditing();
-				if (!model.isEditing()){
-					te.startEditing(model);
-				}
-				te.modifyValues(model, currentPos, attIndexes, attValues);
-				if (model.isEditing()){
-					te.stopEditing(model);
-				}
-                setChangedValues(false);
-				return true;
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-				return false;
-			}
-		}
+	    } catch (Exception e) {
+		logger.error(e.getMessage(), e);
 		return false;
+	    }
 	}
+	return false;
+    }
 
-	@Deprecated
-	private void addRow() {
-		addRecord();
+    @Deprecated
+    private void addRow() {
+	addRecord();
+    }
+
+    private void addRecord() {
+	// Create a new empty record
+	// showWarning();
+	if (onlySelectedCB.isSelected()) {
+	    onlySelectedCB.setSelected(false);
 	}
-
-	private void addRecord() {
-
-		//Create a new empty record
-		//showWarning();
-		if (onlySelectedCB.isSelected()) {
-			onlySelectedCB.setSelected(false);
+	try {
+	    model.startEdition(EditionEvent.ALPHANUMERIC);
+	    if (model instanceof IWriteable) {
+		IRow row;
+		int numAttr = recordset.getFieldCount();
+		Value[] values = new Value[numAttr];
+		for (int i = 0; i < numAttr; i++) {
+		    values[i] = ValueFactory.createNullValue();
 		}
-		try {
-			model.startEdition(EditionEvent.ALPHANUMERIC);
+		row = new DefaultRow(values);
+		model.doAddRow(row, EditionEvent.ALPHANUMERIC);
 
-			if (model instanceof IWriteable) {
+		IWriteable w = (IWriteable) model;
+		IWriter writer = w.getWriter();
 
-				IRow row;
-				int numAttr = recordset.getFieldCount();
-				Value[] values = new Value[numAttr];
-				for (int i=0; i<numAttr; i++) {
-					values[i] = ValueFactory.createNullValue();
-				}
-				row = new DefaultRow(values);
-				model.doAddRow(row, EditionEvent.ALPHANUMERIC);
+		ITableDefinition tableDef = model.getTableDefinition();
+		writer.initialize(tableDef);
 
-				IWriteable w = (IWriteable) model;
-				IWriter writer = w.getWriter();
+		model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
+		last();
+	    }
+	} catch (StartWriterVisitorException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (ReadDriverException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (InitializeWriterException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (StopWriterVisitorException e) {
+	    logger.error(e.getMessage(), e);
+	}
+    }
 
-				ITableDefinition tableDef = model.getTableDefinition();
-				writer.initialize(tableDef);
+    @Override
+    protected void deleteRecord() {
+	try {
+	    model.startEdition(EditionEvent.ALPHANUMERIC);
 
-				model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
-				last();
-			}
-		} catch (StartWriterVisitorException e) {
-			logger.error(e.getMessage(), e);
-		} catch (ReadDriverException e) {
-			logger.error(e.getMessage(), e);
-		} catch (InitializeWriterException e) {
-			logger.error(e.getMessage(), e);
-		} catch (StopWriterVisitorException e) {
-			logger.error(e.getMessage(), e);
-		}
+	    IWriteable w = (IWriteable) model;
+	    IWriter writer = w.getWriter();
+
+	    ITableDefinition tableDef = model.getTableDefinition();
+	    writer.initialize(tableDef);
+
+	    model.doRemoveRow((int) currentPosition, EditionEvent.ALPHANUMERIC);
+	    model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
+
+	    // Refresh
+	    refreshGUI();
+
+	} catch (StartWriterVisitorException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (ReadDriverException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (InitializeWriterException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (StopWriterVisitorException e) {
+	    logger.error(e.getMessage(), e);
 	}
 
-	@Override
-	protected void deleteRecord() {
-		try {
-			model.startEdition(EditionEvent.ALPHANUMERIC);
+    }
 
-			IWriteable w = (IWriteable) model;
-			IWriter writer = w.getWriter();
-
-			ITableDefinition tableDef = model.getTableDefinition();
-			writer.initialize(tableDef);
-
-			model.doRemoveRow((int) currentPosition, EditionEvent.ALPHANUMERIC);
-			model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
-
-			//Refresh
-			refreshGUI();
-
-		} catch (StartWriterVisitorException e) {
-			logger.error(e.getMessage(), e);
-		} catch (ReadDriverException e) {
-			logger.error(e.getMessage(), e);
-		} catch (InitializeWriterException e) {
-			logger.error(e.getMessage(), e);
-		} catch (StopWriterVisitorException e) {
-			logger.error(e.getMessage(), e);
-		}
-
+    @Override
+    public void actionPerformed(ActionEvent e) {
+	if (e.getSource() == newB) {
+	    addRecord();
+	} else if (e.getSource() == removeB) {
+	    int answer = JOptionPane.showConfirmDialog(null,
+		    PluginServices.getText(null, "confirm_delete_register"),
+		    null, JOptionPane.YES_NO_OPTION);
+	    if (answer == 0) {
+		deleteRecord();
+	    }
+	} else {
+	    super.actionPerformed(e);
 	}
-
-	@Override
-	public void actionPerformed (ActionEvent e) {
-
-		if (e.getSource() == newB) {
-			addRecord();
-		}else if (e.getSource() == removeB) {
-			int answer = JOptionPane.showConfirmDialog(null, PluginServices.getText(null, "confirm_delete_register"), null, JOptionPane.YES_NO_OPTION);
-			if (answer == 0) {
-				deleteRecord();
-			}
-		}else {
-			super.actionPerformed(e);
-		}
-	}
+    }
 
     @Override
     public void windowClosed() {
-        this.newB.removeActionListener(this);
-        super.windowClosed();
+	this.newB.removeActionListener(this);
+	super.windowClosed();
     }
 }
