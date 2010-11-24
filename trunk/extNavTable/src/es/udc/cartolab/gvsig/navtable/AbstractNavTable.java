@@ -134,6 +134,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     protected JButton selectionB = null;
     protected JButton saveB = null;
     protected JButton removeB = null;
+    private boolean isSomeNavTableFormOpen = false;
 
     /**
      * 
@@ -155,6 +156,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
 	}
+	setOpenNavTableForm(true);
     }
 
     /**
@@ -936,6 +938,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
      * Handles the user actions.
      */
     public void actionPerformed(ActionEvent e) {
+	/*
+	 * Variable isSomeNavTableForm open is used as workaround to control
+	 * null pointers exceptions when all forms using navtable are closed
+	 * but, for some strange reason, some of the listeners is still active.
+	 * TODO: review all listeners.
+	 */
+	if(!isSomeNavTableFormOpen()) return;
+
 	if (this.recordset == null) {
 	    // TODO
 	    // If there is an error on the recordset of the layer do nothing.
@@ -1065,6 +1075,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     }
 
     public void selectionChanged(SelectionEvent e) {
+	/*
+	 * Variable isSomeNavTableForm open is used as workaround to control
+	 * null pointers exceptions when all forms using navtable are closed
+	 * but, for some strange reason, some of the listeners is still active.
+	 * TODO: review all listeners.
+	 */
+	if(!isSomeNavTableFormOpen()) return;
+
 	if (currentPosition == EMPTY_REGISTER && onlySelectedCB.isSelected()) {
 	    firstSelected();
 	} else {
@@ -1081,6 +1099,15 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     public void windowClosed() {
 	showWarning();
 	this.recordset.removeSelectionListener(this);
+	setOpenNavTableForm(false);
+    }
+
+    private boolean isSomeNavTableFormOpen() {
+	return isSomeNavTableFormOpen;
+    }
+
+    private void setOpenNavTableForm(boolean b) {
+	isSomeNavTableFormOpen = b;
     }
 
     public void windowActivated() {
