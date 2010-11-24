@@ -912,13 +912,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
     }
 
-    protected void copySelected() {
+    protected boolean copySelected() {
 	if (getNumberOfRowsSelected() != 1) {
 	    // show error
 	    JOptionPane.showMessageDialog(null,
 		    PluginServices.getText(this, "justOneRecordMessage"),
 		    PluginServices.getText(this, "justOneRecordTitle"),
 		    JOptionPane.WARNING_MESSAGE);
+	    return false;
 	} else {
 	    // TODO Check this code
 	    long current = currentPosition;
@@ -927,6 +928,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	    currentPosition = selectedRow;
 	    fillValues();
 	    currentPosition = current;
+	    return true;
 	}
     }
 
@@ -983,16 +985,17 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	} else if (e.getSource() == posTF) {
 	    copyPrevious();
 	} else if (e.getSource() == copySelectedB) {
-	    copySelected();
-	    setChangedValues(true);
-	    refreshGUI();
+	    if (copySelected()) {
+		setChangedValues(true);
+		enableSaveButton(true);
+	    }
 	} else if (e.getSource() == copyPreviousB) {
 	    long current = currentPosition;
 	    currentPosition = currentPosition - 1;
 	    fillValues();
 	    currentPosition = current;
 	    setChangedValues(true);
-	    refreshGUI();
+	    enableSaveButton(true);
 	} else if (e.getSource() == zoomB) {
 	    zoom();
 	    // refreshGUI();

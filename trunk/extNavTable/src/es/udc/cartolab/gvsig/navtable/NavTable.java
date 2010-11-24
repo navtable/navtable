@@ -384,7 +384,7 @@ public class NavTable extends AbstractNavTable {
 	    for (int i = 0; i < recordset.getFieldCount(); i++) {
 		Value value = recordset.getFieldValue(currentPosition, i);
 		String textoValue = value
-		.getStringValue(ValueWriter.internalValueWriter);
+			.getStringValue(ValueWriter.internalValueWriter);
 		textoValue = textoValue.replaceAll("'", "");
 		if (value instanceof NullValue) {
 		    textoValue = "";
