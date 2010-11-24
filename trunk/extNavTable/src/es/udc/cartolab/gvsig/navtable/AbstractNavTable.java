@@ -156,7 +156,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
 	}
-	setOpenNavTableForm(true);
     }
 
     /**
@@ -1106,7 +1105,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	return isSomeNavTableFormOpen;
     }
 
-    private void setOpenNavTableForm(boolean b) {
+    protected void setOpenNavTableForm(boolean b) {
 	isSomeNavTableFormOpen = b;
     }
 

@@ -256,6 +256,7 @@ public class NavTable extends AbstractNavTable {
 	refreshGUI();
 	super.repaint();
 	super.setVisible(true);
+	setOpenNavTableForm(true);
 	return true;
 
     }
