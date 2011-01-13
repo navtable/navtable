@@ -1,21 +1,21 @@
 /*
  * This file is part of NavTable
  * Copyright (C) 2009 - 2010  Cartolab (Universidade da Coruña)
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * 
+ *
+ *
  * Authors:
  *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
@@ -64,10 +64,10 @@ import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.cit.gvsig.layers.VectorialLayerEdited;
 
 /**
- * 
+ *
  * AbstractNavTable is the base class that defines the layout of the window that
  * allows to navigate between the elements of the layer.
- * 
+ *
  * It has three panels:
  * <ul>
  * <li>The north panel, with the controls to handle the navigation behavior.
@@ -75,18 +75,18 @@ import com.iver.cit.gvsig.layers.VectorialLayerEdited;
  * implemented in the subclasses.
  * <li>The south panel, with the navigation controls.
  * </ul>
- * 
+ *
  * <img src="images/NavTableWindow.png">
- * 
+ *
  * If there are a image on
  * 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png'
  * is loaded on the NorthPanel.
- * 
+ *
  * @author Nacho Varela
  * @author Javier Estevez
  * @author Pablo Sanxiao
  * @author Andres Maneiro
- * 
+ *
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow, ActionListener, SelectionListener, IWindowListener {
 
@@ -137,10 +137,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     private boolean isSomeNavTableFormOpen = false;
 
     /**
-     * 
+     *
      * Constructor of the class. It gets the data from the layer and stores it
      * in recordset to later uses.
-     * 
+     *
      * @param layer
      *            Vectorial layer whose data will be accessed.
      */
@@ -161,7 +161,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     /**
      * Constructor of the class. This constructor is used by
      * AlphanumericNavTable
-     * 
+     *
      * @param recordset
      */
     public AbstractNavTable(SelectableDataSource recordset) {
@@ -198,14 +198,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * It initializes the window.
-     * 
+     *
      * @return true if it is successful, false if not.
      */
     public abstract boolean init();
 
     /**
      * It shows the values of a data row in the main panel.
-     * 
+     *
      * @param rowPosition
      *            the row of the data to be shown.
      */
@@ -215,7 +215,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     /**
      * It fills NavTable with empty values. Used when "Selected" option is set
      * on, but there are any selection registers.
-     * 
+     *
      */
     public void fillEmptyValues() {
 	currentPosition = EMPTY_REGISTER;
@@ -224,14 +224,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * It selects a specific row into the table.
-     * 
+     *
      * @param row
      */
     public abstract void selectRow(int row);
 
     /**
      * Checks if there's changed values.
-     * 
+     *
      * @return a vector with the position of the values that have changed.
      */
     @Deprecated
@@ -255,7 +255,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Saves the changes of the current data row.
-     * 
+     *
      */
     @Deprecated
     protected void saveRegister() {
@@ -264,12 +264,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Saves the changes of the current data row.
-     * 
+     *
      */
     protected abstract boolean saveRecord();
 
     /**
-     * 
+     *
      * @param true to enable the save button, false to disable it
      */
     protected void enableSaveButton(boolean bool) {
@@ -333,7 +333,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Creates the upper panel.
-     * 
+     *
      * @return the panel.
      */
     protected JPanel getNorthPanel() {
@@ -351,7 +351,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Creates the main panel.
-     * 
+     *
      * @return the panel.
      */
     public abstract JPanel getCenterPanel();
@@ -423,7 +423,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Creates the bottom panel.
-     * 
+     *
      * @return the panel.
      */
     protected JPanel getSouthPanel() {
@@ -436,7 +436,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Shows a warning to the user if there's unsaved data.
-     * 
+     *
      */
     protected void showWarning() {
 	if (currentPosition == EMPTY_REGISTER) {
@@ -461,7 +461,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Goes to the next row of the data.
-     * 
+     *
      */
     public void next() {
 	showWarning();
@@ -495,7 +495,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Goes to the last row of the data.
-     * 
+     *
      */
     public void last() {
 	showWarning();
@@ -514,7 +514,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Goes to the last selected row of the data.
-     * 
+     *
      */
     private void lastSelected() {
 	FBitSet bitset = recordset.getSelection();
@@ -528,7 +528,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Goes to the first row of the data.
-     * 
+     *
      */
     public void first() {
 	showWarning();
@@ -543,7 +543,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Goes to the first selected row of the data.
-     * 
+     *
      */
     private void firstSelected() {
 	FBitSet bitset = recordset.getSelection();
@@ -556,7 +556,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Goes to the previous row of the data.
-     * 
+     *
      */
     public void before() {
 	showWarning();
@@ -574,7 +574,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Goes to the previous selected row of the data.
-     * 
+     *
      */
     protected void beforeSelected() {
 	FBitSet bitset = recordset.getSelection();
@@ -592,7 +592,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     /**
      * Zooms to the current feature. The feature will fill the visualization
      * area.
-     * 
+     *
      */
     private void zoom() {
 	Rectangle2D rectangle = null;
@@ -634,7 +634,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
      * It forces the application to use the current scale when navigating
      * between features. It also centers the visualization to the feature when
      * navigating.
-     * 
+     *
      */
     private void fixScale() {
 	long scale = layer.getMapContext().getScaleView();
@@ -658,7 +658,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     }
 
     /**
-     * 
+     *
      * @return true if the current row is selected, false if not.
      */
     private boolean isRecordSelected() {
@@ -666,7 +666,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     }
 
     /**
-     * 
+     *
      * @return true if the current row is selected, false if not.
      */
     private boolean isRecordSelected(long position) {
@@ -685,7 +685,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Removes all selections of the layer.
-     * 
+     *
      */
     private void clearSelection() {
 	FBitSet bitset = null;
@@ -698,7 +698,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Forces the application to navigate only between selected features.
-     * 
+     *
      */
     private void viewOnlySelected() {
 	if (getNumberOfRowsSelected() == 0) {
@@ -713,7 +713,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Sets the configuration of the window.
-     * 
+     *
      * @return the configuration of the window.
      */
     public WindowInfo getWindowInfo() {
@@ -741,7 +741,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     /**
      * Repaints the window.
-     * 
+     *
      */
     protected void refreshGUI() {
 	boolean navEnabled = false;
@@ -881,36 +881,45 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	return bitset.cardinality();
     }
 
+    protected void posTFChanged() {
+    	String pos = posTF.getText();
+    	Long posNumber = null;
+    	try {
+    		posNumber = new Long(pos);
+    	} catch (NumberFormatException e) {
+    		logger.error(e.getMessage(), e);
+    		posNumber = currentPosition;
+    	}
+    	if (!isValidPosition(posNumber)) {
+    		if (currentPosition == EMPTY_REGISTER) {
+    			posTF.setText("");
+    		} else {
+    			posTF.setText(String.valueOf(currentPosition + 1));
+    		}
+    		return;
+    	}
+    	if (onlySelectedCB.isSelected()) {
+    		if (!isRecordSelected(posNumber)) {
+    			posTF.setText(String.valueOf(currentPosition + 1));
+    			return;
+    		}
+    	}
+    	showWarning();
+    	try {
+    		currentPosition = posNumber.longValue() - 1;
+    		refreshGUI();
+    	} catch (Exception e1) {
+    		e1.printStackTrace();
+    	}
+    }
+
     protected void copyPrevious() {
-	String pos = posTF.getText();
-	Long posNumber = null;
-	try {
-	    posNumber = new Long(pos);
-	} catch (NumberFormatException e) {
-	    logger.error(e.getMessage(), e);
-	    posNumber = currentPosition;
-	}
-	if (!isValidPosition(posNumber)) {
-	    if (currentPosition == EMPTY_REGISTER) {
-		posTF.setText("");
-	    } else {
-		posTF.setText(String.valueOf(currentPosition + 1));
-	    }
-	    return;
-	}
-	if (onlySelectedCB.isSelected()) {
-	    if (!isRecordSelected(posNumber)) {
-		posTF.setText(String.valueOf(currentPosition + 1));
-		return;
-	    }
-	}
-	showWarning();
-	try {
-	    currentPosition = posNumber.longValue() - 1;
-	    refreshGUI();
-	} catch (Exception e1) {
-	    e1.printStackTrace();
-	}
+	    long current = currentPosition;
+	    currentPosition = currentPosition - 1;
+	    fillValues();
+	    currentPosition = current;
+	    setChangedValues(true);
+	    enableSaveButton(true);
     }
 
     protected boolean copySelected() {
@@ -992,19 +1001,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	} else if (e.getSource() == beforeB) {
 	    before();
 	} else if (e.getSource() == posTF) {
-	    copyPrevious();
+	    posTFChanged();
 	} else if (e.getSource() == copySelectedB) {
 	    if (copySelected()) {
 		setChangedValues(true);
 		enableSaveButton(true);
 	    }
 	} else if (e.getSource() == copyPreviousB) {
-	    long current = currentPosition;
-	    currentPosition = currentPosition - 1;
-	    fillValues();
-	    currentPosition = current;
-	    setChangedValues(true);
-	    enableSaveButton(true);
+		copyPrevious();
 	} else if (e.getSource() == zoomB) {
 	    zoom();
 	    // refreshGUI();
