@@ -58,10 +58,10 @@ public class AlphanumericNavTable extends NavTable {
     JButton newB = null;
     protected IEditableSource model;
 
-    public AlphanumericNavTable(IEditableSource model)
-	    throws ReadDriverException {
-	super(model.getRecordset());
-	this.model = model;
+    public AlphanumericNavTable(IEditableSource model, String dataName)
+    throws ReadDriverException {
+    	super(model.getRecordset(), dataName);
+    	this.model = model;
     }
 
     @Override

@@ -115,8 +115,8 @@ public class NavTable extends AbstractNavTable {
 	super(layer);
     }
 
-    public NavTable(SelectableDataSource recordset) {
-	super(recordset);
+    public NavTable(SelectableDataSource recordset, String tableName) {
+    	super(recordset, tableName);
     }
 
     public boolean isFillingValues() {
@@ -244,7 +244,7 @@ public class NavTable extends AbstractNavTable {
 
     			final FiltroExtension filterExt = new FiltroExtension();
     			//TODO: filterExt.setDatasource() method created by nachouve
-    			filterExt.setDatasource(recordset);
+    			filterExt.setDatasource(recordset, "");
 
     			DefaultExpressionDataSource ds = new DefaultExpressionDataSource();
     			ds.setTable(recordset);

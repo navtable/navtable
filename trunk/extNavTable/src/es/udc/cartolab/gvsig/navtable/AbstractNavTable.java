@@ -109,6 +109,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     protected FLyrVect layer = null;
     protected SelectableDataSource recordset = null;
+    protected String dataName = "";
 
     protected boolean changedValues = false;
 
@@ -147,9 +148,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     public AbstractNavTable(FLyrVect layer) {
 	super();
 	this.layer = layer;
-	WindowInfo window = this.getWindowInfo();
-	String title = window.getTitle();
-	window.setTitle(title + ": " + layer.getName());
+	this.dataName = layer.getName();
+    WindowInfo window = this.getWindowInfo();
+    String title = window.getTitle();
+    window.setTitle(title + ": " + dataName);
+
 	try {
 	    this.recordset = layer.getRecordset();
 	    this.recordset.addSelectionListener(this);
@@ -164,17 +167,18 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
      *
      * @param recordset
      */
-    public AbstractNavTable(SelectableDataSource recordset) {
-	super();
-	this.layer = null;
-	WindowInfo window = this.getWindowInfo();
-	String title = window.getTitle();
-	// TODO When the table is on edition, on title window
-	// is shown a weird identify instead of the layer name
-	window.setTitle(title + "*: " + recordset.getName());
+    public AbstractNavTable(SelectableDataSource recordset, String tableName) {
+        super();
+        this.layer = null;
+        this.dataName = tableName;
+        WindowInfo window = this.getWindowInfo();
+        String title = window.getTitle();
+        // TODO When the table is on edition, on title window
+        // is shown a weird identify instead of the layer name
+        window.setTitle(title + "*: " + dataName);
 
-	this.recordset = recordset;
-	this.recordset.addSelectionListener(this);
+        this.recordset = recordset;
+        this.recordset.addSelectionListener(this);
     }
 
     protected JButton getButton(int buttonName) {
@@ -356,7 +360,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
      */
     public abstract JPanel getCenterPanel();
 
-    private ImageIcon getIcon(String iconName) {
+    protected ImageIcon getIcon(String iconName) {
 	java.net.URL imgURL = null;
 	imgURL = getClass().getResource(iconName);
 	ImageIcon icon = new ImageIcon(imgURL);
@@ -687,7 +691,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
      * Removes all selections of the layer.
      *
      */
-    private void clearSelection() {
+    protected void clearSelection() {
 	FBitSet bitset = null;
 	if (layer instanceof AlphanumericData) {
 	    bitset = recordset.getSelection();
@@ -989,8 +993,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	} else if (e.getSource() == filterB) {
 	    FiltroExtension fe = new FiltroExtension();
 	    fe.initialize();
-	    fe.setDatasource(recordset);
-	    fe.execute("FILTRO");
+	    fe.setDatasource(recordset, dataName);
+	    fe.execute("FILTER_DATASOURCE");	    
 	} else if (e.getSource() == noFilterB) {
 	    clearSelection();
 	} else if (e.getSource() == nextB) {
