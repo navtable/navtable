@@ -231,7 +231,7 @@ public class NavTable extends AbstractNavTable {
     					e1.printStackTrace();
     				}
     				//TODO: At the moment, "length" and "area" do not work... But it's a nice feature!!! 
-    				if (i >= table.getRowCount()-2){
+    				if (rows[i] >= table.getRowCount()-2){
     					return;
     				}
     				//TODO: At the moment, only works with first row selected...
