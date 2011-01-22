@@ -27,8 +27,12 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,8 +41,10 @@ import java.io.IOException;
 import java.sql.Types;
 import java.util.Vector;
 
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
@@ -98,6 +104,7 @@ public class NavTable extends AbstractNavTable {
     private JPanel NorthPanel;
     private MyTableModelListener myTableModelListener;
     private MyKeyListener myKeyListener;
+    private MyMouseListener myMouseListener;
 
     public NavTable(FLyrVect layer) {
 	super(layer);
@@ -168,6 +175,9 @@ public class NavTable extends AbstractNavTable {
 
 	myKeyListener = new MyKeyListener();
 	table.addKeyListener(myKeyListener);
+	
+	myMouseListener = new MyMouseListener();
+	table.addMouseListener(myMouseListener);
 
 	this.cellRenderer = new AttribTableCellRenderer();
 
@@ -190,6 +200,74 @@ public class NavTable extends AbstractNavTable {
 	return centerPanel;
     }
 
+    class MyMouseListener implements MouseListener {
+
+		public void mouseClicked(MouseEvent e) {
+			
+			System.out.println(e.getX()+ ", " + e.getY() + "  BUTTON-" + e.getButton());
+			//Button3 (right)
+			if (e.getButton() == 3){
+				int[] rows = table.getSelectedRows();
+				String attrName = "";
+				String attrValue = "";
+				for (int i=0; i < rows.length; i++){
+					//TODO: When multiple rows selected!!! Change to other more complex panel
+					attrName = (String) table.getModel().getValueAt(rows[i], 0);
+					attrValue = (String) table.getModel().getValueAt(rows[i], 1);
+					System.out.println("Selected row: " + rows[i] + " (A,V)=(" 
+						+ attrName 
+						+","+ attrValue+")");
+				}
+				//TODO: It can be used ALIAS!!!!!
+				JMenuItem[] menus = new JMenuItem[2];
+				  menus[0]= new JMenuItem("Igual a '" + attrValue +"'");
+				  menus[0].addActionListener(new ActionListener(){
+				   public void actionPerformed(ActionEvent evt){
+				    //aqui va el codigo para ejecutar la opcion 1
+				   }
+				  });
+				  menus[1]= new JMenuItem("Distinto a '" + attrValue + "'");
+				  menus[1].addActionListener(new ActionListener(){
+				   public void actionPerformed(ActionEvent evt){
+				    //aqui va el codigo para ejecutar la opcion 2
+				   }
+				  });
+				  
+				  JPopupMenu emergente = new JPopupMenu();				  
+				  for(byte x=0; x<menus.length; x++){
+					  emergente.add(menus[x]);
+				  }
+				  emergente.show(table,e.getX(),e.getY());
+
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
+    }
+    
     class MyKeyListener implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 	}
