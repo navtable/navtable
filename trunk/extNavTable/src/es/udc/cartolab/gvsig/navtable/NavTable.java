@@ -59,10 +59,12 @@ import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
+import com.iver.andami.ui.mdiFrame.JPopUpMenu;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
+import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
@@ -70,6 +72,7 @@ import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.cit.gvsig.gui.filter.DefaultExpressionDataSource;
+import com.sun.org.apache.xerces.internal.dom.AttrNSImpl;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -202,70 +205,112 @@ public class NavTable extends AbstractNavTable {
 	return centerPanel;
     }
 
+
     class MyMouseListener implements MouseListener {
 
-		public void mouseClicked(MouseEvent e) {
-			
-			System.out.println(e.getX()+ ", " + e.getY() + "  BUTTON-" + e.getButton());
-			//Button3 (right)
-			if (e.getButton() == 3){
-				int[] rows = table.getSelectedRows();
-				String attrName = "";
-				String attrValue = "";
-				for (int i=0; i < rows.length; i++){
-					//TODO: When multiple rows selected!!! Change to other more complex panel
-					attrName = (String) table.getModel().getValueAt(rows[i], 0);
-					attrValue = (String) table.getModel().getValueAt(rows[i], 1);
-					System.out.println("Selected row: " + rows[i] + " (A,V)=(" 
-						+ attrName 
-						+","+ attrValue+")");
-				}
-				//TODO: It can be a number or other type!!!
-				DefaultExpressionDataSource ds = new DefaultExpressionDataSource();
-				ds.setTable(recordset);
-				//TODO: It can be used ALIAS!!!!!
-				final String expr1 = "select * from '" +
-									ds.getDataSourceName() + "' where " +
-									attrName + " = " + attrValue +";";
-				
-				final String expr2 = "select * from '" +
-				ds.getDataSourceName() + "' where " +
-				attrName + " != " + attrValue +";";
+    	public void mouseClicked(MouseEvent e) {
 
-				JMenuItem[] menus = new JMenuItem[2];
-				  menus[0]= new JMenuItem("Igual a '" + attrValue +"'");
-				  menus[0].addActionListener(new ActionListener(){
-				   public void actionPerformed(ActionEvent evt){
+    		System.out.println(e.getX()+ ", " + e.getY() + "  BUTTON-" + e.getButton());
+    		//Button3 (right)
+    		if (e.getButton() == 3){
+    			int[] rows = table.getSelectedRows();
+    			String _attrName = "";
+    			String _attrValue = "";
+    			int _attrType = 0;
+    			for (int i=0; i < rows.length; i++){
+    				//TODO: When multiple rows selected!!! Change to other more complex panel
+    				_attrName = (String) table.getModel().getValueAt(rows[i], 0);
+    				_attrValue = (String) table.getModel().getValueAt(rows[i], 1);					
+    				try {
+    					_attrType = recordset.getFieldType(rows[i]);
+    					System.out.println("Selected row: " + rows[i] + " (A,V)=(" 
+    							+ _attrName 
+    							+","+ _attrValue+")  type: " + _attrType);
+    					//TODO Other types: timestamp, date, ...
+    				} catch (ReadDriverException e1) {
+    					e1.printStackTrace();
+    				}
+    			}				
 
-					   FiltroExtension filterExt = new FiltroExtension();
-					   filterExt.setDatasource(recordset);
-					   System.out.println(expr1);					   
-					   filterExt.newSet(expr1);
-					   
-					   //TODO: See com.iver.cit.gvsig.gui.filter;
-					 //TODO: See com.iver.cit.gvsig.FiltroExtension;
-					   
-				   }
-				  });
-				  menus[1]= new JMenuItem("Distinto a '" + attrValue + "'");
-				  menus[1].addActionListener(new ActionListener(){
-				   public void actionPerformed(ActionEvent evt){
-					   FiltroExtension filterExt = new FiltroExtension();
-					   filterExt.setDatasource(recordset);
-					   System.out.println(expr2);					   
-					   filterExt.newSet(expr2);
+    			final String attrName = _attrName;
+    			final String attrValue = _attrValue;
+    			final int attrType = _attrType;
 
-				   }
-				  });
-				  
-				  JPopupMenu emergente = new JPopupMenu();				  
-				  for(byte x=0; x<menus.length; x++){
-					  emergente.add(menus[x]);
-				  }
-				  emergente.show(table,e.getX(),e.getY());
+    			final FiltroExtension filterExt = new FiltroExtension();
+    			//TODO: filterExt.setDatasource() method created by nachouve
+    			filterExt.setDatasource(recordset);
 
-			}
-		}
+    			DefaultExpressionDataSource ds = new DefaultExpressionDataSource();
+    			ds.setTable(recordset);
+    			String dataSourceName = ds.getDataSourceName();
+    			final String st_expr = "select * from '" + dataSourceName + "' where " + attrName;
+
+    			if (attrType == java.sql.Types.VARCHAR){
+    				JMenuItem[] menus = new JMenuItem[3];
+    				menus[0]= new JMenuItem("Igual a '" + attrValue +"'");
+    				menus[0].addActionListener(new ActionListener(){
+    					public void actionPerformed(ActionEvent evt){
+    						String expr = st_expr + " = '" + attrValue +"';";				
+    						System.out.println(expr);
+    						filterExt.newSet(expr);					   
+    						//TODO: See com.iver.cit.gvsig.gui.filter;
+    						//TODO: See com.iver.cit.gvsig.FiltroExtension;
+    					}
+    				});
+    				menus[1]= new JMenuItem("Distinto a '" + attrValue + "'");
+    				menus[1].addActionListener(new ActionListener(){
+    					public void actionPerformed(ActionEvent evt){
+    						String expr = st_expr + " != '" + attrValue +"';";
+    						System.out.println(expr);					   
+    						filterExt.newSet(expr);
+    					}
+    				});
+
+    				menus[2]= new JMenuItem("Contiene...'");
+    				menus[2].addActionListener(new ActionListener(){
+    					public void actionPerformed(ActionEvent evt){
+    						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
+    						String expr= st_expr + " like '%" + attrValue +"%';";
+    						System.out.println(expr);  
+    						filterExt.newSet(expr);
+    					}
+    				});
+    			} else {
+    				JMenuItem[] menus = new JMenuItem[3];
+    				menus[0]= new JMenuItem("Igual a '" + attrValue +"'");
+    				menus[0].addActionListener(new ActionListener(){
+    					public void actionPerformed(ActionEvent evt){
+    						String expr = st_expr + " = '" + attrValue +"';";				
+    						System.out.println(expr);
+    						filterExt.newSet(expr);					   
+    						//TODO: See com.iver.cit.gvsig.gui.filter;
+    						//TODO: See com.iver.cit.gvsig.FiltroExtension;
+    					}
+    				});
+					menus[1]= new JMenuItem("Distinto a '" + attrValue + "'");
+    				menus[1].addActionListener(new ActionListener(){
+    					public void actionPerformed(ActionEvent evt){
+    						String expr = st_expr + " != '" + attrValue +"';";
+    						System.out.println(expr);					   
+    						filterExt.newSet(expr);
+    					}
+    				});
+
+    				menus[2]= new JMenuItem("Contiene...'");
+    				menus[2].addActionListener(new ActionListener(){
+    					public void actionPerformed(ActionEvent evt){
+    						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
+    						String expr= st_expr + " like '%" + attrValue +"%';";
+    						System.out.println(expr);  
+    						filterExt.newSet(expr);
+    					}
+    				});
+        			JPopUpMenu popup = new JPopUpMenu();
+        			popup.add(menus);
+    				popup.show(table,e.getX(),e.getY());
+    			}
+    		}
+    	}
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
@@ -290,7 +335,6 @@ public class NavTable extends AbstractNavTable {
 			// TODO Auto-generated method stub
 			
 		}
-    	
     }
     
     class MyKeyListener implements KeyListener {
@@ -440,6 +484,10 @@ public class NavTable extends AbstractNavTable {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    Vector<String> aux = null;
 
+	    //TODO: CHECK BUG!! Some takes the deleted fields on the DBF????
+	    //FieldDescription[] fd = recordset.getFieldsDescription();
+	    //fd[1].
+	    
 	    for (String attName : recordset.getFieldNames()) {
 		aux = new Vector<String>(2);
 		aux.add(getAlias(attName));
