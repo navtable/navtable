@@ -213,12 +213,15 @@ public class NavTable extends AbstractNavTable {
     		System.out.println(e.getX()+ ", " + e.getY() + "  BUTTON-" + e.getButton());
     		//Button3 (right)
     		if (e.getButton() == 3){
-    			int[] rows = table.getSelectedRows();
-    			String _attrName = "";
+    			int[] rows = table.getSelectedRows();    			
+				String _attrName = "";
     			String _attrValue = "";
     			int _attrType = 0;
     			for (int i=0; i < rows.length; i++){
-    				//TODO: When multiple rows selected!!! Change to other more complex panel
+    				//TODO: At the moment, "length" and "area" do not work... But it's a nice feature!!! 
+    				if (rows[i] >= table.getRowCount()-2){
+    					return;
+    				}    				
     				_attrName = (String) table.getModel().getValueAt(rows[i], 0);
     				_attrValue = (String) table.getModel().getValueAt(rows[i], 1);					
     				try {
@@ -230,11 +233,8 @@ public class NavTable extends AbstractNavTable {
     				} catch (ReadDriverException e1) {
     					e1.printStackTrace();
     				}
-    				//TODO: At the moment, "length" and "area" do not work... But it's a nice feature!!! 
-    				if (rows[i] >= table.getRowCount()-2){
-    					return;
-    				}
     				//TODO: At the moment, only works with first row selected...
+    				//TODO: When multiple rows selected!!! Change to other more complex panel
     				break;
     			}				
 
