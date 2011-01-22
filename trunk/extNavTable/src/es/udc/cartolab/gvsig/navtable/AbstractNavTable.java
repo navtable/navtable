@@ -989,6 +989,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	} else if (e.getSource() == filterB) {
 	    FiltroExtension fe = new FiltroExtension();
 	    fe.initialize();
+	    fe.setDatasource(recordset);
 	    fe.execute("FILTRO");
 	} else if (e.getSource() == noFilterB) {
 	    clearSelection();
