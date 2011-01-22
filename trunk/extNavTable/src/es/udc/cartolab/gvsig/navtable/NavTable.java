@@ -65,6 +65,7 @@ import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
+import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
@@ -243,28 +244,36 @@ public class NavTable extends AbstractNavTable {
     			final int attrType = _attrType;
 
     			final FiltroExtension filterExt = new FiltroExtension();
-    			//TODO: filterExt.setDatasource() method created by nachouve
     			filterExt.setDatasource(recordset, "");
 
     			DefaultExpressionDataSource ds = new DefaultExpressionDataSource();
     			ds.setTable(recordset);
+    			
+    			FBitSet fbitset = recordset.getSelection();
+    			boolean filterIsSet = (fbitset.cardinality() > 0);
+    			int addFilterMenuItem = (filterIsSet ? 1 : 0);
+    			
     			String dataSourceName = ds.getDataSourceName();
     			final String st_expr = "select * from '" + dataSourceName + "' where " + attrName;
 
+    			//TODO USE newSet(), fromSet(), addSet?
+    			//TODO Maybe a good idea is use JCheckBoxMenuItem with a ItemListener to get the state
     			JMenuItem[] menus = null;
+    			// TODO: WARNING WITH ALL OTHER TYPES (DATE, etc)
     			if (attrType == java.sql.Types.VARCHAR){
-    				menus = new JMenuItem[3];
+    				menus = new JMenuItem[4 + addFilterMenuItem];
+    			    
     				menus[0]= new JMenuItem("Igual a " + "'" + attrValue +"'");
-    				menus[0].addActionListener(new ActionListener(){
-    					public void actionPerformed(ActionEvent evt){
-    						String expr = st_expr + " = '" + attrValue +"';";				
-    						System.out.println(expr);
-    						filterExt.newSet(expr);					   
-    						//TODO: See com.iver.cit.gvsig.gui.filter;
-    						//TODO: See com.iver.cit.gvsig.FiltroExtension;
-    					}
-    				});
-    				menus[1]= new JMenuItem("Distinto a " + "'" + attrValue + "'");
+    			    menus[0].addActionListener(new ActionListener(){
+    			    	public void actionPerformed(ActionEvent evt){                               
+    			    		String expr = st_expr + " = '" + attrValue +"';";
+    			            System.out.println(expr);
+    			            //TODO: See possibilities com.iver.cit.gvsig.FiltroExtension;
+    			            filterExt.newSet(expr);
+    			    	}
+    			    });
+    			    
+    			    menus[1]= new JMenuItem("Distinto a " + "'" + attrValue + "'");
     				menus[1].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " != '" + attrValue +"';";
@@ -282,19 +291,38 @@ public class NavTable extends AbstractNavTable {
     						filterExt.newSet(expr);
     					}
     				});
+    				
+                    menus[3]= new JMenuItem("Filtrar", getIcon("/filter.png"));
+                    menus[3].addActionListener(new ActionListener(){
+                            public void actionPerformed(ActionEvent evt){
+                                    filterExt.initialize();
+                                    filterExt.setDatasource(recordset, dataName);
+                                    filterExt.execute("FILTER_DATASOURCE");
+                            }
+                    });
+
+                    if (filterIsSet) {
+                            menus[4]= new JMenuItem("Quitar seleccion", getIcon("/nofilter.png"));
+                            menus[4].addActionListener(new ActionListener(){
+                                    public void actionPerformed(ActionEvent evt){
+                                            clearSelection();
+                                    }
+                            });
+                    }
+
     			} else {
-    				// TODO: ALL OTHER TYPES 
-    				menus = new JMenuItem[4];
+    				 // TODO: WARNING ALL OTHER TYPES (DATE??) 
+    				menus = new JMenuItem[5 + addFilterMenuItem];
+    				
     				menus[0]= new JMenuItem("Igual a (==)"+ " \t'" + attrValue +"'");
     				menus[0].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " = " + attrValue +";";				
     						System.out.println(expr);
-    						filterExt.newSet(expr);					   
-    						//TODO: See com.iver.cit.gvsig.gui.filter;
-    						//TODO: See com.iver.cit.gvsig.FiltroExtension;
+    						filterExt.newSet(expr);    					
     					}
     				});
+    				
 					menus[1]= new JMenuItem("Distinto a (!=)"+ " \t'" + attrValue + "'");
     				menus[1].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
@@ -323,6 +351,25 @@ public class NavTable extends AbstractNavTable {
     						filterExt.newSet(expr);
     					}
     				});
+    				
+                    menus[4]= new JMenuItem("Filtrar", getIcon("/filter.png"));
+                    menus[4].addActionListener(new ActionListener(){
+                            public void actionPerformed(ActionEvent evt){
+                                    filterExt.initialize();
+                                    filterExt.setDatasource(recordset, dataName);
+                                    filterExt.execute("FILTER_DATASOURCE");
+                            }
+                    });
+
+                    if (filterIsSet){
+                            menus[5]= new JMenuItem("Quitar seleccion", getIcon("/nofilter.png"));
+                            menus[5].addActionListener(new ActionListener(){
+                                    public void actionPerformed(ActionEvent evt){
+                                            clearSelection();
+                                    }
+                            });
+                    }
+    				
     			}
     			
 				JPopupMenu popup = new JPopupMenu();
