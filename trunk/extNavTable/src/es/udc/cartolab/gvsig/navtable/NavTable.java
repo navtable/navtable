@@ -230,6 +230,12 @@ public class NavTable extends AbstractNavTable {
     				} catch (ReadDriverException e1) {
     					e1.printStackTrace();
     				}
+    				//TODO: At the moment, "length" and "area" do not work... But it's a nice feature!!! 
+    				if (i >= table.getRowCount()-2){
+    					return;
+    				}
+    				//TODO: At the moment, only works with first row selected...
+    				break;
     			}				
 
     			final String attrName = _attrName;
