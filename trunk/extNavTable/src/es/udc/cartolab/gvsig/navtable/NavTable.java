@@ -61,6 +61,7 @@ import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
+import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
@@ -68,6 +69,7 @@ import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
+import com.iver.cit.gvsig.gui.filter.DefaultExpressionDataSource;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -218,18 +220,41 @@ public class NavTable extends AbstractNavTable {
 						+ attrName 
 						+","+ attrValue+")");
 				}
+				//TODO: It can be a number or other type!!!
+				DefaultExpressionDataSource ds = new DefaultExpressionDataSource();
+				ds.setTable(recordset);
 				//TODO: It can be used ALIAS!!!!!
+				final String expr1 = "select * from '" +
+									ds.getDataSourceName() + "' where " +
+									attrName + " = " + attrValue +";";
+				
+				final String expr2 = "select * from '" +
+				ds.getDataSourceName() + "' where " +
+				attrName + " != " + attrValue +";";
+
 				JMenuItem[] menus = new JMenuItem[2];
 				  menus[0]= new JMenuItem("Igual a '" + attrValue +"'");
 				  menus[0].addActionListener(new ActionListener(){
 				   public void actionPerformed(ActionEvent evt){
-				    //aqui va el codigo para ejecutar la opcion 1
+
+					   FiltroExtension filterExt = new FiltroExtension();
+					   filterExt.setDatasource(recordset);
+					   System.out.println(expr1);					   
+					   filterExt.newSet(expr1);
+					   
+					   //TODO: See com.iver.cit.gvsig.gui.filter;
+					 //TODO: See com.iver.cit.gvsig.FiltroExtension;
+					   
 				   }
 				  });
 				  menus[1]= new JMenuItem("Distinto a '" + attrValue + "'");
 				  menus[1].addActionListener(new ActionListener(){
 				   public void actionPerformed(ActionEvent evt){
-				    //aqui va el codigo para ejecutar la opcion 2
+					   FiltroExtension filterExt = new FiltroExtension();
+					   filterExt.setDatasource(recordset);
+					   System.out.println(expr2);					   
+					   filterExt.newSet(expr2);
+
 				   }
 				  });
 				  
