@@ -245,9 +245,10 @@ public class NavTable extends AbstractNavTable {
     			String dataSourceName = ds.getDataSourceName();
     			final String st_expr = "select * from '" + dataSourceName + "' where " + attrName;
 
+    			JMenuItem[] menus = null;
     			if (attrType == java.sql.Types.VARCHAR){
-    				JMenuItem[] menus = new JMenuItem[3];
-    				menus[0]= new JMenuItem("Igual a '" + attrValue +"'");
+    				menus = new JMenuItem[3];
+    				menus[0]= new JMenuItem("Igual a " + "'" + attrValue +"'");
     				menus[0].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " = '" + attrValue +"';";				
@@ -257,7 +258,7 @@ public class NavTable extends AbstractNavTable {
     						//TODO: See com.iver.cit.gvsig.FiltroExtension;
     					}
     				});
-    				menus[1]= new JMenuItem("Distinto a '" + attrValue + "'");
+    				menus[1]= new JMenuItem("Distinto a " + "'" + attrValue + "'");
     				menus[1].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " != '" + attrValue +"';";
@@ -266,7 +267,7 @@ public class NavTable extends AbstractNavTable {
     					}
     				});
 
-    				menus[2]= new JMenuItem("Contiene...'");
+    				menus[2]= new JMenuItem("Contiene... ");
     				menus[2].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
@@ -276,39 +277,53 @@ public class NavTable extends AbstractNavTable {
     					}
     				});
     			} else {
-    				JMenuItem[] menus = new JMenuItem[3];
-    				menus[0]= new JMenuItem("Igual a '" + attrValue +"'");
+    				// TODO: ALL OTHER TYPES 
+    				menus = new JMenuItem[4];
+    				menus[0]= new JMenuItem("Igual a (==)"+ " \t'" + attrValue +"'");
     				menus[0].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
-    						String expr = st_expr + " = '" + attrValue +"';";				
+    						String expr = st_expr + " = " + attrValue +";";				
     						System.out.println(expr);
     						filterExt.newSet(expr);					   
     						//TODO: See com.iver.cit.gvsig.gui.filter;
     						//TODO: See com.iver.cit.gvsig.FiltroExtension;
     					}
     				});
-					menus[1]= new JMenuItem("Distinto a '" + attrValue + "'");
+					menus[1]= new JMenuItem("Distinto a (!=)"+ " \t'" + attrValue + "'");
     				menus[1].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
-    						String expr = st_expr + " != '" + attrValue +"';";
+    						String expr = st_expr + " != " + attrValue +";";
     						System.out.println(expr);					   
     						filterExt.newSet(expr);
     					}
     				});
 
-    				menus[2]= new JMenuItem("Contiene...'");
+    				menus[2]= new JMenuItem("Menor que (<)"+ " \t'" + attrValue + "'");
     				menus[2].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
-    						String expr= st_expr + " like '%" + attrValue +"%';";
+    						String expr= st_expr + " < " + attrValue +";";
     						System.out.println(expr);  
     						filterExt.newSet(expr);
     					}
     				});
-        			JPopUpMenu popup = new JPopUpMenu();
-        			popup.add(menus);
-    				popup.show(table,e.getX(),e.getY());
+    				
+    				menus[3]= new JMenuItem("Mayor que (>)"+ " \t'" + attrValue + "'");
+    				menus[3].addActionListener(new ActionListener(){
+    					public void actionPerformed(ActionEvent evt){
+    						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
+    						String expr= st_expr + " > " + attrValue +";";
+    						System.out.println(expr);  
+    						filterExt.newSet(expr);
+    					}
+    				});
     			}
+    			
+				JPopupMenu popup = new JPopupMenu();
+				for(byte x=0; x<menus.length; x++){
+					popup.add(menus[x]);
+				}	
+				popup.show(table,e.getX(),e.getY());
     		}
     	}
 
