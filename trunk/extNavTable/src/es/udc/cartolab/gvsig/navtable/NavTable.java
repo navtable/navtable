@@ -285,10 +285,17 @@ public class NavTable extends AbstractNavTable {
     				menus[2]= new JMenuItem("Contiene... ");
     				menus[2].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
-    						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
-    						String expr= st_expr + " like '%" + attrValue +"%';";
-    						System.out.println(expr);  
-    						filterExt.newSet(expr);
+    						 String attr = (String)JOptionPane.showInputDialog(NavTable.this,
+    								 "Escriba la subcadena a buscar: ",
+    								 "Contiene",
+    								 JOptionPane.PLAIN_MESSAGE);
+
+    						 if (attr != null){
+    							//TODO: Scape special characters like '%', "'", ...
+    							String expr= st_expr + " like '%" + attr +"%';";
+    							System.out.println(expr);
+    							filterExt.newSet(expr);
+    						}
     					}
     				});
     				
@@ -319,7 +326,7 @@ public class NavTable extends AbstractNavTable {
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " = " + attrValue +";";				
     						System.out.println(expr);
-    						filterExt.newSet(expr);    					
+    						filterExt.newSet(expr);
     					}
     				});
     				
