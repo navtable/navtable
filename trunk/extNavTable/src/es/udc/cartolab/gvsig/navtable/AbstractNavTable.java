@@ -161,11 +161,23 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	}
     }
 
+    //TODO [nachouve] Check this method because
+    //when the table is on edition a weird identify
+    //is shown the title window instead of the layer name.
+    //Maybe can be set as deprecated and be replaced by:
+    //	   {@link AbstractNavTable(SelectableDataSource, String)}
+    //with a properly name as string parameter.
+    //TODO Check AbstractNavTable(FLayer) also on this point
+    public AbstractNavTable(SelectableDataSource recordset) {
+    	this(recordset, recordset.getName());
+    }
+
     /**
      * Constructor of the class. This constructor is used by
      * AlphanumericNavTable
      *
      * @param recordset
+     * @param tableName
      */
     public AbstractNavTable(SelectableDataSource recordset, String tableName) {
         super();
@@ -173,8 +185,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
         this.dataName = tableName;
         WindowInfo window = this.getWindowInfo();
         String title = window.getTitle();
-        // TODO When the table is on edition, on title window
-        // is shown a weird identify instead of the layer name
         window.setTitle(title + "*: " + dataName);
 
         this.recordset = recordset;
