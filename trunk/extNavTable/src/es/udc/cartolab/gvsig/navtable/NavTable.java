@@ -263,7 +263,7 @@ public class NavTable extends AbstractNavTable {
     			if (attrType == java.sql.Types.VARCHAR){
     				menus = new JMenuItem[4 + addFilterMenuItem];
     			    
-    				menus[0]= new JMenuItem("Igual a " + "'" + attrValue +"'");
+    				menus[0]= new JMenuItem(PluginServices.getText(this, "filter_equals") + " '" + attrValue +"'");
     			    menus[0].addActionListener(new ActionListener(){
     			    	public void actionPerformed(ActionEvent evt){                               
     			    		String expr = st_expr + " = '" + attrValue +"';";
@@ -273,7 +273,7 @@ public class NavTable extends AbstractNavTable {
     			    	}
     			    });
     			    
-    			    menus[1]= new JMenuItem("Distinto a " + "'" + attrValue + "'");
+    			    menus[1]= new JMenuItem(PluginServices.getText(this, "filter_different") + " '" + attrValue + "'");
     				menus[1].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " != '" + attrValue +"';";
@@ -282,12 +282,12 @@ public class NavTable extends AbstractNavTable {
     					}
     				});
 
-    				menus[2]= new JMenuItem("Contiene... ");
+    				menus[2]= new JMenuItem(PluginServices.getText(this, "filter_contains"));
     				menus[2].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						 String attr = (String)JOptionPane.showInputDialog(NavTable.this,
-    								 "Escriba la subcadena a buscar: ",
-    								 "Contiene",
+    								 PluginServices.getText(this, "filter_write_string"),
+    								 PluginServices.getText(this, "filter_contains_window_title"),
     								 JOptionPane.PLAIN_MESSAGE);
 
     						 if (attr != null){
@@ -299,7 +299,7 @@ public class NavTable extends AbstractNavTable {
     					}
     				});
     				
-                    menus[3]= new JMenuItem("Filtrar", getIcon("/filter.png"));
+                    menus[3]= new JMenuItem(PluginServices.getText(this, "filter_filter"), getIcon("/filter.png"));
                     menus[3].addActionListener(new ActionListener(){
                             public void actionPerformed(ActionEvent evt){
                                     filterExt.initialize();
@@ -309,7 +309,7 @@ public class NavTable extends AbstractNavTable {
                     });
 
                     if (filterIsSet) {
-                            menus[4]= new JMenuItem("Quitar seleccion", getIcon("/nofilter.png"));
+                            menus[4]= new JMenuItem(PluginServices.getText(this, "filter_remove_filter"), getIcon("/nofilter.png"));
                             menus[4].addActionListener(new ActionListener(){
                                     public void actionPerformed(ActionEvent evt){
                                             clearSelection();
@@ -321,7 +321,7 @@ public class NavTable extends AbstractNavTable {
     				 // TODO: WARNING ALL OTHER TYPES (DATE??) 
     				menus = new JMenuItem[5 + addFilterMenuItem];
     				
-    				menus[0]= new JMenuItem("Igual a (==)"+ " \t'" + attrValue +"'");
+    				menus[0]= new JMenuItem(PluginServices.getText(this, "filter_numeric_equals")+ " \t'" + attrValue +"'");
     				menus[0].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " = " + attrValue +";";				
@@ -330,7 +330,7 @@ public class NavTable extends AbstractNavTable {
     					}
     				});
     				
-					menus[1]= new JMenuItem("Distinto a (!=)"+ " \t'" + attrValue + "'");
+					menus[1]= new JMenuItem(PluginServices.getText(this, "filter_numeric_different")+ " \t'" + attrValue + "'");
     				menus[1].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " != " + attrValue +";";
@@ -339,7 +339,7 @@ public class NavTable extends AbstractNavTable {
     					}
     				});
 
-    				menus[2]= new JMenuItem("Menor que (<)"+ " \t'" + attrValue + "'");
+    				menus[2]= new JMenuItem(PluginServices.getText(this, "filter_numeric_less")+ " \t'" + attrValue + "'");
     				menus[2].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
@@ -349,7 +349,7 @@ public class NavTable extends AbstractNavTable {
     					}
     				});
     				
-    				menus[3]= new JMenuItem("Mayor que (>)"+ " \t'" + attrValue + "'");
+    				menus[3]= new JMenuItem(PluginServices.getText(this, "filter_numeric_greater")+ " \t'" + attrValue + "'");
     				menus[3].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
@@ -359,7 +359,7 @@ public class NavTable extends AbstractNavTable {
     					}
     				});
     				
-                    menus[4]= new JMenuItem("Filtrar", getIcon("/filter.png"));
+                    menus[4]= new JMenuItem(PluginServices.getText(this, "filter_filter"), getIcon("/filter.png"));
                     menus[4].addActionListener(new ActionListener(){
                             public void actionPerformed(ActionEvent evt){
                                     filterExt.initialize();
@@ -369,7 +369,7 @@ public class NavTable extends AbstractNavTable {
                     });
 
                     if (filterIsSet){
-                            menus[5]= new JMenuItem("Quitar seleccion", getIcon("/nofilter.png"));
+                            menus[5]= new JMenuItem(PluginServices.getText(this, "filter_remove_filter"), getIcon("/nofilter.png"));
                             menus[5].addActionListener(new ActionListener(){
                                     public void actionPerformed(ActionEvent evt){
                                             clearSelection();
