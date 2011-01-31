@@ -1,6 +1,6 @@
 /*
  * This file is part of NavTable
- * Copyright (C) 2009 - 2010  Cartolab (Universidade da Coruña)
+ * Copyright (C) 2009 - 2010  Cartolab (Universidade da Coruï¿½a)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  * 
  * 
  * Authors:
- *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
+ *   Juan Ignacio Varela Garcï¿½a <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
- *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
+ *   Javier Estï¿½vez Valiï¿½as <valdaris (at) gmail (dot) com>
  */
 package es.udc.cartolab.gvsig.navtable;
 
@@ -387,25 +387,21 @@ public class NavTable extends AbstractNavTable {
     		}
     	}
 
-		@Override
 		public void mouseEntered(MouseEvent e) {
 			// TODO Auto-generated method stub
 			
 		}
 
-		@Override
 		public void mouseExited(MouseEvent e) {
 			// TODO Auto-generated method stub
 			
 		}
 
-		@Override
 		public void mousePressed(MouseEvent e) {
 			// TODO Auto-generated method stub
 			
 		}
 
-		@Override
 		public void mouseReleased(MouseEvent e) {
 			// TODO Auto-generated method stub
 			
