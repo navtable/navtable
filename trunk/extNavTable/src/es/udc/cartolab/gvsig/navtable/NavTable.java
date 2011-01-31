@@ -24,6 +24,7 @@
 package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
@@ -111,6 +112,9 @@ public class NavTable extends AbstractNavTable {
     private MyTableModelListener myTableModelListener;
     private MyKeyListener myKeyListener;
     private MyMouseListener myMouseListener;
+    
+    //Mouse buttons constants
+    final int BUTTON_RIGHT = 3;
 
     public NavTable(FLyrVect layer) {
 	super(layer);
@@ -210,16 +214,13 @@ public class NavTable extends AbstractNavTable {
     class MyMouseListener implements MouseListener {
 
     	public void mouseClicked(MouseEvent e) {
-
-    		System.out.println(e.getX()+ ", " + e.getY() + "  BUTTON-" + e.getButton());
-    		//Button3 (right)
-    		if (e.getButton() == 3){
+    		if (e.getButton() == BUTTON_RIGHT){
     			int[] rows = table.getSelectedRows();    			
 				String _attrName = "";
     			String _attrValue = "";
     			int _attrType = 0;
     			for (int i=0; i < rows.length; i++){
-    				//TODO: At the moment, "length" and "area" do not work... But it's a nice feature!!! 
+    				//TODO: At the moment, filters do not work with automatic calculated fields "length" and "area" 
     				if (rows[i] >= table.getRowCount()-2){
     					return;
     				}    				
@@ -227,15 +228,14 @@ public class NavTable extends AbstractNavTable {
     				_attrValue = (String) table.getModel().getValueAt(rows[i], 1);					
     				try {
     					_attrType = recordset.getFieldType(rows[i]);
-    					System.out.println("Selected row: " + rows[i] + " (A,V)=(" 
+    					logger.warn("Selected row: " + rows[i] + " (A,V)=(" 
     							+ _attrName 
     							+","+ _attrValue+")  type: " + _attrType);
-    					//TODO Other types: timestamp, date, ...
+    					//TODO Make compatible with other types: timestamp, date, ...
     				} catch (ReadDriverException e1) {
     					e1.printStackTrace();
     				}
-    				//TODO: At the moment, only works with first row selected...
-    				//TODO: When multiple rows selected!!! Change to other more complex panel
+    				//TODO: This panel only works with the first row selected for now.
     				break;
     			}				
 
@@ -257,7 +257,7 @@ public class NavTable extends AbstractNavTable {
     			final String st_expr = "select * from '" + dataSourceName + "' where " + attrName;
 
     			//TODO USE newSet(), fromSet(), addSet?
-    			//TODO Maybe a good idea is use JCheckBoxMenuItem with a ItemListener to get the state
+    			//TODO Maybe a good idea is using JCheckBoxMenuItem with a ItemListener to get state
     			JMenuItem[] menus = null;
     			// TODO: WARNING WITH ALL OTHER TYPES (DATE, etc)
     			if (attrType == java.sql.Types.VARCHAR){
@@ -267,7 +267,7 @@ public class NavTable extends AbstractNavTable {
     			    menus[0].addActionListener(new ActionListener(){
     			    	public void actionPerformed(ActionEvent evt){                               
     			    		String expr = st_expr + " = '" + attrValue +"';";
-    			            System.out.println(expr);
+    			            logger.warn(expr);
     			            //TODO: See possibilities com.iver.cit.gvsig.FiltroExtension;
     			            filterExt.newSet(expr);
     			    	}
@@ -277,7 +277,7 @@ public class NavTable extends AbstractNavTable {
     				menus[1].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " != '" + attrValue +"';";
-    						System.out.println(expr);					   
+    						logger.warn(expr);					   
     						filterExt.newSet(expr);
     					}
     				});
@@ -291,9 +291,9 @@ public class NavTable extends AbstractNavTable {
     								 JOptionPane.PLAIN_MESSAGE);
 
     						 if (attr != null){
-    							//TODO: Scape special characters like '%', "'", ...
+    							//TODO: We need to escape special characters like '%', "'", ...
     							String expr= st_expr + " like '%" + attr +"%';";
-    							System.out.println(expr);
+    							logger.warn(expr);
     							filterExt.newSet(expr);
     						}
     					}
@@ -325,7 +325,7 @@ public class NavTable extends AbstractNavTable {
     				menus[0].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " = " + attrValue +";";				
-    						System.out.println(expr);
+    						logger.warn(expr);
     						filterExt.newSet(expr);
     					}
     				});
@@ -334,7 +334,7 @@ public class NavTable extends AbstractNavTable {
     				menus[1].addActionListener(new ActionListener(){
     					public void actionPerformed(ActionEvent evt){
     						String expr = st_expr + " != " + attrValue +";";
-    						System.out.println(expr);					   
+    						logger.warn(expr);					   
     						filterExt.newSet(expr);
     					}
     				});
@@ -344,7 +344,7 @@ public class NavTable extends AbstractNavTable {
     					public void actionPerformed(ActionEvent evt){
     						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
     						String expr= st_expr + " < " + attrValue +";";
-    						System.out.println(expr);  
+    						logger.warn(expr);  
     						filterExt.newSet(expr);
     					}
     				});
@@ -354,7 +354,7 @@ public class NavTable extends AbstractNavTable {
     					public void actionPerformed(ActionEvent evt){
     						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
     						String expr= st_expr + " > " + attrValue +";";
-    						System.out.println(expr);  
+    						logger.warn(expr);  
     						filterExt.newSet(expr);
     					}
     				});
@@ -555,7 +555,7 @@ public class NavTable extends AbstractNavTable {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    Vector<String> aux = null;
 
-	    //TODO: CHECK BUG!! Some takes the deleted fields on the DBF????
+	    //TODO: Some times it takes the deleted fields on the DBF
 	    //FieldDescription[] fd = recordset.getFieldsDescription();
 	    //fd[1].
 	    
