@@ -24,7 +24,6 @@
 package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
@@ -60,12 +59,10 @@ import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiFrame.JPopUpMenu;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
-import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
@@ -74,7 +71,6 @@ import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.cit.gvsig.gui.filter.DefaultExpressionDataSource;
-import com.sun.org.apache.xerces.internal.dom.AttrNSImpl;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -210,204 +206,58 @@ public class NavTable extends AbstractNavTable {
 	return centerPanel;
     }
 
-
     class MyMouseListener implements MouseListener {
 
-    	public void mouseClicked(MouseEvent e) {
-    		if (e.getButton() == BUTTON_RIGHT){
-    			int[] rows = table.getSelectedRows();    			
-				String _attrName = "";
-    			String _attrValue = "";
-    			int _attrType = 0;
-    			for (int i=0; i < rows.length; i++){
-    				//TODO: At the moment, filters do not work with automatic calculated fields "length" and "area" 
-    				if (rows[i] >= table.getRowCount()-2){
-    					return;
-    				}    				
-    				_attrName = (String) table.getModel().getValueAt(rows[i], 0);
-    				_attrValue = (String) table.getModel().getValueAt(rows[i], 1);					
-    				try {
-    					_attrType = recordset.getFieldType(rows[i]);
-    					logger.warn("Selected row: " + rows[i] + " (A,V)=(" 
-    							+ _attrName 
-    							+","+ _attrValue+")  type: " + _attrType);
-    					//TODO Make compatible with other types: timestamp, date, ...
-    				} catch (ReadDriverException e1) {
-    					e1.printStackTrace();
-    				}
-    				//TODO: This panel only works with the first row selected for now.
-    				break;
-    			}				
+	public void mouseClicked(MouseEvent e) {
+	    /*
+	     * TODO At the moment, filters do not work with automatic calculated
+	     * fields "length" and "area". Besides, the filter panel only is
+	     * activated if only 1 row is selected.
+	     */
+	    if (e.getButton() == BUTTON_RIGHT
+		    && table.getSelectedRowCount() == 1
+		    && !isSelectedRowAreaOrLength()) {
 
-    			final String attrName = _attrName;
-    			final String attrValue = _attrValue;
-    			final int attrType = _attrType;
-
-    			final FiltroExtension filterExt = new FiltroExtension();
-    			filterExt.setDatasource(recordset, "");
-
-    			DefaultExpressionDataSource ds = new DefaultExpressionDataSource();
-    			ds.setTable(recordset);
-    			
-    			FBitSet fbitset = recordset.getSelection();
-    			boolean filterIsSet = (fbitset.cardinality() > 0);
-    			int addFilterMenuItem = (filterIsSet ? 1 : 0);
-    			
-    			String dataSourceName = ds.getDataSourceName();
-    			final String st_expr = "select * from '" + dataSourceName + "' where " + attrName;
-
-    			//TODO USE newSet(), fromSet(), addSet?
-    			//TODO Maybe a good idea is using JCheckBoxMenuItem with a ItemListener to get state
-    			JMenuItem[] menus = null;
-    			// TODO: WARNING WITH ALL OTHER TYPES (DATE, etc)
-    			if (attrType == java.sql.Types.VARCHAR){
-    				menus = new JMenuItem[4 + addFilterMenuItem];
-    			    
-    				menus[0]= new JMenuItem(PluginServices.getText(this, "filter_equals") + " '" + attrValue +"'");
-    			    menus[0].addActionListener(new ActionListener(){
-    			    	public void actionPerformed(ActionEvent evt){                               
-    			    		String expr = st_expr + " = '" + attrValue +"';";
-    			            logger.warn(expr);
-    			            //TODO: See possibilities com.iver.cit.gvsig.FiltroExtension;
-    			            filterExt.newSet(expr);
-    			    	}
-    			    });
-    			    
-    			    menus[1]= new JMenuItem(PluginServices.getText(this, "filter_different") + " '" + attrValue + "'");
-    				menus[1].addActionListener(new ActionListener(){
-    					public void actionPerformed(ActionEvent evt){
-    						String expr = st_expr + " != '" + attrValue +"';";
-    						logger.warn(expr);					   
-    						filterExt.newSet(expr);
-    					}
-    				});
-
-    				menus[2]= new JMenuItem(PluginServices.getText(this, "filter_contains"));
-    				menus[2].addActionListener(new ActionListener(){
-    					public void actionPerformed(ActionEvent evt){
-    						 String attr = (String)JOptionPane.showInputDialog(NavTable.this,
-    								 PluginServices.getText(this, "filter_write_string"),
-    								 PluginServices.getText(this, "filter_contains_window_title"),
-    								 JOptionPane.PLAIN_MESSAGE);
-
-    						 if (attr != null){
-    							//TODO: We need to escape special characters like '%', "'", ...
-    							String expr= st_expr + " like '%" + attr +"%';";
-    							logger.warn(expr);
-    							filterExt.newSet(expr);
-    						}
-    					}
-    				});
-    				
-                    menus[3]= new JMenuItem(PluginServices.getText(this, "filter_filter"), getIcon("/filter.png"));
-                    menus[3].addActionListener(new ActionListener(){
-                            public void actionPerformed(ActionEvent evt){
-                                    filterExt.initialize();
-                                    filterExt.setDatasource(recordset, dataName);
-                                    filterExt.execute("FILTER_DATASOURCE");
-                            }
-                    });
-
-                    if (filterIsSet) {
-                            menus[4]= new JMenuItem(PluginServices.getText(this, "filter_remove_filter"), getIcon("/nofilter.png"));
-                            menus[4].addActionListener(new ActionListener(){
-                                    public void actionPerformed(ActionEvent evt){
-                                            clearSelection();
-                                    }
-                            });
-                    }
-
-    			} else {
-    				 // TODO: WARNING ALL OTHER TYPES (DATE??) 
-    				menus = new JMenuItem[5 + addFilterMenuItem];
-    				
-    				menus[0]= new JMenuItem(PluginServices.getText(this, "filter_numeric_equals")+ " \t'" + attrValue +"'");
-    				menus[0].addActionListener(new ActionListener(){
-    					public void actionPerformed(ActionEvent evt){
-    						String expr = st_expr + " = " + attrValue +";";				
-    						logger.warn(expr);
-    						filterExt.newSet(expr);
-    					}
-    				});
-    				
-					menus[1]= new JMenuItem(PluginServices.getText(this, "filter_numeric_different")+ " \t'" + attrValue + "'");
-    				menus[1].addActionListener(new ActionListener(){
-    					public void actionPerformed(ActionEvent evt){
-    						String expr = st_expr + " != " + attrValue +";";
-    						logger.warn(expr);					   
-    						filterExt.newSet(expr);
-    					}
-    				});
-
-    				menus[2]= new JMenuItem(PluginServices.getText(this, "filter_numeric_less")+ " \t'" + attrValue + "'");
-    				menus[2].addActionListener(new ActionListener(){
-    					public void actionPerformed(ActionEvent evt){
-    						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
-    						String expr= st_expr + " < " + attrValue +";";
-    						logger.warn(expr);  
-    						filterExt.newSet(expr);
-    					}
-    				});
-    				
-    				menus[3]= new JMenuItem(PluginServices.getText(this, "filter_numeric_greater")+ " \t'" + attrValue + "'");
-    				menus[3].addActionListener(new ActionListener(){
-    					public void actionPerformed(ActionEvent evt){
-    						//TODO: Still not working. Remove option with numbers. Open a dialog to type the '%...%'? 
-    						String expr= st_expr + " > " + attrValue +";";
-    						logger.warn(expr);  
-    						filterExt.newSet(expr);
-    					}
-    				});
-    				
-                    menus[4]= new JMenuItem(PluginServices.getText(this, "filter_filter"), getIcon("/filter.png"));
-                    menus[4].addActionListener(new ActionListener(){
-                            public void actionPerformed(ActionEvent evt){
-                                    filterExt.initialize();
-                                    filterExt.setDatasource(recordset, dataName);
-                                    filterExt.execute("FILTER_DATASOURCE");
-                            }
-                    });
-
-                    if (filterIsSet){
-                            menus[5]= new JMenuItem(PluginServices.getText(this, "filter_remove_filter"), getIcon("/nofilter.png"));
-                            menus[5].addActionListener(new ActionListener(){
-                                    public void actionPerformed(ActionEvent evt){
-                                            clearSelection();
-                                    }
-                            });
-                    }
-    				
-    			}
-    			
-				JPopupMenu popup = new JPopupMenu();
-				for(byte x=0; x<menus.length; x++){
-					popup.add(menus[x]);
-				}	
-				popup.show(table,e.getX(),e.getY());
-    		}
-    	}
-
-		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+		JMenuItem[] menus = getFilterMenusForRowSelected();
+		if (menus != null) {
+		    JPopupMenu popup = new JPopupMenu();
+		    for (byte x = 0; x < menus.length; x++) {
+			popup.add(menus[x]);
+		    }
+		    popup.show(table, e.getX(), e.getY());
 		}
+	    }
+	}
 
-		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+	private boolean isSelectedRowAreaOrLength() {
+	    if (table.getSelectedRow() > (table.getRowCount() - 2)) {
+		return true;
+	    } else {
+		return false;
+	    }
+	}
 
-		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+	public void mouseEntered(MouseEvent e) {
+	    // TODO Auto-generated method stub
 
-		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+	}
+
+	public void mouseExited(MouseEvent e) {
+	    // TODO Auto-generated method stub
+
+	}
+
+	public void mousePressed(MouseEvent e) {
+	    // TODO Auto-generated method stub
+
+	}
+
+	public void mouseReleased(MouseEvent e) {
+	    // TODO Auto-generated method stub
+
+	}
     }
-    
+
     class MyKeyListener implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 	}
@@ -831,5 +681,182 @@ public class NavTable extends AbstractNavTable {
 	return WindowInfo.PROPERTIES_PROFILE;
     }
 
-}
+    private JMenuItem[] getFilterMenusForRowSelected() {
+	int rowSelected = table.getSelectedRow();
 
+	final String attrName = (String) table.getModel().getValueAt(
+		rowSelected, 0);
+	final String attrValue = (String) table.getModel().getValueAt(
+		rowSelected, 1);
+	final int attrType = getAttrTypeForValueSelected(rowSelected);
+
+	final FiltroExtension filterExt = new FiltroExtension();
+	filterExt.setDatasource(recordset, "");
+
+	DefaultExpressionDataSource ds = new DefaultExpressionDataSource();
+	ds.setTable(recordset);
+
+	FBitSet fbitset = recordset.getSelection();
+	boolean isFilterSet = (fbitset.cardinality() > 0);
+	int itemSetOffFilter = (isFilterSet ? 1 : 0);
+
+	String dataSourceName = ds.getDataSourceName();
+	final String st_expr = "select * from '" + dataSourceName + "' where "
+		+ attrName;
+
+	// TODO USE newSet(), fromSet(), addSet?
+	// TODO Maybe a good idea is using JCheckBoxMenuItem with a
+	// ItemListener to get state
+	JMenuItem[] menus = null;
+	if (attrType == java.sql.Types.VARCHAR) {
+	    menus = new JMenuItem[4 + itemSetOffFilter];
+
+	    menus[0] = new JMenuItem(PluginServices.getText(this,
+		    "filter_equals") + " '" + attrValue + "'");
+	    menus[0].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    String exp = st_expr + " = '" + attrValue + "';";
+		    logger.warn(exp);
+		    filterExt.newSet(exp);
+		}
+	    });
+
+	    menus[1] = new JMenuItem(PluginServices.getText(this,
+		    "filter_different") + " '" + attrValue + "'");
+	    menus[1].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    String exp = st_expr + " != '" + attrValue + "';";
+		    logger.warn(exp);
+		    filterExt.newSet(exp);
+		}
+	    });
+
+	    menus[2] = new JMenuItem(PluginServices.getText(this,"filter_contains"));
+	    menus[2].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    String attr = (String) JOptionPane.showInputDialog(
+			    NavTable.this, PluginServices.getText(this,
+				    "filter_write_string"), PluginServices
+				    .getText(this,
+					    "filter_contains_window_title"),
+			    JOptionPane.PLAIN_MESSAGE);
+
+		    if (attr != null) {
+			// TODO: We need to escape special characters
+			// like '%', "'", ...
+			String expr = st_expr + " like '%" + attr + "%';";
+			logger.warn(expr);
+			filterExt.newSet(expr);
+		    }
+		}
+	    });
+
+	    menus[3] = new JMenuItem(PluginServices.getText(this,
+		    "filter_filter"), getIcon("/filter.png"));
+	    menus[3].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    filterExt.initialize();
+		    filterExt.setDatasource(recordset, dataName);
+		    filterExt.execute("FILTER_DATASOURCE");
+		}
+	    });
+
+	    if (isFilterSet) {
+		menus[4] = new JMenuItem(PluginServices.getText(this,
+			"filter_remove_filter"), getIcon("/nofilter.png"));
+		menus[4].addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent evt) {
+			clearSelection();
+		    }
+		});
+	    }
+
+	} else if (attrType == java.sql.Types.DOUBLE
+		|| attrType == java.sql.Types.INTEGER) {
+
+	    menus = new JMenuItem[5 + itemSetOffFilter];
+
+	    menus[0] = new JMenuItem(PluginServices.getText(this,
+		    "filter_numeric_equals") + " \t'" + attrValue + "'");
+	    menus[0].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    String expr = st_expr + " = " + attrValue + ";";
+		    logger.warn(expr);
+		    filterExt.newSet(expr);
+		}
+	    });
+
+	    menus[1] = new JMenuItem(PluginServices.getText(this,
+		    "filter_numeric_different") + " \t'" + attrValue + "'");
+	    menus[1].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    String expr = st_expr + " != " + attrValue + ";";
+		    logger.warn(expr);
+		    filterExt.newSet(expr);
+		}
+	    });
+
+	    menus[2] = new JMenuItem(PluginServices.getText(this,
+		    "filter_numeric_less") + " \t'" + attrValue + "'");
+	    menus[2].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    // TODO: Still not working. Remove option with
+		    // numbers. Open a dialog to type the '%...%'?
+		    String expr = st_expr + " < " + attrValue + ";";
+		    logger.warn(expr);
+		    filterExt.newSet(expr);
+		}
+	    });
+
+	    menus[3] = new JMenuItem(PluginServices.getText(this,
+		    "filter_numeric_greater") + " \t'" + attrValue + "'");
+	    menus[3].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    // TODO: Still not working. Remove option with
+		    // numbers. Open a dialog to type the '%...%'?
+		    String expr = st_expr + " > " + attrValue + ";";
+		    logger.warn(expr);
+		    filterExt.newSet(expr);
+		}
+	    });
+
+	    menus[4] = new JMenuItem(PluginServices.getText(this,
+		    "filter_filter"), getIcon("/filter.png"));
+	    menus[4].addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+		    filterExt.initialize();
+		    filterExt.setDatasource(recordset, dataName);
+		    filterExt.execute("FILTER_DATASOURCE");
+		}
+	    });
+
+	    if (isFilterSet) {
+		menus[5] = new JMenuItem(PluginServices.getText(this,
+			"filter_remove_filter"), getIcon("/nofilter.png"));
+		menus[5].addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent evt) {
+			clearSelection();
+		    }
+		});
+	    }
+
+	} else {
+	    // TODO OTHER TYPES (DATE or BOOLEAN)
+	    // the filter menu will not be shown on these types
+	    menus = null;
+	}
+	return menus;
+    }
+
+    private int getAttrTypeForValueSelected(int fieldIndex) {
+	int attrType = -1;
+	try {
+	    attrType = recordset.getFieldType(fieldIndex);
+	} catch (ReadDriverException e1) {
+	    attrType = -1;
+	    logger.error(e1.getMessage());
+	} finally {
+	    return attrType;
+	}
+    }
+}
