@@ -20,6 +20,7 @@
  *   Juan Ignacio Varela Garc�a <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Est�vez Vali�as <valdaris (at) gmail (dot) com>
+ *   Andres Maneiro <andres.maneiro@gmail.com>
  */
 package es.udc.cartolab.gvsig.navtable;
 
@@ -108,8 +109,8 @@ public class NavTable extends AbstractNavTable {
     private MyTableModelListener myTableModelListener;
     private MyKeyListener myKeyListener;
     private MyMouseListener myMouseListener;
-    
-    //Mouse buttons constants
+
+    // Mouse buttons constants
     final int BUTTON_RIGHT = 3;
 
     public NavTable(FLyrVect layer) {
@@ -117,7 +118,7 @@ public class NavTable extends AbstractNavTable {
     }
 
     public NavTable(SelectableDataSource recordset, String tableName) {
-    	super(recordset, tableName);
+	super(recordset, tableName);
     }
 
     public boolean isFillingValues() {
@@ -181,7 +182,7 @@ public class NavTable extends AbstractNavTable {
 
 	myKeyListener = new MyKeyListener();
 	table.addKeyListener(myKeyListener);
-	
+
 	myMouseListener = new MyMouseListener();
 	table.addMouseListener(myMouseListener);
 
@@ -191,10 +192,10 @@ public class NavTable extends AbstractNavTable {
 	model.addColumn(PluginServices.getText(this, "headerTableValue"));
 
 	TableColumn attribColumn = table.getColumn(PluginServices.getText(this,
-	"headerTableAttribute"));
+		"headerTableAttribute"));
 	attribColumn.setCellRenderer(this.cellRenderer);
 	attribColumn = table.getColumn(PluginServices.getText(this,
-	"headerTableValue"));
+		"headerTableValue"));
 	attribColumn.setCellRenderer(this.cellRenderer);
 
 	myTableModelListener = new MyTableModelListener();
@@ -238,23 +239,15 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	public void mouseEntered(MouseEvent e) {
-	    // TODO Auto-generated method stub
-
 	}
 
 	public void mouseExited(MouseEvent e) {
-	    // TODO Auto-generated method stub
-
 	}
 
 	public void mousePressed(MouseEvent e) {
-	    // TODO Auto-generated method stub
-
 	}
 
 	public void mouseReleased(MouseEvent e) {
-	    // TODO Auto-generated method stub
-
 	}
     }
 
@@ -358,12 +351,12 @@ public class NavTable extends AbstractNavTable {
 
 	    if (!fileAlias.exists()) {
 		pathToken = Preferences.getAliasDir() + File.separator
-		+ layer.getName();
+			+ layer.getName();
 		fileAlias = new File(pathToken + ".alias");
 	    }
 	} else if (source instanceof VectorialDBAdapter) {
 	    pathToken = Preferences.getAliasDir() + File.separator
-	    + layer.getName();
+		    + layer.getName();
 	    fileAlias = new File(pathToken + ".alias");
 	} else {
 	    return fieldName;
@@ -405,10 +398,10 @@ public class NavTable extends AbstractNavTable {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    Vector<String> aux = null;
 
-	    //TODO: Some times it takes the deleted fields on the DBF
-	    //FieldDescription[] fd = recordset.getFieldsDescription();
-	    //fd[1].
-	    
+	    // TODO: Some times it takes the deleted fields on the DBF
+	    // FieldDescription[] fd = recordset.getFieldsDescription();
+	    // fd[1].
+
 	    for (String attName : recordset.getFieldNames()) {
 		aux = new Vector<String>(2);
 		aux.add(getAlias(attName));
@@ -508,7 +501,7 @@ public class NavTable extends AbstractNavTable {
 		String tableValue = model.getValueAt(i, 1).toString();
 		Value value = recordset.getFieldValue(currentPosition, i);
 		String layerValue = value
-		.getStringValue(ValueWriter.internalValueWriter);
+			.getStringValue(ValueWriter.internalValueWriter);
 		layerValue = layerValue.replaceAll("'", "");
 		if (value instanceof NullValue) {
 		    if (tableValue.compareTo("") != 0) {
@@ -731,7 +724,8 @@ public class NavTable extends AbstractNavTable {
 		}
 	    });
 
-	    menus[2] = new JMenuItem(PluginServices.getText(this,"filter_contains"));
+	    menus[2] = new JMenuItem(PluginServices.getText(this,
+		    "filter_contains"));
 	    menus[2].addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
 		    String attr = (String) JOptionPane.showInputDialog(
