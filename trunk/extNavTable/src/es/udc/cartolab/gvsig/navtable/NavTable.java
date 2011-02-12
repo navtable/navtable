@@ -834,8 +834,52 @@ public class NavTable extends AbstractNavTable {
 		});
 	    }
 
-	} else {
-	    // TODO OTHER TYPES (DATE or BOOLEAN)
+	} else if (attrType == java.sql.Types.BOOLEAN ||
+            attrType == java.sql.Types.BIT) {
+        menus = new JMenuItem[3 + itemSetOffFilter];
+
+        menus[0] = new JMenuItem(PluginServices.getText(this,
+            "filter_equals") + " = TRUE");
+        menus[0].addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+            String expr = st_expr + " = boolean('true');";
+            logger.warn(expr);
+            filterExt.newSet(expr);
+        }
+        });
+
+        menus[1] = new JMenuItem(PluginServices.getText(this,
+            "filter_equals") + " = FALSE");
+        menus[1].addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+            String expr = st_expr + " = boolean('false');";
+            logger.warn(expr);
+            filterExt.newSet(expr);
+        }
+        });
+
+        menus[2] = new JMenuItem(PluginServices.getText(this,
+            "filter_filter"), getIcon("/filter.png"));
+        menus[2].addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+            filterExt.initialize();
+            filterExt.setDatasource(recordset, dataName);
+            filterExt.execute("FILTER_DATASOURCE");
+        }
+        });
+
+        if (isFilterSet) {
+        	menus[3] = new JMenuItem(PluginServices.getText(this,
+        		"filter_remove_filter"), getIcon("/nofilter.png"));
+        	menus[3].addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                clearSelection();
+            }
+        });
+        }
+        
+	} else { 
+	    // TODO OTHER TYPES (like DATE)
 	    // the filter menu will not be shown on these types
 	    menus = null;
 	}
