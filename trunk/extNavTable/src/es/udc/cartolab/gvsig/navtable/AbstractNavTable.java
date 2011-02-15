@@ -332,9 +332,19 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	return icon;
     }
 
-    private JPanel getNorthFirstRow() {
-	File iconPath = new File(
+    /**
+     * Gets the file of the image header for the upper panel. Subclasses can
+     * override this method to get their custom image header.
+     *
+     * @return the File of the image.
+     */
+    protected File getHeaderFile() {
+    	return new File(
 		"gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
+    }
+
+    private JPanel getNorthFirstRow() {
+	File iconPath = getHeaderFile();
 	JPanel northFirstRow = new JPanel(new BorderLayout());
 	if (iconPath.exists()) {
 	    northFirstRow.setBackground(Color.WHITE);
