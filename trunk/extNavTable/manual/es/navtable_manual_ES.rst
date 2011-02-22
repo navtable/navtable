@@ -399,6 +399,8 @@ Copyright (c) CartoLab - Universidade da Coruña, 2009. http://www.cartolab.es/
 
 - Francisco Puga Alonso
 
+- Andrés Maneiro
+
 Han aportado ideas, comentarios, sugerencias y/o informado de errores:
 
 - Francisco Alberto Varela García [C]
