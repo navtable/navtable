@@ -308,7 +308,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 
     private JPanel getFilterPanel(File iconPath) {
 	JPanel filterPanel = new JPanel(new FlowLayout());
-	if (iconPath.exists()) {
+	if (iconPath != null && iconPath.exists()) {
 	    filterPanel.setBackground(Color.WHITE);
 	}
 	filterPanel.add(filterB);
@@ -346,7 +346,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     private JPanel getNorthFirstRow() {
 	File iconPath = getHeaderFile();
 	JPanel northFirstRow = new JPanel(new BorderLayout());
-	if (iconPath.exists()) {
+	if (iconPath != null && iconPath.exists()) {
 	    northFirstRow.setBackground(Color.WHITE);
 	    northFirstRow.add(getIcon(iconPath), BorderLayout.WEST);
 	    viewInfo.setHeight(575);
