@@ -30,12 +30,14 @@ A lo largo del texto se usará los términos  y  como sinónimos para referirse 
 
 .. parsed-literal::
 
+  Revisión 0.8: 24 febrero 2010
   Revisión 0.6: 19 mayo 2010
   Revisión 0.4: 18 septiembre 2009
   Revisión 0.2.2: 3 junio 2009
   Revisión 0.2.1: 16 mayo 2009
 
-Copyright 2009, 2010 - Cartolab http://www.cartolab.es
+Copyright 2009, 2010, 2011 - Cartolab http://www.cartolab.es
+		      2011 - iCarto http://www.icarto.es	
 
 El presente documento se distribuye bajo la licencia Creative Commons versión 3 con Reconocimiento y Compartir igual.
 
@@ -385,13 +387,14 @@ Puedes colaborar en NavTable aportando ideas, comentarios, informando de errores
 
 .. image:: images/picture_13.png
 
-Copyright (c) CartoLab - Universidade da Coruña, 2009. http://www.cartolab.es/
+CartoLab - Universidade da Coruña 
+http://www.cartolab.es/
 
 **Director:** Fco. Alberto Varela García.
 
 **Equipo de desarrollo:**
 
-- Juan Ignacio Varela García (lead developer)
+- Juan Ignacio Varela García
 
 - Javier Estévez Valiñas
 
@@ -411,9 +414,9 @@ Han aportado ideas, comentarios, sugerencias y/o informado de errores:
 
 - Adrián Eiris Torres [C]
 
-- Jorge Ocampo [C]
+- Jorge Ocampo [iC]
 
-- Carmen Molejón [C]
+- Carmen Molejón [iC]
 
 - Juan Fuentes [C]
 
@@ -439,5 +442,6 @@ Han aportado ideas, comentarios, sugerencias y/o informado de errores:
   [G]: gvSIG
   [OA]: Oxford Archaeology
   [UV]: Universitat de València
+  [iC]: iCarto
 
 Licencia: GPLv3. Puede ver los términos de esta licencia en http://www.gnu.org/licenses
