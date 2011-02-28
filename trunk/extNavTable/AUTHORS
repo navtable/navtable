@@ -1,33 +1,41 @@
 NavTable was written and maintained by this team:
 
 DEVELOPERS:
-- Juan Ignacio Varela García (Lead Developer) <nvarela (at) cartolab (dot) es>
-- Pablo Sanxiao Roca <psanxiao (at) cartolab (dot) es>
-- Javier Estévez Valiñas <jestevez (at) cartolab (dot) es>
+- Juan Ignacio Varela Garcï¿½a <nvarela (at) cartolab (dot) es>
+- Pablo Sanxiao Roca <psanxiao (at) icarto (dot) es>
+- Javier Estï¿½vez Valiï¿½as <jestevez (at) cartolab (dot) es>
 - Francisco Puga <fpuga (at) cartolab (dot) es
-- Andrés Maneiro <amaneiro (at) cartolab (dot) es>
+- Andrï¿½s Maneiro <amaneiro (at) icarto (dot) es>
 
 
 Important suggestions, bug reports, etc. from:
-- Francisco Alberto Varela García [C]
-- Daniel Díaz Grandío [C]
-- Gonzalo Martínez Crespo [C]
-- Adrián Eirís Torres [C]
-- Jorge Ocampo [C]
-- Carmen Molejón [C]
+- Francisco Alberto Varela Garcï¿½a [C]
+- Daniel Dï¿½az Grandï¿½o [C]
+- Gonzalo Martï¿½nez Crespo [C]
+- Adriï¿½n Eirï¿½s Torres [C]
+- Jorge Ocampo [iC]
+- Carmen Molejï¿½n [iC]
 - Juan Fuentes [C]
 
 Special thanks to:
-- Francisco José Peñarrubia [G]
+- Francisco Josï¿½ Peï¿½arrubia [G]
 - Joaquim Rocha
 - Artur Juen
 - Silvio Grosso
 - Antonio Falciano
 - Nacho Brodin
+- Benjamin Ducke [OA]
+- AgustÃ­n Diez Castillo [UV]
+- Francisco JosÃ© PeÃ±arrubia [G]
+- Joaquim Rocha
+- Jordi Torres
 
 Installer image designed by:
-- Daniel Díaz Grandío [C]
+- Daniel Dï¿½az Grandï¿½o [C]
 
 ---------------------
 [C]: CartoLab
 [G]: gvSIG
+[OA]: Oxford Archaeology
+[UV]: Universitat de ValÃ¨ncia
+[iC]: iCarto
