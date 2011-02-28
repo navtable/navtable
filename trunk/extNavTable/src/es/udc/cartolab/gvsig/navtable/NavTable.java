@@ -609,11 +609,12 @@ public class NavTable extends AbstractNavTable {
 	    int currentPos = Long.valueOf(currentPosition).intValue();
 	    try {
 		ToggleEditing te = new ToggleEditing();
-		if (!layer.isEditing()) {
+        boolean wasEditing = layer.isEditing();
+		if (!wasEditing) {
 		    te.startEditing(layer);
 		}
 		te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
-		if (layer.isEditing()) {
+		if (!wasEditing) {
 		    te.stopEditing(layer, false);
 		}
 		setChangedValues(false);

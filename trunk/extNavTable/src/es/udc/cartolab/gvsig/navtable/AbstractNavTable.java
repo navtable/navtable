@@ -466,7 +466,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	if (currentPosition == EMPTY_REGISTER) {
 	    return;
 	}
-	if (isChangedValues()) {
+    boolean changed = isChangedValues();
+    boolean save = changed && layer.isEditing();
+	if (changed && !save) {
 	    Object[] options = {
 		    PluginServices.getText(this, "saveButtonTooltip"),
 		    PluginServices.getText(this, "ignoreButton") };
@@ -478,9 +480,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		    options, // the titles of buttons
 		    options[1]); // default button title
 	    if (response == 0) {
-		saveRecord();
+    		save = true;
 	    }
 	}
+    if (save) {
+        saveRecord();
+    }
     }
 
     /**
