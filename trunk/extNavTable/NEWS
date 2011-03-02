@@ -1,4 +1,11 @@
-NEWS from NavTable 0.6 2010-08-18
+NEWS from NavTable 0.7.9 2011-02-28
+------------------------------------------------
+- Implemented quick filter tool on the right click on mouse
+- Fix for unsaved data question on editing layers
+- Some improvements in code style and refactoring
+- Misc tasks on Navtable-Forms
+
+NEWS from NavTable 0.6.2 2010-08-18
 ------------------------------------------------
 - Use "appHomeDir" as provided by com.iver.andami.Launcher (Nacho Brodin)
 - Fixed problem when there are agrupations among selected layers (Daniel González)
