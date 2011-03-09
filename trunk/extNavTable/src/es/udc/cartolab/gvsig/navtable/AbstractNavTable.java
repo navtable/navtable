@@ -381,10 +381,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     public abstract JPanel getCenterPanel();
 
     protected ImageIcon getIcon(String iconName) {
-	java.net.URL imgURL = null;
-	imgURL = getClass().getResource(iconName);
-	ImageIcon icon = new ImageIcon(imgURL);
-	return icon;
+    	java.net.URL imgURL = getClass().getResource(iconName);
+    	if (imgURL == null) {
+    		imgURL = AbstractNavTable.class.getResource(iconName);
+    	}
+
+    	ImageIcon icon = new ImageIcon(imgURL);
+    	return icon;
     }
 
     protected JButton getNavTableButton(JButton button, String iconName,
@@ -871,18 +874,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     }
 
     private void setIconAndPositionBackgroundForSelection() {
-	java.net.URL imgURL = null;
-	if (isRecordSelected()) {
-	    imgURL = getClass().getResource("/Unselect.png");
-	    ImageIcon imagenUnselect = new ImageIcon(imgURL);
-	    selectionB.setIcon(imagenUnselect);
-	    posTF.setBackground(Color.YELLOW);
-	} else {
-	    imgURL = getClass().getResource("/Select.png");
-	    ImageIcon imagenSelect = new ImageIcon(imgURL);
-	    selectionB.setIcon(imagenSelect);
-	    posTF.setBackground(Color.WHITE);
-	}
+    	java.net.URL imgURL = null;
+    	if (isRecordSelected()) {
+    		ImageIcon imagenUnselect = getIcon("/Unselect.png");
+    		selectionB.setIcon(imagenUnselect);
+    		posTF.setBackground(Color.YELLOW);
+    	} else {
+    		ImageIcon imagenSelect = getIcon("/Select.png");
+    		selectionB.setIcon(imagenSelect);
+    		posTF.setBackground(Color.WHITE);
+    	}
     }
 
     private void checkAndUpdateCurrentPositionBoundaries() throws ReadDriverException {
@@ -1019,7 +1020,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 	    FiltroExtension fe = new FiltroExtension();
 	    fe.initialize();
 	    fe.setDatasource(recordset, dataName);
-	    fe.execute("FILTER_DATASOURCE");	    
+	    fe.execute("FILTER_DATASOURCE");
 	} else if (e.getSource() == noFilterB) {
 	    clearSelection();
 	} else if (e.getSource() == nextB) {
