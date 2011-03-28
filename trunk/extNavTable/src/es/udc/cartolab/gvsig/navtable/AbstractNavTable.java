@@ -484,6 +484,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
 		    options[1]); // default button title
 	    if (response == 0) {
     		save = true;
+	    } else {
+	    	setChangedValues(false);
 	    }
 	}
     if (save) {
