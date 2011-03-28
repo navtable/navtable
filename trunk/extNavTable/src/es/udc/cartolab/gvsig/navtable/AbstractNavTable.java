@@ -922,7 +922,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     		logger.error(e.getMessage(), e);
     		posNumber = currentPosition;
     	}
-    	if (!isValidPosition(posNumber)) {
+    	setPosition(posNumber);
+    }
+
+    /**
+     * @param pos must be the recordset row number + 1
+     */
+    public void setPosition(long pos) {
+    	if (!isValidPosition(pos)) {
     		if (currentPosition == EMPTY_REGISTER) {
     			posTF.setText("");
     		} else {
@@ -931,14 +938,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     		return;
     	}
     	if (onlySelectedCB.isSelected()) {
-    		if (!isRecordSelected(posNumber)) {
+    		if (!isRecordSelected(pos)) {
     			posTF.setText(String.valueOf(currentPosition + 1));
     			return;
     		}
     	}
     	showWarning();
     	try {
-    		currentPosition = posNumber.longValue() - 1;
+    		currentPosition = pos - 1;
     		refreshGUI();
     	} catch (Exception e1) {
     		e1.printStackTrace();
