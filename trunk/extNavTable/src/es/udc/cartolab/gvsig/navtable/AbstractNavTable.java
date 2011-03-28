@@ -926,6 +926,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow, Action
     }
 
     /**
+     * init method must be called before this
      * @param pos must be the recordset row number + 1
      */
     public void setPosition(long pos) {
