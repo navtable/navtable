@@ -26,10 +26,10 @@ The policy carried out in order to increment the version number is the same as g
 - The parity of the minor number indicates the stability of the software: even means stable, odd means unstable.
 
 The version number is specified in the file "install/intall.xml" 
-on the tag: <appversion> 0.7.9 </ AppVersion> 
+on the tag: <appversion> 0.8 </ AppVersion> 
 
 It should also be changed in the file "config/about.htm" in tag: 
-<h2> NavTable Extension v0.7.9 </h2> 
+<h2> NavTable Extension v0.8 </h2> 
 
 Build instructions
 ===============================

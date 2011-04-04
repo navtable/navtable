@@ -1,7 +1,7 @@
 <installation version="1.0">
 	<info>
 		<appname>NavTable</appname> <!-- A SUSTITUR POR EL NOMBRE DE EXTENSION, POR EJEMPLO: "VISOR_RUIDO" -->
-		<appversion>0.7.9</appversion>
+		<appversion>0.8</appversion>
 		<authors>
 			<author name="Cartolab - Universidad de A Coruña" email="" />
 		</authors>

@@ -1,3 +1,7 @@
+NEWS from NavTable 0.8 2011-03-28
+------------------------------------------------
+- Misc Bugfixes
+
 NEWS from NavTable 0.7.9 2011-02-28
 ------------------------------------------------
 - Implemented quick filter tool on the right click on mouse
@@ -39,18 +43,18 @@ Improved behaviour when the layer is being edited.
 
 Bugs Fixed:
 
-	- Bug #592: Error when deleting features when 
+	- Bug #592: Error when deleting features when
 		    layer is on edition.
 	- Bug #525: Mistake with register unselection
 X
 NEWS from NavTable 0.2.2 2009-06-02
 ------------------------------------------------
-Created a system to give longer names to the 
+Created a system to give longer names to the
 attributes.
 Arrow keys navigation.
 Added info about the geometry.
 It shows a warning when there's unsaved data.
-Copy from selected record instead of the 
+Copy from selected record instead of the
 previous one.
 Better behaviour wiht selections in gvSIG.
 Added to gvSIG menus.
