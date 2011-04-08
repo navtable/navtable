@@ -1,100 +1,100 @@
 
-Manual básico de NavTable
-*************************
+NavTable User Manual
+********************
 
 .. image:: images/picture_1.png
 
-.. contents:: Índice
+.. contents:: Index
 
 
-0.- Acerca de este manual
-==========================
+0.- About the manual
+====================
 
-En el presente documento tiene como finalidad ofrecer información sobre la herramienta **NavTable** creado para trabajar con las tablas asociadas a capas vectoriales en SIG libre gvSIG. En los apartados de este documento se describirán las propiedades de la herramienta, instrucciones de uso, características del proyecto NavTable y enlaces de interés.
+This document aims to offer general information about **NavTable** tool, which was created in order to work with tables belonging to vectorial layers on gvSIG. Next chapters of this document will explain the properties of the tool, its use, characteristics and main links.
 
-Se debe tener en cuenta, para la correcta comprensión del documento, que en las capas vectoriales en un SIG suelen estar compuestas de muchos elementos que tienen una componente espacial/geométrica que se visualiza en la Vista o mapa y componentes alfanuméricos que se representan en un registro de una tabla o conjunto de valores.
+Take into account that vectorial layers might be composed by several elements with spatial/geometric components (which are rendered in the view or map) plus alphanumeric information (which is represented in a table register as a collection of values).
 
-A lo largo del texto se usará los términos  y  como sinónimos para referirse a los ítems (features) de una capa vectorial.
+Along this text register and element will be used as synonim of items (features) of a vectorial layer.
 
-**Autores**:
+**Authors**:
+
+- Fco. Alberto Varela García
+
+- Juan Ignacio Varela García
 
 - Javier Estévez Valiñas
 
 - Pablo Sanxiao
 
-- Juan Ignacio Varela García
+- Francisco Puga 
 
-- Fco. Alberto Varela García
+- Andrés Maneiro
 
-**Revisiones**
+
+**Revisions**
 
 .. parsed-literal::
 
-  Revisión 0.8: 24 febrero 2010
-  Revisión 0.6: 19 mayo 2010
-  Revisión 0.4: 18 septiembre 2009
-  Revisión 0.2.2: 3 junio 2009
-  Revisión 0.2.1: 16 mayo 2009
+  Revision 0.8: 24th February 2010
+  Revision 0.6: 19th May 2010
+  Revision 0.4: 18th September 2009
+  Revision 0.2.2: 3rd June 2009
+  Revision 0.2.1: 16th May 2009
 
 Copyright 2009, 2010, 2011 - Cartolab http://www.cartolab.es
 		      2011 - iCarto http://www.icarto.es	
 
-El presente documento se distribuye bajo la licencia Creative Commons versión 3 con Reconocimiento y Compartir igual.
+The document is distributed under Creative Commons version 3 license, which requires Attribution and Share Alike.
 
-Puede obtener más información sobre esta licencia en el siguiente enlace: http://creativecommons.org/licenses/by-sa/3.0/es/
+More information on: http://creativecommons.org/licenses/by-sa/3.0/en/
 
 .. image:: images/picture_11.png
 
 
-1.- Introducción
-=================
+1.- Introduction
+================
 
-**NavTable** es una extensión de gvSIG para **visualizar** de forma ágil registros de las capas vectoriales de información geográfica. Su principal característica es que permite ver los atributos de un elemento de manera individualizada en una tabla vertical. Entre sus funcionalidades cuenta con la posibilidad de editar los valores alfanuméricos, así como navegar entre los elementos de la capa de información.
+**NavTable** is a gvSIG extension to **display** in an agile way the alphanumeric elements of vectorial layers. It allows seeing the features of an element in a vertical table besides editing, navigating and quick filtering the values of a layer.
 
 .. image:: images/picture_0.png
 
-**NavTable** es una herramienta pensada para mejorar la experiencia de los usuarios de SIG al manejar información alfanumérica, y resulta especialmente útil en el trabajo diario con este tipo de datos. NavTable permite navegar por tablas pudiendo visualizar y modificar datos de los registros existentes de forma ágil y sencilla.
-
-**NavTable** se libera bajo una licencia GPL v3. Ha sido creada por el laboratorio **CartoLab** de la Universidade da Coruña. Animamos a cualquier usuario que nos haga llegar sugerencias, comentarios, informes de error, etc.
+**NavTable** is released under a GPL v3 license. It has been created by **CartoLab**, the Cartographic Laboratory from University of A Coruña. Feel free to send us comments, suggestions, bug reports, etc.
 
 
-1.1 Listado de características:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1.1 Feature list:
+^^^^^^^^^^^^^^^^^
 
-1. Visualización de datos de capas vectoriales en registros individualizados y en sentido vertical
+1. Display data from vectorial layers in vertical align
 
-2. Edición de los valores alfanuméricos (testeado con ESRI Shapefile y PostGIS)
+2. Edit alphanumeric values (tested with ESRI Shapefile y PostGIS)
 
-3. Acceso a registros contiguos, primero, último o de forma aleatoria.
+3. Navigate between elements: next, previous, ...
 
-4. Navegación usando filtros de selección
+4. Allow to navigate only by selected elements
 
-5. Zoom manual y automático a los elementos.
+5. Zoom to the elements: manual and automatic
 
-6. Zoom a los elementos con escala fija
+6. Allow zoom with fixed scale
 
-7. Permite selección y deselección de elementos
+7. Select and unselect elements
 
-8. Edición alfanumérica de los valores
+8. Copy attributes from last register or from selected
 
-9. Copiado de los atributos de un registro seleccionado
+9. Create and drop elements
 
-10. Creación y eliminación de registros.
+10. Length and area of a element is calculated
 
-11. Cálculo automático de la longitud y área de la geometría
-
-12. Disponible en castellano, gallego, inglés y francés.
+11. Available in several language: english, galician, spanish, portuguese, french, italian, german.
 
 
-1.2 Aspectos técnicos
-^^^^^^^^^^^^^^^^^^^^^
-NavTable cuenta con un diseño interno modular, lo que permite programar nuevas formas de ver los datos alfanuméricos, manteniendo las funcionalidades y características generales de navegación de NavTable.
+1.2 Tecnical nuts and bolts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-La parte central es fácilmente adaptable, lo que permite crear formularios personalizados, más complejos y con características avanzadas para visualizar, editar e incluso procesar los datos. En la siguiente figura, se muestra un ejemplo de este tipo de ampliaciones de NavTable:
+NavTable was designed following a modular architecture, which allow to extend their functionalities in an easy way plus using it to display personalized forms. Its center panel is easily adaptable by injecting other forms to display, edit and even process the data. See next figure to learn the possibilities of this approach:
 
 .. image:: images/picture_2.png
 
-Recuerde que el código fuente de NavTable se encuentra a su disposición en la página del proyecto.
+Bear in mind that the code of NavTable is publicly available for you to download and adapt it.
 
 
 2.- Requisitos
