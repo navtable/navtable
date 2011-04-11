@@ -32,6 +32,8 @@ In questo documento saranno utilizzati i termini record o elemento come sinonimi
 
 La traduzione in lingua italiana del presente documento è stata realizzata da:
 
+- Giuliano Ramat
+
 - Silvio Grosso
 
 - Antonio Falciano
