@@ -125,13 +125,13 @@ Descargar el instalador correspondiente a su sistema operativo y ejecutarlo. Seg
 3.2 Instalación manual:
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Si quiere instalar NavTable manualmente puede descargar el fichero de binarios navTable_0.2.2.zip y descomprimirlo en la ruta siguiente:
+Si quiere instalar NavTable manualmente puede descargar el fichero de binarios navTable_0.8.zip y descomprimirlo en la ruta siguiente:
 
-- Ejemplo en **Linux**:  /home/usuario/gvSIG_1.1.2/bin/gvSIG/extensiones/
+- Ejemplo en **Linux**:  /home/usuario/gvSIG_1.11/bin/gvSIG/extensiones/
 
-- Ejemplo en **Mac**:  /Applications/gvSIG/sextante/gvSIG1.1.2build1045sex20090521.app/Contents/Resources/gvSIG/gvSIG\ 1.1.2\ build1045.app/Contents/Resources/Java/gvSIG/extensiones/es.udc.cartolab.gvsig.navtable
+- Ejemplo en **Mac**:  /home/usuario/gvSIG_1.11/bin/gvSIG/extensiones/
 
-- Ejemplo en **Windows**: C:\Archivos de programa\gvSIG_1.1\bin\gvSIG\extensiones\
+- Ejemplo en **Windows**: C:\Archivos de programa\gvSIG_1.11\bin\gvSIG\extensiones\
 
 
 4.- Instrucciones de uso

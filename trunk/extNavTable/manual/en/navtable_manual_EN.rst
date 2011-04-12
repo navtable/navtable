@@ -129,11 +129,11 @@ Download the installer, execute it and follow the instructions.
 
 For various reasons, it is often useful to have instructions for manual install an application. Here are the manual install steps for Navtable in Linux, Mac or Windows: download the binary files navTable_0.8.zip and unzip the folder 'es.udc.cartolab.gvsig.navtable' into: [gvSIG_installation_path]/bin/gvSIG/extensiones/  
 
-- **Linux example**:  /home/user/gvSIG_1.9/bin/gvSIG/extensiones/es.udc.cartolab.gvsig.navtable
+- **Linux example**:  /home/user/gvSIG_1.11/bin/gvSIG/extensiones/es.udc.cartolab.gvsig.navtable
 
-- **Mac example**:   /Applications/gvSIG/sextante/gvSIG1.9build1045sex20090521.app/Contents/Resources/gvSIG/gvSIG\ 1.9\ build\ 1045.app/Contents/Resources/Java/gvSIG/extensiones/es.udc.cartolab.gvsig.navtable 
+- **Mac example**:   /home/user/gvSIG_1.11/bin/gvSIG/extensiones/
 
-- **Windows example**: C:\Program Files\gvSIG_1_9\bin\gvSIG\extensiones\es.udc.cartolab.gvsig.navtable 
+- **Windows example**: C:\Program Files\gvSIG_1_11\bin\gvSIG\extensiones\es.udc.cartolab.gvsig.navtable 
 
 
 4.- Instrucciones de uso
