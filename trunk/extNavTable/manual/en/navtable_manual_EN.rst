@@ -97,41 +97,43 @@ NavTable was designed following a modular architecture, which allow to extend th
 Bear in mind that the code of NavTable is publicly available for you to download and adapt it.
 
 
-2.- Requisitos
-===============
-
-NavTable es multiplataforma por lo que puede ser instalada en entornos Windows, GNU/Linux y MacOS.
-
-Es necesario tener previamente una instalación de gvSIG en su versión 1.1.x, que se puede descargar desde http://www.gvsig.gva.es
-
-Más información sobre requisitos de gvSIG:
-
-- Mínimos: Pentium III (o equivalente) / 256 MB RAM
-
-- Recomendados: Pentium IV (o equivalente) / 512 MB RAM
-
-
-3.- Instalación
+2.- Requirements
 ================
 
-Una vez instalado gvSIG versión 1.1.x en el ordenador, se puede instalar la extensión NavTable usando un instalador automático o de forma manual. Todos los archivos necesarios se encuentran accesibles en la web  http://navtable.forge.osor.eu/
+NavTable is cross-plaftform so can be installed in GNU/Linux, Windows and MacOS enviroments.
+
+NavTable is a gvSIG extension, so it is necessary to have previously a gvSIG installation. It is compatible with versions 1.9 of gvSIG that can be obtained from  http://www.gvsig.org 
+
+More informaticon about gvSIG requirements: 
+
+- Minimum: Pentium III (or equivalent) / 256 MB RAM
+
+- Recommended: Pentium IV (or equivalent) / 512 MB RAM
+
+- Operating systems: Windows - Linux - Macintosh (Tested in WinXP, Linux Ubuntu 8.04/8.10 and Linux Kubuntu 7.10)
 
 
-3.1 Instalación automatizada mediante asistente
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.- Installation
+================
 
-Descargar el instalador correspondiente a su sistema operativo y ejecutarlo. Seguir las instrucciones.
+Once gvSIG version 1.9 is installed in the system, NavTable can be installed with an installer or with a manual installation. First step is to download the installation files for Navtable. You can get them from: http://navtable.forge.osor.eu/. Save the downloaded file in a folder.
 
-3.2 Instalación manual:
-^^^^^^^^^^^^^^^^^^^^^^^
 
-Si quiere instalar NavTable manualmente puede descargar el fichero de binarios navTable_0.2.2.zip y descomprimirlo en la ruta siguiente:
+3.1 Automatic installation:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Ejemplo en **Linux**:  /home/usuario/gvSIG_1.1.2/bin/gvSIG/extensiones/
+Download the installer, execute it and follow the instructions. 
 
-- Ejemplo en **Mac**:  /Applications/gvSIG/sextante/gvSIG1.1.2build1045sex20090521.app/Contents/Resources/gvSIG/gvSIG\ 1.1.2\ build1045.app/Contents/Resources/Java/gvSIG/extensiones/es.udc.cartolab.gvsig.navtable
+3.2 Manual installation:
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Ejemplo en **Windows**: C:\Archivos de programa\gvSIG_1.1\bin\gvSIG\extensiones\
+For various reasons, it is often useful to have instructions for manual install an application. Here are the manual install steps for Navtable in Linux, Mac or Windows: download the binary files navTable_0.8.zip and unzip the folder 'es.udc.cartolab.gvsig.navtable' into: [gvSIG_installation_path]/bin/gvSIG/extensiones/  
+
+- **Linux example**:  /home/user/gvSIG_1.9/bin/gvSIG/extensiones/es.udc.cartolab.gvsig.navtable
+
+- **Mac example**:   /Applications/gvSIG/sextante/gvSIG1.9build1045sex20090521.app/Contents/Resources/gvSIG/gvSIG\ 1.9\ build\ 1045.app/Contents/Resources/Java/gvSIG/extensiones/es.udc.cartolab.gvsig.navtable 
+
+- **Windows example**: C:\Program Files\gvSIG_1_9\bin\gvSIG\extensiones\es.udc.cartolab.gvsig.navtable 
 
 
 4.- Instrucciones de uso
