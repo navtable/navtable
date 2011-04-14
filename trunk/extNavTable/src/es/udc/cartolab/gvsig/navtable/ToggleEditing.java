@@ -100,7 +100,8 @@ public class ToggleEditing {
     }
 
     /**
-     * @param layer The vectorial layer to be edited.
+     * @param layer
+     *            The vectorial layer to be edited.
      */
     public void startEditing(FLayer layer) {
 
@@ -194,7 +195,6 @@ public class ToggleEditing {
 	}
 	startEditing(layer);
     }
-
 
     /**
      * @param layer
@@ -394,16 +394,19 @@ public class ToggleEditing {
 	}
     }
 
-
     /**
      * Modidify a single value of a register. It creates the new value from its
      * String representation. IMPORTANT: StartEditing and StopEditing is
      * required before and after call this method.
      * 
-     * @param layer the layer that contains the feature to be changed.
-     * @param rowPos the data row to be changed.
-     * @param colPos the data column position to be changed.
-     * @param newValue the String representation of the value to be saved.
+     * @param layer
+     *            the layer that contains the feature to be changed.
+     * @param rowPos
+     *            the data row to be changed.
+     * @param colPos
+     *            the data column position to be changed.
+     * @param newValue
+     *            the String representation of the value to be saved.
      * 
      */
     public void modifyValue(FLyrVect layer, int rowPos, int colPos,
@@ -436,10 +439,14 @@ public class ToggleEditing {
      * Modidify a single value of a register. IMPORTANT: StartEditing and
      * StopEditing is required before and after call this method.
      * 
-     * @param layer the layer that contains the feature to be changed.
-     * @param rowPos the data row to be changed.
-     * @param colPos the data column position to be changed.
-     * @param newValue the value to be saved.
+     * @param layer
+     *            the layer that contains the feature to be changed.
+     * @param rowPos
+     *            the data row to be changed.
+     * @param colPos
+     *            the data column position to be changed.
+     * @param newValue
+     *            the value to be saved.
      * 
      * @throws DriverException
      * @throws IOException
@@ -517,10 +524,15 @@ public class ToggleEditing {
      * Modify an the desired of values of a register IMPORTANT: StartEditing and
      * StopEditing is required before and after call this method.
      * 
-     * @param layer the layer that contains the feature to be changed.
-     * @param rowPos the data row to be changed.
-     * @param attPos An array that contains the index of the columns that will be modified.
-     * @param attStringValues the new values to save (in correlative order with attPos)
+     * @param layer
+     *            the layer that contains the feature to be changed.
+     * @param rowPos
+     *            the data row to be changed.
+     * @param attPos
+     *            An array that contains the index of the columns that will be
+     *            modified.
+     * @param attStringValues
+     *            the new values to save (in correlative order with attPos)
      * 
      * @throws DriverException
      * @throws IOException

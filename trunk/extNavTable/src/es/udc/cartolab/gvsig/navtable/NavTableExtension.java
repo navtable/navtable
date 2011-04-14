@@ -38,7 +38,7 @@ import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
-public class NavTableExtension extends Extension{
+public class NavTableExtension extends Extension {
 
     private NavTable viewer = null;
 

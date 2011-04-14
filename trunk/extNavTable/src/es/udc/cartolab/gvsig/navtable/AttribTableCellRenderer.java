@@ -33,13 +33,13 @@ import javax.swing.JTextArea;
 import javax.swing.table.TableCellRenderer;
 
 /**
- * With this class, the navTable first column text is forced to
- * be bold.
+ * With this class, the navTable first column text is forced to be bold.
  * 
  * @author Pablo Sanxiao, Nacho Uve
- *
+ * 
  */
-public class AttribTableCellRenderer extends JTextArea implements TableCellRenderer {
+public class AttribTableCellRenderer extends JTextArea implements
+	TableCellRenderer {
 
     private static final long serialVersionUID = 1L;
 

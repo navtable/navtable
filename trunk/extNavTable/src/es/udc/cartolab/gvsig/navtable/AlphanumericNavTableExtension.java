@@ -61,7 +61,7 @@ public class AlphanumericNavTableExtension extends Extension {
 	IEditableSource model = table.getModel().getModelo();
 	AlphanumericNavTable viewer;
 	try {
-		viewer = new AlphanumericNavTable(model, table.getModel().getName());
+	    viewer = new AlphanumericNavTable(model, table.getModel().getName());
 	    if (viewer.init()) {
 		PluginServices.getMDIManager().addCentredWindow(viewer);
 	    }

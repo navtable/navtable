@@ -46,7 +46,6 @@ import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
 
-
 /**
  * @author Nacho Varela
  * @author Javier Estevez
@@ -59,9 +58,9 @@ public class AlphanumericNavTable extends NavTable {
     protected IEditableSource model;
 
     public AlphanumericNavTable(IEditableSource model, String dataName)
-    throws ReadDriverException {
-    	super(model.getRecordset(), dataName);
-    	this.model = model;
+	    throws ReadDriverException {
+	super(model.getRecordset(), dataName);
+	this.model = model;
     }
 
     @Override
