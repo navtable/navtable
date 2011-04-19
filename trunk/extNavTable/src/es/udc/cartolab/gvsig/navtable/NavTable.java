@@ -328,7 +328,6 @@ public class NavTable extends AbstractNavTable {
      * @return alias
      */
     private String getAlias(String fieldName) {
-
 	File layerFile = null;
 	String filePath = null;
 	String alias = fieldName;
@@ -343,31 +342,30 @@ public class NavTable extends AbstractNavTable {
 		+ dataName;
 		fileAlias = new File(pathToken + ".alias");
 	} else {
-
 		ReadableVectorial source = layer.getSource();
 
 		if (source != null && source instanceof VectorialFileAdapter) {
-		    layerFile = ((VectorialFileAdapter) source).getFile();
-		    filePath = layerFile.getAbsolutePath();
-		    pathToken = filePath.substring(0, filePath.lastIndexOf("."));
-		    fileAlias = new File(pathToken + ".alias");
+			layerFile = ((VectorialFileAdapter) source).getFile();
+			filePath = layerFile.getAbsolutePath();
+			pathToken = filePath.substring(0, filePath.lastIndexOf("."));
+			fileAlias = new File(pathToken + ".alias");
 
-		    if (!fileAlias.exists()) {
+			if (!fileAlias.exists()) {
+				pathToken = Preferences.getAliasDir() + File.separator
+					+ layer.getName();
+				fileAlias = new File(pathToken + ".alias");
+			}
+		} else if (source instanceof VectorialDBAdapter) {
 			pathToken = Preferences.getAliasDir() + File.separator
 				+ layer.getName();
 			fileAlias = new File(pathToken + ".alias");
-		    }
-		} else if (source instanceof VectorialDBAdapter) {
-		    pathToken = Preferences.getAliasDir() + File.separator
-			    + layer.getName();
-		    fileAlias = new File(pathToken + ".alias");
 		} else {
-		    return fieldName;
+			return fieldName;
 		}
 	}
 
 	if (!fileAlias.exists()) {
-	    return fieldName;
+		return fieldName;
 	}
 
 	try {
