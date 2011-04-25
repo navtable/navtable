@@ -337,35 +337,36 @@ public class NavTable extends AbstractNavTable {
 	// Added to tables without Layer support, but must be supported alias
 	// here also
 	if (layer == null) {
-		pathToken = dataName.contains(".") ? Preferences.getAliasDir() + File.separator
-		+ dataName.substring(0, dataName.lastIndexOf(".")) : Preferences.getAliasDir() + File.separator
-		+ dataName;
-		fileAlias = new File(pathToken + ".alias");
+	    pathToken = dataName.contains(".") ? Preferences.getAliasDir()
+		    + File.separator
+		    + dataName.substring(0, dataName.lastIndexOf("."))
+		    : Preferences.getAliasDir() + File.separator + dataName;
+	    fileAlias = new File(pathToken + ".alias");
 	} else {
-		ReadableVectorial source = layer.getSource();
+	    ReadableVectorial source = layer.getSource();
 
-		if (source != null && source instanceof VectorialFileAdapter) {
-			layerFile = ((VectorialFileAdapter) source).getFile();
-			filePath = layerFile.getAbsolutePath();
-			pathToken = filePath.substring(0, filePath.lastIndexOf("."));
-			fileAlias = new File(pathToken + ".alias");
+	    if (source != null && source instanceof VectorialFileAdapter) {
+		layerFile = ((VectorialFileAdapter) source).getFile();
+		filePath = layerFile.getAbsolutePath();
+		pathToken = filePath.substring(0, filePath.lastIndexOf("."));
+		fileAlias = new File(pathToken + ".alias");
 
-			if (!fileAlias.exists()) {
-				pathToken = Preferences.getAliasDir() + File.separator
-					+ layer.getName();
-				fileAlias = new File(pathToken + ".alias");
-			}
-		} else if (source instanceof VectorialDBAdapter) {
-			pathToken = Preferences.getAliasDir() + File.separator
-				+ layer.getName();
-			fileAlias = new File(pathToken + ".alias");
-		} else {
-			return fieldName;
+		if (!fileAlias.exists()) {
+		    pathToken = Preferences.getAliasDir() + File.separator
+			    + layer.getName();
+		    fileAlias = new File(pathToken + ".alias");
 		}
+	    } else if (source instanceof VectorialDBAdapter) {
+		pathToken = Preferences.getAliasDir() + File.separator
+			+ layer.getName();
+		fileAlias = new File(pathToken + ".alias");
+	    } else {
+		return fieldName;
+	    }
 	}
 
 	if (!fileAlias.exists()) {
-		return fieldName;
+	    return fieldName;
 	}
 
 	try {
