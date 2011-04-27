@@ -2,8 +2,8 @@
 NavTable User Manual
 ********************
 
-.. image:: images/picture_1.png
 
+.. image:: images/picture_1.png
 .. contents:: Index
 
 
@@ -26,7 +26,7 @@ Along this text register and element will be used as synonim of items (features)
 
 - Pablo Sanxiao
 
-- Francisco Puga 
+- Francisco Puga
 
 - Andrés Maneiro
 
@@ -42,13 +42,13 @@ Along this text register and element will be used as synonim of items (features)
   Revision 0.2.1: 16th May 2009
 
 Copyright 2009, 2010, 2011 - Cartolab http://www.cartolab.es
-		      2011 - iCarto http://www.icarto.es	
+		      2011 - iCarto http://www.icarto.es
 
 The document is distributed under Creative Commons version 3 license, which requires Attribution and Share Alike.
-
 More information on: http://creativecommons.org/licenses/by-sa/3.0/en/
 
 .. image:: images/picture_11.png
+
 
 
 1.- Introduction
@@ -102,9 +102,9 @@ Bear in mind that the code of NavTable is publicly available for you to download
 
 NavTable is cross-plaftform so can be installed in GNU/Linux, Windows and MacOS enviroments.
 
-NavTable is a gvSIG extension, so it is necessary to have previously a gvSIG installation. It is compatible with versions 1.9 of gvSIG that can be obtained from  http://www.gvsig.org 
+NavTable is a gvSIG extension, so it is necessary to have previously a gvSIG installation. It is compatible with versions 1.9 of gvSIG that can be obtained from  http://www.gvsig.org
 
-More informaticon about gvSIG requirements: 
+More informaticon about gvSIG requirements:
 
 - Minimum: Pentium III (or equivalent) / 256 MB RAM
 
@@ -122,239 +122,240 @@ Once gvSIG version 1.9 is installed in the system, NavTable can be installed wit
 3.1 Automatic installation:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Download the installer, execute it and follow the instructions. 
+Download the installer, execute it and follow the instructions.
 
 3.2 Manual installation:
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-For various reasons, it is often useful to have instructions for manual install an application. Here are the manual install steps for Navtable in Linux, Mac or Windows: download the binary files navTable_0.8.zip and unzip the folder 'es.udc.cartolab.gvsig.navtable' into: [gvSIG_installation_path]/bin/gvSIG/extensiones/  
+For various reasons, it is often useful to have instructions for manual install an application. Here are the manual install steps for Navtable in Linux, Mac or Windows: download the binary files navTable_0.8.zip and unzip the folder 'es.udc.cartolab.gvsig.navtable' into: [gvSIG_installation_path]/bin/gvSIG/extensiones/
 
 - **Linux example**:  /home/user/gvSIG_1.11/bin/gvSIG/extensiones/es.udc.cartolab.gvsig.navtable
 
 - **Mac example**:   /home/user/gvSIG_1.11/bin/gvSIG/extensiones/
 
-- **Windows example**: C:\Program Files\gvSIG_1_11\bin\gvSIG\extensiones\es.udc.cartolab.gvsig.navtable 
+- **Windows example**: C:\Program Files\gvSIG_1_11\bin\gvSIG\extensiones\es.udc.cartolab.gvsig.navtable
 
 
-4.- Instrucciones de uso
+4.- Working with NavTable
 =========================
 
-Para activar NavTable es necesario tener seleccionada una capa vectorial en el ToC (listado de capas) dentro de gvSIG y pulsar el botón de NavTable
+To activate NavTable you must select a vector layer in the gvSIG ToC (Table of Contents) and click the  button NavTable
 
 .. image:: images/picture_6.png
 
-La interfaz gráfica de NavTable cuenta con las siguientes partes básicas:
+NavTable interface has the following areas:
 
-- **Parte superior:** checkboxes de ajustes básicos de comportamiento y botón para crear filtros.
+- **Top:** basic adjustments and filter checkboxes.
 
-- **Parte central:** donde se visualizan y editan los datos de cada registro.
+- **Central:** view and edit  data in each record.
 
-- **Parte inferior:** barra de navegación, botón de guardado y otros botones de manejo.
+- **Bottom:** navigate bar,  save button and others practical buttons.
 
 .. image:: images/picture_23.png
 
-NavTable puede utilizarse para la edición y visualización de datos en tablas alfanúmericas puras, que no tengan asociada geometría. Para estos casos, cuando se tenga el foco en una tabla de estas características, el icono de NavTable en la barra de herramientas tiene un tono azul
+NavTable can be used for editing and display alpha-numeric tables, which have no associated  geometry. For these  cases, NavTable  icon in the toolbar  will be blue.
 
 .. image:: images/picture_8.png
 
-El título de la ventana de NavTable para tablas sin geometría tiene un '*' para distinguirla de las tablas normales.
+The title of the  NavTable window for tables  without geometry has a '*' to distinguish it from normal tables.
 
-
-4.1 Navegación
+4.1 Navigation
 ^^^^^^^^^^^^^^
 
-NavTable permite moverse entre los registros y elementos geométricos de modo muy simple. Para ello, en el panel inferior se encuentra la Barra de Navegación.
+NavTable scrolls through the records and features in a friendly way. You will find the navigation bar at the bottom of NavTable's window.
 
 .. image:: images/picture_16.png
 
-Pulsando estos botones se puede:
+With these buttons you can:
 
-- Ir al primer registro
+- Go to the first record
 
-- Ir al registro anterior
+- Go to the previous record
 
-- Ir al siguiente registro
+- Go to the next record
 
-- Ir al último registro
+- Go to the last record
 
-- Ir a cualquier registro usando la caja de posición. Ésta muestra el número del registro que se está visualizando actualmente. Introduciendo una posición permite ver los valores del registro correspondiente. Al lado de la caja de posición se encuentra un número que indica el total de registros en la capa.
+- Go  to any record using the box located between the  buttons described above. It  shows the number of the records you're currently viewing. If you enter a new value here you will see the corresponding record. Next to the position of the box there is a number indicating the total amount of records in the table.
 
-Si el foco está en la parte central de NavTable (haciendo click en alguna de las filas) se pueden usar las teclas del cursor (Derecha e Izquierda) para cambiar de registro, así como las teclas HOME y END para ir al primer o último registro respectivamente.
+If you are working in the central area of NavTable (click on any row) you can use the buttons “right”or “left”, “home” or “end” to change the record that you want to see.
 
-4.1.1 Selecciones
------------------
+4.1.1 Selecting elements
+------------------------
 
-En caso de que esté seleccionado el checkbox "Seleccionados" el comportamiento de estos botones de navegación varía limitando la navegación a registros de elementos que se encuentran seleccionados en el SIG. Cuando un elemento se encuentra seleccionado la caja de posición de el panel inferior de NavTable se pone de color amarillo. Además se indicará entre paréntesis el número de elementos que se encuentran seleccionados en esa capa junto al total de elementos de ésta.
+If you click on the checkbox "selected" the navigation buttons will work only for features that are previous selected. If a feature is selected, the bottom area of the NavTable Window will be highlighted in yellow. In between parentheses the number of selected records can be seen next to the whole number of records.
 
 .. image:: images/picture_21.png
 
-En la imagen superior se muestra un ejemplo en el que se visualiza el registro 8 de una capa que cuenta con 20 elementos de los cuales 7 están seleccionados.
+In this image you see an example explaining how this function works: record 8 for a layer with 20 records is displayed  where 7 records are selected
 
-En caso de activar la opción de "Seleccionados", pero existir ningún registro seleccionado todos los valores de los atributos se mostrarán vacíos y la caja de posición no indicará ningún número.
+If the checkbox "selected" is activated without any selected feature, all records will be shown empty and the box will not display any number.
 
 .. image:: images/picture_22.png
 
 .. image:: images/picture_18.png
 
-Este tipo de selección actúa sólo en el registro actual respetando el estado de la selección del resto de elementos.
+The option "select" is another interesting tool you can find next to "selected" in the Nav Table menu. If you activate the checkbox next to  "select", the attributes you are visualizing will be selected and highlighted in the view. In the case that other features were selected, this option will turn them unselected and will select only the register you are visualizing.
 
-Otro interesante comportamiento configurable en NavTable es la opción "Seleccionar" del checkbox del panel superior. Al activar esa opción el elemento que se está visualizando en NavTable siempre será seleccionado automáticamente en la vista. En caso de existir otros elementos seleccionados, se limpiará esa selección y se dejará seleccionado sólamente el elemento actual.
-
-En el panel superior está el "botón de filtro" 
+On top of the NavTable Window there is the button "Filter"
 
 .. image:: images/picture_14.png
 
-que permite construir consultas en gvSIG y obtener selecciones complejas de los elementos de la capa. Pulsando el botón de eliminar filtro 
+If you press it, a dialogue window will appear in which you can define exactly what you want to select (attributes and calculations). If you click on "clear selection"
 
 .. image:: images/picture_7.png
- 
-se eliminan todas las selecciones.
 
-4.1.2 Zoom al elemento
+all selections will be turned off and no features will be selected.
+
+4.1.2 Zoom to feature
 ----------------------
-
-Si se pulsa el botón de zoom
+If you click on the zoom button
 
 .. image:: images/picture_20.png
 
- la vista asociada se centrará en la geometría del elemento que se está visualizando en NavTable en ese momento. La escala se ajusta para contener el elemento de la mejor forma posible. En el caso de ser una geometría de tipo punto, la escala toma un valor que permita ver el entorno al elemento puntual.
+the feature will be displayed in the center of the view, referring to the record you are working with at that time. The scale of the view will be changed to have a good visualization of the data.
+
+In case you are working with a point layer, a scale size will be chosen that allows to see also the surroundings of the point.
 
 .. image:: images/picture_12.png
 
-Si se activa la opción "Siempre Zoom" en el checkbox del panel superior, provocará que NavTable haga zoom extensión de forma automática al elemento mostrado cuando se pulsen los botones de navegación. En el caso de activar la opción "Escala fija", se centrará la vista dejando en el centro el elemento visualizado en NavTable, pero sin variar la escala actual de la Vista. La escala se puede ajustar cambiando su valor numérico en el checkbox de la parte inferior derecha de la Vista en gvSIG, junto a las coordenadas.
+With help of the button "always zoom" next to the checkbox "select", Navtable will zoom to each feature referring to the record you are visualizing. If you click on "fixed scale" as well, Navtable will zoom to the feature and display it in the center of the view, but the scale will always remain the same.
 
-**Recomendación:** Las opciones de "Siempre Zoom" o "Escala fija" en combinación con la "Seleccionar" ofrecen una interesante forma de navegar por los elementos de una capa.
+It is possible to change the scale value introducing a new one in the "scale bar" of gvSIG. This is shown on the buttom right of the gvSIG view, next to where the coordinates are displayed.
 
-4.1.2 Filtros Rápidos
+**Tip:** The options "always zoom" or "fixed scale" together with "select" is a very interesting way of navigate through the features of a layer.
+
+4.1.2 Quick filters
 ---------------------
 
-Se pueden hacer filtros de forma muy cómoda usando NavTable. Para usar esta funcionalidad de filtros rápidos se debe seleccionar una única fila en NavTable que corresponda a un atributo de tipo numérico, texto o booleano. Al presionar el botón derecho de ratón, se desplegará un menú que mostrará algunas opciones básicas para hacer el filtrado.
+Navtable offers you a comfortable way to make quick filters. If you want to use this functionality you must select a row in Navtable which has one of this attribute types: number, string or boolean. If you click on the right button of your mouse a new menu will be displayed which shows you the different options to define filters.
 
-Si el campo seleccionado es de tipo "texto" se mostrarán las siguientes opciones:
+If the selected field is of type "string" one of the following options will be shown:
 
-* **Igual a** [texto actual]
-* **Distinto a** [texto actual]
-* **Contiene...** (activará un diálogo para introducir la subcadena de texto a buscar entre todos los registros)
-* **Filtro** (esta opción enlazaría con la extensión de filtrado de gvSIG, como en el panel superior)
-* **Quitar filtro** (Si existe algún registro selecionado)
+* **is the same than** [current text]
+* **is different than** [current text]
+* **contains...** (a new dialogue window will be displayed introducing text that Navtable should find between all other records)
+* **Filter** (this option will call the "Filter" function of gvSIG as we have seen it before)
+* **Clear Selection** (if a feature is selected)
 
 .. image:: images/picture_24.png
 
-En el caso de activar el menú de filtro rápido sobre un atributo de tipo numérico, las opciones serían:
+If you want to use the quick filter of Navtable on a numeric field you will have these possibilities:
 
-* **Igual a (==)** [valor actual]
-* **Distinto de (!=)** [valor actual]
-* **Menor que (<)** [valor actual]
-* **Mayor que (<)** [valor actual]
-* **Filtro** 
-* **Quitar filtro** 
+* **is the same than (==)** [current value]
+* **is different than (!=)** [current value]
+* **smaller than (<)** [current value]
+* **greater than (<)** [current value]
+* **filter**
+* **clear filter**
 
 .. image:: images/picture_25.png
 
-También existe la posibilidad de hacer filtros en los atributos booleanos donde las opciones disponibles serán:
+regarding boolean fields the filter options are the followings:
 
-* **Igual a "TRUE"**
-* **Igual a "FALSE"**
-* **Filtro** 
-* **Quitar filtro** 
+* **equal to "TRUE"**
+* **equal to "FALSE"**
+* **filter**
+* **clear fliter**
 
-En el caso de que exista algún registro seleccionado, entre las opciones desplegadas en el menú estará la de "Quitar filtro" para limpiar la selección actual. De todos modos, al seleccionar un nuevo filtro rápido se elimina la selección actual automáticamente.
+If there are selected records the "clear filter" option can be activated to delete the current selection. Each time you use Navtable´s quick filter option a new selection will be made and the actual one will be cleared.
 
-Nota: Se debe recordar que en caso de tener activa la opción de "Seleccionados" de NavTable y si se hace un filtro donde no exista ningún registro que cumpla dicha condición, NavTable mostrará un registro vacío.
+Notice: You should consider that NavTable will show you an empty record if you use a filter and you have to activate the checkbox "selected". Every feature has the condition you are looking for including the expression you have defined for the filter.
 
-Advertencia: Si el número de registros es muy elevado (al igual que sucede con la extensión de Filtro de gvSIG) las operaciones pueden llevar un tiempo de procesamiento elevado. Otra cosa a tener en cuenta, es que hay un error conocido en gvSIG al trabajar con filtros cuando el número es un decimal y la operación "Igual a". Los filtros para atributos de tipo fecha aún no han sido implementados.
+Warning: if there is a great amount of records inside the table, the processing of the Navtable filter operations could take a long time (like in gvSIG filter itself). Please consider that there is a known bug in gvSIG when using filters with decimals in numerical fields and the "equal to" operator.
 
-4.2 Edición
+Filter for date fields have not yet been implemented in Navtable.
+
+4.2 Edition
 ^^^^^^^^^^^
 
-La principal novedad que representa NavTable a la hora de editar datos es que no es necesario poner la capa en edición de antemano. Los pasos a seguir para modificar un atributo son:
+The main new functionality in Navtable is that you don't need to start the editing mode for a layer if you want to edit it. You should follow these steps to edit the table:
 
-1. Hacer doble click en una celda (o pulsar la barra espaciadora del teclado). Esto pondrá en edición esa celda poniendo un cursor preparado para escribir.
+1. Make double click on the register you wish to work with (or click on the space bar). Now you are in editing modus and you will be able to modify this record.
 
-2. Modificar el dato con el nuevo valor.
+2. Modify the data by entering a new value
 
-3. Pulsar el botón de guardado 
+3. Click on the "save" button
 
 .. image:: images/picture_4.png
 
-Una vez hecho eso, el nuevo valor quedará registrado. Sin embargo, a la hora de salvar datos cabe destacar ciertos casos especiales:
+After that, the new value will be saved. It's important to consider these special cases if you want to save the edition:
 
-- En el caso de que el tipo de dato sea un booleano, sólo se aceptarán los valores *true* o *false* (sin importar las mayúsculas/minúsculas). En caso de no ser ninguno de ellos, se mantendrá el valor inicial.
+- with boolean fields you can only use *true* or *false* (the expression is not case sensitive). If you enter another value, the original one will be saved.
 
+- If you try to save a value into a not appropriate field (for example from type „text“ into type „numerical“), the original value will be written.
 
-- Igualmente en el caso de que se trate de guardar un tipo de dato incorrecto (por ejemplo un texto en un campo numérico), se mantendrá el valor inicial.
+- If you want to save an empty text, the default value will be saved. But if the field is from type „string“, the record will be saved with an empty value.
 
-
-- Si se trata de guardar un texto vacío, se guardará el valor por defecto que se haya asignado, salvo que el tipo de dato sea String, en el que se guardará el texto vacío.
-
-Además se dispone de un botón para edición rápida. Si se decide que el registro actual debe tener los mismos valores que otro registro existente, o comparte la mayoría de ellos, se puede seleccionar el registro que se desea copiar y pulsar el botón de copiar el registro seleccionado
+With Navtable it is also possible to use options for advanced editing. For example you can copy and paste records. For that you should select the record you want to copy first and click then on the button "copy selected feature".
 
  .. image:: images/picture_10.png
 
-para que se carguen automáticamente. Sin embargo, no se modificarán los datos definitivamente hasta que se haga click en el botón de guardar.
+The data will be modified when you click on the button "save".
 
-**Eliminación de elementos**
+**Removing records**
 
-Se puede eliminar el elemento actual que se está visualizando en NavTable mendiante el botón de eliminar registro 
+It is possible to delete the record you are visualizing with Navtable if you click on the button "delete feature"
 
 .. image:: images/picture_19.png
 
-En caso de que ese registro tenga geometría asociada esta será eliminada también.
+If this record has an associated geometry feature (graphical element), this one will be also deleted.
 
-**Creación de registros en tablas alfanuméricas**
+**Adding records to alphanumerical tables**
 
-NavTable en modo de tabla alfanumérica sin geometría cuenta con el botón 
+For tables which aren't associated to a layer, Navtable has this button
 
 .. image:: images/picture_15.png
 
-Pulsándolo es posible crear un nuevo registro a continuación del último registro.
+If you click on it, after the last one of the table a new record will appear.
 
+4.3 Long names DBF
+^^^^^^^^^^^^^^^^^^^
 
-4.3 Visualización de nombres largos
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+As you know, the dbf format doesn't allow field names with more than 10 characters. This limitation could be solved using alias for these fields. This option is also available for layers stored in a geodatabase.
 
-Como es de sobra conocido, el formato dbf no permite definir nombres para los campos de más de 10 caracteres. Esta limitación se puede corregir parcialmente con navTable, gracias al uso de alias para esos campos. Además de para los dbf esta función esta disponible también para capas cargadas desde una base de datos geoespacial.
+If you wish to use this functionality you will need to create a text file with the same name as the layer in which you want to use "alias" names. Save this text file in the folder "alias" that was created when installing Navtable.
 
-Para ello es necesario definir un fichero de texto con el mismo nombre que tiene la capa, para la cual se quieren utilizar los alias, en el TOC de gvSIG y la extensión ".alias". Este fichero se debe guardar dentro de un directorio llamado alias que se crea cuando se instala NavTable. A continuación se detalla donde se encuentra este directorio.
+When installing gvSIG, a folder with the name gvSIG will also be created:
 
-Cuando se instala gvSIG, éste crea un directorio del mismo nombre dentro del directorio del usuario. En **Windows** típicamente se encuentra dentro de "C:\Documents and Settings\usuario\"
+On **Windows** it is usually installed here  "C:\Documents and Settings\user\"
 
 .. image:: images/picture_9.jpg
 
-En **GNU/Linux** lo encontramos típicamente en el «home» del usuario, por ejemplo: "/home/usuario/gvSIG"
+On **GNU/Linux** you will find it here: "/home/user/gvSIG"
 
-Dentro de este directorio, gvSIG, NavTable en el momento de instalarla, crea un directorio llamado NavTable y dentro de este otro llamado alias, que será donde se guardan los ficheros «.alias»
+When installing Navtable, a folder with the Name "Navtable" is saved to the "gvSIG" folders. At the Navtable folder you will find the "Alias" one, where you should save the text file mentioned above.
 
 .. image:: images/picture_17.png
 
-En este fichero se pueden definir nombres largos o alias para los nombres de los campos.
+In this file you can define long names or alias for the field names.
 
-   Nombre_campo_original=Nombre_largo
+ Name_original_field=long_name
 
-Sólo es necesario escribir una línea con este formato para aquellos campos para los cuales se quiera definir un alias. El orden de estas líneas es libre, es decir, no es necesario seguir el orden de los campos en el fichero dbf.
+It's only necessary to describe a row for the fields you want to define an alias name for. The order of the lines isn't important, that means, you don't need to follow the same sequence like the field's names of the table.
 
-Cuando se abre navTable, se comprueba si existe este fichero ".alias", si es así, para los campos que tienen definido un alias, se muestra éste en lugar del nombre original del campo.
+When Navtable is opened, the according "alias" text file will be found automatically. If new names for the fields are available there, Navtable will use these ones instead of the original names.
 
-**Ejemplo:** Tenemos un dbf con los siguientes campos:
+**Example:** There is a dbf file with the following fields:
 
 .. image:: images/picture_26.png
 
-Definimos un fichero de alias con el mismo nombre del shp: *Borde_mun.alias* en este caso. En este fichero escribimos el siguiente contenido:
+We define an alias text file with the same name as the shape file: *Borde_mun.alias* in this case. In this file we will write the following text:
 
 .. parsed-literal::
 
-   cod_provinc=código de provincia
-   cod_municip=código de municipio
+ cod_provinc=código de provincia
+ cod_municip=código de municipio
 
-Este fichero *Borde_mun.alias* lo guardamos en el mismo directorio que el fichero *Borde_mun.shp*. Ahora abrimos de nuevo la capa con navTable y vemos lo siguiente:
+This file *Borde_mun.alias* will be saved in the same folder as the file *Borde_mun.shp*. Now we can open the table of this layer with Navtable and can see the following:
 
 .. image:: images/picture_5.png
 
-**Importante para Windows:**
+**Important for Windows:**
 
-Por defecto Windows oculta la extensión de los archivos, por lo que es probable que al crear un fichero de texto nuevo para los alias y lo guardamos con nombre  en realidad el nombre del fichero sea *nombre_capa.alias.txt*. Esto hará que navTable no sea capaz de leer el archivo de alias. Para asegurarse que esto no pasa es recomendable desactivar la opción *Ocultar las extensiones de archivo para tipos de archivo conocidos*. Esto puede hacerse a través del explorador de ficheros de Windows en el menú *Herramientas -- Opciones de carpeta*, en la pestaña *Ver*, dentro del apartado *Configuración avanzada*.
+Windows doesn't show the file extension by default. For this reason for a new alias text file the name of the file will be probably *name_layer.alias.txt* and Navtable will not be able to read this alias file.
 
-
+In order to have a correct result for this functionality we recommend you to deactivate the option *hide hidden files and folders*. You can make this in Windows Explorer: *Extras > File Options > View > Advanced Settings > Hidden Files and Folders*
 
 5.- More about NavTable
 ========================
@@ -364,7 +365,6 @@ NavTable is hosted by the OSOR Forge[1]. On this page you can find useful inform
 In the section "Future Work" on the project website you will find some of the things we want to incorporate in NavTable in the near future.
 
 [1]: http://navtable.forge.osor.eu/
-
 
 
 6.- Collaboration
@@ -383,13 +383,12 @@ You can collaborate in NavTable providing ideas, comments, reporting bugs, trans
 Help us build a tool even more useful!
 
 
-
 7 .- Credits
 =============
 
 .. image:: images/picture_13.png
 
-CartoLab - Universidade da Coruña 
+CartoLab - Universidade da Coruña
 http://www.cartolab.es/
 
 **Director:** Fco. Alberto Varela García.
@@ -406,7 +405,7 @@ http://www.cartolab.es/
 
 - Andrés Maneiro
 
-Have contributed ideas, comments, suggestions and/or reported errors:
+Have contributed ideas, comments, suggestions, reported errors or translations:
 
 - Francisco Alberto Varela García [C]
 
@@ -437,6 +436,8 @@ Have contributed ideas, comments, suggestions and/or reported errors:
 - Silvio Grosso
 
 - Antonio Falciano
+
+- José Antonio Canalejo
 
 .. parsed-literal::
 
