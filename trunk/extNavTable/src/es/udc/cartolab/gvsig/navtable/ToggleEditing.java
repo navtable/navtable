@@ -578,8 +578,9 @@ public class ToggleEditing {
 		    // System.out.println("El valor " + attStringValues[i] +
 		    // " es de tipo " + FieldDescription.typeToString(type));
 		} catch (NumberFormatException e) {
-		    logger.error("Tipo incorrecto: El valor "
-			    + attStringValues[i] + "debería ser "
+		    logger.error("Tipo incorrecto: El valor del campo "
+			    + fieldDesc[attPos[i]].getFieldName() + " es \""
+			    + attStringValues[i] + "\" y debería ser "
 			    + FieldDescription.typeToString(type), e);
 		} catch (java.text.ParseException e) {
 		    logger.error(e.getMessage(), e);
@@ -593,7 +594,7 @@ public class ToggleEditing {
 	    edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY",
 		    EditionEvent.ALPHANUMERIC);
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    logger.error(e.getMessage(), e);
 	}
     }
 
