@@ -137,6 +137,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     protected JButton saveB = null;
     protected JButton removeB = null;
     private boolean isSomeNavTableFormOpen = false;
+    protected EditionListener listener;
 
     /**
      * 
@@ -149,6 +150,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     public AbstractNavTable(FLyrVect layer) {
 	super();
 	this.layer = layer;
+	this.listener = new EditionListener(this, layer);
+	this.layer.addLayerListener(this.listener);
 	this.dataName = layer.getName();
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
@@ -183,6 +186,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     public AbstractNavTable(SelectableDataSource recordset, String tableName) {
 	super();
 	this.layer = null;
+	this.listener = new EditionListener(this);
 	this.dataName = tableName;
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
@@ -957,6 +961,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	}
     }
 
+    public long getPosition() {
+	return currentPosition;
+    }
+
     protected void copyPrevious() {
 	long current = currentPosition;
 	currentPosition = currentPosition - 1;
@@ -1151,6 +1159,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     public void windowClosed() {
 	showWarning();
 	this.recordset.removeSelectionListener(this);
+	if (this.layer != null) {
+	    this.layer.removeLayerListener(this.listener);
+	}
 	setOpenNavTableForm(false);
     }
 
@@ -1163,5 +1174,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     }
 
     public void windowActivated() {
+    }
+
+    /**
+     * Reloads recordset from layer, if possible.
+     * 
+     * @throws ReadDriverException
+     */
+    public void reloadRecordset() throws ReadDriverException {
+	if (this.layer != null) {
+	    this.recordset = this.layer.getRecordset();
+	}
     }
 }

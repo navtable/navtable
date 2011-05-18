@@ -61,6 +61,7 @@ public class AlphanumericNavTable extends NavTable {
 	    throws ReadDriverException {
 	super(model.getRecordset(), dataName);
 	this.model = model;
+	this.model.addEditionListener(listener);
     }
 
     @Override
@@ -224,5 +225,6 @@ public class AlphanumericNavTable extends NavTable {
     public void windowClosed() {
 	this.newB.removeActionListener(this);
 	super.windowClosed();
+	this.model.removeEditionListener(listener);
     }
 }
