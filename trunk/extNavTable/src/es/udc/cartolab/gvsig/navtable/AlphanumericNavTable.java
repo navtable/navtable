@@ -26,6 +26,7 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.event.ActionEvent;
 import java.net.URL;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -56,12 +57,20 @@ public class AlphanumericNavTable extends NavTable {
 
     JButton newB = null;
     protected IEditableSource model;
+    protected HashMap<String, String> defaultValues = null;
 
     public AlphanumericNavTable(IEditableSource model, String dataName)
 	    throws ReadDriverException {
 	super(model.getRecordset(), dataName);
 	this.model = model;
 	this.model.addEditionListener(listener);
+    }
+
+    public AlphanumericNavTable(IEditableSource model, String dataName, HashMap<String,String> defaultValues)
+	    throws ReadDriverException {
+	super(model.getRecordset(), dataName);
+	this.model = model;
+	this.defaultValues = defaultValues;
     }
 
     @Override
@@ -148,9 +157,18 @@ public class AlphanumericNavTable extends NavTable {
 		IRow row;
 		int numAttr = recordset.getFieldCount();
 		Value[] values = new Value[numAttr];
-		for (int i = 0; i < numAttr; i++) {
-		    values[i] = ValueFactory.createNullValue();
-		}
+		if (defaultValues == null)
+		    for (int i = 0; i < numAttr; i++) {
+			values[i] = ValueFactory.createNullValue();
+		    }
+		else
+		    for (int i = 0; i < numAttr; i++) {
+			if (defaultValues.get(recordset.getFieldAlias(i)) == null)
+			    values[i] = ValueFactory.createNullValue();
+			else
+			    values[i] = ValueFactory.createValue(defaultValues
+				    .get(recordset.getFieldAlias(i)));
+		    }
 		row = new DefaultRow(values);
 		model.doAddRow(row, EditionEvent.ALPHANUMERIC);
 
@@ -210,9 +228,9 @@ public class AlphanumericNavTable extends NavTable {
 	if (e.getSource() == newB) {
 	    addRecord();
 	} else if (e.getSource() == removeB) {
-	    int answer = JOptionPane.showConfirmDialog(null,
-		    PluginServices.getText(null, "confirm_delete_register"),
-		    null, JOptionPane.YES_NO_OPTION);
+	    int answer = JOptionPane.showConfirmDialog(null, PluginServices
+		    .getText(null, "confirm_delete_register"), null,
+		    JOptionPane.YES_NO_OPTION);
 	    if (answer == 0) {
 		deleteRecord();
 	    }
