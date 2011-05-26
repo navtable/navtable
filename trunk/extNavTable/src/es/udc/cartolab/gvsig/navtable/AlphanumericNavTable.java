@@ -75,11 +75,10 @@ public class AlphanumericNavTable extends NavTable {
 
     @Override
     public boolean init() {
-	if (super.init() == false) {
+	if (!super.init()) {
 	    return false;
 	}
 
-	int index = -1;
 	zoomB.setVisible(false);
 	alwaysZoomCB.setVisible(false);
 	fixScaleCB.setVisible(false);
