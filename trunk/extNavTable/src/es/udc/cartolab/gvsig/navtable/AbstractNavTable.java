@@ -300,6 +300,44 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	}
     }
 
+    public void setOnlySelected(boolean value) {
+	onlySelectedCB.doClick();
+    }
+
+    public void selectFeature(long feature) {
+	FBitSet bitset = null;
+	int pos = Long.valueOf(feature).intValue();
+	bitset = recordset.getSelection();
+	if (!bitset.get(pos)) {
+	    bitset.set(pos);
+	}
+	recordset.setSelection(bitset);
+    }
+
+    public void unselectFeature(long feature) {
+	FBitSet bitset = null;
+	int pos = Long.valueOf(feature).intValue();
+	bitset = recordset.getSelection();
+	if (bitset.get(pos)) {
+	    bitset.clear(pos);
+	    if (onlySelectedCB.isSelected()) {
+		lastSelected();
+	    }
+	}
+	recordset.setSelection(bitset);
+    }
+
+    public boolean isFeatureSelected(long feature) {
+	FBitSet bitset = null;
+	int pos = Long.valueOf(feature).intValue();
+	bitset = recordset.getSelection();
+	return bitset.get(pos);
+    }
+
+    public void clearSelectedFeatures() {
+	recordset.clearSelection();
+    }
+
     protected void initNorthPanelButtons() {
 	filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
 	noFilterB = getNavTableButton(noFilterB, "/nofilter.png",
