@@ -1222,6 +1222,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     public void reloadRecordset() throws ReadDriverException {
 	if (this.layer != null) {
 	    this.recordset = this.layer.getRecordset();
+	    this.recordset.reload();
 	}
     }
 }

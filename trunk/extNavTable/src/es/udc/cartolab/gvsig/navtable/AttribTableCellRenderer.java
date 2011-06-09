@@ -49,6 +49,11 @@ public class AttribTableCellRenderer extends JTextArea implements
 	noEditableRows.addElement(new Integer(rowNumber));
     }
 
+    public void emptyNoEditableRows() {
+	noEditableRows.removeAllElements();
+
+    }
+
     public Component getTableCellRendererComponent(JTable table, Object value,
 	    boolean isSelected, boolean hasFocus, int row, int column) {
 

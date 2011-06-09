@@ -80,6 +80,7 @@ public class EditionListener implements LayerListener, IEditionListener {
 
     @Override
     public void afterFieldEditEvent(AfterFieldEditEvent e) {
+	refresh();
     }
 
     @Override
@@ -101,20 +102,25 @@ public class EditionListener implements LayerListener, IEditionListener {
 	    if (layer.isEditing()) {
 		source = (IEditableSource) ((FLyrVect) layer).getSource();
 		source.addEditionListener(this);
-		try {
-		    nt.reloadRecordset();
-		} catch (ReadDriverException e2) {
-		    logger.error(e2.getMessage(), e2);
-		}
 	    } else if (source != null) {
 		source.removeEditionListener(this);
 		source = null;
 	    }
+	    refresh();
 	}
     }
 
     @Override
     public void drawValueChanged(LayerEvent e) {
+    }
+
+    private void refresh() {
+	try {
+	    nt.reloadRecordset();
+	} catch (ReadDriverException error) {
+	    logger.error(error.getMessage(), error);
+	}
+	nt.refreshGUI();
     }
 
 }

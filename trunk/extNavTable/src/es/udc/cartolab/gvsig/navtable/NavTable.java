@@ -399,13 +399,15 @@ public class NavTable extends AbstractNavTable {
     private void fillAttributes() {
 	try {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
+	    model.setRowCount(0);
 	    Vector<String> aux = null;
 
 	    // TODO: Some times it takes the deleted fields on the DBF
 	    // FieldDescription[] fd = recordset.getFieldsDescription();
 	    // fd[1].
 
-	    for (String attName : recordset.getFieldNames()) {
+	    for (int i = 0; i < recordset.getFieldCount(); i++) {
+		String attName = recordset.getFieldName(i);
 		aux = new Vector<String>(2);
 		aux.add(getAlias(attName));
 		aux.add(" ");
@@ -424,6 +426,8 @@ public class NavTable extends AbstractNavTable {
 		aux.add(PluginServices.getText(this, "Geom_AREA"));
 		aux.add("0.0");
 		model.addRow(aux);
+
+		this.cellRenderer.emptyNoEditableRows();
 
 		this.cellRenderer.addNoEditableRow(model.getRowCount() - 2);
 		this.cellRenderer.addNoEditableRow(model.getRowCount() - 1);
@@ -900,5 +904,10 @@ public class NavTable extends AbstractNavTable {
 	} finally {
 	    return attrType;
 	}
+    }
+
+    public void reloadRecordset() throws ReadDriverException {
+	super.reloadRecordset();
+	fillAttributes();
     }
 }
