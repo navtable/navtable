@@ -178,6 +178,7 @@ public class NavTable extends AbstractNavTable {
 	centerPanel = new JPanel(glayout);
 	NavTableModel model = new NavTableModel();
 	table = new JTable(model);
+	table.getTableHeader().setReorderingAllowed(false);
 
 	myKeyListener = new MyKeyListener();
 	table.addKeyListener(myKeyListener);
