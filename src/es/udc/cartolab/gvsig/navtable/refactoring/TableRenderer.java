@@ -20,15 +20,20 @@ public class TableRenderer {
     public void updateModel(DefaultTableModel model, SelectableDataSource sds) {
 	try {
 	    model.setRowCount(0);
-	    for (int i = 0; i < sds.getFieldCount(); i++) {
-		String name = sds.getFieldName(i);
-		Vector<String> attr = new Vector<String>(2);
-		attr.add(name);
-		model.addRow(attr);
-		Value value = sds.getFieldValue(nt.getCurrentPosition(), i);
-		String textoValue = value
-			.getStringValue(ValueWriter.internalValueWriter);
-		model.setValueAt(textoValue, i, 1);
+	    if (sds.getRowCount() > 0) {
+		for (int i = 0; i < sds.getFieldCount(); i++) {
+		    String name = sds.getFieldName(i);
+		    Vector<String> attr = new Vector<String>(2);
+		    attr.add(name);
+		    model.addRow(attr);
+		    if (sds.getRowCount() > 0) {
+			Value value = sds.getFieldValue(
+				nt.getCurrentPosition(), i);
+			String textoValue = value
+				.getStringValue(ValueWriter.internalValueWriter);
+			model.setValueAt(textoValue, i, 1);
+		    }
+		}
 	    }
 	} catch (ReadDriverException e) {
 	    e.printStackTrace();

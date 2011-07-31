@@ -16,6 +16,7 @@ import es.udc.cartolab.gvsig.navtable.actions.GoToPreviousRecordAction;
 
 public class NavigationTable implements INavigationTable {
 
+    private static final int NO_REGISTER = -1;
     public static final int GO_FIRST = 0;
     public static final int GO_LAST = 1;
     public static final int GO_NEXT = 2;
@@ -36,6 +37,7 @@ public class NavigationTable implements INavigationTable {
 	initTableModel();
 	initActions();
 	setStatusOfActions();
+	setCurrentPosition(NO_REGISTER);
     }
 
     public void initActions() {
@@ -135,7 +137,7 @@ public class NavigationTable implements INavigationTable {
 	    return (int) (sds.getRowCount() - 1);
 	} catch (ReadDriverException e) {
 	    e.printStackTrace();
-	    return -1;
+	    return NO_REGISTER;
 	}
     }
 
