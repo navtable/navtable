@@ -112,18 +112,22 @@ public class NavigationTable implements INavigationTable {
     }
 
     private void setStatusOfActions() {
-	goToFirstRecordAction.setEnabled(true);
-	goToLastRecordAction.setEnabled(true);
-	goToNextRecordAction.setEnabled(true);
-	goToPreviousRecordAction.setEnabled(true);
-	if (currentPosition == 0) {
-	    goToFirstRecordAction.setEnabled(false);
-	    goToPreviousRecordAction.setEnabled(false);
+	goToFirstRecordAction.setEnabled(false);
+	goToLastRecordAction.setEnabled(false);
+	goToNextRecordAction.setEnabled(false);
+	goToPreviousRecordAction.setEnabled(false);
+	if (currentPosition > getIndexOfFirstRecord()) {
+	    goToFirstRecordAction.setEnabled(true);
+	    goToPreviousRecordAction.setEnabled(true);
 	}
-	if (currentPosition == getIndexOfLastRecord()) {
-	    goToLastRecordAction.setEnabled(false);
-	    goToNextRecordAction.setEnabled(false);
+	if (currentPosition < getIndexOfLastRecord()) {
+	    goToLastRecordAction.setEnabled(true);
+	    goToNextRecordAction.setEnabled(true);
 	}
+    }
+
+    public int getIndexOfFirstRecord() {
+	return 0;
     }
 
     public int getIndexOfLastRecord() {
