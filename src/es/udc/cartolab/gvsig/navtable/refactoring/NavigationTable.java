@@ -24,7 +24,7 @@ public class NavigationTable implements INavigationTable {
 
     private SelectableDataSource sds;
     private boolean onlyNavigateThroughSelection;
-    private int currentPosition;
+    private int currentPosition = NO_REGISTER;
     private GoToFirstRecordAction goToFirstRecordAction;
     private GoToLastRecordAction goToLastRecordAction;
     private GoToNextRecordAction goToNextRecordAction;
@@ -34,10 +34,19 @@ public class NavigationTable implements INavigationTable {
 
     public NavigationTable(SelectableDataSource sds) {
 	this.sds = sds;
-	initTableModel();
+	init();
+    }
+
+    private void init() {
 	initActions();
-	setStatusOfActions();
-	setCurrentPosition(NO_REGISTER);
+	initTableModel();
+	try {
+	    if (sds.getRowCount() > 0) {
+		setCurrentPosition(0);
+	    }
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	}
     }
 
     public void initActions() {
@@ -45,6 +54,7 @@ public class NavigationTable implements INavigationTable {
 	goToPreviousRecordAction = new GoToPreviousRecordAction(this);
 	goToNextRecordAction = new GoToNextRecordAction(this);
 	goToLastRecordAction = new GoToLastRecordAction(this);
+	setStatusOfActions();
     }
 
     public AbstractAction getAction(int actionName) {
