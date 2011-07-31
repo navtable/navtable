@@ -32,6 +32,8 @@ public class NavigationTable implements INavigationTable {
     private DefaultTableModel model;
     private TableRenderer tableRenderer;
 
+    private CurrentPositionEventSource currentPositionEventSource = new CurrentPositionEventSource();
+
     public NavigationTable(SelectableDataSource sds) {
 	this.sds = sds;
 	init();
@@ -121,6 +123,7 @@ public class NavigationTable implements INavigationTable {
 	currentPosition = index;
 	setStatusOfActions();
 	tableRenderer.updateModel(model, sds);
+	currentPositionEventSource.fireEvent(new CurrentPositionEvent(this));
     }
 
     private void setStatusOfActions() {
@@ -156,4 +159,11 @@ public class NavigationTable implements INavigationTable {
 	return sds;
     }
 
+    public void addCurrentPositionListener(CurrentPositionListener listener) {
+	currentPositionEventSource.addEventListener(listener);
+    }
+
+    public void removeCurrentPositionListener(CurrentPositionListener listener) {
+	currentPositionEventSource.removeEventListener(listener);
+    }
 }

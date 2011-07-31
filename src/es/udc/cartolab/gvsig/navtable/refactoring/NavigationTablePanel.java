@@ -7,16 +7,19 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
+import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 
-public class NavigationTablePanel extends JPanel implements IWindow {
+public class NavigationTablePanel extends JPanel implements IWindow,
+	IWindowListener {
 
     private NavigationTable nt;
 
@@ -26,10 +29,12 @@ public class NavigationTablePanel extends JPanel implements IWindow {
     private JButton goToLastRecord;
     private JToolBar navigationToolBar;
     private JTable table;
+    private JTextField currentPosition;
 
     private WindowInfo windowInfo;
 
     private JScrollPane scrollPane;
+    private UpdateCurrentPositionListener updateCurrentPositionListener = new UpdateCurrentPositionListener();
 
     public NavigationTablePanel(SelectableDataSource sds) {
 	super(new BorderLayout());
@@ -41,8 +46,9 @@ public class NavigationTablePanel extends JPanel implements IWindow {
     private void init() {
 	initializeTable();
 	add(scrollPane, BorderLayout.PAGE_START);
-	initializeButtons();
+	initializeToolBar();
 	add(navigationToolBar, BorderLayout.PAGE_END);
+	nt.addCurrentPositionListener((CurrentPositionListener) updateCurrentPositionListener);
     }
 
     private void initializeTable() {
@@ -50,7 +56,7 @@ public class NavigationTablePanel extends JPanel implements IWindow {
 	scrollPane = new JScrollPane(table);
     }
 
-    public void initializeButtons() {
+    public void initializeToolBar() {
 	navigationToolBar = new JToolBar();
 
 	goToFirstRecord = new JButton(nt.getAction(nt.GO_FIRST));
@@ -62,8 +68,12 @@ public class NavigationTablePanel extends JPanel implements IWindow {
 	goToLastRecord = new JButton(nt.getAction(nt.GO_LAST));
 	nt.setActionIcon(nt.GO_LAST, getIcon("/go-last.png"));
 
+	currentPosition = new JTextField(
+		String.valueOf(nt.getCurrentPosition()));
+
 	navigationToolBar.add(goToFirstRecord);
 	navigationToolBar.add(goToPreviousRecord);
+	navigationToolBar.add(currentPosition);
 	navigationToolBar.add(goToNextRecord);
 	navigationToolBar.add(goToLastRecord);
     }
@@ -94,4 +104,22 @@ public class NavigationTablePanel extends JPanel implements IWindow {
 	return WindowInfo.PROPERTIES_PROFILE;
     }
 
+    public class UpdateCurrentPositionListener implements
+	    CurrentPositionListener {
+
+	@Override
+	public void onChange(CurrentPositionEvent e) {
+	    currentPosition.setText(String.valueOf(nt.getCurrentPosition()));
+	}
+    }
+
+    @Override
+    public void windowActivated() {
+	// TODO Auto-generated method stub
+    }
+
+    @Override
+    public void windowClosed() {
+	nt.removeCurrentPositionListener(updateCurrentPositionListener);
+    }
 }
