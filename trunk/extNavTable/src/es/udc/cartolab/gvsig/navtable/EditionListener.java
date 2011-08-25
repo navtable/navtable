@@ -59,43 +59,34 @@ public class EditionListener implements LayerListener, IEditionListener {
 	this.nt = nt;
     }
 
-    @Override
     public void processEvent(EditionEvent e) {
     }
 
-    @Override
     public void beforeRowEditEvent(IRow feat, BeforeRowEditEvent e) {
     }
 
-    @Override
     public void afterRowEditEvent(IRow feat, AfterRowEditEvent e) {
 	if (nt.getPosition() == e.getNumRow()) {
 	    nt.fillValues();
 	}
     }
 
-    @Override
     public void beforeFieldEditEvent(BeforeFieldEditEvent e) {
     }
 
-    @Override
     public void afterFieldEditEvent(AfterFieldEditEvent e) {
 	refresh();
     }
 
-    @Override
     public void visibilityChanged(LayerEvent e) {
     }
 
-    @Override
     public void activationChanged(LayerEvent e) {
     }
 
-    @Override
     public void nameChanged(LayerEvent e) {
     }
 
-    @Override
     public void editionChanged(LayerEvent e) {
 	FLayer layer = e.getSource();
 	if (layer instanceof FLyrVect) {
@@ -110,7 +101,6 @@ public class EditionListener implements LayerListener, IEditionListener {
 	}
     }
 
-    @Override
     public void drawValueChanged(LayerEvent e) {
     }
 
