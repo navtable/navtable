@@ -1,0 +1,60 @@
+<html>
+<head>
+<style type="text/css">
+html, body, h1, h2, h3, h4, div, p, ul, li, input {
+   font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+   font-size: large;
+}
+
+h2 {
+   font-size: large;
+}
+
+h3 {
+   font-size: medium;
+}
+</style>
+</head>
+<body>
+<h1>Extensi&oacute;n de administraci&oacute;n de traducciones multiidioma</h1>
+
+<h2>Autores:</h2>
+<ul>
+<li>Generalitat Valenciana
+ (Conselleria d'Infraestructures i Transport).</li>
+<li>DiSiD Technologies S.L.</li>
+</ul>
+
+<p>Software con licencia GNU/GPL
+(http://www.fsf.org/licensing/licenses/gpl.html)</p>
+
+<p>Informaci&oacute;n y soporte:
+	http://www.disid.com/<p>
+
+<h2>Requisitos de la aplicaci&oacute;n:</h2>
+<h3>Sistema</h3>
+<ul>
+<li>M&iacute;nimos: Pentium III / 256 MB RAM.</li>
+<li>Recomendables: Pentium IV / 512 MB RAM.</li>
+<li>Sistemas operativos: plataformas Windows y Linux.</li>
+</ul>
+
+<h3>Software instalado</h3> (disponible en http://www.gvsig.gva.es o en http://java.sun.com)
+<ul>
+<li>gvSIG-1.1</li>
+</ul>
+
+<h2>M&aacute;s informaci&oacute;n y soporte sobre gvSIG en:</h2>
+<h3> Web oficial del proyecto:</h3>
+	http://www.gvsig.org
+
+<h3>Listas de distribuci&oacute;n:</h3>
+<span style="monospace"> http://runas.cap.gva.es/mailman/listinfo/gvsig_usuarios</span> (soporte para usuarios).
+<span style="monospace"> http://runas.cap.gva.es/mailman/listinfo/gvsig_desarrolladores</span> (soporte para desarrolladores).
+<span style="monospace"> http://runas.cap.gva.es/mailman/listinfo/gvsig_internacional</span> (soporte para desarrolladores o usuarios de habla no hispana).
+
+</body>
+</html>

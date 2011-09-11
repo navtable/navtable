@@ -1,0 +1,68 @@
+NEWS from NavTable 0.8 2011-03-28
+------------------------------------------------
+- Misc Bugfixes
+
+NEWS from NavTable 0.7.9 2011-02-28
+------------------------------------------------
+- Implemented quick filter tool on the right click on mouse
+- Fix for unsaved data question on editing layers
+- Some improvements in code style and refactoring
+- Misc tasks on Navtable-Forms
+
+NEWS from NavTable 0.6.2 2010-08-18
+------------------------------------------------
+- Use "appHomeDir" as provided by com.iver.andami.Launcher (Nacho Brodin)
+- Fixed problem when there are agrupations among selected layers (Daniel González)
+- Function for modifying multiple values of a row in one time
+- Misc Bugfixes
+
+NEWS from NavTable 0.6 2010-05-19
+------------------------------------------------
+- Changed TableLayout library to MiGLayout in order to improve the resize behaviour.
+- Improved NavTable behaviour when the layer is already under edition.
+- Now NavTable opens all the active layers in TOC at the same time.
+- Created NavTable config folder into gvSIG's one.
+- Added new alias system, compatible with the old one, with support for alias in PostGIS layers.
+- Some changes in order to be compatible with gvSIG-3D pilot (by Jordi Torres Fabra)
+- Misc BugFixes
+
+Translations:
+
+	Added italian translation (by Silvio Grosso and Antonio Falciano)
+
+NEWS from NavTable 0.4.1_beta 2009-12-3
+------------------------------------------------
+Adapted NavTable to gvSIG 1.9.
+Added Portuguese translation by Joaquim Rocha.
+
+NEWS from NavTable 0.4 2009-09-18
+------------------------------------------------
+Added Open NavTable action to popup menu in TOC.
+Create and eliminate registers.
+Improved behaviour when the layer is being edited.
+
+Bugs Fixed:
+
+	- Bug #592: Error when deleting features when
+		    layer is on edition.
+	- Bug #525: Mistake with register unselection
+X
+NEWS from NavTable 0.2.2 2009-06-02
+------------------------------------------------
+Created a system to give longer names to the
+attributes.
+Arrow keys navigation.
+Added info about the geometry.
+It shows a warning when there's unsaved data.
+Copy from selected record instead of the
+previous one.
+Better behaviour wiht selections in gvSIG.
+Added to gvSIG menus.
+Added French Translation by Gonzalo Martínez Crespo.
+
+
+NEWS from NavTable 0.2 2009-05-11
+------------------------------------------------
+Initial import
+Official Release of NavTable 0.2 for gvSIG
+

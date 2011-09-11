@@ -1,0 +1,10 @@
+2009-05-20  Javier Estevez  <jestevez@cartolab.es>
+
+	* PreferencesPanel.java, NavtablePopupMenu:
+	Added Preferences window.
+
+2009-05-12  Javier Estevez  <jestevez@cartolab.es>
+
+	* *:
+	Initial import of NavTable ver 1.0
+

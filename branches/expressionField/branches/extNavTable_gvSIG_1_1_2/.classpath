@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/_fwAndami"/>
+	<classpathentry kind="src" path="/appgvSIG"/>
+	<classpathentry kind="src" path="/libFMap"/>
+	<classpathentry kind="src" path="/libGDBMS"/>
+	<classpathentry kind="src" path="/libDriverManager"/>
+	<classpathentry kind="src" path="/libIverUtiles"/>
+	<classpathentry kind="src" path="/libCq CMS for java"/>
+	<classpathentry kind="lib" path="/libFMap/lib/jts-1.9.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/extCAD"/>
+	<classpathentry kind="lib" path="lib/miglayout-3.7.3.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
