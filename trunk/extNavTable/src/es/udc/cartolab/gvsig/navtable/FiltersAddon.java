@@ -17,7 +17,7 @@ import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 /**
- *
+ * @author Nacho Varela
  * @author Francisco Puga <fpuga@cartolab.es>
  *
  */
