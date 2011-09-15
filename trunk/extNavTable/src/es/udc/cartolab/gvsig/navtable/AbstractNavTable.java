@@ -62,6 +62,9 @@ import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
 import com.iver.cit.gvsig.fmap.layers.SelectionListener;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.cit.gvsig.layers.VectorialLayerEdited;
+import com.iver.utiles.extensionPoints.ExtensionPoint;
+import com.iver.utiles.extensionPoints.ExtensionPoints;
+import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
 /**
  * 
@@ -100,6 +103,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     protected static final int BUTTON_COPY_SELECTED = 5;
     private static final long serialVersionUID = 1L;
     protected static Logger logger = Logger.getLogger("NavTable");
+    public static final String NAVTABLE_ACTIONS_TOOLBAR = "navtable_extension_point_actions_toolbar";
 
     protected JPanel northPanel = null;
     protected JPanel centerPanel = null;
@@ -156,7 +160,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
 	window.setTitle(title + ": " + dataName);
-
 	try {
 	    this.recordset = layer.getRecordset();
 	    this.recordset.addSelectionListener(this);
@@ -446,7 +449,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	return cb;
     }
 
-    private JPanel getNavToolBar() {
+    private JPanel createNavigationToolBar() {
+	registerNavTableButtonsOnNavigationToolBarExtensionPoint();
 	JPanel navToolBar = new JPanel(new FlowLayout());
 	navToolBar.add(firstB);
 	navToolBar.add(beforeB);
@@ -459,16 +463,31 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 
     protected JPanel getActionsToolBar() {
 	JPanel actionsToolBar = new JPanel(new FlowLayout());
-	actionsToolBar.add(copySelectedB);
-	actionsToolBar.add(copyPreviousB);
-	actionsToolBar.add(zoomB);
-	actionsToolBar.add(selectionB);
-	actionsToolBar.add(saveB);
-	actionsToolBar.add(removeB);
+	registerNavTableButtonsOnActionToolBarExtensionPoint();
+	ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton
+		.getInstance().get(NAVTABLE_ACTIONS_TOOLBAR);
+	for (Object button : actionToolBarEP.values()) {
+	    actionsToolBar.add((JButton) button);
+	}
 	return actionsToolBar;
     }
 
+    /**
+     * Deprecated method: the original aim for this method was enable the
+     * developers to have a way to override the buttons on the south panel for
+     * their child applications (add more, delete, etc). If you are a developer
+     * and want to get that behaviour, check NAVTABLE_ACTIONS_TOOLBAR
+     * extensionPoint. Through it, you will have complete access to the toolbar.
+     * Check also #registerNavTableButtonsOnActionsToolBarExtensionPoint()
+     * method for a concrete example on the prefered way to do it.
+     */
+    @Deprecated
     protected void initNavTableSouthPanelButtons() {
+	registerNavTableButtonsOnNavigationToolBarExtensionPoint();
+	registerNavTableButtonsOnActionToolBarExtensionPoint();
+    }
+
+    private void registerNavTableButtonsOnNavigationToolBarExtensionPoint() {
 	firstB = getNavTableButton(firstB, "/go-first.png",
 		"goFirstButtonTooltip");
 	beforeB = getNavTableButton(beforeB, "/go-previous.png",
@@ -478,16 +497,36 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	totalLabel = new JLabel();
 	nextB = getNavTableButton(nextB, "/go-next.png", "goNextButtonTooltip");
 	lastB = getNavTableButton(lastB, "/go-last.png", "goLastButtonTooltip");
+    }
+
+    private void registerNavTableButtonsOnActionToolBarExtensionPoint() {
+	ExtensionPoints extensionPoints = ExtensionPointsSingleton
+		.getInstance();
+
 	copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png",
 		"copySelectedButtonTooltip");
+	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-selected",
+		copySelectedB);
+
 	copyPreviousB = getNavTableButton(copyPreviousB, "/copy.png",
 		"copyPreviousButtonTooltip");
+	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-previous",
+		copyPreviousB);
+
 	zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
+	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-zoom", zoomB);
+
 	selectionB = getNavTableButton(selectionB, "/Select.png",
 		"selectionButtonTooltip");
+	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-selection",
+		selectionB);
+
 	saveB = getNavTableButton(saveB, "/save.png", "saveButtonTooltip");
 	saveB.setEnabled(false);
+	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-save", saveB);
+
 	removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
+	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-remove", removeB);
     }
 
     /**
@@ -496,9 +535,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * @return the panel.
      */
     protected JPanel getSouthPanel() {
-	initNavTableSouthPanelButtons();
 	southPanel = new JPanel(new BorderLayout());
-	southPanel.add(getNavToolBar(), BorderLayout.SOUTH);
+	southPanel.add(createNavigationToolBar(), BorderLayout.SOUTH);
 	southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
 	return southPanel;
     }
