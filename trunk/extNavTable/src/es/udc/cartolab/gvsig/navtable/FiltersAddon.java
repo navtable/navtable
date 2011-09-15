@@ -248,4 +248,8 @@ navtable,
 	}
     }
 
+    public boolean getDefaultVisibiliy() {
+	return true;
+    }
+
 }
