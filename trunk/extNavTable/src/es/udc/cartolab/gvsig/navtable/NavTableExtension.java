@@ -27,6 +27,8 @@ import java.io.File;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
+import com.iver.andami.preferences.IPreference;
+import com.iver.andami.preferences.IPreferenceExtension;
 import com.iver.cit.gvsig.About;
 import com.iver.cit.gvsig.EditionUtilities;
 import com.iver.cit.gvsig.fmap.MapControl;
@@ -38,9 +40,11 @@ import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
-public class NavTableExtension extends Extension {
+public class NavTableExtension extends Extension implements
+	IPreferenceExtension {
 
     private NavTable viewer = null;
+    private IPreference[] preferencesPage;
     public static final String NAVTABLE_CONTEXT_MENU = "NAVTABLE_CONTEXT_MENU";
 
     public void execute(String actionCommand) {
@@ -125,6 +129,13 @@ public class NavTableExtension extends Extension {
 	    return true;
 	}
 	return false;
+    }
+
+    public IPreference[] getPreferencesPages() {
+	if (preferencesPage == null) {
+	    preferencesPage = new IPreference[] { new NavTablePreferencesPage() };
+	}
+	return preferencesPage;
     }
 
 }
