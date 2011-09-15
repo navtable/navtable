@@ -41,6 +41,7 @@ import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 public class NavTableExtension extends Extension {
 
     private NavTable viewer = null;
+    public static final String NAVTABLE_CONTEXT_MENU = "NAVTABLE_CONTEXT_MENU";
 
     public void execute(String actionCommand) {
 
@@ -74,6 +75,11 @@ public class NavTableExtension extends Extension {
 		.getInstance();
 	extensionPoints.add("View_TocActions", "NavTable",
 		new NavTableTocMenuEntry());
+
+	// Add NavTable "official" context menu addons to the extension point
+	INavTableContextMenu filtersAddon = new FiltersAddon();
+	extensionPoints.add(NavTableExtension.NAVTABLE_CONTEXT_MENU,
+		filtersAddon.getName(), filtersAddon);
 
 	// Creating config Dir
 	File configDir;
