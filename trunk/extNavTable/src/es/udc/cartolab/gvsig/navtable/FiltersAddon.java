@@ -30,6 +30,8 @@ public class FiltersAddon implements INavTableContextMenu {
     private JTable table;
     private String dataName;
 
+    private boolean userVisibility;
+
 
     public void setNavtableInstance(NavTable navtable) {
 	this.navtable = navtable;
@@ -237,7 +239,7 @@ navtable,
     }
 
     public boolean isVisible() {
-	return (table.getSelectedRowCount() == 1 && !isSelectedRowAreaOrLength());
+	return (userVisibility && table.getSelectedRowCount() == 1 && !isSelectedRowAreaOrLength());
     }
 
     private boolean isSelectedRowAreaOrLength() {
@@ -246,6 +248,10 @@ navtable,
 	} else {
 	    return false;
 	}
+    }
+
+    public void setUserVisibility(boolean userVisibility) {
+	this.userVisibility = userVisibility;
     }
 
     public boolean getDefaultVisibiliy() {

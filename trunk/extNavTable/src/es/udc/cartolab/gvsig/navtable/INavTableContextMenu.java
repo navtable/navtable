@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
  */
 public interface INavTableContextMenu {
 
+
     /**
      * This is the string that must be used to register this addon in the
      * extension point. Example:
@@ -37,4 +38,23 @@ public interface INavTableContextMenu {
      *
      */
     boolean getDefaultVisibiliy();
+
+    /**
+     * When the user change the visibility of the addon in the preferences page
+     * this method is used to pass to the addon the visibility selected by the
+     * user. The addons that implement this interface should store this
+     * visibility and check it in the isVisible() method before check its own
+     * visibility requirements. Example:
+     *
+     * private boolean userVisibility;
+     *
+     * public void setUserVisibility (boolean userVisibility) {
+     *     this.userVisibility = userVisibility;
+     * }
+     *
+     * public boolean isVisible() {
+     *     return (userVisibility && myOwnConditions);
+     * }
+     */
+    void setUserVisibility(boolean userVisibility);
 }

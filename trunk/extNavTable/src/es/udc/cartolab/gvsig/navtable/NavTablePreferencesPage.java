@@ -28,7 +28,7 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
 
     private String id;
     private String title;
-    private HashMap<String, JCheckBox> chbMap = new HashMap<String, JCheckBox>();
+    private HashMap<INavTableContextMenu, JCheckBox> contextMenuMap = new HashMap<INavTableContextMenu, JCheckBox>();
 
     ExtensionPoint extensionPoint;
 
@@ -48,9 +48,8 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
 	for (Object contextMenuAddon : extensionPoint.values()) {
 	    try {
 		INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
-		String name = c.getName();
-		JCheckBox chb = new JCheckBox(name);
-		chbMap.put(name, chb);
+		JCheckBox chb = new JCheckBox(c.getName());
+		contextMenuMap.put(c, chb);
 		addComponent(chb);
 	    } catch (ClassCastException cce) {
 		logger.error("Class is not a navtable context menu", cce);
@@ -73,36 +72,25 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
     public void initializeValues() {
 	XMLEntity xml = PluginServices.getPluginServices(this)
 	.getPersistentXML();
-	for (String chb : chbMap.keySet()) {
+	for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
 	    boolean value = false;
 	    try {
-		value = xml.getBooleanProperty(chb);
+		value = xml.getBooleanProperty(contextMenu.getName());
 	    } catch (NotExistInXMLEntity e) {
-		value = getDefaultValue(chb);
-		xml.putProperty(chb, value);
+		value = contextMenu.getDefaultVisibiliy();
+		xml.putProperty(contextMenu.getName(), value);
 	    }
-	    chbMap.get(chb).setSelected(value);
+	    contextMenuMap.get(contextMenu).setSelected(value);
 	}
     }
 
 
     public void initializeDefaults() {
 
-	for (String chb : chbMap.keySet()) {
-	    getDefaultValue(chb);
+	for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
+	    JCheckBox chb = contextMenuMap.get(contextMenu);
+	    chb.setSelected(contextMenu.getDefaultVisibiliy());
 	}
-    }
-
-    private boolean getDefaultValue(String chb) {
-	boolean defaultValue = false;
-	try {
-	    INavTableContextMenu c = (INavTableContextMenu) extensionPoint
-	    .get(chb);
-	    defaultValue = c.getDefaultVisibiliy();
-	} catch (ClassCastException cce) {
-	    logger.error("Class is not a navtable context menu", cce);
-	}
-	return defaultValue;
     }
 
     public ImageIcon getIcon() {
@@ -117,8 +105,10 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
     public void storeValues() throws StoreException {
 	XMLEntity xml = PluginServices.getPluginServices(this)
 	.getPersistentXML();
-	for (String chb : chbMap.keySet()) {
-	    xml.putProperty(chb, chbMap.get(chb).isSelected());
+	for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
+	    boolean visibility = contextMenuMap.get(contextMenu).isSelected();
+	    xml.putProperty(contextMenu.getName(), visibility);
+	    contextMenu.setUserVisibility(visibility);
 	}
     }
 
