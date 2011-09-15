@@ -224,7 +224,7 @@ public class NavTable extends AbstractNavTable {
 		JPopupMenu popup = new JPopupMenu();
 		
 		ExtensionPoint extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
-			.getInstance().get(NavTableExtension.NAVTABLE_CONTEXT_MENU);
+			.getInstance().get(AbstractNavTable.NAVTABLE_CONTEXT_MENU);
 		for (Object contextMenuAddon : extensionPoint.values()) {
 		    try {
 			INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;

@@ -43,7 +43,7 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
 	addComponent(addonsVisibility);
 
 	extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
-	.getInstance().get(NavTableExtension.NAVTABLE_CONTEXT_MENU);
+	.getInstance().get(AbstractNavTable.NAVTABLE_CONTEXT_MENU);
 
 	for (Object contextMenuAddon : extensionPoint.values()) {
 	    try {

@@ -104,6 +104,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     private static final long serialVersionUID = 1L;
     protected static Logger logger = Logger.getLogger("NavTable");
     public static final String NAVTABLE_ACTIONS_TOOLBAR = "navtable_extension_point_actions_toolbar";
+    public static final String NAVTABLE_CONTEXT_MENU = "navtable_extension_point_context_menu";
 
     protected JPanel northPanel = null;
     protected JPanel centerPanel = null;

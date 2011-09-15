@@ -45,7 +45,6 @@ public class NavTableExtension extends Extension implements
 
     private NavTable viewer = null;
     private IPreference[] preferencesPage;
-    public static final String NAVTABLE_CONTEXT_MENU = "NAVTABLE_CONTEXT_MENU";
 
     public void execute(String actionCommand) {
 
@@ -82,7 +81,7 @@ public class NavTableExtension extends Extension implements
 
 	// Add NavTable "official" context menu addons to the extension point
 	INavTableContextMenu filtersAddon = new FiltersAddon();
-	extensionPoints.add(NavTableExtension.NAVTABLE_CONTEXT_MENU,
+	extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU,
 		filtersAddon.getName(), filtersAddon);
 
 	// Creating config Dir
