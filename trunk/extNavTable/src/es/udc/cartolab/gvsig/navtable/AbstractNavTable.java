@@ -125,22 +125,24 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	protected JCheckBox alwaysZoomCB = null;
 	protected JCheckBox alwaysSelectCB = null;
 
+	// SOUTH
+	// actions buttons
 	protected JButton filterB = null;
 	protected JButton noFilterB = null;
-
-	// SOUTH
-	protected JButton firstB = null;
-	protected JButton beforeB = null;
-	protected JTextField posTF = null;
-	protected JLabel totalLabel = null;
-	protected JButton nextB = null;
-	protected JButton lastB = null;
 	protected JButton copyPreviousB = null;
 	protected JButton copySelectedB = null;
 	protected JButton zoomB = null;
 	protected JButton selectionB = null;
 	protected JButton saveB = null;
 	protected JButton removeB = null;
+	// navigation buttons
+	protected JButton firstB = null;
+	protected JButton beforeB = null;
+	protected JTextField posTF = null;
+	protected JLabel totalLabel = null;
+	protected JButton nextB = null;
+	protected JButton lastB = null;
+
 	private boolean isSomeNavTableFormOpen = false;
 	protected EditionListener listener;
 
@@ -343,23 +345,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	}
 
 	protected void initNorthPanelButtons() {
-		filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
-		noFilterB = getNavTableButton(noFilterB, "/nofilter.png",
-				"noFilterTooltip");
 		onlySelectedCB = getNavTableCheckBox(onlySelectedCB, "selectedCheckBox");
 		alwaysSelectCB = getNavTableCheckBox(alwaysSelectCB, "selectCheckBox");
 		alwaysZoomCB = getNavTableCheckBox(alwaysZoomCB, "alwaysZoomCheckBox");
 		fixScaleCB = getNavTableCheckBox(fixScaleCB, "fixedScaleCheckBox");
-	}
-
-	private JPanel getFilterPanel(File iconPath) {
-		JPanel filterPanel = new JPanel(new FlowLayout());
-		if (iconPath != null && iconPath.exists()) {
-			filterPanel.setBackground(Color.WHITE);
-		}
-		filterPanel.add(filterB);
-		filterPanel.add(noFilterB);
-		return filterPanel;
 	}
 
 	protected JPanel getOptionsPanel() {
@@ -389,18 +378,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 				"gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
 	}
 
-	private JPanel getNorthFirstRow() {
-		File iconPath = getHeaderFile();
-		JPanel northFirstRow = new JPanel(new BorderLayout());
-		if (iconPath != null && iconPath.exists()) {
-			northFirstRow.setBackground(Color.WHITE);
-			northFirstRow.add(getIcon(iconPath), BorderLayout.WEST);
-			viewInfo.setHeight(575);
-		}
-		northFirstRow.add(getFilterPanel(iconPath), BorderLayout.EAST);
-		return northFirstRow;
-	}
-
 	/**
 	 * Creates the upper panel.
 	 * 
@@ -409,7 +386,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	protected JPanel getNorthPanel() {
 		initNorthPanelButtons();
 		northPanel = new JPanel(new BorderLayout());
-		northPanel.add(getNorthFirstRow(), BorderLayout.NORTH);
 		northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
 		return northPanel;
 	}
@@ -503,6 +479,15 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	private void registerNavTableButtonsOnActionToolBarExtensionPoint() {
 		ExtensionPoints extensionPoints = ExtensionPointsSingleton
 				.getInstance();
+
+		filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-enable-filter",
+				filterB);
+
+		noFilterB = getNavTableButton(noFilterB, "/nofilter.png",
+				"noFilterTooltip");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-disable-filter",
+				noFilterB);
 
 		copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png",
 				"copySelectedButtonTooltip");
