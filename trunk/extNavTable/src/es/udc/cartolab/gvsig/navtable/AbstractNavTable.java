@@ -720,22 +720,29 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		source.start();
 		g = source.getShape(pos);
 		source.stop();
-		/*
-		 * fix to avoid zoom problems when layer and view projections
-		 * aren't the same.
-		 */
-		if (layer.getCoordTrans() != null) {
-		    g.reProject(layer.getCoordTrans());
-		}
-		rectangle = g.getBounds2D();
-		if (rectangle.getWidth() < 200) {
-		    rectangle.setFrameFromCenter(rectangle.getCenterX(),
-			    rectangle.getCenterY(),
-			    rectangle.getCenterX() + 100,
-			    rectangle.getCenterY() + 100);
-		}
-		if (rectangle != null) {
-		    layer.getMapContext().getViewPort().setExtent(rectangle);
+
+		if (g != null) {
+		    /*
+		     * fix to avoid zoom problems when layer and view
+		     * projections aren't the same.
+		     */
+		    if (layer.getCoordTrans() != null) {
+			g.reProject(layer.getCoordTrans());
+		    }
+		    rectangle = g.getBounds2D();
+		    if (rectangle.getWidth() < 200) {
+			rectangle.setFrameFromCenter(rectangle.getCenterX(),
+				rectangle.getCenterY(),
+				rectangle.getCenterX() + 100,
+				rectangle.getCenterY() + 100);
+		    }
+		    if (rectangle != null) {
+			layer.getMapContext().getViewPort()
+				.setExtent(rectangle);
+		    }
+		} else {
+		    JOptionPane.showMessageDialog(this, PluginServices.getText(
+			    this, "feature_has_no_geometry_to_zoom"));
 		}
 	    } catch (InitializeDriverException e) {
 		logger.error(e.getMessage(), e);
