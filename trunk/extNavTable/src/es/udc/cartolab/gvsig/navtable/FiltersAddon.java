@@ -30,7 +30,7 @@ public class FiltersAddon implements INavTableContextMenu {
     private JTable table;
     private String dataName;
 
-    private boolean userVisibility;
+    private boolean userVisibility = true;
 
 
     public void setNavtableInstance(NavTable navtable) {
