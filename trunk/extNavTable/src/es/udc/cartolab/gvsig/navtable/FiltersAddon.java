@@ -44,6 +44,10 @@ public class FiltersAddon implements INavTableContextMenu {
 	return this.getClass().getName();
     }
 
+    public String getDescription() {
+	return "filters_addon_description";
+    }
+
     public JMenuItem[] getMenuItems() {
 	return getFilterMenusForRowSelected().toArray(new JMenuItem[0]);
     }

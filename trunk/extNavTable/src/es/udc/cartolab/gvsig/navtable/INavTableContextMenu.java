@@ -4,6 +4,10 @@ import javax.swing.JMenuItem;
 
 /**
  *
+ * The plugins that implement this interface should depend from NavTable adding
+ * this line to the config.xml file
+ * <depends plugin-name="es.udc.cartolab.gvsig.navtable"/>
+ *
  * @author Francisco Puga <fpuga@cartolab.es>
  *
  */
@@ -19,8 +23,17 @@ public interface INavTableContextMenu {
      * String name = filtersAddon.getName();
      * extPoints.add(NavTableExtension.NAVTABLE_CONTEXT_MENU, name, filtersAddon);
      *
+     * Usually, implementing classes will return this.getClass().getName()
+     *
      */
     String getName();
+
+    /**
+     * Returns an i18n string describing the addon. This string will be used as
+     * the label of the checkbox in the preferences page
+     *
+     */
+    String getDescription();
 
     JMenuItem[] getMenuItems();
 

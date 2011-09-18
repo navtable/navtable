@@ -48,7 +48,8 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
 	for (Object contextMenuAddon : extensionPoint.values()) {
 	    try {
 		INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
-		JCheckBox chb = new JCheckBox(c.getName());
+		JCheckBox chb = new JCheckBox(PluginServices.getText(this,
+			c.getDescription()));
 		contextMenuMap.put(c, chb);
 		addComponent(chb);
 	    } catch (ClassCastException cce) {
