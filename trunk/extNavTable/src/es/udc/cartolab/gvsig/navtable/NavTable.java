@@ -67,6 +67,7 @@ import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.utiles.extensionPoints.ExtensionPoint;
+import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -108,7 +109,6 @@ public class NavTable extends AbstractNavTable {
 
     // Mouse buttons constants
     final int BUTTON_RIGHT = 3;
-
 
     public NavTable(FLyrVect layer) {
 	super(layer);
@@ -220,11 +220,12 @@ public class NavTable extends AbstractNavTable {
 	     * activated if only 1 row is selected.
 	     */
 	    if (e.getButton() == BUTTON_RIGHT) {
-		
+
 		JPopupMenu popup = new JPopupMenu();
-		
+
 		ExtensionPoint extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
-			.getInstance().get(AbstractNavTable.NAVTABLE_CONTEXT_MENU);
+			.getInstance().get(
+				AbstractNavTable.NAVTABLE_CONTEXT_MENU);
 		for (Object contextMenuAddon : extensionPoint.values()) {
 		    try {
 			INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
@@ -235,7 +236,8 @@ public class NavTable extends AbstractNavTable {
 			    }
 			}
 		    } catch (ClassCastException cce) {
-			logger.error("Class is not a navtable context menu", cce);
+			logger.error("Class is not a navtable context menu",
+				cce);
 		    }
 		}
 		if (popup.getComponents().length != 0) {
@@ -244,7 +246,6 @@ public class NavTable extends AbstractNavTable {
 
 	    }
 	}
-
 
 	public void mouseEntered(MouseEvent e) {
 	}
@@ -290,6 +291,35 @@ public class NavTable extends AbstractNavTable {
 		enableSaveButton(isChangedValues());
 	    }
 	}
+    }
+
+    @Override
+    protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
+	/*
+	 * TODO: this will make the extension point mechanims not work as
+	 * expected for navtable extension. It only will add the regular buttons
+	 * navtable has, not all included in the extensionpoint (as the default
+	 * behaviour is).
+	 * 
+	 * Probably we need to get rid of extensionpoints mechanism as -roughly-
+	 * it is a global variable mechanism, which is not what we need. For
+	 * action buttons, it'll be desirable a mechanism that:
+	 * 
+	 * 1) allow adding buttons for custom forms build on abstractnavtable.
+	 * 2) don't share those buttons between all children of
+	 * abstractnavtable, unless requested otherwise.
+	 * 
+	 * Check decorator pattern, as it seems to fit well here.
+	 */
+	ExtensionPoints extensionPoints = ExtensionPointsSingleton
+		.getInstance();
+	ExtensionPoint ep = (ExtensionPoint) extensionPoints
+		.get(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR);
+
+	if (ep != null) {
+	    ep.clear();
+	}
+	super.registerNavTableButtonsOnActionToolBarExtensionPoint();
     }
 
     @Override

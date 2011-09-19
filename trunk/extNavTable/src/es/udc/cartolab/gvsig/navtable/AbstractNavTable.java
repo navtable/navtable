@@ -476,7 +476,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	lastB = getNavTableButton(lastB, "/go-last.png", "goLastButtonTooltip");
     }
 
-    private void registerNavTableButtonsOnActionToolBarExtensionPoint() {
+    protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
 	ExtensionPoints extensionPoints = ExtensionPointsSingleton
 		.getInstance();
 
