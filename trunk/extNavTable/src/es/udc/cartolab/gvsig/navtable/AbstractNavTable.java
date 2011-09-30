@@ -145,6 +145,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 
     private boolean isSomeNavTableFormOpen = false;
     protected EditionListener listener;
+    private JPanel actionsToolBar;
+    private JPanel optionsPanel;
 
     /**
      * 
@@ -352,11 +354,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     }
 
     protected JPanel getOptionsPanel() {
-	JPanel optionsPanel = new JPanel(new FlowLayout());
-	optionsPanel.add(onlySelectedCB);
-	optionsPanel.add(alwaysSelectCB);
-	optionsPanel.add(alwaysZoomCB);
-	optionsPanel.add(fixScaleCB);
+	if (optionsPanel == null) {
+	    optionsPanel = new JPanel(new FlowLayout());
+	    optionsPanel.add(onlySelectedCB);
+	    optionsPanel.add(alwaysSelectCB);
+	    optionsPanel.add(alwaysZoomCB);
+	    optionsPanel.add(fixScaleCB);
+	}
 	return optionsPanel;
     }
 
@@ -384,9 +388,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * @return the panel.
      */
     protected JPanel getNorthPanel() {
-	initNorthPanelButtons();
-	northPanel = new JPanel(new BorderLayout());
-	northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
+	if (northPanel == null) {
+	    initNorthPanelButtons();
+	    northPanel = new JPanel(new BorderLayout());
+	    northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
+	}
 	return northPanel;
     }
 
@@ -438,13 +444,15 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	return navToolBar;
     }
 
-    protected JPanel getActionsToolBar() {
-	JPanel actionsToolBar = new JPanel(new FlowLayout());
-	registerNavTableButtonsOnActionToolBarExtensionPoint();
-	ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton
-		.getInstance().get(NAVTABLE_ACTIONS_TOOLBAR);
-	for (Object button : actionToolBarEP.values()) {
-	    actionsToolBar.add((JButton) button);
+    public JPanel getActionsToolBar() {
+	if (actionsToolBar == null) {
+	    actionsToolBar = new JPanel(new FlowLayout());
+	    registerNavTableButtonsOnActionToolBarExtensionPoint();
+	    ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton
+		    .getInstance().get(NAVTABLE_ACTIONS_TOOLBAR);
+	    for (Object button : actionToolBarEP.values()) {
+		actionsToolBar.add((JButton) button);
+	    }
 	}
 	return actionsToolBar;
     }
@@ -521,9 +529,11 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * @return the panel.
      */
     protected JPanel getSouthPanel() {
-	southPanel = new JPanel(new BorderLayout());
-	southPanel.add(createNavigationToolBar(), BorderLayout.SOUTH);
-	southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
+	if (southPanel == null) {
+	    southPanel = new JPanel(new BorderLayout());
+	    southPanel.add(createNavigationToolBar(), BorderLayout.SOUTH);
+	    southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
+	}
 	return southPanel;
     }
 
