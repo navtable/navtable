@@ -19,7 +19,7 @@ import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 /**
  * @author Nacho Varela
  * @author Francisco Puga <fpuga@cartolab.es>
- *
+ * 
  */
 public class FiltersAddon implements INavTableContextMenu {
 
@@ -31,7 +31,6 @@ public class FiltersAddon implements INavTableContextMenu {
     private String dataName;
 
     private boolean userVisibility = true;
-
 
     public void setNavtableInstance(NavTable navtable) {
 	this.navtable = navtable;
@@ -67,8 +66,8 @@ public class FiltersAddon implements INavTableContextMenu {
 	FBitSet fbitset = sds.getSelection();
 	boolean isFilterSet = (fbitset.cardinality() > 0);
 
-	final String st_expr = "select * from '" + sds.getName()
-		+ "' where " + attrName;
+	final String st_expr = "select * from '" + sds.getName() + "' where "
+		+ attrName;
 
 	ArrayList<JMenuItem> menus = new ArrayList<JMenuItem>();
 	if (attrType == java.sql.Types.VARCHAR) {
@@ -214,11 +213,10 @@ public class FiltersAddon implements INavTableContextMenu {
 		"filter_contains"));
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		String attr = (String) JOptionPane.showInputDialog(
-navtable,
+		String attr = (String) JOptionPane.showInputDialog(navtable,
+			PluginServices.getText(this, "filter_write_string"),
 			PluginServices.getText(this,
-				"filter_write_string"), PluginServices.getText(
-				this, "filter_contains_window_title"),
+				"filter_contains_window_title"),
 			JOptionPane.PLAIN_MESSAGE);
 
 		if (attr != null) {
@@ -247,7 +245,10 @@ navtable,
     }
 
     private boolean isSelectedRowAreaOrLength() {
-	if (table.getSelectedRow() > (table.getRowCount() - 2)) {
+	if (navtable.isAlphanumericNT) {
+	    return false;
+	}
+	if (table.getSelectedRow() >= (table.getRowCount() - 2)) {
 	    return true;
 	} else {
 	    return false;

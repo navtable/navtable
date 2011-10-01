@@ -148,6 +148,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     private JPanel actionsToolBar;
     private JPanel optionsPanel;
 
+    protected boolean isAlphanumericNT = false;
+
     /**
      * 
      * Constructor of the class. It gets the data from the layer and stores it
