@@ -71,6 +71,11 @@ import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 import com.vividsolutions.jts.geom.Geometry;
 
+import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
+import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
+import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
+import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
+
 /**
  * <p>
  * NavTable's main panel is a two-column table that shows data row of the layer.
@@ -726,4 +731,7 @@ public class NavTable extends AbstractNavTable {
 	fillAttributes();
     }
 
+    public JTable getTable() {
+	return this.table;
+    }
 }

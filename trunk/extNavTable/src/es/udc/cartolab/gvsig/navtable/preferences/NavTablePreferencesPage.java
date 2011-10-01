@@ -1,4 +1,4 @@
-package es.udc.cartolab.gvsig.navtable;
+package es.udc.cartolab.gvsig.navtable.preferences;
 
 import java.util.HashMap;
 
@@ -16,6 +16,9 @@ import com.iver.utiles.NotExistInXMLEntity;
 import com.iver.utiles.XMLEntity;
 import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
+
+import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
+import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
 
 /**
  *

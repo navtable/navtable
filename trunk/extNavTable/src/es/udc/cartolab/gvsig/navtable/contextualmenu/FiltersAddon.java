@@ -1,4 +1,4 @@
-package es.udc.cartolab.gvsig.navtable;
+package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +15,8 @@ import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
+
+import es.udc.cartolab.gvsig.navtable.NavTable;
 
 /**
  * @author Nacho Varela
@@ -34,9 +36,9 @@ public class FiltersAddon implements INavTableContextMenu {
 
     public void setNavtableInstance(NavTable navtable) {
 	this.navtable = navtable;
-	this.dataName = navtable.dataName;
-	this.sds = navtable.recordset;
-	this.table = navtable.table;
+	this.dataName = navtable.getDataName();
+	this.sds = navtable.getRecordset();
+	this.table = navtable.getTable();
     }
 
     public String getName() {
@@ -245,7 +247,7 @@ public class FiltersAddon implements INavTableContextMenu {
     }
 
     private boolean isSelectedRowAreaOrLength() {
-	if (navtable.isAlphanumericNT) {
+	if (navtable.isAlphanumericNT()) {
 	    return false;
 	}
 	if (table.getSelectedRow() >= (table.getRowCount() - 2)) {

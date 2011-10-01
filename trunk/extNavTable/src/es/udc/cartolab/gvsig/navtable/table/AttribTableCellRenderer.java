@@ -21,7 +21,7 @@
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
  */
-package es.udc.cartolab.gvsig.navtable;
+package es.udc.cartolab.gvsig.navtable.table;
 
 import java.awt.Color;
 import java.awt.Component;

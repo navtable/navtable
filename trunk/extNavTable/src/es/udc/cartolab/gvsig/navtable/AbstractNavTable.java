@@ -66,6 +66,8 @@ import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
+import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
+
 /**
  * 
  * AbstractNavTable is the base class that defines the layout of the window that
@@ -223,6 +225,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	default:
 	    return null;
 	}
+    }
+
+    public boolean isAlphanumericNT() {
+	return this.isAlphanumericNT;
     }
 
     /**
@@ -410,7 +416,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      */
     public abstract JPanel getCenterPanel();
 
-    protected ImageIcon getIcon(String iconName) {
+    public ImageIcon getIcon(String iconName) {
 	java.net.URL imgURL = getClass().getResource(iconName);
 	if (imgURL == null) {
 	    imgURL = AbstractNavTable.class.getResource(iconName);
@@ -805,7 +811,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * Removes all selections of the layer.
      * 
      */
-    protected void clearSelection() {
+    public void clearSelection() {
 	FBitSet bitset = null;
 	if (layer instanceof AlphanumericData) {
 	    bitset = recordset.getSelection();
@@ -861,7 +867,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * Repaints the window.
      * 
      */
-    protected void refreshGUI() {
+    public void refreshGUI() {
 	boolean navEnabled = false;
 	try {
 	    if (recordset == null) {
@@ -1268,4 +1274,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    this.recordset.reload();
 	}
     }
+
+    public SelectableDataSource getRecordset() {
+	return this.recordset;
+    }
+
+    public String getDataName() {
+	return this.dataName;
+    }
+
 }

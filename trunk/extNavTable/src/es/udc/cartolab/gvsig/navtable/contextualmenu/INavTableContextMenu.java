@@ -1,6 +1,8 @@
-package es.udc.cartolab.gvsig.navtable;
+package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
 import javax.swing.JMenuItem;
+
+import es.udc.cartolab.gvsig.navtable.NavTable;
 
 /**
  *

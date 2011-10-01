@@ -15,7 +15,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package es.udc.cartolab.gvsig.navtable;
+package es.udc.cartolab.gvsig.navtable.utils;
 
 import org.apache.log4j.Logger;
 
@@ -32,6 +32,8 @@ import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.LayerEvent;
 import com.iver.cit.gvsig.fmap.layers.LayerListener;
+
+import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 
 /**
  * This class handles data source edition changes for AbstractNavTable. It

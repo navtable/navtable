@@ -40,6 +40,12 @@ import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
+import es.udc.cartolab.gvsig.navtable.contextualmenu.FiltersAddon;
+import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
+import es.udc.cartolab.gvsig.navtable.preferences.NavTablePreferencesPage;
+import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
+import es.udc.cartolab.gvsig.navtable.utils.NavTableTocMenuEntry;
+
 public class NavTableExtension extends Extension implements
 	IPreferenceExtension {
 

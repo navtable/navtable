@@ -21,7 +21,7 @@
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
  */
-package es.udc.cartolab.gvsig.navtable;
+package es.udc.cartolab.gvsig.navtable.table;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -32,7 +32,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Pablo Sanxiao
  * 
  */
-class NavTableModel extends DefaultTableModel {
+public class NavTableModel extends DefaultTableModel {
 
     @Override
     public boolean isCellEditable(int row, int col) {

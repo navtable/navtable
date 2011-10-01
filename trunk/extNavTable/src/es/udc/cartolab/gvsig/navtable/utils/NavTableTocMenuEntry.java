@@ -21,13 +21,15 @@
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
  */
-package es.udc.cartolab.gvsig.navtable;
+package es.udc.cartolab.gvsig.navtable.utils;
 
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.project.documents.view.toc.AbstractTocContextMenuAction;
 import com.iver.cit.gvsig.project.documents.view.toc.ITocItem;
+
+import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
 
