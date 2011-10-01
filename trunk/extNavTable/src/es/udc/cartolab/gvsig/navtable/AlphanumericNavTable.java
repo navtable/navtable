@@ -62,13 +62,15 @@ public class AlphanumericNavTable extends NavTable {
     public AlphanumericNavTable(IEditableSource model, String dataName)
 	    throws ReadDriverException {
 	super(model.getRecordset(), dataName);
+	this.isAlphanumericNT = true;
 	this.model = model;
 	this.model.addEditionListener(listener);
     }
 
-    public AlphanumericNavTable(IEditableSource model, String dataName, HashMap<String,String> defaultValues)
-	    throws ReadDriverException {
+    public AlphanumericNavTable(IEditableSource model, String dataName,
+	    HashMap<String, String> defaultValues) throws ReadDriverException {
 	super(model.getRecordset(), dataName);
+	this.isAlphanumericNT = true;
 	this.model = model;
 	this.defaultValues = defaultValues;
     }
@@ -227,10 +229,10 @@ public class AlphanumericNavTable extends NavTable {
 	if (e.getSource() == newB) {
 	    addRecord();
 	} else if (e.getSource() == removeB) {
-	    int answer = JOptionPane.showConfirmDialog(null, PluginServices
-		    .getText(null, "confirm_delete_register"), null,
-		    JOptionPane.YES_NO_OPTION);
-	    if (answer == 0) {
+	    int answer = JOptionPane.showConfirmDialog(null,
+		    PluginServices.getText(null, "confirm_delete_register"),
+		    null, JOptionPane.YES_NO_OPTION);
+	    if (answer == JOptionPane.YES_OPTION) {
 		deleteRecord();
 	    }
 	} else {
