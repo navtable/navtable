@@ -148,8 +148,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     private JPanel actionsToolBar;
     private JPanel optionsPanel;
 
-    protected boolean isAlphanumericNT = false;
-
     /**
      * 
      * Constructor of the class. It gets the data from the layer and stores it
@@ -548,10 +546,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    return;
 	}
 	boolean changed = isChangedValues();
-	boolean save = false;
-	if (!isAlphanumericNT) {
-	    save = changed && layer.isEditing();
-	}
+	boolean save = changed && layer.isEditing();
 	if (changed && !save) {
 	    Object[] options = {
 		    PluginServices.getText(this, "saveButtonTooltip"),

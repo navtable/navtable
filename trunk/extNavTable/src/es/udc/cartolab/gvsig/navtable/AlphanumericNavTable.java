@@ -62,7 +62,6 @@ public class AlphanumericNavTable extends NavTable {
     public AlphanumericNavTable(IEditableSource model, String dataName)
 	    throws ReadDriverException {
 	super(model.getRecordset(), dataName);
-	this.isAlphanumericNT = true;
 	this.model = model;
 	this.model.addEditionListener(listener);
     }
@@ -70,7 +69,6 @@ public class AlphanumericNavTable extends NavTable {
     public AlphanumericNavTable(IEditableSource model, String dataName,
 	    HashMap<String, String> defaultValues) throws ReadDriverException {
 	super(model.getRecordset(), dataName);
-	this.isAlphanumericNT = true;
 	this.model = model;
 	this.defaultValues = defaultValues;
     }
@@ -192,6 +190,38 @@ public class AlphanumericNavTable extends NavTable {
 	    logger.error(e.getMessage(), e);
 	} catch (StopWriterVisitorException e) {
 	    logger.error(e.getMessage(), e);
+	}
+    }
+
+    /**
+     * Shows a warning to the user if there's unsaved data.
+     * 
+     */
+    protected void showWarning() {
+	if (currentPosition == -1) {
+	    return;
+	}
+	boolean changed = isChangedValues();
+	boolean save = changed && model.isEditing();
+	if (changed && !save) {
+	    Object[] options = {
+		    PluginServices.getText(this, "saveButtonTooltip"),
+		    PluginServices.getText(this, "ignoreButton") };
+	    int response = JOptionPane.showOptionDialog(this,
+		    PluginServices.getText(this, "unsavedDataMessage"),
+		    PluginServices.getText(this, "unsavedDataTitle"),
+		    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+		    null, // do not use a custom Icon
+		    options, // the titles of buttons
+		    options[1]); // default button title
+	    if (response == 0) {
+		save = true;
+	    } else {
+		setChangedValues(false);
+	    }
+	}
+	if (save) {
+	    saveRecord();
 	}
     }
 
