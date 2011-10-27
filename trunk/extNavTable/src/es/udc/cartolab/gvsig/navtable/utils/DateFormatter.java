@@ -13,32 +13,28 @@ import com.hardcode.gdbms.engine.values.ValueFactory;
 
 public class DateFormatter {
 
+    //see java Date API
+    public static final String DATE_PATTERN = "dd/MM/yyyy";
+
     public static String convertDateValueToString(Value date) {
 	String dateString;
 	if(date instanceof NullValue) {
 	    dateString = "";
 	} else {
 	    Date tmp = ((DateValue) date).getValue();
-	    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");	
+	    SimpleDateFormat formatter = new SimpleDateFormat(DATE_PATTERN);	
 	    dateString = formatter.format(tmp);
 	}
 	return dateString;
     }
 
-    /**
-     * gvsig representation of date follows java convention: MM/dd/yyyy
-     * see java Date API
-     * 
-     * @param string date to format according gvsig style
-     * @return string formatted according gvsig style
-     */
     public static Value convertStringToValue(String date) {
 	if(date == "") {
 	    return ValueFactory.createNullValue();
 	} else {
 	    String[] vars = date.split("/");
 	    if (vars.length == 3) {
-		String gvsigDate = vars[0]+"-"+vars[1]+"-"+vars[2]; //yyy-mm-dd
+		String gvsigDate = vars[0]+"-"+vars[1]+"-"+vars[2];
 		return ValueFactory.createValue(gvsigDate);
 	    } else {
 		return ValueFactory.createNullValue();
