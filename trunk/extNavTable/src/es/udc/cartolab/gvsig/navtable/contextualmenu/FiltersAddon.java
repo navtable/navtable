@@ -2,6 +2,7 @@ package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Types;
 import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
@@ -242,8 +243,17 @@ public class FiltersAddon implements INavTableContextMenu {
 	return attrType;
     }
 
+    private boolean isDateField() {
+	int rowSelected = table.getSelectedRow();
+	int attrType = getAttrTypeForValueSelected(rowSelected);
+	if(attrType == Types.DATE) {
+	    return true;
+	}
+	return false;
+    }
+
     public boolean isVisible() {
-	return (userVisibility && table.getSelectedRowCount() == 1 && !isSelectedRowAreaOrLength());
+	return (!isDateField() && userVisibility && table.getSelectedRowCount() == 1 && !isSelectedRowAreaOrLength());
     }
 
     private boolean isSelectedRowAreaOrLength() {
