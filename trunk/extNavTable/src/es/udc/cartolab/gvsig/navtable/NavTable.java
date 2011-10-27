@@ -53,6 +53,7 @@ import javax.swing.table.TableColumn;
 import net.miginfocom.swing.MigLayout;
 
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
+import com.hardcode.gdbms.engine.values.DateValue;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
@@ -75,6 +76,7 @@ import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
+import es.udc.cartolab.gvsig.navtable.utils.DateFormatter;
 
 /**
  * <p>
@@ -500,11 +502,15 @@ public class NavTable extends AbstractNavTable {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    for (int i = 0; i < recordset.getFieldCount(); i++) {
 		Value value = recordset.getFieldValue(currentPosition, i);
-		String textoValue = value
-			.getStringValue(ValueWriter.internalValueWriter);
-		textoValue = textoValue.replaceAll("'", "");
+		String textoValue;
 		if (value instanceof NullValue) {
 		    textoValue = "";
+		} else if (value instanceof DateValue) {
+		    textoValue = DateFormatter.convertDateValueToString(value);
+		} else {
+		    textoValue = value
+			    .getStringValue(ValueWriter.internalValueWriter);
+		    textoValue = textoValue.replaceAll("'", "");
 		}
 		model.setValueAt(textoValue, i, 1);
 	    }
