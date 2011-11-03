@@ -96,7 +96,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 public abstract class AbstractNavTable extends JPanel implements IWindow,
 	ActionListener, SelectionListener, IWindowListener {
 
-    protected static final int EMPTY_REGISTER = -1;
+    public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
     protected static final int BUTTON_SAVE = 1;
     protected static final int BUTTON_SELECTION = 2;
