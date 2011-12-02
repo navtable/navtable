@@ -25,23 +25,23 @@ The policy carried out in order to increment the version number is the same as g
 
 - The parity of the minor number indicates the stability of the software: even means stable, odd means unstable.
 
-The version number is specified in the file "install/intall.xml" 
-on the tag: <appversion> 0.8 </ AppVersion> 
+The version number is specified in the file "install/intall.xml"
+on the tag: <appversion> 0.8 </ AppVersion>
 
-It should also be changed in the file "config/about.htm" in tag: 
-<h2> NavTable Extension v0.8 </h2> 
+It should also be changed in the file "config/about.htm" in tag:
+<h2> NavTable Extension v0.8 </h2>
 
 Build instructions
 ===============================
 
-The code is compatible with the 1.5 JVM. 
+The code is compatible with the 1.5 JVM.
 
 Setting up a workspace to version 1.11 of gvSIG and then include this project into that workspace.
 
 To build it from the workspace can be launched build.xml to generate the necessary packaging within _fwAndami.
 
 Packaging instructions
-=============================== 
+===============================
 
 To build an installer packaged with this plugin you can run the ant file "install/buildExt.xml."
 
@@ -52,33 +52,33 @@ NavTable_[MAJOR]_[MINOR]_[MICRO]
 Internationalization notes
 ===================================
 
-* Where you can find the translation strings. 
+* Where you can find the translation strings.
 
-Translation strings are inside the files "text_*.properties", where * is the ISO 639-1 language code, 
+Translation strings are inside the files "text_*.properties", where * is the ISO 639-1 language code,
 in the "config". The languages that are currently translated NavTable are:
 
 +------------+--------------------+
 | *Language* | *ISO 639-1 code*   |
 +------------+--------------------+
-| Spanish    | es		          |
+| Spanish    | es		  |
 +------------+--------------------+
-| Galician   | gl	              |
+| Galician   | gl	          |
 +------------+--------------------+
-| English    | en	              |
+| English    | en	          |
 +------------+--------------------+
-| French     | fr	              |
+| French     | fr	          |
 +------------+--------------------+
-| Portuguese | pt	              |
+| Portuguese | pt	          |
 +------------+--------------------+
-| Italian    | it	              |
+| Italian    | it	          |
 +------------+--------------------+
-| German     | de	              |
+| German     | de	          |
 +------------+--------------------+
 
 * What should I do to include a new language
 
-To add a new language, create a file, with the keys of one that already exists, with the language name 
-followed by an underscore and the ISO 639-1 language code followed by the extension ".properties" 
+To add a new language, create a file, with the keys of one that already exists, with the language name
+followed by an underscore and the ISO 639-1 language code followed by the extension ".properties"
 
 Ex: For Galician: "text_gl.properties"
 

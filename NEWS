@@ -1,3 +1,10 @@
+NEWS about migration 2011-12-02
+------------------------------------------------
+- Migration from OSOR to GitHub (http://navtable.github.com). The libraries and plugins in the repo
+  (navtableforms, navtableforms-example and navtable-opencadtoolplugin) have gained independence
+  and a proper repo have been created for each of them. Commits affecting to those projects have
+  been filtered from NavTable repository.
+
 NEWS from NavTable 0.8 2011-03-28
 ------------------------------------------------
 - Misc Bugfixes
@@ -27,42 +34,36 @@ NEWS from NavTable 0.6 2010-05-19
 - Misc BugFixes
 
 Translations:
-
-	Added italian translation (by Silvio Grosso and Antonio Falciano)
+- Added italian translation (by Silvio Grosso and Antonio Falciano)
 
 NEWS from NavTable 0.4.1_beta 2009-12-3
 ------------------------------------------------
-Adapted NavTable to gvSIG 1.9.
-Added Portuguese translation by Joaquim Rocha.
+- Adapted NavTable to gvSIG 1.9.
+- Added Portuguese translation by Joaquim Rocha.
 
 NEWS from NavTable 0.4 2009-09-18
 ------------------------------------------------
-Added Open NavTable action to popup menu in TOC.
-Create and eliminate registers.
-Improved behaviour when the layer is being edited.
+- Added Open NavTable action to popup menu in TOC.
+- Create and eliminate registers.
+- Improved behaviour when the layer is being edited.
 
 Bugs Fixed:
+- #592: Error deleting features while layer is on edition.
+- #525: Mistake with register unselection.
 
-	- Bug #592: Error when deleting features when
-		    layer is on edition.
-	- Bug #525: Mistake with register unselection
-X
 NEWS from NavTable 0.2.2 2009-06-02
 ------------------------------------------------
-Created a system to give longer names to the
-attributes.
-Arrow keys navigation.
-Added info about the geometry.
-It shows a warning when there's unsaved data.
-Copy from selected record instead of the
-previous one.
-Better behaviour wiht selections in gvSIG.
-Added to gvSIG menus.
-Added French Translation by Gonzalo Martínez Crespo.
-
+- Created a system to give longer names to the attributes.
+- Arrow keys navigation.
+- Added info about the geometry.
+- It shows a warning when there's unsaved data.
+- Copy from selected record instead of the previous one.
+- Better behaviour with selections in gvSIG.
+- Added to gvSIG menus.
+- Added French Translation by Gonzalo Martínez Crespo.
 
 NEWS from NavTable 0.2 2009-05-11
 ------------------------------------------------
-Initial import
-Official Release of NavTable 0.2 for gvSIG
+- Initial import
+- Official Release of NavTable 0.2 for gvSIG
 
