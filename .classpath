@@ -14,6 +14,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/libProjection"/>
 	<classpathentry kind="lib" path="lib/miglayout-3.7.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/libUIComponent"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

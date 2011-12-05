@@ -25,10 +25,9 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.io.File;
 
+import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
-import com.iver.andami.preferences.IPreference;
-import com.iver.andami.preferences.IPreferenceExtension;
 import com.iver.cit.gvsig.About;
 import com.iver.cit.gvsig.EditionUtilities;
 import com.iver.cit.gvsig.fmap.MapControl;
@@ -40,17 +39,12 @@ import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
-import es.udc.cartolab.gvsig.navtable.contextualmenu.FiltersAddon;
-import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
-import es.udc.cartolab.gvsig.navtable.preferences.NavTablePreferencesPage;
-import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
-import es.udc.cartolab.gvsig.navtable.utils.NavTableTocMenuEntry;
+import es.udc.cartolab.gvsig.navtable.refactoring.NavigationTablePanel;
 
-public class NavTableExtension extends Extension implements
-	IPreferenceExtension {
 
-    private NavTable viewer = null;
-    private IPreference[] preferencesPage;
+public class NavTableExtension extends Extension {
+
+    private NavigationTablePanel viewer = null;
 
     public void execute(String actionCommand) {
 
@@ -62,10 +56,15 @@ public class NavTableExtension extends Extension implements
 	for (int i = 0; i < flayers.getActives().length; i++) {
 	    if (!(flayers.getActives()[i] instanceof FLayers)) {
 		actLayer = (FLyrVect) flayers.getActives()[i];
-		viewer = new NavTable(actLayer);
-		if (viewer.init()) {
-		    PluginServices.getMDIManager().addCentredWindow(viewer);
+		try {
+		    viewer = new NavigationTablePanel(actLayer.getSource()
+			    .getRecordset());
+		} catch (ReadDriverException e) {
+		    e.printStackTrace();
 		}
+		// if (viewer.init()) {
+		PluginServices.getMDIManager().addCentredWindow(viewer);
+		// }
 	    }
 	}
 
@@ -84,11 +83,6 @@ public class NavTableExtension extends Extension implements
 		.getInstance();
 	extensionPoints.add("View_TocActions", "NavTable",
 		new NavTableTocMenuEntry());
-
-	// Add NavTable "official" context menu addons to the extension point
-	INavTableContextMenu filtersAddon = new FiltersAddon();
-	extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU,
-		filtersAddon.getName(), filtersAddon);
 
 	// Creating config Dir
 	File configDir;
@@ -134,13 +128,6 @@ public class NavTableExtension extends Extension implements
 	    return true;
 	}
 	return false;
-    }
-
-    public IPreference[] getPreferencesPages() {
-	if (preferencesPage == null) {
-	    preferencesPage = new IPreference[] { new NavTablePreferencesPage() };
-	}
-	return preferencesPage;
     }
 
 }
