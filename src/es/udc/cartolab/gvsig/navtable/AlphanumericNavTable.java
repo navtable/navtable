@@ -47,7 +47,6 @@ import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
 
-
 /**
  * @author Nacho Varela
  * @author Javier Estevez
@@ -63,15 +62,13 @@ public class AlphanumericNavTable extends NavTable {
     public AlphanumericNavTable(IEditableSource model, String dataName)
 	    throws ReadDriverException {
 	super(model.getRecordset(), dataName);
-	this.isAlphanumericNT = true;
 	this.model = model;
 	this.model.addEditionListener(listener);
     }
 
-    public AlphanumericNavTable(IEditableSource model, String dataName,
-	    HashMap<String, String> defaultValues) throws ReadDriverException {
+    public AlphanumericNavTable(IEditableSource model, String dataName, HashMap<String,String> defaultValues)
+	    throws ReadDriverException {
 	super(model.getRecordset(), dataName);
-	this.isAlphanumericNT = true;
 	this.model = model;
 	this.defaultValues = defaultValues;
     }
@@ -196,38 +193,6 @@ public class AlphanumericNavTable extends NavTable {
 	}
     }
 
-    /**
-     * Shows a warning to the user if there's unsaved data.
-     * 
-     */
-    protected void showWarning() {
-	if (currentPosition == -1) {
-	    return;
-	}
-	boolean changed = isChangedValues();
-	boolean save = changed && model.isEditing();
-	if (changed && !save) {
-	    Object[] options = {
-		    PluginServices.getText(this, "saveButtonTooltip"),
-		    PluginServices.getText(this, "ignoreButton") };
-	    int response = JOptionPane.showOptionDialog(this,
-		    PluginServices.getText(this, "unsavedDataMessage"),
-		    PluginServices.getText(this, "unsavedDataTitle"),
-		    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-		    null, // do not use a custom Icon
-		    options, // the titles of buttons
-		    options[1]); // default button title
-	    if (response == 0) {
-		save = true;
-	    } else {
-		setChangedValues(false);
-	    }
-	}
-	if (save) {
-	    saveRecord();
-	}
-    }
-
     @Override
     protected void deleteRecord() {
 	try {
@@ -262,10 +227,10 @@ public class AlphanumericNavTable extends NavTable {
 	if (e.getSource() == newB) {
 	    addRecord();
 	} else if (e.getSource() == removeB) {
-	    int answer = JOptionPane.showConfirmDialog(null,
-		    PluginServices.getText(null, "confirm_delete_register"),
-		    null, JOptionPane.YES_NO_OPTION);
-	    if (answer == JOptionPane.YES_OPTION) {
+	    int answer = JOptionPane.showConfirmDialog(null, PluginServices
+		    .getText(null, "confirm_delete_register"), null,
+		    JOptionPane.YES_NO_OPTION);
+	    if (answer == 0) {
 		deleteRecord();
 	    }
 	} else {

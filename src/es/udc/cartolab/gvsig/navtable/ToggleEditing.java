@@ -80,8 +80,6 @@ import com.iver.cit.gvsig.project.documents.table.gui.Table;
 import com.iver.cit.gvsig.project.documents.view.IProjectView;
 import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
-import es.udc.cartolab.gvsig.navtable.utils.DateFormatter;
-
 /**
  * Class for start, stop or toggle the editing on a vector layer. Based on the
  * StartingEditing Extension of gvSIG
@@ -573,8 +571,6 @@ public class ToggleEditing {
 	    // modify the value that changed
 	    if (attStringValues[i] == null || attStringValues[i].length() == 0) {
 		attValues[attPos[i]] = ValueFactory.createNullValue();
-	    } else if(type == Types.DATE){
-		attValues[attPos[i]] = DateFormatter.convertStringToValue(attStringValues[i]);
 	    } else {
 		try {
 		    attValues[attPos[i]] = ValueFactory.createValueByType(

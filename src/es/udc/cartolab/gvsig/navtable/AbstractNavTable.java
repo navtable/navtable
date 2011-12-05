@@ -62,11 +62,6 @@ import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
 import com.iver.cit.gvsig.fmap.layers.SelectionListener;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.cit.gvsig.layers.VectorialLayerEdited;
-import com.iver.utiles.extensionPoints.ExtensionPoint;
-import com.iver.utiles.extensionPoints.ExtensionPoints;
-import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
-
-import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 /**
  * 
@@ -96,7 +91,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 public abstract class AbstractNavTable extends JPanel implements IWindow,
 	ActionListener, SelectionListener, IWindowListener {
 
-    public static final int EMPTY_REGISTER = -1;
+    private static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
     protected static final int BUTTON_SAVE = 1;
     protected static final int BUTTON_SELECTION = 2;
@@ -105,8 +100,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     protected static final int BUTTON_COPY_SELECTED = 5;
     private static final long serialVersionUID = 1L;
     protected static Logger logger = Logger.getLogger("NavTable");
-    public static final String NAVTABLE_ACTIONS_TOOLBAR = "navtable_extension_point_actions_toolbar";
-    public static final String NAVTABLE_CONTEXT_MENU = "navtable_extension_point_context_menu";
 
     protected JPanel northPanel = null;
     protected JPanel centerPanel = null;
@@ -127,30 +120,24 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     protected JCheckBox alwaysZoomCB = null;
     protected JCheckBox alwaysSelectCB = null;
 
-    // SOUTH
-    // actions buttons
     protected JButton filterB = null;
     protected JButton noFilterB = null;
-    protected JButton copyPreviousB = null;
-    protected JButton copySelectedB = null;
-    protected JButton zoomB = null;
-    protected JButton selectionB = null;
-    protected JButton saveB = null;
-    protected JButton removeB = null;
-    // navigation buttons
+
+    // SOUTH
     protected JButton firstB = null;
     protected JButton beforeB = null;
     protected JTextField posTF = null;
     protected JLabel totalLabel = null;
     protected JButton nextB = null;
     protected JButton lastB = null;
-
+    protected JButton copyPreviousB = null;
+    protected JButton copySelectedB = null;
+    protected JButton zoomB = null;
+    protected JButton selectionB = null;
+    protected JButton saveB = null;
+    protected JButton removeB = null;
     private boolean isSomeNavTableFormOpen = false;
     protected EditionListener listener;
-    private JPanel actionsToolBar;
-    private JPanel optionsPanel;
-
-    protected boolean isAlphanumericNT = false;
 
     /**
      * 
@@ -169,6 +156,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
 	window.setTitle(title + ": " + dataName);
+
 	try {
 	    this.recordset = layer.getRecordset();
 	    this.recordset.addSelectionListener(this);
@@ -225,10 +213,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	default:
 	    return null;
 	}
-    }
-
-    public boolean isAlphanumericNT() {
-	return this.isAlphanumericNT;
     }
 
     /**
@@ -355,20 +339,31 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     }
 
     protected void initNorthPanelButtons() {
+	filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
+	noFilterB = getNavTableButton(noFilterB, "/nofilter.png",
+		"noFilterTooltip");
 	onlySelectedCB = getNavTableCheckBox(onlySelectedCB, "selectedCheckBox");
 	alwaysSelectCB = getNavTableCheckBox(alwaysSelectCB, "selectCheckBox");
 	alwaysZoomCB = getNavTableCheckBox(alwaysZoomCB, "alwaysZoomCheckBox");
 	fixScaleCB = getNavTableCheckBox(fixScaleCB, "fixedScaleCheckBox");
     }
 
-    protected JPanel getOptionsPanel() {
-	if (optionsPanel == null) {
-	    optionsPanel = new JPanel(new FlowLayout());
-	    optionsPanel.add(onlySelectedCB);
-	    optionsPanel.add(alwaysSelectCB);
-	    optionsPanel.add(alwaysZoomCB);
-	    optionsPanel.add(fixScaleCB);
+    private JPanel getFilterPanel(File iconPath) {
+	JPanel filterPanel = new JPanel(new FlowLayout());
+	if (iconPath != null && iconPath.exists()) {
+	    filterPanel.setBackground(Color.WHITE);
 	}
+	filterPanel.add(filterB);
+	filterPanel.add(noFilterB);
+	return filterPanel;
+    }
+
+    protected JPanel getOptionsPanel() {
+	JPanel optionsPanel = new JPanel(new FlowLayout());
+	optionsPanel.add(onlySelectedCB);
+	optionsPanel.add(alwaysSelectCB);
+	optionsPanel.add(alwaysZoomCB);
+	optionsPanel.add(fixScaleCB);
 	return optionsPanel;
     }
 
@@ -390,17 +385,28 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		"gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
     }
 
+    private JPanel getNorthFirstRow() {
+	File iconPath = getHeaderFile();
+	JPanel northFirstRow = new JPanel(new BorderLayout());
+	if (iconPath != null && iconPath.exists()) {
+	    northFirstRow.setBackground(Color.WHITE);
+	    northFirstRow.add(getIcon(iconPath), BorderLayout.WEST);
+	    viewInfo.setHeight(575);
+	}
+	northFirstRow.add(getFilterPanel(iconPath), BorderLayout.EAST);
+	return northFirstRow;
+    }
+
     /**
      * Creates the upper panel.
      * 
      * @return the panel.
      */
     protected JPanel getNorthPanel() {
-	if (northPanel == null) {
-	    initNorthPanelButtons();
-	    northPanel = new JPanel(new BorderLayout());
-	    northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
-	}
+	initNorthPanelButtons();
+	northPanel = new JPanel(new BorderLayout());
+	northPanel.add(getNorthFirstRow(), BorderLayout.NORTH);
+	northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
 	return northPanel;
     }
 
@@ -416,7 +422,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      */
     public abstract JPanel getCenterPanel();
 
-    public ImageIcon getIcon(String iconName) {
+    protected ImageIcon getIcon(String iconName) {
 	java.net.URL imgURL = getClass().getResource(iconName);
 	if (imgURL == null) {
 	    imgURL = AbstractNavTable.class.getResource(iconName);
@@ -440,8 +446,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	return cb;
     }
 
-    private JPanel createNavigationToolBar() {
-	registerNavTableButtonsOnNavigationToolBarExtensionPoint();
+    private JPanel getNavToolBar() {
 	JPanel navToolBar = new JPanel(new FlowLayout());
 	navToolBar.add(firstB);
 	navToolBar.add(beforeB);
@@ -452,35 +457,18 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	return navToolBar;
     }
 
-    public JPanel getActionsToolBar() {
-	if (actionsToolBar == null) {
-	    actionsToolBar = new JPanel(new FlowLayout());
-	    registerNavTableButtonsOnActionToolBarExtensionPoint();
-	    ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton
-		    .getInstance().get(NAVTABLE_ACTIONS_TOOLBAR);
-	    for (Object button : actionToolBarEP.values()) {
-		actionsToolBar.add((JButton) button);
-	    }
-	}
+    protected JPanel getActionsToolBar() {
+	JPanel actionsToolBar = new JPanel(new FlowLayout());
+	actionsToolBar.add(copySelectedB);
+	actionsToolBar.add(copyPreviousB);
+	actionsToolBar.add(zoomB);
+	actionsToolBar.add(selectionB);
+	actionsToolBar.add(saveB);
+	actionsToolBar.add(removeB);
 	return actionsToolBar;
     }
 
-    /**
-     * Deprecated method: the original aim for this method was enable the
-     * developers to have a way to override the buttons on the south panel for
-     * their child applications (add more, delete, etc). If you are a developer
-     * and want to get that behaviour, check NAVTABLE_ACTIONS_TOOLBAR
-     * extensionPoint. Through it, you will have complete access to the toolbar.
-     * Check also #registerNavTableButtonsOnActionsToolBarExtensionPoint()
-     * method for a concrete example on the prefered way to do it.
-     */
-    @Deprecated
     protected void initNavTableSouthPanelButtons() {
-	registerNavTableButtonsOnNavigationToolBarExtensionPoint();
-	registerNavTableButtonsOnActionToolBarExtensionPoint();
-    }
-
-    private void registerNavTableButtonsOnNavigationToolBarExtensionPoint() {
 	firstB = getNavTableButton(firstB, "/go-first.png",
 		"goFirstButtonTooltip");
 	beforeB = getNavTableButton(beforeB, "/go-previous.png",
@@ -490,45 +478,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	totalLabel = new JLabel();
 	nextB = getNavTableButton(nextB, "/go-next.png", "goNextButtonTooltip");
 	lastB = getNavTableButton(lastB, "/go-last.png", "goLastButtonTooltip");
-    }
-
-    protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
-	ExtensionPoints extensionPoints = ExtensionPointsSingleton
-		.getInstance();
-
-	filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-enable-filter",
-		filterB);
-
-	noFilterB = getNavTableButton(noFilterB, "/nofilter.png",
-		"noFilterTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-disable-filter",
-		noFilterB);
-
 	copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png",
 		"copySelectedButtonTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-selected",
-		copySelectedB);
-
 	copyPreviousB = getNavTableButton(copyPreviousB, "/copy.png",
 		"copyPreviousButtonTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-previous",
-		copyPreviousB);
-
 	zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-zoom", zoomB);
-
 	selectionB = getNavTableButton(selectionB, "/Select.png",
 		"selectionButtonTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-selection",
-		selectionB);
-
 	saveB = getNavTableButton(saveB, "/save.png", "saveButtonTooltip");
 	saveB.setEnabled(false);
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-save", saveB);
-
 	removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-remove", removeB);
     }
 
     /**
@@ -537,11 +496,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * @return the panel.
      */
     protected JPanel getSouthPanel() {
-	if (southPanel == null) {
-	    southPanel = new JPanel(new BorderLayout());
-	    southPanel.add(createNavigationToolBar(), BorderLayout.SOUTH);
-	    southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
-	}
+	initNavTableSouthPanelButtons();
+	southPanel = new JPanel(new BorderLayout());
+	southPanel.add(getNavToolBar(), BorderLayout.SOUTH);
+	southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
 	return southPanel;
     }
 
@@ -566,7 +524,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		    null, // do not use a custom Icon
 		    options, // the titles of buttons
 		    options[1]); // default button title
-	    if (response == JOptionPane.YES_OPTION) {
+	    if (response == 0) {
 		save = true;
 	    } else {
 		setChangedValues(false);
@@ -723,29 +681,22 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		source.start();
 		g = source.getShape(pos);
 		source.stop();
-
-		if (g != null) {
-		    /*
-		     * fix to avoid zoom problems when layer and view
-		     * projections aren't the same.
-		     */
-		    if (layer.getCoordTrans() != null) {
-			g.reProject(layer.getCoordTrans());
-		    }
-		    rectangle = g.getBounds2D();
-		    if (rectangle.getWidth() < 200) {
-			rectangle.setFrameFromCenter(rectangle.getCenterX(),
-				rectangle.getCenterY(),
-				rectangle.getCenterX() + 100,
-				rectangle.getCenterY() + 100);
-		    }
-		    if (rectangle != null) {
-			layer.getMapContext().getViewPort()
-				.setExtent(rectangle);
-		    }
-		} else {
-		    JOptionPane.showMessageDialog(this, PluginServices.getText(
-			    this, "feature_has_no_geometry_to_zoom"));
+		/*
+		 * fix to avoid zoom problems when layer and view projections
+		 * aren't the same.
+		 */
+		if (layer.getCoordTrans() != null) {
+		    g.reProject(layer.getCoordTrans());
+		}
+		rectangle = g.getBounds2D();
+		if (rectangle.getWidth() < 200) {
+		    rectangle.setFrameFromCenter(rectangle.getCenterX(),
+			    rectangle.getCenterY(),
+			    rectangle.getCenterX() + 100,
+			    rectangle.getCenterY() + 100);
+		}
+		if (rectangle != null) {
+		    layer.getMapContext().getViewPort().setExtent(rectangle);
 		}
 	    } catch (InitializeDriverException e) {
 		logger.error(e.getMessage(), e);
@@ -811,7 +762,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * Removes all selections of the layer.
      * 
      */
-    public void clearSelection() {
+    protected void clearSelection() {
 	FBitSet bitset = null;
 	if (layer instanceof AlphanumericData) {
 	    bitset = recordset.getSelection();
@@ -867,7 +818,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * Repaints the window.
      * 
      */
-    public void refreshGUI() {
+    protected void refreshGUI() {
 	boolean navEnabled = false;
 	try {
 	    if (recordset == null) {
@@ -1274,13 +1225,4 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    this.recordset.reload();
 	}
     }
-
-    public SelectableDataSource getRecordset() {
-	return this.recordset;
-    }
-
-    public String getDataName() {
-	return this.dataName;
-    }
-
 }
