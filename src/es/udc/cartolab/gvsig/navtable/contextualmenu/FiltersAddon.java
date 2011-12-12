@@ -1,5 +1,6 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Types;
@@ -213,23 +214,9 @@ public class FiltersAddon implements INavTableContextMenu {
 	menus.add(tmpMenuItem);
 
 	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_contains"));
-	tmpMenuItem.addActionListener(new ActionListener() {
-	    public void actionPerformed(ActionEvent evt) {
-		String attr = (String) JOptionPane.showInputDialog(navtable,
-			PluginServices.getText(this, "filter_write_string"),
-			PluginServices.getText(this,
-				"filter_contains_window_title"),
-			JOptionPane.PLAIN_MESSAGE);
-
-		if (attr != null) {
-		    // TODO: We need to escape special characters
-		    // like '%', "'", ...
-		    String expr = st_expr + " like '%" + attr + "%';";
-		    filterExt.newSet(expr);
-		}
-	    }
-	});
+		"filter_substring"));
+	tmpMenuItem.addActionListener(new StringFilterActionListener(navtable.getLocationOnScreen(), 
+			st_expr, filterExt));
 	menus.add(tmpMenuItem);
     }
 
