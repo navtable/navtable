@@ -316,8 +316,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	}
     }
 
-    public void setOnlySelected(boolean value) {
-	onlySelectedCB.doClick();
+    public void setOnlySelected(boolean bool) {
+	if (bool != onlySelectedCB.isSelected()){
+	    onlySelectedCB.doClick();
+	}
     }
 
     public void selectFeature(long feature) {
