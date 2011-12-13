@@ -1,80 +1,97 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
+import com.iver.andami.ui.mdiFrame.MDIFrame;
+import com.iver.andami.ui.mdiManager.IWindow;
+import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
 
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
-public class StringFilterActionListener extends JDialog implements ActionListener {
+public class StringFilterActionListener extends JPanel implements ActionListener, IWindow {
 
-	Point point;
 	String st_expr;
+	String attrValue;
 	FiltroExtension filterExt;
-	JRadioButton rbContains;
-	JRadioButton rbStartsWith;
-	JRadioButton rbEndsWith; 
 
-	public StringFilterActionListener(final Point point, 
+	JCheckBox cbStartsWith;
+	JCheckBox cbEndsWith;
+	
+	WindowInfo windowInfo;
+
+	public StringFilterActionListener(final String attrValue,
 			final String st_expr, 
 			final FiltroExtension filterExt) {
 
 		super();
-		setTitle(PluginServices.getText(this,
-				"Filter_substring"));
 		
-		Container cp = this.getContentPane();
-		cp.setLayout(new FlowLayout());
+		this.st_expr = st_expr;
+		this.attrValue = attrValue;
+		this.filterExt = filterExt;
 
-		rbContains = new JRadioButton(PluginServices.getText(this,
-		"filter_contains"));
-		rbStartsWith = new JRadioButton(PluginServices.getText(this,
-		"filter_startswith"));
-		rbEndsWith = new JRadioButton(PluginServices.getText(this,
-		"filter_endswith"));
+		initGUI();
+	}
 
-		rbContains.setSelected(true);
+	private void initGUI() {
 
-		ButtonGroup bgroup = new ButtonGroup();
-		bgroup.add(rbContains);
-		bgroup.add(rbStartsWith);
-		bgroup.add(rbEndsWith);
-
-		cp.add(rbStartsWith);
-		cp.add(rbEndsWith);
-		cp.add(rbContains);
-
-		cp.add(new JLabel(PluginServices.getText(this,
+		windowInfo = this.getWindowInfo();
+		
+		add(new JLabel(PluginServices.getText(this,
 		"filter_write_string")));
-		final JTextField tf = new JTextField(20);
-		cp.add(tf);
-		JButton ok = new JButton("OK");
-		ok.addActionListener(new ActionListener() {
+		final JTextField tf = new JTextField(16);
+		add(tf);
+		
+		cbStartsWith = new JCheckBox(PluginServices.getText(this,
+		"filter_startswith"));
+		cbStartsWith.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				if (cbStartsWith.isSelected()){
+					cbEndsWith.setSelected(false);
+				}
+			}
+		});
+		cbEndsWith = new JCheckBox(PluginServices.getText(this,
+		"filter_endswith"));
+		cbEndsWith.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent evt) {
+				if (cbEndsWith.isSelected()){
+					cbStartsWith.setSelected(false);
+				}
+			}
+		});
+
+		add(cbStartsWith);
+		add(cbEndsWith);		
+		
+		JPanel btnPanel = new JPanel();
+		
+		JButton okBtn = new JButton(PluginServices.getText(this,"ok"));
+		okBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String attr = tf.getText();
 				executeFilter(attr);
-				dispose(); // Closes the dialog
+				PluginServices.getMDIManager().closeWindow(StringFilterActionListener.this);
 			}
 		});
-		cp.add(ok);
-		setSize(250, 225);
-
-		this.st_expr = st_expr;
-		this.filterExt = filterExt;
-		this.point = point;
+		btnPanel.add(okBtn);
+		
+		JButton cancelBtn = new JButton(PluginServices.getText(this,"cancel"));
+		cancelBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PluginServices.getMDIManager().closeWindow(StringFilterActionListener.this);
+			}
+		});
+		btnPanel.add(cancelBtn);
+		add(btnPanel);		
 	}
 
 	private void executeFilter(final String attr){
@@ -82,9 +99,9 @@ public class StringFilterActionListener extends JDialog implements ActionListene
 			// TODO: We need to escape special characters
 			// like '%', "'", ...
 			String expr = "";
-			if (rbStartsWith.isSelected()) {
+			if (cbStartsWith.isSelected()) {
 				expr = st_expr + " like '" + attr + "%';";
-			} else if (rbEndsWith.isSelected()) {
+			} else if (cbEndsWith.isSelected()) {
 				expr = st_expr + " like '%" + attr + "';";
 			} else {
 				//rbContains.isSelected()
@@ -95,7 +112,26 @@ public class StringFilterActionListener extends JDialog implements ActionListene
 	}
 
 	public void actionPerformed(ActionEvent evt) {
-		setLocation(point.x, point.y);
-		setVisible(true);
+		PluginServices.getMDIManager().addWindow(this);
 	}
+
+	@Override
+	public WindowInfo getWindowInfo() {
+		if (windowInfo ==null){
+			windowInfo = new WindowInfo(WindowInfo.MODALDIALOG
+				| WindowInfo.PALETTE);
+			windowInfo.setTitle(PluginServices.getText(this,
+				"Filter_substring"));
+			windowInfo.setWidth(220);
+			windowInfo.setHeight(120);
+		}
+		return windowInfo;
+	}
+
+	@Override
+	public Object getWindowProfile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

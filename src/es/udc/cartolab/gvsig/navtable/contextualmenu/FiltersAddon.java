@@ -215,8 +215,9 @@ public class FiltersAddon implements INavTableContextMenu {
 
 	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
 		"filter_substring"));
-	tmpMenuItem.addActionListener(new StringFilterActionListener(navtable.getLocationOnScreen(), 
-			st_expr, filterExt));
+	tmpMenuItem.addActionListener(new StringFilterActionListener(attrValue,
+			st_expr, 
+			filterExt));
 	menus.add(tmpMenuItem);
     }
 
