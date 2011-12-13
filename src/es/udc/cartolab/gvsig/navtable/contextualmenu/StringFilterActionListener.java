@@ -49,6 +49,8 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		"filter_write_string")));
 		final JTextField tf = new JTextField(16);
 		tf.setText(attrValue);
+		tf.setSelectionStart(0);
+		tf.setSelectionEnd(attrValue.length());
 		add(tf);
 		
 		cbStartsWith = new JCheckBox(PluginServices.getText(this,
