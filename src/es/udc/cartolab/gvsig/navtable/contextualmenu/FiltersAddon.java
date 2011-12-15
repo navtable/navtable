@@ -1,13 +1,11 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Types;
 import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
@@ -124,7 +122,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = boolean('true');";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -134,7 +132,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = boolean('false');";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -149,7 +147,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = " + attrValue + ";";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -159,7 +157,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " != " + attrValue + ";";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -171,7 +169,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		// TODO: Still not working. Remove option with
 		// numbers. Open a dialog to type the '%...%'?
 		String expr = st_expr + " < " + attrValue + ";";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -183,7 +181,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		// TODO: Still not working. Remove option with
 		// numbers. Open a dialog to type the '%...%'?
 		String expr = st_expr + " > " + attrValue + ";";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -198,7 +196,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String exp = st_expr + " = '" + attrValue + "';";
-		filterExt.newSet(exp);
+		executeFilter(filterExt, exp);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -208,14 +206,15 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String exp = st_expr + " != '" + attrValue + "';";
-		filterExt.newSet(exp);
+		executeFilter(filterExt, exp);
 	    }
 	});
 	menus.add(tmpMenuItem);
 
 	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
 		"filter_contains"));
-	tmpMenuItem.addActionListener(new StringFilterActionListener(attrValue,
+	tmpMenuItem.addActionListener(new StringFilterActionListener(navtable,
+			attrValue,
 			st_expr, 
 			filterExt));
 	menus.add(tmpMenuItem);
@@ -263,4 +262,9 @@ public class FiltersAddon implements INavTableContextMenu {
 	return true;
     }
 
+    public void executeFilter(final FiltroExtension filterExt,
+    		final String st_expr){
+    	filterExt.newSet(st_expr);
+    	navtable.setOnlySelected(true);
+    } 
 }
