@@ -14,8 +14,11 @@ import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
 
+import es.udc.cartolab.gvsig.navtable.NavTable;
+
 public class StringFilterActionListener extends JPanel implements ActionListener, IWindow {
 
+	NavTable navtable;
 	String st_expr;
 	String attrValue;
 	FiltroExtension filterExt;
@@ -25,12 +28,14 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 	
 	WindowInfo windowInfo;
 
-	public StringFilterActionListener(final String attrValue,
+	public StringFilterActionListener(final NavTable navtable,
+			final String attrValue,
 			final String st_expr, 
 			final FiltroExtension filterExt) {
 
 		super();
 		
+		this.navtable = navtable;
 		this.st_expr = st_expr;
 		this.attrValue = attrValue;
 		this.filterExt = filterExt;
@@ -107,6 +112,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 				expr = st_expr + " like '%" + attr + "%';";
 			}
 			filterExt.newSet(expr);
+			navtable.setOnlySelected(true);
 		}
 	}
 
