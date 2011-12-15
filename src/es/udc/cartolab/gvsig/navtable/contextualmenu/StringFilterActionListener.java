@@ -10,12 +10,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiFrame.MDIFrame;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
-
-import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class StringFilterActionListener extends JPanel implements ActionListener, IWindow {
 
@@ -46,7 +43,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		windowInfo = this.getWindowInfo();
 		
 		add(new JLabel(PluginServices.getText(this,
-		"filter_write_string")));
+		"nt_filter_write_string")));
 		final JTextField tf = new JTextField(16);
 		tf.setText(attrValue);
 		tf.setSelectionStart(0);
@@ -76,7 +73,6 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		add(cbEndsWith);		
 		
 		JPanel btnPanel = new JPanel();
-		
 		JButton okBtn = new JButton(PluginServices.getText(this,"ok"));
 		okBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -118,13 +114,12 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		PluginServices.getMDIManager().addWindow(this);
 	}
 
-	@Override
 	public WindowInfo getWindowInfo() {
 		if (windowInfo ==null){
 			windowInfo = new WindowInfo(WindowInfo.MODALDIALOG
 				| WindowInfo.PALETTE);
 			windowInfo.setTitle(PluginServices.getText(this,
-				"Filter_substring"));
+				"filter_contains_window_title"));
 			windowInfo.setWidth(220);
 			windowInfo.setHeight(120);
 		}
