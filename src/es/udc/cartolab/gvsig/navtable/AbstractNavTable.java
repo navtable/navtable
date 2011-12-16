@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -433,6 +434,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     protected JButton getNavTableButton(JButton button, String iconName,
 	    String toolTipName) {
 	JButton but = new JButton(getIcon(iconName));
+	but.setSize(12, 12);
+	but.setMargin(new Insets(1,1,1,1));
 	but.setToolTipText(PluginServices.getText(this, toolTipName));
 	but.addActionListener(this);
 	return but;
