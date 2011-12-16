@@ -17,15 +17,17 @@
  *
  *
  * Authors:
- *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
+ *   Juan Ignacio Varela Garcia <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
- *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
+ *   Javier Estevez Valinas <valdaris (at) gmail (dot) com>
  */
 package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
@@ -853,7 +855,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    f.setLayout(new BorderLayout());
 	    f.add(getNorthPanel(), BorderLayout.NORTH);
 	    f.pack();
+	    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	    viewInfo.setWidth(f.getWidth() + 25);
+	    viewInfo.setWidth((1*dim.width)/3);
 	    f.add(getSouthPanel(), BorderLayout.SOUTH);
 	    JPanel centerPanel = getCenterPanel();
 	    if (centerPanel != null) {
@@ -861,6 +865,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    }
 	    f.pack();
 	    viewInfo.setHeight(f.getHeight());
+	    viewInfo.setHeight(((2*dim.height)/3)-25);
 	}
 	return viewInfo;
     }
