@@ -3,10 +3,12 @@ package es.udc.cartolab.gvsig.navtable.contextualmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
@@ -23,8 +25,8 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 	String attrValue;
 	FiltroExtension filterExt;
 
-	JCheckBox cbStartsWith;
-	JCheckBox cbEndsWith;
+	JRadioButton rbStartsWith;
+	JRadioButton rbEndsWith;
 	
 	WindowInfo windowInfo;
 
@@ -53,36 +55,18 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		tf.setText(attrValue);
 		tf.setSelectionStart(0);
 		tf.setSelectionEnd(attrValue.length());
-		tf.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg) {
-				String attr = tf.getText();
-				executeFilter(attr);
-				PluginServices.getMDIManager().closeWindow(StringFilterActionListener.this);
-			}
-		});
 		add(tf);
-		
-		cbStartsWith = new JCheckBox(PluginServices.getText(this,
+				
+		rbStartsWith = new JRadioButton(PluginServices.getText(this,
 		"filter_startswith"));
-		cbStartsWith.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt) {
-				if (cbStartsWith.isSelected()){
-					cbEndsWith.setSelected(false);
-				}
-			}
-		});
-		cbEndsWith = new JCheckBox(PluginServices.getText(this,
+		rbEndsWith = new JRadioButton(PluginServices.getText(this,
 		"filter_endswith"));
-		cbEndsWith.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent evt) {
-				if (cbEndsWith.isSelected()){
-					cbStartsWith.setSelected(false);
-				}
-			}
-		});
 
-		add(cbStartsWith);
-		add(cbEndsWith);		
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(rbStartsWith);
+		bg.add(rbEndsWith);
+		add(rbStartsWith);
+		add(rbEndsWith);	
 		
 		JPanel btnPanel = new JPanel();
 		JButton okBtn = new JButton(PluginServices.getText(this,"ok"));
@@ -110,9 +94,9 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 			// TODO: We need to escape special characters
 			// like '%', "'", ...
 			String expr = "";
-			if (cbStartsWith.isSelected()) {
+			if (rbStartsWith.isSelected()) {
 				expr = st_expr + " like '" + attr + "%';";
-			} else if (cbEndsWith.isSelected()) {
+			} else if (rbEndsWith.isSelected()) {
 				expr = st_expr + " like '%" + attr + "';";
 			} else {
 				//rbContains.isSelected()
