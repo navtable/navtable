@@ -357,7 +357,6 @@ public class NavTable extends AbstractNavTable {
 	getThisSouthPanel().add(southPanel);
 
 	fillAttributes();
-	currentPosition = 0;
 
 	refreshGUI();
 	super.repaint();
@@ -484,9 +483,7 @@ public class NavTable extends AbstractNavTable {
 	}
     }
 
-    @Override
     public void fillEmptyValues() {
-	super.fillEmptyValues();
 	setFillingValues(true);
 	DefaultTableModel model = (DefaultTableModel) table.getModel();
 	for (int i = 0; i < model.getRowCount(); i++) {
@@ -501,7 +498,7 @@ public class NavTable extends AbstractNavTable {
 	    setFillingValues(true);
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    for (int i = 0; i < recordset.getFieldCount(); i++) {
-		Value value = recordset.getFieldValue(currentPosition, i);
+		Value value = recordset.getFieldValue(getPosition(), i);
 		String textoValue;
 		if (value instanceof NullValue) {
 		    textoValue = "";
@@ -521,7 +518,7 @@ public class NavTable extends AbstractNavTable {
 		IGeometry g;
 		ReadableVectorial source = (layer).getSource();
 		source.start();
-		g = source.getShape(new Long(currentPosition).intValue());
+		g = source.getShape(new Long(getPosition()).intValue());
 		source.stop();
 		if (g == null) {
 		    model.setValueAt("0", recordset.getFieldCount(), 1);
@@ -535,7 +532,7 @@ public class NavTable extends AbstractNavTable {
 		// Fill GEOM_AREA
 		value = "0.0";
 		source.start();
-		g = source.getShape(new Long(currentPosition).intValue());
+		g = source.getShape(new Long(getPosition()).intValue());
 		source.stop();
 		geom = g.toJTSGeometry();
 		// TODO Format number (Set units in Preferences)
@@ -556,7 +553,7 @@ public class NavTable extends AbstractNavTable {
 	try {
 	    for (int i = 0; i < recordset.getFieldCount(); i++) {
 		String tableValue = model.getValueAt(i, 1).toString();
-		Value value = recordset.getFieldValue(currentPosition, i);
+		Value value = recordset.getFieldValue(getPosition(), i);
 		String layerValue = value
 			.getStringValue(ValueWriter.internalValueWriter);
 		layerValue = layerValue.replaceAll("'", "");
@@ -663,7 +660,7 @@ public class NavTable extends AbstractNavTable {
 	if (isSaveable()) {
 	    int[] attIndexes = getIndexes();
 	    String[] attValues = getValues();
-	    int currentPos = Long.valueOf(currentPosition).intValue();
+	    int currentPos = Long.valueOf(getPosition()).intValue();
 	    try {
 		ToggleEditing te = new ToggleEditing();
 		boolean wasEditing = layer.isEditing();

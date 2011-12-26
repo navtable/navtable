@@ -122,7 +122,7 @@ public class AlphanumericNavTable extends NavTable {
 	if (isSaveable()) {
 	    int[] attIndexes = getIndexes();
 	    String[] attValues = getValues();
-	    int currentPos = Long.valueOf(currentPosition).intValue();
+	    int currentPos = Long.valueOf(getPosition()).intValue();
 	    try {
 		ToggleEditing te = new ToggleEditing();
 		if (!model.isEditing()) {
@@ -201,7 +201,7 @@ public class AlphanumericNavTable extends NavTable {
      * 
      */
     protected void showWarning() {
-	if (currentPosition == -1) {
+	if (getPosition() == AbstractNavTable.EMPTY_REGISTER) {
 	    return;
 	}
 	boolean changed = isChangedValues();
@@ -239,7 +239,7 @@ public class AlphanumericNavTable extends NavTable {
 	    ITableDefinition tableDef = model.getTableDefinition();
 	    writer.initialize(tableDef);
 
-	    model.doRemoveRow((int) currentPosition, EditionEvent.ALPHANUMERIC);
+	    model.doRemoveRow((int) getPosition(), EditionEvent.ALPHANUMERIC);
 	    model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
 
 	    // Refresh

@@ -66,6 +66,9 @@ import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
+import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 /**
@@ -94,7 +97,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow,
-	ActionListener, SelectionListener, IWindowListener {
+ActionListener, SelectionListener, IWindowListener {
 
     public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
@@ -146,7 +149,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     protected JButton lastB = null;
 
     private boolean isSomeNavTableFormOpen = false;
+
     protected EditionListener listener;
+    private PositionEventSource positionEventSource = new PositionEventSource();
+
     private JPanel actionsToolBar;
     private JPanel optionsPanel;
 
@@ -251,9 +257,16 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * on, but there are any selection registers.
      * 
      */
-    public void fillEmptyValues() {
-	currentPosition = EMPTY_REGISTER;
-	// TODO Set not enabled all navButtons, seleccion, etc.
+    public abstract void fillEmptyValues();
+
+    /**
+     * Deprecated method. Use instead {@link #setPosition(long)}
+     * @param rowPosition
+     */
+    @Deprecated
+    public void fillValues(long rowPosition) {
+	currentPosition = rowPosition;
+	refreshGUI();
     }
 
     /**
@@ -406,11 +419,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	return northPanel;
     }
 
-    public void fillValues(long rowPosition) {
-	currentPosition = rowPosition;
-	refreshGUI();
-    }
-
     /**
      * Creates the main panel.
      * 
@@ -552,7 +560,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * 
      */
     protected void showWarning() {
-	if (currentPosition == EMPTY_REGISTER) {
+	if (getPosition() == EMPTY_REGISTER) {
 	    return;
 	}
 	boolean changed = isChangedValues();
@@ -589,12 +597,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    if (onlySelectedCB.isSelected()) {
 		nextSelected();
 	    } else {
-		if (currentPosition < recordset.getRowCount()) {
-		    currentPosition = currentPosition + 1;
-		    // fillValues();
+		if (getPosition() < recordset.getRowCount()) {
+		    setPosition(getPosition() + 1);
 		}
 	    }
-	    refreshGUI();
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
 	}
@@ -605,11 +611,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      */
     protected void nextSelected() {
 	FBitSet bitset = recordset.getSelection();
-	int currentPos = Long.valueOf(currentPosition).intValue();
+	int currentPos = Long.valueOf(getPosition()).intValue();
 	int pos = bitset.nextSetBit(currentPos + 1);
 	if (pos != EMPTY_REGISTER) {
-	    currentPosition = pos;
-	    // fillValues();
+	    setPosition(pos);
 	}
     }
 
@@ -623,10 +628,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    if (onlySelectedCB.isSelected()) {
 		lastSelected();
 	    } else {
-		currentPosition = recordset.getRowCount() - 1;
-		// fillValues();
+		setPosition(recordset.getRowCount() - 1);
 	    }
-	    refreshGUI();
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
 	}
@@ -640,10 +643,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	FBitSet bitset = recordset.getSelection();
 	int pos = bitset.length();
 	if (pos != 0) {
-	    currentPosition = pos - 1;
-	    // fillValues();
+	    setPosition(pos - 1);
 	}
-	refreshGUI();
     }
 
     /**
@@ -655,10 +656,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	if (onlySelectedCB.isSelected()) {
 	    firstSelected();
 	} else {
-	    currentPosition = 0;
-	    // fillValues();
+	    setPosition(0);
 	}
-	refreshGUI();
     }
 
     /**
@@ -669,8 +668,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	FBitSet bitset = recordset.getSelection();
 	int pos = bitset.nextSetBit(0);
 	if (pos != EMPTY_REGISTER) {
-	    currentPosition = pos;
-	    // fillValues();
+	    setPosition(pos);
 	}
     }
 
@@ -683,13 +681,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	if (onlySelectedCB.isSelected()) {
 	    beforeSelected();
 	} else {
-	    // '-1' is used by NavTable to show empty values, so I must check it
-	    if (currentPosition > 0) {
-		currentPosition = currentPosition - 1;
+	    if (getPosition() > 0) {
+		setPosition(getPosition() - 1);
 	    }
-	    // fillValues();
 	}
-	refreshGUI();
     }
 
     /**
@@ -698,14 +693,13 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      */
     protected void beforeSelected() {
 	FBitSet bitset = recordset.getSelection();
-	int currentPos = Long.valueOf(currentPosition).intValue() - 1;
+	int currentPos = Long.valueOf(getPosition()).intValue() - 1;
 	int pos = currentPos;
 	for (; pos >= 0 && !bitset.get(pos); pos--) {
 	    ;
 	}
 	if (pos != EMPTY_REGISTER) {
-	    currentPosition = pos;
-	    // fillValues();
+	    setPosition(pos);
 	}
     }
 
@@ -716,7 +710,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      */
     private void zoom() {
 	Rectangle2D rectangle = null;
-	int pos = Long.valueOf(currentPosition).intValue();
+	int pos = Long.valueOf(getPosition()).intValue();
 	if (layer instanceof AlphanumericData) {
 	    // TODO gvSIG comment: Esta comprobacion se hacia con Selectable
 	    try {
@@ -743,7 +737,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		    }
 		    if (rectangle != null) {
 			layer.getMapContext().getViewPort()
-				.setExtent(rectangle);
+			.setExtent(rectangle);
 		    }
 		} else {
 		    JOptionPane.showMessageDialog(this, PluginServices.getText(
@@ -771,7 +765,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 
     private void selectCurrentFeature() {
 	FBitSet bitset = null;
-	int pos = Long.valueOf(currentPosition).intValue();
+	int pos = Long.valueOf(getPosition()).intValue();
 	bitset = recordset.getSelection();
 	if (!bitset.get(pos)) {
 	    bitset.set(pos);
@@ -789,7 +783,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * @return true if the current row is selected, false if not.
      */
     private boolean isRecordSelected() {
-	return isRecordSelected(currentPosition);
+	return isRecordSelected(getPosition());
     }
 
     /**
@@ -828,11 +822,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      */
     private void viewOnlySelected() {
 	if (getNumberOfRowsSelected() == 0) {
-	    currentPosition = EMPTY_REGISTER;
+	    setPosition(EMPTY_REGISTER);
 	}
-
 	if (!isRecordSelected()) {
-	    // System.out.println("View only selected... getFirstSelected");
 	    firstSelected();
 	}
     }
@@ -876,8 +868,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		return;
 	    }
 
-	    checkAndUpdateCurrentPositionBoundaries();
-	    navEnabled = checkNavEnabledAndFillValues();
+	    if (getPosition() == EMPTY_REGISTER) {
+		posTF.setText("");
+		navEnabled = false;
+		fillEmptyValues();
+	    } else {
+		navEnabled = true;
+		fillValues();
+	    }
 
 	    // north panel buttons
 	    alwaysZoomCB.setEnabled(navEnabled);
@@ -885,7 +883,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    fixScaleCB.setEnabled(navEnabled);
 
 	    if (isSomeRowToWorkOn()) {
-		posTF.setText(String.valueOf(currentPosition + 1));
+		//we need to adapt a zero-based index (currentPosition)
+		// to what user introduces (a 1-based index)
+		posTF.setText(String.valueOf(getPosition() + 1));
 		if (alwaysSelectCB.isSelected()) {
 		    selectionB.setEnabled(false);
 		    clearSelection();
@@ -941,7 +941,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     }
 
     private void enableCopyPreviousButton(boolean navEnabled) {
-	if (currentPosition == 0 || !navEnabled) {
+	if (getPosition() == 0 || !navEnabled) {
 	    copyPreviousB.setEnabled(false);
 	} else {
 	    copyPreviousB.setEnabled(true);
@@ -956,19 +956,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	}
     }
 
-    private boolean checkNavEnabledAndFillValues() {
-	boolean navEnabled;
-	if (currentPosition == EMPTY_REGISTER) {
-	    posTF.setText("");
-	    navEnabled = false;
-	    fillEmptyValues();
-	} else {
-	    navEnabled = true;
-	    fillValues();
-	}
-	return navEnabled;
-    }
-
     private void setIconAndPositionBackgroundForSelection() {
 	java.net.URL imgURL = null;
 	if (isRecordSelected()) {
@@ -979,16 +966,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    ImageIcon imagenSelect = getIcon("/Select.png");
 	    selectionB.setIcon(imagenSelect);
 	    posTF.setBackground(Color.WHITE);
-	}
-    }
-
-    private void checkAndUpdateCurrentPositionBoundaries()
-	    throws ReadDriverException {
-	if (currentPosition >= recordset.getRowCount()) {
-	    currentPosition = recordset.getRowCount() - 1;
-	}
-	if (currentPosition < EMPTY_REGISTER) {
-	    currentPosition = 0;
 	}
     }
 
@@ -1015,38 +992,34 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    posNumber = new Long(pos);
 	} catch (NumberFormatException e) {
 	    logger.error(e.getMessage(), e);
-	    posNumber = currentPosition;
+	    posNumber = getPosition();
+	} finally {
+	    //user will set a 1-based index to navigate through layer, 
+	    // so we need to adapt it to currentPosition (a zero-based index)
+	    setPosition(posNumber-1);
 	}
-	setPosition(posNumber);
     }
 
     /**
-     * init method must be called before this
+     * {@link #init()} method must be called before this
      * 
-     * @param pos
-     *            must be the recordset row number + 1
+     * @param newPosition zero-based index on recordset
      */
-    public void setPosition(long pos) {
-	if (!isValidPosition(pos)) {
-	    if (currentPosition == EMPTY_REGISTER) {
-		posTF.setText("");
-	    } else {
-		posTF.setText(String.valueOf(currentPosition + 1));
-	    }
+    public void setPosition(long newPosition) {
+	if(!isValidPosition(newPosition)) {
 	    return;
 	}
-	if (onlySelectedCB.isSelected()) {
-	    if (!isRecordSelected(pos)) {
-		posTF.setText(String.valueOf(currentPosition + 1));
-		return;
-	    }
-	}
-	showWarning();
 	try {
-	    currentPosition = pos - 1;
+	    if (newPosition >= recordset.getRowCount()) {
+		newPosition = recordset.getRowCount() - 1;
+	    } else if (newPosition < EMPTY_REGISTER) {
+		newPosition = 0;
+	    }
+	    currentPosition = newPosition;
+	    positionEventSource.fireEvent(new PositionEvent(this));
 	    refreshGUI();
-	} catch (Exception e1) {
-	    e1.printStackTrace();
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
 	}
     }
 
@@ -1055,8 +1028,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     }
 
     protected void copyPrevious() {
-	long current = currentPosition;
-	currentPosition = currentPosition - 1;
+	long current = getPosition();
+	//TODO: copy values without the trick of currentPosition
+	currentPosition = current - 1;
 	fillValues();
 	currentPosition = current;
 	setChangedValues(true);
@@ -1072,10 +1046,10 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		    JOptionPane.WARNING_MESSAGE);
 	    return false;
 	} else {
-	    // TODO Check this code
-	    long current = currentPosition;
+	    long current = getPosition();
 	    FBitSet selection = recordset.getSelection();
 	    long selectedRow = selection.nextSetBit(0);
+	    //TODO: copy values without the trick of currentPosition
 	    currentPosition = selectedRow;
 	    fillValues();
 	    currentPosition = current;
@@ -1105,13 +1079,12 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	if (e.getSource() == onlySelectedCB) {
 	    alwaysSelectCB.setSelected(false);
 	    if (onlySelectedCB.isSelected()) {
-		// areSelectedRows()
-		if (currentPosition != EMPTY_REGISTER) {
+		if (getPosition() != EMPTY_REGISTER) {
 		    viewOnlySelected();
 		}
 	    } else {
-		if (currentPosition == EMPTY_REGISTER) {
-		    currentPosition = 0;
+		if (getPosition() == EMPTY_REGISTER) {
+		    setPosition(0);
 		}
 	    }
 	    refreshGUI();
@@ -1187,7 +1160,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    boolean layerEditing = true;
 	    ReadableVectorial feats = layer.getSource();
 	    feats.start();
-	    if (currentPosition > EMPTY_REGISTER) {
+	    if (getPosition() > EMPTY_REGISTER) {
 		ToggleEditing te = new ToggleEditing();
 		if (!layer.isEditing()) {
 		    layerEditing = false;
@@ -1195,7 +1168,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		}
 		VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
 		VectorialEditableAdapter vea = vle.getVEA();
-		vea.removeRow((int) currentPosition, CADExtension.getCADTool()
+		vea.removeRow((int) getPosition(), CADExtension.getCADTool()
 			.getName(), EditionEvent.GRAPHIC);
 		layer.getSelectionSupport().removeSelectionListener(vle);
 		if (!layerEditing) {
@@ -1212,7 +1185,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     }
 
     private boolean isValidPosition(Long pos) {
-	if (pos == null || pos.longValue() == 0) {
+	if (pos == null) {
 	    return false;
 	}
 	if (onlySelectedCB.isSelected()) {
@@ -1232,7 +1205,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    return;
 	}
 
-	if (currentPosition == EMPTY_REGISTER && onlySelectedCB.isSelected()) {
+	if (getPosition() == EMPTY_REGISTER && onlySelectedCB.isSelected()) {
 	    firstSelected();
 	} else {
 	    if (onlySelectedCB.isSelected() && !isRecordSelected()) {
@@ -1283,6 +1256,14 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 
     public String getDataName() {
 	return this.dataName;
+    }
+
+    public void addPositionListener(PositionListener l) {
+	positionEventSource.addEventListener(l);
+    }
+
+    public void removePositionListener(PositionListener l) {
+	positionEventSource.removeEventListener(l);
     }
 
 }
