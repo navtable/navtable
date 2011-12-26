@@ -116,7 +116,7 @@ ActionListener, SelectionListener, IWindowListener {
     protected JPanel southPanel = null;
 
     protected WindowInfo viewInfo = null;
-    protected long currentPosition = 0;
+    private long currentPosition = 0;
 
     protected FLyrVect layer = null;
     protected SelectableDataSource recordset = null;
