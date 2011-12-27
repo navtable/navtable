@@ -5,20 +5,21 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
+import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
 
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
-public class StringFilterActionListener extends JPanel implements ActionListener, IWindow {
+public class StringFilterActionListener extends JPanel implements ActionListener, IWindow, IWindowListener {
 
 	NavTable navtable;
 	String st_expr;
@@ -29,6 +30,8 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 	JRadioButton rbEndsWith;
 	
 	WindowInfo windowInfo;
+	private JRootPane jRootPane;
+	private JButton okBtn;
 
 	public StringFilterActionListener(final NavTable navtable,
 			final String attrValue,
@@ -69,7 +72,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		add(rbEndsWith);	
 		
 		JPanel btnPanel = new JPanel();
-		JButton okBtn = new JButton(PluginServices.getText(this,"ok"));
+		okBtn = new JButton(PluginServices.getText(this,"ok"));
 		okBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String attr = tf.getText();
@@ -123,10 +126,22 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		return windowInfo;
 	}
 
-	@Override
+
 	public Object getWindowProfile() {
-		// TODO Auto-generated method stub
-		return null;
+		return WindowInfo.DIALOG_PROFILE;
 	}
+	
+	public void windowActivated() {
+            if (jRootPane == null) {
+			jRootPane = this.getRootPane();
+                    if (jRootPane != null) {
+                            jRootPane.setDefaultButton(okBtn);
+                    }
+            }
+	}
+
+	public void windowClosed() {
+	}
+
 
 }
