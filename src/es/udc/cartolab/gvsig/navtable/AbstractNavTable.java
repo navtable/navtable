@@ -575,7 +575,7 @@ ActionListener, SelectionListener, IWindowListener {
 		    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 		    null, // do not use a custom Icon
 		    options, // the titles of buttons
-		    options[1]); // default button title
+		    options[0]); // default button title
 	    if (response == JOptionPane.YES_OPTION) {
 		save = true;
 	    } else {
@@ -994,6 +994,7 @@ ActionListener, SelectionListener, IWindowListener {
 	    logger.error(e.getMessage(), e);
 	    posNumber = getPosition();
 	} finally {
+	    showWarning();
 	    //user will set a 1-based index to navigate through layer, 
 	    // so we need to adapt it to currentPosition (a zero-based index)
 	    setPosition(posNumber-1);
@@ -1078,6 +1079,7 @@ ActionListener, SelectionListener, IWindowListener {
 	}
 	if (e.getSource() == onlySelectedCB) {
 	    alwaysSelectCB.setSelected(false);
+	    showWarning();
 	    if (onlySelectedCB.isSelected()) {
 		if (getPosition() != EMPTY_REGISTER) {
 		    viewOnlySelected();
