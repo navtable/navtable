@@ -33,7 +33,6 @@ import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.Value;
-import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
 import com.iver.cit.gvsig.CADExtension;
@@ -80,7 +79,8 @@ import com.iver.cit.gvsig.project.documents.table.gui.Table;
 import com.iver.cit.gvsig.project.documents.view.IProjectView;
 import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
-import es.udc.cartolab.gvsig.navtable.utils.DateFormatter;
+import es.udc.cartolab.gvsig.navtable.format.DateFormatter;
+import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNavTable;
 
 /**
  * Class for start, stop or toggle the editing on a vector layer. Based on the
@@ -231,7 +231,7 @@ public class ToggleEditing {
 			    lyrEd);
 		} catch (ReadDriverException e) {
 		    NotificationManager
-			    .addError("Remove Selection Listener", e);
+		    .addError("Remove Selection Listener", e);
 		}
 
 		VectorialEditableAdapter vea = (VectorialEditableAdapter) ((FLyrVect) layer)
@@ -291,7 +291,7 @@ public class ToggleEditing {
 		NotificationManager.addError(
 			"No existe driver de escritura para la tabla"
 				+ source.getRecordset().getName(),
-			new EditionExceptionOld());
+				new EditionExceptionOld());
 	    } else {
 		ITableDefinition tableDef = source.getTableDefinition();
 		writer.initialize(tableDef);
@@ -349,7 +349,7 @@ public class ToggleEditing {
     }
 
     private void saveLayer(FLyrVect layer) throws DriverException,
-	    EditionExceptionOld {
+    EditionExceptionOld {
 	layer.setProperty("stoppingEditing", new Boolean(true));
 	VectorialEditableAdapter vea = (VectorialEditableAdapter) layer
 		.getSource();
@@ -430,9 +430,9 @@ public class ToggleEditing {
 	// FieldDescription.typeToString(type));
 	Value val;
 	if (newValue.length() == 0) {
-	    val = ValueFactory.createNullValue();
+	    val = ValueFactoryNavTable.createNullValue();
 	} else {
-	    val = ValueFactory.createValueByType(newValue, type);
+	    val = ValueFactoryNavTable.createValueByType(newValue, type);
 	}
 	modifyValue(layer, rowPos, colPos, val);
     }
@@ -458,7 +458,7 @@ public class ToggleEditing {
 	    Value newValue) throws Exception {
 
 	if (newValue == null) {
-	    newValue = ValueFactory.createNullValue();
+	    newValue = ValueFactoryNavTable.createNullValue();
 	}
 	VectorialEditableAdapter edAdapter = (VectorialEditableAdapter) layer
 		.getSource();
@@ -510,9 +510,9 @@ public class ToggleEditing {
 	// FieldDescription.typeToString(type));
 	Value val;
 	if (newValue.length() == 0) {
-	    val = ValueFactory.createNullValue();
+	    val = ValueFactoryNavTable.createNullValue();
 	} else {
-	    val = ValueFactory.createValueByType(newValue, type);
+	    val = ValueFactoryNavTable.createValueByType(newValue, type);
 	}
 	IRowEdited row = source.getRow(rowPos);
 	Value[] attributes = row.getAttributes();
@@ -572,12 +572,12 @@ public class ToggleEditing {
 	    }
 	    // modify the value that changed
 	    if (attStringValues[i] == null || attStringValues[i].length() == 0) {
-		attValues[attPos[i]] = ValueFactory.createNullValue();
+		attValues[attPos[i]] = ValueFactoryNavTable.createNullValue();
 	    } else if(type == Types.DATE){
 		attValues[attPos[i]] = DateFormatter.convertStringToValue(attStringValues[i]);
 	    } else {
 		try {
-		    attValues[attPos[i]] = ValueFactory.createValueByType(
+		    attValues[attPos[i]] = ValueFactoryNavTable.createValueByType(
 			    attStringValues[i], type);
 		    // System.out.println("El valor " + attStringValues[i] +
 		    // " es de tipo " + FieldDescription.typeToString(type));
@@ -615,13 +615,14 @@ public class ToggleEditing {
 	    FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
 	    for (int i = 0; i < attIndexes.length; i++) {
 		if (attValues[i].length() == 0 || attValues[i] == null) {
-		    val = ValueFactory.createNullValue();
+		    val = ValueFactoryNavTable.createNullValue();
 		} else {
 		    type = fieldDesc[attIndexes[i]].getFieldType();
 		    if (type == 16) {// in this case type is boolean
 			type = Types.BIT;
 		    }
-		    val = ValueFactory.createValueByType(attValues[i], type);
+		    val = ValueFactoryNavTable.createValueByType(
+			    attValues[i], type);
 		}
 		attributes[attIndexes[i]] = val;
 	    }

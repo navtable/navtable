@@ -1,4 +1,4 @@
-package es.udc.cartolab.gvsig.navtable.utils;
+package es.udc.cartolab.gvsig.navtable.format;
 
 import java.sql.Date;
 import java.text.DateFormat;
@@ -30,14 +30,14 @@ public class DateFormatter {
 
     public static Value convertStringToValue(String date) {
 	if(date == "") {
-	    return ValueFactory.createNullValue();
+	    return ValueFactoryNavTable.createNullValue();
 	} else {
 	    String[] vars = date.split("/");
 	    if (vars.length == 3) {
 		String gvsigDate = vars[0]+"-"+vars[1]+"-"+vars[2];
-		return ValueFactory.createValue(gvsigDate);
+		return ValueFactoryNavTable.createValue(gvsigDate);
 	    } else {
-		return ValueFactory.createNullValue();
+		return ValueFactoryNavTable.createNullValue();
 	    }
 	}
     }
