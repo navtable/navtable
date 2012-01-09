@@ -50,7 +50,7 @@ public class ValueFactoryNavTable extends ValueFactory {
 	case Types.NUMERIC:
 	case Types.FLOAT:
 	case Types.DOUBLE:
-	    DecimalFormat format = DoubleFormatter.getFormatForEditingInstance();
+	    DecimalFormat format = DoubleFormatter.getFormatForEditing();
 	    value = ValueFactory.createValue(format.parse(text).doubleValue());
 	    break;
 
