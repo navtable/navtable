@@ -2,14 +2,14 @@ package es.udc.cartolab.gvsig.navtable.format;
 
 import java.text.DecimalFormat;
 
-public class NavTableFormats {
+public class DoubleFormatter {
 
-    private DecimalFormat doubleFormatOnDisplay;
-    private DecimalFormat doubleFormatOnEdit;
+    private static DecimalFormat doubleFormatOnDisplay;
+    private static DecimalFormat doubleFormatOnEdit;
     private static final String FORMAT_DOUBLE_ON_DISPLAY = "###,###,###,###,###,##0.00";
     private static final String FORMAT_DOUBLE_ON_EDIT = "##################.##";
 
-    public DecimalFormat getDoubleFormatForDisplayingInstance() {
+    public static DecimalFormat getFormatForDisplayingInstance() {
 	if(doubleFormatOnDisplay != null) {
 	    return doubleFormatOnDisplay;
 	}
@@ -17,12 +17,12 @@ public class NavTableFormats {
 	return doubleFormatOnDisplay;
     }
 
-    public DecimalFormat getDoubleFormatForEditingInstance() {
+    public static DecimalFormat getFormatForEditingInstance() {
 	if(doubleFormatOnEdit != null) {
 	    return doubleFormatOnEdit;
 	}
 	doubleFormatOnEdit = new DecimalFormat(FORMAT_DOUBLE_ON_EDIT);
 	return doubleFormatOnEdit;	
     }
-
+    
 }

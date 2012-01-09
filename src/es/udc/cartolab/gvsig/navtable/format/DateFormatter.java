@@ -1,20 +1,17 @@
 package es.udc.cartolab.gvsig.navtable.format;
 
 import java.sql.Date;
-import java.text.DateFormat;
-import java.text.Format;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import com.hardcode.gdbms.engine.values.DateValue;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
-import com.hardcode.gdbms.engine.values.ValueFactory;
 
 public class DateFormatter {
 
     //see java Date API
-    public static final String DATE_PATTERN = "dd/MM/yyyy";
+    private static final String DATE_PATTERN = "dd/MM/yyyy";
+    private static SimpleDateFormat dateFormat;
 
     public static String convertDateValueToString(Value date) {
 	String dateString;
@@ -42,4 +39,11 @@ public class DateFormatter {
 	}
     }
 
+    public static SimpleDateFormat getDateFormatter() {
+	if(dateFormat != null) {
+	    return dateFormat;
+	}
+	dateFormat = new SimpleDateFormat(DATE_PATTERN);
+	return dateFormat;
+    }
 }

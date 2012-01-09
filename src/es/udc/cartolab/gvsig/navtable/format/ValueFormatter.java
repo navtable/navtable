@@ -8,16 +8,17 @@ import java.text.SimpleDateFormat;
 
 import com.hardcode.gdbms.engine.values.ValueWriter;
 
-
+/**
+ * Class to manage how the strings are formatted to display them, 
+ * taking into account the formats declared in NavTableFormats.
+ */
 public class ValueFormatter implements ValueWriter {
 
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-    private NavTableFormats formats;
     private DecimalFormat doubleFormat;
 
     public ValueFormatter() {
-	formats = new NavTableFormats();
-	doubleFormat = formats.getDoubleFormatForDisplayingInstance();
+	doubleFormat = DoubleFormatter.getFormatForDisplayingInstance();
     }
 
     /**

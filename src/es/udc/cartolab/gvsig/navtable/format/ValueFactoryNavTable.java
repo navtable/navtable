@@ -10,6 +10,10 @@ import java.text.ParseException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 
+/**
+ * ValueFactory to create values from its type, 
+ * taking into account the format of the value as stated in NavTableFormats.
+ */
 public class ValueFactoryNavTable extends ValueFactory {
 
     public static Value createValueByType(String text, int type)
@@ -46,8 +50,7 @@ public class ValueFactoryNavTable extends ValueFactory {
 	case Types.NUMERIC:
 	case Types.FLOAT:
 	case Types.DOUBLE:
-	    NavTableFormats formats = new NavTableFormats();
-	    DecimalFormat format = formats.getDoubleFormatForEditingInstance();
+	    DecimalFormat format = DoubleFormatter.getFormatForEditingInstance();
 	    value = ValueFactory.createValue(format.parse(text).doubleValue());
 	    break;
 
