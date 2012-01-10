@@ -562,25 +562,17 @@ public class ToggleEditing {
 	    logger.error(e.getMessage(), e);
 	    return;
 	}
-	// iterate throw the values that changed creating an array with all the
-	// new values of the row
+	// iterate throw the values that changed,
+	//   creating an array with all the new values of the row (attValues)
 	for (int i = 0; i < attPos.length; i++) {
-	    // get the type of the layer's field
 	    type = fieldDesc[attPos[i]].getFieldType();
-	    if (type == 16) { // in this case type is boolean
-		type = Types.BIT;
-	    }
 	    // modify the value that changed
 	    if (attStringValues[i] == null || attStringValues[i].length() == 0) {
 		attValues[attPos[i]] = ValueFactoryNavTable.createNullValue();
-	    } else if(type == Types.DATE){
-		attValues[attPos[i]] = DateFormatter.convertStringToValue(attStringValues[i]);
 	    } else {
 		try {
 		    attValues[attPos[i]] = ValueFactoryNavTable.createValueByType(
 			    attStringValues[i], type);
-		    // System.out.println("El valor " + attStringValues[i] +
-		    // " es de tipo " + FieldDescription.typeToString(type));
 		} catch (NumberFormatException e) {
 		    logger.error("Tipo incorrecto: El valor del campo "
 			    + fieldDesc[attPos[i]].getFieldName() + " es \""

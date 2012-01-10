@@ -18,7 +18,7 @@ public class ValueFormatter implements ValueWriter {
     private DecimalFormat doubleFormat;
 
     public ValueFormatter() {
-	doubleFormat = DoubleFormatter.getFormatForDisplaying();
+	doubleFormat = DoubleFormatter.getDisplayingFormat();
     }
 
     /**

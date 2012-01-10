@@ -9,7 +9,7 @@ public class DoubleFormatter {
     private static final String FORMAT_DOUBLE_ON_DISPLAY = "###,###,###,###,###,##0.00";
     private static final String FORMAT_DOUBLE_ON_EDIT = "##################.##";
 
-    public static DecimalFormat getFormatForDisplaying() {
+    public static DecimalFormat getDisplayingFormat() {
 	if(doubleFormatOnDisplay != null) {
 	    return doubleFormatOnDisplay;
 	}
@@ -17,7 +17,7 @@ public class DoubleFormatter {
 	return doubleFormatOnDisplay;
     }
 
-    public static DecimalFormat getFormatForEditing() {
+    public static DecimalFormat getEditingFormat() {
 	if(doubleFormatOnEdit != null) {
 	    return doubleFormatOnEdit;
 	}
