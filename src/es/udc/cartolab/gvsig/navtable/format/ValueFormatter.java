@@ -14,11 +14,14 @@ import com.hardcode.gdbms.engine.values.ValueWriter;
  */
 public class ValueFormatter implements ValueWriter {
 
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private DecimalFormat doubleFormat;
+    private SimpleDateFormat dateFormat;
+    private SimpleDateFormat timeFormat;
 
     public ValueFormatter() {
 	doubleFormat = DoubleFormatter.getDisplayingFormat();
+	dateFormat = DateFormatter.getDateFormat();
+	timeFormat = new SimpleDateFormat("HH:mm:ss");
     }
 
     /**
@@ -53,7 +56,7 @@ public class ValueFormatter implements ValueWriter {
      * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(java.sql.Date)
      */
     public String getStatementString(Date d) {
-	return d.toString();
+	return dateFormat.format(d); 
     }
 
     /**

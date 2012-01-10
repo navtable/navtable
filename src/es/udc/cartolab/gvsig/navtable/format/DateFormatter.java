@@ -39,7 +39,7 @@ public class DateFormatter {
 	}
     }
 
-    public static SimpleDateFormat getDateFormatter() {
+    public static SimpleDateFormat getDateFormat() {
 	if(dateFormat != null) {
 	    return dateFormat;
 	}
