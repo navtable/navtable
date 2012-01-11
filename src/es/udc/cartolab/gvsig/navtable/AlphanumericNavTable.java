@@ -46,7 +46,7 @@ import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
 
-import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNavTable;
+import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 
 /**
@@ -162,14 +162,14 @@ public class AlphanumericNavTable extends NavTable {
 		Value[] values = new Value[numAttr];
 		if (defaultValues == null)
 		    for (int i = 0; i < numAttr; i++) {
-			values[i] = ValueFactoryNavTable.createNullValue();
+			values[i] = ValueFactoryNT.createNullValue();
 		    }
 		else
 		    for (int i = 0; i < numAttr; i++) {
 			if (defaultValues.get(recordset.getFieldAlias(i)) == null)
-			    values[i] = ValueFactoryNavTable.createNullValue();
+			    values[i] = ValueFactoryNT.createNullValue();
 			else
-			    values[i] = ValueFactoryNavTable.createValue(
+			    values[i] = ValueFactoryNT.createValue(
 				    defaultValues.get(recordset.getFieldAlias(i)));
 		    }
 		row = new DefaultRow(values);

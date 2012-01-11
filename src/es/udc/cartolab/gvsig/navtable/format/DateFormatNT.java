@@ -7,7 +7,7 @@ import com.hardcode.gdbms.engine.values.DateValue;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 
-public class DateFormatter {
+public class DateFormatNT {
 
     //see java Date API
     private static final String DATE_PATTERN = "dd/MM/yyyy";
@@ -27,14 +27,14 @@ public class DateFormatter {
 
     public static Value convertStringToValue(String date) {
 	if(date == "") {
-	    return ValueFactoryNavTable.createNullValue();
+	    return ValueFactoryNT.createNullValue();
 	} else {
 	    String[] vars = date.split("/");
 	    if (vars.length == 3) {
 		String gvsigDate = vars[0]+"-"+vars[1]+"-"+vars[2];
-		return ValueFactoryNavTable.createValue(gvsigDate);
+		return ValueFactoryNT.createValue(gvsigDate);
 	    } else {
-		return ValueFactoryNavTable.createNullValue();
+		return ValueFactoryNT.createNullValue();
 	    }
 	}
     }

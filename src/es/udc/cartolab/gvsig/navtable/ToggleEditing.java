@@ -79,8 +79,8 @@ import com.iver.cit.gvsig.project.documents.table.gui.Table;
 import com.iver.cit.gvsig.project.documents.view.IProjectView;
 import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
-import es.udc.cartolab.gvsig.navtable.format.DateFormatter;
-import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNavTable;
+import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
+import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 /**
  * Class for start, stop or toggle the editing on a vector layer. Based on the
@@ -430,9 +430,9 @@ public class ToggleEditing {
 	// FieldDescription.typeToString(type));
 	Value val;
 	if (newValue.length() == 0) {
-	    val = ValueFactoryNavTable.createNullValue();
+	    val = ValueFactoryNT.createNullValue();
 	} else {
-	    val = ValueFactoryNavTable.createValueByType(newValue, type);
+	    val = ValueFactoryNT.createValueByType(newValue, type);
 	}
 	modifyValue(layer, rowPos, colPos, val);
     }
@@ -458,7 +458,7 @@ public class ToggleEditing {
 	    Value newValue) throws Exception {
 
 	if (newValue == null) {
-	    newValue = ValueFactoryNavTable.createNullValue();
+	    newValue = ValueFactoryNT.createNullValue();
 	}
 	VectorialEditableAdapter edAdapter = (VectorialEditableAdapter) layer
 		.getSource();
@@ -510,9 +510,9 @@ public class ToggleEditing {
 	// FieldDescription.typeToString(type));
 	Value val;
 	if (newValue.length() == 0) {
-	    val = ValueFactoryNavTable.createNullValue();
+	    val = ValueFactoryNT.createNullValue();
 	} else {
-	    val = ValueFactoryNavTable.createValueByType(newValue, type);
+	    val = ValueFactoryNT.createValueByType(newValue, type);
 	}
 	IRowEdited row = source.getRow(rowPos);
 	Value[] attributes = row.getAttributes();
@@ -568,10 +568,10 @@ public class ToggleEditing {
 	    type = fieldDesc[attPos[i]].getFieldType();
 	    // modify the value that changed
 	    if (attStringValues[i] == null || attStringValues[i].length() == 0) {
-		attValues[attPos[i]] = ValueFactoryNavTable.createNullValue();
+		attValues[attPos[i]] = ValueFactoryNT.createNullValue();
 	    } else {
 		try {
-		    attValues[attPos[i]] = ValueFactoryNavTable.createValueByType(
+		    attValues[attPos[i]] = ValueFactoryNT.createValueByType(
 			    attStringValues[i], type);
 		} catch (NumberFormatException e) {
 		    logger.error("Tipo incorrecto: El valor del campo "
@@ -607,13 +607,13 @@ public class ToggleEditing {
 	    FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
 	    for (int i = 0; i < attIndexes.length; i++) {
 		if (attValues[i].length() == 0 || attValues[i] == null) {
-		    val = ValueFactoryNavTable.createNullValue();
+		    val = ValueFactoryNT.createNullValue();
 		} else {
 		    type = fieldDesc[attIndexes[i]].getFieldType();
 		    if (type == 16) {// in this case type is boolean
 			type = Types.BIT;
 		    }
-		    val = ValueFactoryNavTable.createValueByType(
+		    val = ValueFactoryNT.createValueByType(
 			    attValues[i], type);
 		}
 		attributes[attIndexes[i]] = val;

@@ -14,7 +14,7 @@ import com.hardcode.gdbms.engine.values.ValueFactory;
  * ValueFactory to create values from its type, 
  * taking into account the format of the value as stated in NavTableFormats.
  */
-public class ValueFactoryNavTable extends ValueFactory {
+public class ValueFactoryNT extends ValueFactory {
 
     public static Value createValueByType(String text, int type)
 	    throws ParseException {
@@ -40,7 +40,7 @@ public class ValueFactoryNavTable extends ValueFactory {
 
 	case Types.DATE:
 	    try {
-		value = DateFormatter.convertStringToValue(text);
+		value = DateFormatNT.convertStringToValue(text);
 	    }catch (IllegalArgumentException e) {
 		throw new ParseException(e.getMessage(),0);
 	    }
@@ -50,12 +50,13 @@ public class ValueFactoryNavTable extends ValueFactory {
 	case Types.NUMERIC:
 	case Types.FLOAT:
 	case Types.DOUBLE:
-	    DecimalFormat format = DoubleFormatter.getDisplayingFormat();
-	    value = ValueFactory.createValue(format.parse(text).doubleValue());
+	    DecimalFormat doubleFormat = DoubleFormatNT.getDisplayingFormat();
+	    value = ValueFactory.createValue(doubleFormat.parse(text).doubleValue());
 	    break;
 
 	case Types.INTEGER:
-	    value = ValueFactory.createValue(Integer.parseInt(text));
+	    DecimalFormat integerFormat = IntegerFormatNT.getDisplayingFormat();
+	    value = ValueFactory.createValue(integerFormat.parse(text).intValue());
 	    break;
 
 	case Types.REAL:

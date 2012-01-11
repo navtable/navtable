@@ -12,15 +12,17 @@ import com.hardcode.gdbms.engine.values.ValueWriter;
  * Class to manage how the strings are formatted to display them, 
  * taking into account the formats declared in NavTableFormats.
  */
-public class ValueFormatter implements ValueWriter {
+public class ValueFormatNT implements ValueWriter {
 
     private DecimalFormat doubleFormat;
+    private DecimalFormat integerFormat;
     private SimpleDateFormat dateFormat;
     private SimpleDateFormat timeFormat;
 
-    public ValueFormatter() {
-	doubleFormat = DoubleFormatter.getDisplayingFormat();
-	dateFormat = DateFormatter.getDateFormat();
+    public ValueFormatNT() {
+	doubleFormat = DoubleFormatNT.getDisplayingFormat();
+	integerFormat = IntegerFormatNT.getDisplayingFormat();
+	dateFormat = DateFormatNT.getDateFormat();
 	timeFormat = new SimpleDateFormat("HH:mm:ss");
     }
 
@@ -35,7 +37,7 @@ public class ValueFormatter implements ValueWriter {
      * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(int, int)
      */
     public String getStatementString(int i, int sqlType) {
-	return Integer.toString(i);
+	return integerFormat.format(i);
     }
 
     /**
