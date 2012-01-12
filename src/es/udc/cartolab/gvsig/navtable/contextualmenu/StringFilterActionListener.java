@@ -1,5 +1,6 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -25,6 +26,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 	String attrValue;
 	FiltroExtension filterExt;
 
+	JRadioButton rbContainsWith;
 	JRadioButton rbStartsWith;
 	JRadioButton rbEndsWith;
 	
@@ -56,17 +58,25 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		tf.setSelectionStart(0);
 		tf.setSelectionEnd(attrValue.length());
 		add(tf);
+		
+		JPanel rbPanel = new JPanel(new GridLayout(3, 1));
 				
+		rbContainsWith = new JRadioButton(PluginServices.getText(this,
+		"filter_contains"));
+		rbContainsWith.setSelected(true);
 		rbStartsWith = new JRadioButton(PluginServices.getText(this,
 		"filter_startswith"));
 		rbEndsWith = new JRadioButton(PluginServices.getText(this,
 		"filter_endswith"));
 
 		ButtonGroup bg = new ButtonGroup();
+		bg.add(rbContainsWith);
 		bg.add(rbStartsWith);
 		bg.add(rbEndsWith);
-		add(rbStartsWith);
-		add(rbEndsWith);	
+		rbPanel.add(rbContainsWith);
+		rbPanel.add(rbStartsWith);
+		rbPanel.add(rbEndsWith);
+		add(rbPanel);
 		
 		JPanel btnPanel = new JPanel();
 		JButton okBtn = new JButton(PluginServices.getText(this,"ok"));
