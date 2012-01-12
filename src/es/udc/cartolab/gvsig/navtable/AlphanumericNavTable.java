@@ -35,7 +35,6 @@ import javax.swing.JOptionPane;
 import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.values.Value;
-import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
 import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
@@ -46,6 +45,8 @@ import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
+
+import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 
 /**
@@ -161,15 +162,15 @@ public class AlphanumericNavTable extends NavTable {
 		Value[] values = new Value[numAttr];
 		if (defaultValues == null)
 		    for (int i = 0; i < numAttr; i++) {
-			values[i] = ValueFactory.createNullValue();
+			values[i] = ValueFactoryNT.createNullValue();
 		    }
 		else
 		    for (int i = 0; i < numAttr; i++) {
 			if (defaultValues.get(recordset.getFieldAlias(i)) == null)
-			    values[i] = ValueFactory.createNullValue();
+			    values[i] = ValueFactoryNT.createNullValue();
 			else
-			    values[i] = ValueFactory.createValue(defaultValues
-				    .get(recordset.getFieldAlias(i)));
+			    values[i] = ValueFactoryNT.createValue(
+				    defaultValues.get(recordset.getFieldAlias(i)));
 		    }
 		row = new DefaultRow(values);
 		model.doAddRow(row, EditionEvent.ALPHANUMERIC);

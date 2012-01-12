@@ -1,20 +1,17 @@
-package es.udc.cartolab.gvsig.navtable.utils;
+package es.udc.cartolab.gvsig.navtable.format;
 
 import java.sql.Date;
-import java.text.DateFormat;
-import java.text.Format;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import com.hardcode.gdbms.engine.values.DateValue;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
-import com.hardcode.gdbms.engine.values.ValueFactory;
 
-public class DateFormatter {
+public class DateFormatNT {
 
     //see java Date API
-    public static final String DATE_PATTERN = "dd/MM/yyyy";
+    private static final String DATE_PATTERN = "dd/MM/yyyy";
+    private static SimpleDateFormat dateFormat;
 
     public static String convertDateValueToString(Value date) {
 	String dateString;
@@ -30,16 +27,23 @@ public class DateFormatter {
 
     public static Value convertStringToValue(String date) {
 	if(date == "") {
-	    return ValueFactory.createNullValue();
+	    return ValueFactoryNT.createNullValue();
 	} else {
 	    String[] vars = date.split("/");
 	    if (vars.length == 3) {
 		String gvsigDate = vars[0]+"-"+vars[1]+"-"+vars[2];
-		return ValueFactory.createValue(gvsigDate);
+		return ValueFactoryNT.createValue(gvsigDate);
 	    } else {
-		return ValueFactory.createNullValue();
+		return ValueFactoryNT.createNullValue();
 	    }
 	}
     }
 
+    public static SimpleDateFormat getDateFormat() {
+	if(dateFormat != null) {
+	    return dateFormat;
+	}
+	dateFormat = new SimpleDateFormat(DATE_PATTERN);
+	return dateFormat;
+    }
 }

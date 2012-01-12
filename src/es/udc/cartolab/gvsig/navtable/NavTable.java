@@ -73,10 +73,10 @@ import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 import com.vividsolutions.jts.geom.Geometry;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
+import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
-import es.udc.cartolab.gvsig.navtable.utils.DateFormatter;
 
 /**
  * <p>
@@ -503,7 +503,7 @@ public class NavTable extends AbstractNavTable {
 		if (value instanceof NullValue) {
 		    textoValue = "";
 		} else if (value instanceof DateValue) {
-		    textoValue = DateFormatter.convertDateValueToString(value);
+		    textoValue = DateFormatNT.convertDateValueToString(value);
 		} else {
 		    textoValue = value
 			    .getStringValue(ValueWriter.internalValueWriter);
