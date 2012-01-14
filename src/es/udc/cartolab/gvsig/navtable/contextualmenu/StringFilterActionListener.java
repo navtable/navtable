@@ -61,6 +61,13 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		tf.setText(attrValue);
 		tf.setSelectionStart(0);
 		tf.setSelectionEnd(attrValue.length());
+		tf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String attr = tf.getText();
+				executeFilter(attr);
+				PluginServices.getMDIManager().closeWindow(StringFilterActionListener.this);
+			}
+		});
 		add(tf);
 		
 		JPanel rbPanel = new JPanel(new GridLayout(3, 1));
