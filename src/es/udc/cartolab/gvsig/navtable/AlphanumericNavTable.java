@@ -75,6 +75,7 @@ public class AlphanumericNavTable extends NavTable {
 	this.isAlphanumericNT = true;
 	this.model = model;
 	this.defaultValues = defaultValues;
+	this.model.addEditionListener(listener);
     }
 
     @Override
