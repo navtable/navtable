@@ -57,7 +57,7 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
  */
 public class AlphanumericNavTable extends NavTable {
 
-    JButton newB = null;
+    private JButton newB = null;
     protected IEditableSource model;
     protected HashMap<String, String> defaultValues = null;
 
