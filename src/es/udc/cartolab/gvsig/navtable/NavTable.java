@@ -656,7 +656,7 @@ public class NavTable extends AbstractNavTable {
     }
 
     @Override
-    protected boolean saveRecord() {
+    public boolean saveRecord() {
 	if (isSaveable()) {
 	    int[] attIndexes = getIndexes();
 	    String[] attValues = getValues();

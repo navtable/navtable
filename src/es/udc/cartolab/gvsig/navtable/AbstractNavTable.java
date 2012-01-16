@@ -313,7 +313,7 @@ ActionListener, SelectionListener, IWindowListener {
      * Saves the changes of the current data row.
      * 
      */
-    protected abstract boolean saveRecord();
+    public abstract boolean saveRecord();
 
     /**
      * 
@@ -691,7 +691,7 @@ ActionListener, SelectionListener, IWindowListener {
      * Goes to the previous selected row of the data.
      * 
      */
-    protected void beforeSelected() {
+    private void beforeSelected() {
 	FBitSet bitset = recordset.getSelection();
 	int currentPos = Long.valueOf(getPosition()).intValue() - 1;
 	int pos = currentPos;
@@ -708,7 +708,7 @@ ActionListener, SelectionListener, IWindowListener {
      * area.
      * 
      */
-    private void zoom() {
+    public void zoom() {
 	Rectangle2D rectangle = null;
 	int pos = Long.valueOf(getPosition()).intValue();
 	if (layer instanceof AlphanumericData) {
@@ -763,7 +763,7 @@ ActionListener, SelectionListener, IWindowListener {
 	layer.getMapContext().setScaleView(scale);
     }
 
-    private void selectCurrentFeature() {
+    public void selectCurrentFeature() {
 	FBitSet bitset = null;
 	int pos = Long.valueOf(getPosition()).intValue();
 	bitset = recordset.getSelection();
@@ -1028,7 +1028,7 @@ ActionListener, SelectionListener, IWindowListener {
 	return currentPosition;
     }
 
-    protected void copyPrevious() {
+    public void copyPrevious() {
 	long current = getPosition();
 	//TODO: copy values without the trick of currentPosition
 	currentPosition = current - 1;
@@ -1038,7 +1038,7 @@ ActionListener, SelectionListener, IWindowListener {
 	enableSaveButton(true);
     }
 
-    protected boolean copySelected() {
+    public boolean copySelected() {
 	if (getNumberOfRowsSelected() != 1) {
 	    // show error
 	    JOptionPane.showMessageDialog(null,
@@ -1157,7 +1157,7 @@ ActionListener, SelectionListener, IWindowListener {
 	deleteRecord();
     }
 
-    protected void deleteRecord() {
+    public void deleteRecord() {
 	try {
 	    boolean layerEditing = true;
 	    ReadableVectorial feats = layer.getSource();

@@ -120,7 +120,7 @@ public class AlphanumericNavTable extends NavTable {
     }
 
     @Override
-    protected boolean saveRecord() {
+    public boolean saveRecord() {
 	if (isSaveable()) {
 	    int[] attIndexes = getIndexes();
 	    String[] attValues = getValues();
@@ -149,7 +149,7 @@ public class AlphanumericNavTable extends NavTable {
 	addRecord();
     }
 
-    private void addRecord() {
+    public void addRecord() {
 	// Create a new empty record
 	// showWarning();
 	if (onlySelectedCB.isSelected()) {
@@ -231,7 +231,7 @@ public class AlphanumericNavTable extends NavTable {
     }
 
     @Override
-    protected void deleteRecord() {
+    public void deleteRecord() {
 	try {
 	    model.startEdition(EditionEvent.ALPHANUMERIC);
 
