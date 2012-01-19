@@ -6,7 +6,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
@@ -123,7 +122,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = boolean('true');";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -133,7 +132,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = boolean('false');";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -148,7 +147,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = " + attrValue + ";";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -158,7 +157,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " != " + attrValue + ";";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -170,7 +169,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		// TODO: Still not working. Remove option with
 		// numbers. Open a dialog to type the '%...%'?
 		String expr = st_expr + " < " + attrValue + ";";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -182,7 +181,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		// TODO: Still not working. Remove option with
 		// numbers. Open a dialog to type the '%...%'?
 		String expr = st_expr + " > " + attrValue + ";";
-		filterExt.newSet(expr);
+		executeFilter(filterExt,expr);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -197,7 +196,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String exp = st_expr + " = '" + attrValue + "';";
-		filterExt.newSet(exp);
+		executeFilter(filterExt, exp);
 	    }
 	});
 	menus.add(tmpMenuItem);
@@ -207,29 +206,17 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String exp = st_expr + " != '" + attrValue + "';";
-		filterExt.newSet(exp);
+		executeFilter(filterExt, exp);
 	    }
 	});
 	menus.add(tmpMenuItem);
 
 	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
 		"filter_contains"));
-	tmpMenuItem.addActionListener(new ActionListener() {
-	    public void actionPerformed(ActionEvent evt) {
-		String attr = (String) JOptionPane.showInputDialog(navtable,
-			PluginServices.getText(this, "filter_write_string"),
-			PluginServices.getText(this,
-				"filter_contains_window_title"),
-			JOptionPane.PLAIN_MESSAGE);
-
-		if (attr != null) {
-		    // TODO: We need to escape special characters
-		    // like '%', "'", ...
-		    String expr = st_expr + " like '%" + attr + "%';";
-		    filterExt.newSet(expr);
-		}
-	    }
-	});
+	tmpMenuItem.addActionListener(new StringFilterActionListener(navtable,
+			attrValue,
+			st_expr, 
+			filterExt));
 	menus.add(tmpMenuItem);
     }
 
@@ -275,4 +262,9 @@ public class FiltersAddon implements INavTableContextMenu {
 	return true;
     }
 
+    public void executeFilter(final FiltroExtension filterExt,
+    		final String st_expr){
+    	filterExt.newSet(st_expr);
+    	navtable.setOnlySelected(true);
+    } 
 }
