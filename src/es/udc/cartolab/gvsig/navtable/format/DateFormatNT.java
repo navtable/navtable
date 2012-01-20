@@ -1,6 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.format;
 
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import com.hardcode.gdbms.engine.values.DateValue;
@@ -29,11 +30,11 @@ public class DateFormatNT {
 	if(date == "") {
 	    return ValueFactoryNT.createNullValue();
 	} else {
-	    String[] vars = date.split("/");
-	    if (vars.length == 3) {
-		String gvsigDate = vars[0]+"-"+vars[1]+"-"+vars[2];
-		return ValueFactoryNT.createValue(gvsigDate);
-	    } else {
+	    SimpleDateFormat formatter = new SimpleDateFormat(DATE_PATTERN);
+	    try {
+		return ValueFactoryNT.createValue(formatter.parse(date));
+	    } catch (ParseException e) {
+		e.printStackTrace();
 		return ValueFactoryNT.createNullValue();
 	    }
 	}
