@@ -158,22 +158,9 @@ public class AlphanumericNavTable extends NavTable {
 	try {
 	    model.startEdition(EditionEvent.ALPHANUMERIC);
 	    if (model instanceof IWriteable) {
-		IRow row;
 		int numAttr = recordset.getFieldCount();
-		Value[] values = new Value[numAttr];
-		if (defaultValues == null)
-		    for (int i = 0; i < numAttr; i++) {
-			values[i] = ValueFactoryNT.createNullValue();
-		    }
-		else
-		    for (int i = 0; i < numAttr; i++) {
-			if (defaultValues.get(recordset.getFieldAlias(i)) == null)
-			    values[i] = ValueFactoryNT.createNullValue();
-			else
-			    values[i] = ValueFactoryNT.createValue(
-				    defaultValues.get(recordset.getFieldAlias(i)));
-		    }
-		row = new DefaultRow(values);
+		Value[] values = createDefaultValues(numAttr);
+		IRow row = new DefaultRow(values);
 		model.doAddRow(row, EditionEvent.ALPHANUMERIC);
 
 		IWriteable w = (IWriteable) model;
@@ -196,6 +183,24 @@ public class AlphanumericNavTable extends NavTable {
 	} catch (StopWriterVisitorException e) {
 	    logger.error(e.getMessage(), e);
 	}
+    }
+
+    private Value[] createDefaultValues(int numAttr) {
+	Value[] values = new Value[numAttr];
+	if (defaultValues == null)
+	    for (int i = 0; i < numAttr; i++) {
+		values[i] = ValueFactoryNT.createNullValue();
+	    }
+	else {	    
+	    for (int i = 0; i < numAttr; i++) {
+		if (defaultValues.get(recordset.getFieldAlias(i)) == null)
+		    values[i] = ValueFactoryNT.createNullValue();
+		else
+		    values[i] = ValueFactoryNT.createValue(
+			    defaultValues.get(recordset.getFieldAlias(i)));
+	    }
+	}
+	return values;
     }
 
     /**
