@@ -119,7 +119,6 @@ ActionListener, SelectionListener, IWindowListener {
     private long currentPosition = 0;
 
     protected FLyrVect layer = null;
-    protected SelectableDataSource recordset = null;
     protected String dataName = "";
 
     protected boolean changedValues = false;
@@ -175,12 +174,6 @@ ActionListener, SelectionListener, IWindowListener {
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
 	window.setTitle(title + ": " + dataName);
-	try {
-	    this.recordset = layer.getRecordset();
-	    this.recordset.addSelectionListener(this);
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	}
     }
 
     // TODO [nachouve] Check this method because
@@ -209,9 +202,6 @@ ActionListener, SelectionListener, IWindowListener {
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
 	window.setTitle(title + "*: " + dataName);
-
-	this.recordset = recordset;
-	this.recordset.addSelectionListener(this);
     }
 
     protected JButton getButton(int buttonName) {
@@ -338,35 +328,35 @@ ActionListener, SelectionListener, IWindowListener {
     public void selectFeature(long feature) {
 	FBitSet bitset = null;
 	int pos = Long.valueOf(feature).intValue();
-	bitset = recordset.getSelection();
+	bitset = getRecordset().getSelection();
 	if (!bitset.get(pos)) {
 	    bitset.set(pos);
 	}
-	recordset.setSelection(bitset);
+	getRecordset().setSelection(bitset);
     }
 
     public void unselectFeature(long feature) {
 	FBitSet bitset = null;
 	int pos = Long.valueOf(feature).intValue();
-	bitset = recordset.getSelection();
+	bitset = getRecordset().getSelection();
 	if (bitset.get(pos)) {
 	    bitset.clear(pos);
 	    if (onlySelectedCB.isSelected()) {
 		lastSelected();
 	    }
 	}
-	recordset.setSelection(bitset);
+	getRecordset().setSelection(bitset);
     }
 
     public boolean isFeatureSelected(long feature) {
 	FBitSet bitset = null;
 	int pos = Long.valueOf(feature).intValue();
-	bitset = recordset.getSelection();
+	bitset = getRecordset().getSelection();
 	return bitset.get(pos);
     }
 
     public void clearSelectedFeatures() {
-	recordset.clearSelection();
+	getRecordset().clearSelection();
     }
 
     protected void initNorthPanelButtons() {
@@ -597,7 +587,7 @@ ActionListener, SelectionListener, IWindowListener {
 	    if (onlySelectedCB.isSelected()) {
 		nextSelected();
 	    } else {
-		if (getPosition() < recordset.getRowCount()) {
+		if (getPosition() < getRecordset().getRowCount()) {
 		    setPosition(getPosition() + 1);
 		}
 	    }
@@ -610,7 +600,7 @@ ActionListener, SelectionListener, IWindowListener {
      * Goes to the next selected row of the data.
      */
     protected void nextSelected() {
-	FBitSet bitset = recordset.getSelection();
+	FBitSet bitset = getRecordset().getSelection();
 	int currentPos = Long.valueOf(getPosition()).intValue();
 	int pos = bitset.nextSetBit(currentPos + 1);
 	if (pos != EMPTY_REGISTER) {
@@ -628,7 +618,7 @@ ActionListener, SelectionListener, IWindowListener {
 	    if (onlySelectedCB.isSelected()) {
 		lastSelected();
 	    } else {
-		setPosition(recordset.getRowCount() - 1);
+		setPosition(getRecordset().getRowCount() - 1);
 	    }
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
@@ -640,7 +630,7 @@ ActionListener, SelectionListener, IWindowListener {
      * 
      */
     private void lastSelected() {
-	FBitSet bitset = recordset.getSelection();
+	FBitSet bitset = getRecordset().getSelection();
 	int pos = bitset.length();
 	if (pos != 0) {
 	    setPosition(pos - 1);
@@ -665,7 +655,7 @@ ActionListener, SelectionListener, IWindowListener {
      * 
      */
     private void firstSelected() {
-	FBitSet bitset = recordset.getSelection();
+	FBitSet bitset = getRecordset().getSelection();
 	int pos = bitset.nextSetBit(0);
 	if (pos != EMPTY_REGISTER) {
 	    setPosition(pos);
@@ -692,7 +682,7 @@ ActionListener, SelectionListener, IWindowListener {
      * 
      */
     private void beforeSelected() {
-	FBitSet bitset = recordset.getSelection();
+	FBitSet bitset = getRecordset().getSelection();
 	int currentPos = Long.valueOf(getPosition()).intValue() - 1;
 	int pos = currentPos;
 	for (; pos >= 0 && !bitset.get(pos); pos--) {
@@ -766,7 +756,7 @@ ActionListener, SelectionListener, IWindowListener {
     public void selectCurrentFeature() {
 	FBitSet bitset = null;
 	int pos = Long.valueOf(getPosition()).intValue();
-	bitset = recordset.getSelection();
+	bitset = getRecordset().getSelection();
 	if (!bitset.get(pos)) {
 	    bitset.set(pos);
 	} else {
@@ -775,7 +765,7 @@ ActionListener, SelectionListener, IWindowListener {
 		lastSelected();
 	    }
 	}
-	recordset.setSelection(bitset);
+	getRecordset().setSelection(bitset);
     }
 
     /**
@@ -796,10 +786,10 @@ ActionListener, SelectionListener, IWindowListener {
 	    return false;
 	}
 	int pos = Long.valueOf(position).intValue();
-	if (recordset == null) {
+	if (getRecordset() == null) {
 	    return false;
 	}
-	bitset = recordset.getSelection();
+	bitset = getRecordset().getSelection();
 	return bitset.get(pos);
     }
 
@@ -810,9 +800,9 @@ ActionListener, SelectionListener, IWindowListener {
     public void clearSelection() {
 	FBitSet bitset = null;
 	if (layer instanceof AlphanumericData) {
-	    bitset = recordset.getSelection();
+	    bitset = getRecordset().getSelection();
 	    bitset.clear();
-	    recordset.setSelection(bitset);
+	    getRecordset().setSelection(bitset);
 	}
     }
 
@@ -864,7 +854,7 @@ ActionListener, SelectionListener, IWindowListener {
     public void refreshGUI() {
 	boolean navEnabled = false;
 	try {
-	    if (recordset == null) {
+	    if (getRecordset() == null) {
 		return;
 	    }
 
@@ -931,7 +921,7 @@ ActionListener, SelectionListener, IWindowListener {
     }
 
     private void setTotalLabelText() throws ReadDriverException {
-	long numberOfRowsInRecordset = recordset.getRowCount();
+	long numberOfRowsInRecordset = getRecordset().getRowCount();
 	if (onlySelectedCB.isSelected()) {
 	    totalLabel.setText("/" + "(" + getNumberOfRowsSelected() + ") "
 		    + numberOfRowsInRecordset);
@@ -981,7 +971,7 @@ ActionListener, SelectionListener, IWindowListener {
     }
 
     private int getNumberOfRowsSelected() {
-	FBitSet bitset = recordset.getSelection();
+	FBitSet bitset = getRecordset().getSelection();
 	return bitset.cardinality();
     }
 
@@ -1011,8 +1001,8 @@ ActionListener, SelectionListener, IWindowListener {
 	    return;
 	}
 	try {
-	    if (newPosition >= recordset.getRowCount()) {
-		newPosition = recordset.getRowCount() - 1;
+	    if (newPosition >= getRecordset().getRowCount()) {
+		newPosition = getRecordset().getRowCount() - 1;
 	    } else if (newPosition < EMPTY_REGISTER) {
 		newPosition = 0;
 	    }
@@ -1048,7 +1038,7 @@ ActionListener, SelectionListener, IWindowListener {
 	    return false;
 	} else {
 	    long current = getPosition();
-	    FBitSet selection = recordset.getSelection();
+	    FBitSet selection = getRecordset().getSelection();
 	    long selectedRow = selection.nextSetBit(0);
 	    //TODO: copy values without the trick of currentPosition
 	    currentPosition = selectedRow;
@@ -1072,7 +1062,7 @@ ActionListener, SelectionListener, IWindowListener {
 	    return;
 	}
 
-	if (this.recordset == null) {
+	if (getRecordset() == null) {
 	    // TODO
 	    // If there is an error on the recordset of the layer do nothing.
 	    return;
@@ -1099,15 +1089,15 @@ ActionListener, SelectionListener, IWindowListener {
 	} else if (e.getSource() == alwaysSelectCB) {
 	    onlySelectedCB.setSelected(false);
 	    if (alwaysSelectCB.isSelected()) {
-		this.recordset.removeSelectionListener(this);
+		getRecordset().removeSelectionListener(this);
 	    } else {
-		this.recordset.addSelectionListener(this);
+		getRecordset().addSelectionListener(this);
 	    }
 	    refreshGUI();
 	} else if (e.getSource() == filterB) {
 	    FiltroExtension fe = new FiltroExtension();
 	    fe.initialize();
-	    fe.setDatasource(recordset, dataName);
+	    fe.setDatasource(getRecordset(), dataName);
 	    fe.execute("FILTER_DATASOURCE");
 	} else if (e.getSource() == noFilterB) {
 	    clearSelection();
@@ -1207,10 +1197,12 @@ ActionListener, SelectionListener, IWindowListener {
 	    return;
 	}
 
-	if (getPosition() == EMPTY_REGISTER && onlySelectedCB.isSelected()) {
+	if (getPosition() == EMPTY_REGISTER 
+		&& onlySelectedCB.isSelected()) {
 	    firstSelected();
 	} else {
-	    if (onlySelectedCB.isSelected() && !isRecordSelected()) {
+	    if (onlySelectedCB.isSelected() 
+		    && !isRecordSelected()) {
 		firstSelected();
 	    }
 	    if (!isSomeRowToWorkOn()) {
@@ -1222,7 +1214,7 @@ ActionListener, SelectionListener, IWindowListener {
 
     public void windowClosed() {
 	showWarning();
-	this.recordset.removeSelectionListener(this);
+	getRecordset().removeSelectionListener(this);
 	if (this.layer != null) {
 	    this.layer.removeLayerListener(this.listener);
 	}
@@ -1246,15 +1238,10 @@ ActionListener, SelectionListener, IWindowListener {
      * @throws ReadDriverException
      */
     public void reloadRecordset() throws ReadDriverException {
-	if (this.layer != null) {
-	    this.recordset = this.layer.getRecordset();
-	    this.recordset.reload();
-	}
+	getRecordset().reload();
     }
 
-    public SelectableDataSource getRecordset() {
-	return this.recordset;
-    }
+    public abstract SelectableDataSource getRecordset();
 
     public String getDataName() {
 	return this.dataName;

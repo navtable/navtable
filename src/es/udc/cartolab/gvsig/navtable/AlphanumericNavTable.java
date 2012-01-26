@@ -45,6 +45,7 @@ import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
+import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
@@ -114,6 +115,16 @@ public class AlphanumericNavTable extends NavTable {
     }
 
     @Override
+    public SelectableDataSource getRecordset(){
+	try {
+	    return model.getRecordset();
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	    return null;
+	}
+    }
+
+    @Override
     @Deprecated
     protected void saveRegister() {
 	saveRecord();
@@ -156,31 +167,24 @@ public class AlphanumericNavTable extends NavTable {
 	    onlySelectedCB.setSelected(false);
 	}
 	try {
-	    model.startEdition(EditionEvent.ALPHANUMERIC);
+	    ToggleEditing te = new ToggleEditing();
+	    if (!model.isEditing()) {
+		te.startEditing(model);
+	    }
 	    if (model instanceof IWriteable) {
-		int numAttr = recordset.getFieldCount();
+		int numAttr = getRecordset().getFieldCount();
 		Value[] values = createDefaultValues(numAttr);
 		IRow row = new DefaultRow(values);
 		model.doAddRow(row, EditionEvent.ALPHANUMERIC);
 
-		IWriteable w = (IWriteable) model;
-		IWriter writer = w.getWriter();
+		getRecordset().reload();
+		setPosition(getRecordset().getRowCount());
 
-		ITableDefinition tableDef = model.getTableDefinition();
-		writer.initialize(tableDef);
-
-		model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
 		last();
 		setChangedValues(true);
 		refreshGUI();
 	    }
-	} catch (StartWriterVisitorException e) {
-	    logger.error(e.getMessage(), e);
 	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (InitializeWriterException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (StopWriterVisitorException e) {
 	    logger.error(e.getMessage(), e);
 	}
     }
@@ -193,11 +197,11 @@ public class AlphanumericNavTable extends NavTable {
 	    }
 	else {	    
 	    for (int i = 0; i < numAttr; i++) {
-		if (defaultValues.get(recordset.getFieldAlias(i)) == null)
+		if (defaultValues.get(getRecordset().getFieldAlias(i)) == null)
 		    values[i] = ValueFactoryNT.createNullValue();
 		else
 		    values[i] = ValueFactoryNT.createValue(
-			    defaultValues.get(recordset.getFieldAlias(i)));
+			    defaultValues.get(getRecordset().getFieldAlias(i)));
 	    }
 	}
 	return values;
@@ -228,6 +232,7 @@ public class AlphanumericNavTable extends NavTable {
 		save = true;
 	    } else {
 		setChangedValues(false);
+		//TODO: if a new record was added, delete it
 	    }
 	}
 	if (save) {

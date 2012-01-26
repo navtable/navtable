@@ -331,9 +331,10 @@ public class NavTable extends AbstractNavTable {
 
     @Override
     public boolean init() {
+	getRecordset().addSelectionListener(this);
 	window = PluginServices.getMDIManager().getActiveWindow();
 	try {
-	    if (recordset.getRowCount() <= 0) {
+	    if (getRecordset().getRowCount() <= 0) {
 		JOptionPane.showMessageDialog(this,
 			PluginServices.getText(this, "emptyLayer"));
 		return false;
@@ -386,7 +387,7 @@ public class NavTable extends AbstractNavTable {
 		    + File.separator
 		    + dataName.substring(0, dataName.lastIndexOf("."))
 		    : Preferences.getAliasDir() + File.separator + dataName;
-	    fileAlias = new File(pathToken + ".alias");
+		    fileAlias = new File(pathToken + ".alias");
 	} else {
 	    ReadableVectorial source = layer.getSource();
 
@@ -451,8 +452,8 @@ public class NavTable extends AbstractNavTable {
 	    // FieldDescription[] fd = recordset.getFieldsDescription();
 	    // fd[1].
 
-	    for (int i = 0; i < recordset.getFieldCount(); i++) {
-		String attName = recordset.getFieldName(i);
+	    for (int i = 0; i < getRecordset().getFieldCount(); i++) {
+		String attName = getRecordset().getFieldName(i);
 		aux = new Vector<String>(2);
 		aux.add(getAlias(attName));
 		aux.add(" ");
@@ -497,8 +498,8 @@ public class NavTable extends AbstractNavTable {
 	try {
 	    setFillingValues(true);
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
-	    for (int i = 0; i < recordset.getFieldCount(); i++) {
-		Value value = recordset.getFieldValue(getPosition(), i);
+	    for (int i = 0; i < getRecordset().getFieldCount(); i++) {
+		Value value = getRecordset().getFieldValue(getPosition(), i);
 		String textoValue;
 		if (value instanceof NullValue) {
 		    textoValue = "";
@@ -521,14 +522,14 @@ public class NavTable extends AbstractNavTable {
 		g = source.getShape(new Long(getPosition()).intValue());
 		source.stop();
 		if (g == null) {
-		    model.setValueAt("0", recordset.getFieldCount(), 1);
-		    model.setValueAt("0", recordset.getFieldCount() + 1, 1);
+		    model.setValueAt("0", getRecordset().getFieldCount(), 1);
+		    model.setValueAt("0", getRecordset().getFieldCount() + 1, 1);
 		    return;
 		}
 		Geometry geom = g.toJTSGeometry();
 		// TODO Format number (Set units in Preferences)
 		value = String.valueOf(Math.round(geom.getLength()));
-		model.setValueAt(value, recordset.getFieldCount(), 1);
+		model.setValueAt(value, getRecordset().getFieldCount(), 1);
 		// Fill GEOM_AREA
 		value = "0.0";
 		source.start();
@@ -537,7 +538,7 @@ public class NavTable extends AbstractNavTable {
 		geom = g.toJTSGeometry();
 		// TODO Format number (Set units in Preferences)
 		value = String.valueOf(Math.round(geom.getArea()));
-		model.setValueAt(value, recordset.getFieldCount() + 1, 1);
+		model.setValueAt(value, getRecordset().getFieldCount() + 1, 1);
 	    }
 
 	} catch (ReadDriverException e) {
@@ -551,9 +552,9 @@ public class NavTable extends AbstractNavTable {
 	Vector<Integer> changedValues = new Vector<Integer>();
 	DefaultTableModel model = (DefaultTableModel) table.getModel();
 	try {
-	    for (int i = 0; i < recordset.getFieldCount(); i++) {
+	    for (int i = 0; i < getRecordset().getFieldCount(); i++) {
 		String tableValue = model.getValueAt(i, 1).toString();
-		Value value = recordset.getFieldValue(getPosition(), i);
+		Value value = getRecordset().getFieldValue(getPosition(), i);
 		String layerValue = value
 			.getStringValue(ValueWriter.internalValueWriter);
 		layerValue = layerValue.replaceAll("'", "");
@@ -641,7 +642,7 @@ public class NavTable extends AbstractNavTable {
 		    try {
 			Object value = model.getValueAt(i, 1);
 			attValues[j] = value.toString();
-			if (recordset.getFieldType(i) == Types.DATE) {
+			if (getRecordset().getFieldType(i) == Types.DATE) {
 			    attValues[j] = attValues[j].replaceAll("-", "/");
 			}
 		    } catch (ReadDriverException e) {
@@ -737,4 +738,15 @@ public class NavTable extends AbstractNavTable {
     public JTable getTable() {
 	return this.table;
     }
+
+    @Override
+    public SelectableDataSource getRecordset() {
+	try {
+	    return layer.getSource().getRecordset();
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	    return null;
+	}
+    }
+
 }
