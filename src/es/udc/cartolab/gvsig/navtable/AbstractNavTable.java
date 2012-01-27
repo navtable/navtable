@@ -1255,4 +1255,6 @@ ActionListener, SelectionListener, IWindowListener {
 	positionEventSource.removeEventListener(l);
     }
 
+    public abstract boolean isSavingValues();
+
 }

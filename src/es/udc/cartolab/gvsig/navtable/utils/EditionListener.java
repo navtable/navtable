@@ -68,7 +68,8 @@ public class EditionListener implements LayerListener, IEditionListener {
     }
 
     public void afterRowEditEvent(IRow feat, AfterRowEditEvent e) {
-	if (nt.getPosition() == e.getNumRow()) {
+	if (!nt.isSavingValues() 
+		&& (nt.getPosition() == e.getNumRow())) {
 	    nt.fillValues();
 	}
     }

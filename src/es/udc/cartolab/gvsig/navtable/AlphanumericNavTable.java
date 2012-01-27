@@ -133,6 +133,7 @@ public class AlphanumericNavTable extends NavTable {
     @Override
     public boolean saveRecord() {
 	if (isSaveable()) {
+	    setSavingValues(true);
 	    int[] attIndexes = getIndexes();
 	    String[] attValues = getValues();
 	    int currentPos = Long.valueOf(getPosition()).intValue();
@@ -150,6 +151,8 @@ public class AlphanumericNavTable extends NavTable {
 	    } catch (Exception e) {
 		logger.error(e.getMessage(), e);
 		return false;
+	    } finally {
+		setSavingValues(false);
 	    }
 	}
 	return false;

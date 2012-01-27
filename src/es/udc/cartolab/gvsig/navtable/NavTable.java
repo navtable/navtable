@@ -103,6 +103,7 @@ public class NavTable extends AbstractNavTable {
     protected WindowInfo viewInfo = null;
 
     private boolean isFillingValues = false;
+    private boolean isSavingValues = false;
 
     protected JTable table = null;
     private AttribTableCellRenderer cellRenderer = null;
@@ -495,6 +496,14 @@ public class NavTable extends AbstractNavTable {
 	setFillingValues(false);
     }
 
+    public boolean isSavingValues() {
+	return isSavingValues;
+    }
+
+    public void setSavingValues(boolean bool) {
+	isSavingValues = bool;
+    }
+
     @Override
     public void fillValues() {
 	SelectableDataSource sds;
@@ -664,6 +673,7 @@ public class NavTable extends AbstractNavTable {
     @Override
     public boolean saveRecord() {
 	if (isSaveable()) {
+	    setSavingValues(true);
 	    int[] attIndexes = getIndexes();
 	    String[] attValues = getValues();
 	    int currentPos = Long.valueOf(getPosition()).intValue();
@@ -682,6 +692,8 @@ public class NavTable extends AbstractNavTable {
 	    } catch (Exception e) {
 		logger.error(e.getMessage(), e);
 		return false;
+	    } finally {
+		setSavingValues(false);
 	    }
 	}
 	return false;
