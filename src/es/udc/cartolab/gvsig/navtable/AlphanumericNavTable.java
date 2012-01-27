@@ -172,13 +172,14 @@ public class AlphanumericNavTable extends NavTable {
 		te.startEditing(model);
 	    }
 	    if (model instanceof IWriteable) {
-		int numAttr = getRecordset().getFieldCount();
+		SelectableDataSource sds = getRecordset();
+		int numAttr = sds.getFieldCount();
 		Value[] values = createDefaultValues(numAttr);
 		IRow row = new DefaultRow(values);
 		model.doAddRow(row, EditionEvent.ALPHANUMERIC);
 
-		getRecordset().reload();
-		setPosition(getRecordset().getRowCount());
+		sds.reload();
+		setPosition(sds.getRowCount());
 
 		last();
 		setChangedValues(true);
@@ -195,13 +196,14 @@ public class AlphanumericNavTable extends NavTable {
 	    for (int i = 0; i < numAttr; i++) {
 		values[i] = ValueFactoryNT.createNullValue();
 	    }
-	else {	    
+	else {
+	    SelectableDataSource sds = getRecordset();
 	    for (int i = 0; i < numAttr; i++) {
-		if (defaultValues.get(getRecordset().getFieldAlias(i)) == null)
+		if (defaultValues.get(sds.getFieldAlias(i)) == null)
 		    values[i] = ValueFactoryNT.createNullValue();
 		else
 		    values[i] = ValueFactoryNT.createValue(
-			    defaultValues.get(getRecordset().getFieldAlias(i)));
+			    defaultValues.get(sds.getFieldAlias(i)));
 	    }
 	}
 	return values;

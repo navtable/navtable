@@ -331,10 +331,11 @@ public class NavTable extends AbstractNavTable {
 
     @Override
     public boolean init() {
-	getRecordset().addSelectionListener(this);
+	SelectableDataSource sds = getRecordset();
+	sds.addSelectionListener(this);
 	window = PluginServices.getMDIManager().getActiveWindow();
 	try {
-	    if (getRecordset().getRowCount() <= 0) {
+	    if (sds.getRowCount() <= 0) {
 		JOptionPane.showMessageDialog(this,
 			PluginServices.getText(this, "emptyLayer"));
 		return false;
@@ -452,8 +453,9 @@ public class NavTable extends AbstractNavTable {
 	    // FieldDescription[] fd = recordset.getFieldsDescription();
 	    // fd[1].
 
-	    for (int i = 0; i < getRecordset().getFieldCount(); i++) {
-		String attName = getRecordset().getFieldName(i);
+	    SelectableDataSource sds = getRecordset();
+	    for (int i = 0; i < sds.getFieldCount(); i++) {
+		String attName = sds.getFieldName(i);
 		aux = new Vector<String>(2);
 		aux.add(getAlias(attName));
 		aux.add(" ");
@@ -495,11 +497,13 @@ public class NavTable extends AbstractNavTable {
 
     @Override
     public void fillValues() {
+	SelectableDataSource sds;
 	try {
+	    sds = getRecordset();
 	    setFillingValues(true);
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
-	    for (int i = 0; i < getRecordset().getFieldCount(); i++) {
-		Value value = getRecordset().getFieldValue(getPosition(), i);
+	    for (int i = 0; i < sds.getFieldCount(); i++) {
+		Value value = sds.getFieldValue(getPosition(), i);
 		String textoValue;
 		if (value instanceof NullValue) {
 		    textoValue = "";
@@ -522,14 +526,14 @@ public class NavTable extends AbstractNavTable {
 		g = source.getShape(new Long(getPosition()).intValue());
 		source.stop();
 		if (g == null) {
-		    model.setValueAt("0", getRecordset().getFieldCount(), 1);
-		    model.setValueAt("0", getRecordset().getFieldCount() + 1, 1);
+		    model.setValueAt("0", sds.getFieldCount(), 1);
+		    model.setValueAt("0", sds.getFieldCount() + 1, 1);
 		    return;
 		}
 		Geometry geom = g.toJTSGeometry();
 		// TODO Format number (Set units in Preferences)
 		value = String.valueOf(Math.round(geom.getLength()));
-		model.setValueAt(value, getRecordset().getFieldCount(), 1);
+		model.setValueAt(value, sds.getFieldCount(), 1);
 		// Fill GEOM_AREA
 		value = "0.0";
 		source.start();
@@ -538,7 +542,7 @@ public class NavTable extends AbstractNavTable {
 		geom = g.toJTSGeometry();
 		// TODO Format number (Set units in Preferences)
 		value = String.valueOf(Math.round(geom.getArea()));
-		model.setValueAt(value, getRecordset().getFieldCount() + 1, 1);
+		model.setValueAt(value, sds.getFieldCount() + 1, 1);
 	    }
 
 	} catch (ReadDriverException e) {
@@ -552,9 +556,10 @@ public class NavTable extends AbstractNavTable {
 	Vector<Integer> changedValues = new Vector<Integer>();
 	DefaultTableModel model = (DefaultTableModel) table.getModel();
 	try {
-	    for (int i = 0; i < getRecordset().getFieldCount(); i++) {
+	    SelectableDataSource sds = getRecordset();
+	    for (int i = 0; i < sds.getFieldCount(); i++) {
 		String tableValue = model.getValueAt(i, 1).toString();
-		Value value = getRecordset().getFieldValue(getPosition(), i);
+		Value value = sds.getFieldValue(getPosition(), i);
 		String layerValue = value
 			.getStringValue(ValueWriter.internalValueWriter);
 		layerValue = layerValue.replaceAll("'", "");
