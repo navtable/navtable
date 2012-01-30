@@ -74,8 +74,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
 import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
-import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
-import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
@@ -452,10 +450,6 @@ public class NavTable extends AbstractNavTable {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    model.setRowCount(0);
 	    Vector<String> aux = null;
-
-	    // TODO: Some times it takes the deleted fields on the DBF
-	    // FieldDescription[] fd = recordset.getFieldsDescription();
-	    // fd[1].
 
 	    SelectableDataSource sds = getRecordset();
 	    for (int i = 0; i < sds.getFieldCount(); i++) {

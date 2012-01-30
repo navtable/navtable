@@ -177,13 +177,12 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	window.setTitle(title + ": " + dataName);
     }
 
-    // TODO [nachouve] Check this method because
-    // when the table is on edition a weird identify
+    // [nachouve] Check this method because
+    // When the table is on edition a weird identify
     // is shown the title window instead of the layer name.
     // Maybe can be set as deprecated and be replaced by:
     // {@link AbstractNavTable(SelectableDataSource, String)}
     // with a properly name as string parameter.
-    // TODO Check AbstractNavTable(FLayer) also on this point
     public AbstractNavTable(SelectableDataSource recordset) {
 	this(recordset, recordset.getName());
     }
@@ -197,7 +196,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      */
     public AbstractNavTable(SelectableDataSource recordset, String tableName) {
 	super();
-	this.layer = null;
 	this.listener = new EditionListener(this);
 	this.dataName = tableName;
 	WindowInfo window = this.getWindowInfo();
@@ -376,13 +374,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    optionsPanel.add(fixScaleCB);
 	}
 	return optionsPanel;
-    }
-
-    private JLabel getIcon(File iconPath) {
-	ImageIcon logo = new ImageIcon(iconPath.getAbsolutePath());
-	JLabel icon = new JLabel();
-	icon.setIcon(logo);
-	return icon;
     }
 
     /**
@@ -703,7 +694,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	Rectangle2D rectangle = null;
 	int pos = Long.valueOf(getPosition()).intValue();
 	if (layer instanceof AlphanumericData) {
-	    // TODO gvSIG comment: Esta comprobacion se hacia con Selectable
 	    try {
 		IGeometry g;
 		ReadableVectorial source = (layer).getSource();
@@ -948,7 +938,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     }
 
     private void setIconAndPositionBackgroundForSelection() {
-	java.net.URL imgURL = null;
 	if (isRecordSelected()) {
 	    ImageIcon imagenUnselect = getIcon("/Unselect.png");
 	    selectionB.setIcon(imagenUnselect);
@@ -1020,7 +1009,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 
     public void copyPrevious() {
 	long current = getPosition();
-	//TODO: copy values without the trick of currentPosition
 	currentPosition = current - 1;
 	fillValues();
 	currentPosition = current;
@@ -1040,7 +1028,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    long current = getPosition();
 	    FBitSet selection = getRecordset().getSelection();
 	    long selectedRow = selection.nextSetBit(0);
-	    //TODO: copy values without the trick of currentPosition
 	    currentPosition = selectedRow;
 	    fillValues();
 	    currentPosition = current;
@@ -1056,15 +1043,14 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	 * Variable isSomeNavTableForm open is used as workaround to control
 	 * null pointers exceptions when all forms using navtable are closed
 	 * but, for some strange reason, some of the listeners is still active.
-	 * TODO: review all listeners.
 	 */
 	if (!isSomeNavTableFormOpen()) {
 	    return;
 	}
 
 	if (getRecordset() == null) {
-	    // TODO
-	    // If there is an error on the recordset of the layer do nothing.
+	    // If there is an error on the recordset of the layer 
+	    // do nothing.
 	    return;
 	}
 	if (e.getSource() == onlySelectedCB) {
@@ -1190,7 +1176,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	 * Variable isSomeNavTableForm open is used as workaround to control
 	 * null pointers exceptions when all forms using navtable are closed
 	 * but, for some strange reason, some of the listeners is still active.
-	 * TODO: review all listeners.
 	 */
 	if (!isSomeNavTableFormOpen()) {
 	    return;
