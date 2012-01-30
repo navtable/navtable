@@ -183,10 +183,7 @@ public class AlphanumericNavTable extends NavTable {
 
 		sds.reload();
 		setPosition(sds.getRowCount());
-
-		last();
 		setChangedValues(true);
-		refreshGUI();
 	    }
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
@@ -259,8 +256,8 @@ public class AlphanumericNavTable extends NavTable {
 	    model.doRemoveRow((int) getPosition(), EditionEvent.ALPHANUMERIC);
 	    model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
 
-	    // Refresh
-	    refreshGUI();
+	    //keep the current position within boundaries
+	    setPosition(getPosition());
 
 	} catch (StartWriterVisitorException e) {
 	    logger.error(e.getMessage(), e);

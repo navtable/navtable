@@ -74,6 +74,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
 import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
@@ -334,6 +336,7 @@ public class NavTable extends AbstractNavTable {
     public boolean init() {
 	SelectableDataSource sds = getRecordset();
 	sds.addSelectionListener(this);
+	this.addPositionListener(this);
 	window = PluginServices.getMDIManager().getActiveWindow();
 	try {
 	    if (sds.getRowCount() <= 0) {
