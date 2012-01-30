@@ -545,9 +545,8 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	if (getPosition() == EMPTY_REGISTER) {
 	    return;
 	}
-	boolean changed = isChangedValues();
-	boolean save = changed && layer.isEditing();
-	if (changed && !save) {
+	if (isChangedValues()) {
+	    boolean save = false;
 	    Object[] options = {
 		    PluginServices.getText(this, "saveButtonTooltip"),
 		    PluginServices.getText(this, "ignoreButton") };
@@ -561,11 +560,15 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    if (response == JOptionPane.YES_OPTION) {
 		save = true;
 	    } else {
+		save = false;
 		setChangedValues(false);
+		//The values will be restored as they are
+		// when filling again the table/form,
+		// so it's not need to revert the changes done.
 	    }
-	}
-	if (save) {
-	    saveRecord();
+	    if (save) {
+		saveRecord();
+	    }
 	}
     }
 
