@@ -26,6 +26,7 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.event.ActionEvent;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -36,6 +37,7 @@ import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.iver.andami.PluginServices;
+import com.iver.cit.gvsig.exceptions.commands.EditionCommandException;
 import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
 import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.core.DefaultRow;
@@ -61,6 +63,7 @@ public class AlphanumericNavTable extends NavTable {
     private JButton newB = null;
     protected IEditableSource model;
     protected HashMap<String, String> defaultValues = null;
+    private ArrayList<Integer> indexesOfRowsAdded = null;
 
     public AlphanumericNavTable(IEditableSource model, String dataName)
 	    throws ReadDriverException {
@@ -68,6 +71,7 @@ public class AlphanumericNavTable extends NavTable {
 	this.isAlphanumericNT = true;
 	this.model = model;
 	this.model.addEditionListener(listener);
+	this.indexesOfRowsAdded = new ArrayList<Integer>();
     }
 
     public AlphanumericNavTable(IEditableSource model, String dataName,
@@ -179,11 +183,11 @@ public class AlphanumericNavTable extends NavTable {
 		int numAttr = sds.getFieldCount();
 		Value[] values = createDefaultValues(numAttr);
 		IRow row = new DefaultRow(values);
-		model.doAddRow(row, EditionEvent.ALPHANUMERIC);
+		indexesOfRowsAdded.add(
+			model.doAddRow(row, EditionEvent.ALPHANUMERIC)+1);
 
-		sds.reload();
-		setPosition(sds.getRowCount());
 		setChangedValues(true);
+		setPosition(sds.getRowCount());
 	    }
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
@@ -217,9 +221,8 @@ public class AlphanumericNavTable extends NavTable {
 	if (getPosition() == AbstractNavTable.EMPTY_REGISTER) {
 	    return;
 	}
-	boolean changed = isChangedValues();
-	boolean save = changed && model.isEditing();
-	if (changed && !save) {
+	if (isChangedValues()) {
+	    boolean save = false;
 	    Object[] options = {
 		    PluginServices.getText(this, "saveButtonTooltip"),
 		    PluginServices.getText(this, "ignoreButton") };
@@ -233,12 +236,24 @@ public class AlphanumericNavTable extends NavTable {
 	    if (response == 0) {
 		save = true;
 	    } else {
+		save = false;
 		setChangedValues(false);
-		//TODO: if a new record was added, delete it
+		deleteAddedRows();
+	    }
+	    if (save) {
+		saveRecord();
 	    }
 	}
-	if (save) {
-	    saveRecord();
+    }
+
+    private void deleteAddedRows() {
+	try {
+	    for (int index : indexesOfRowsAdded) {
+		model.undoAddRow(index, EditionEvent.ROW_EDITION);
+	    }
+	    indexesOfRowsAdded.clear();
+	} catch (EditionCommandException e) {
+	    e.printStackTrace();
 	}
     }
 
