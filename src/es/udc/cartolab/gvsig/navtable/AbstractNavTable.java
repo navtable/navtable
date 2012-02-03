@@ -1184,17 +1184,9 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    return;
 	}
 
-	if (getPosition() == EMPTY_REGISTER 
-		&& onlySelectedCB.isSelected()) {
-	    firstSelected();
-	} else {
-	    if (onlySelectedCB.isSelected() 
-		    && !isRecordSelected()) {
-		firstSelected();
-	    }
-	    if (!isSomeRowToWorkOn()) {
-		fillEmptyValues();
-	    }
+	if(onlySelectedCB.isSelected()
+		&& !isRecordSelected()) {
+	    first();
 	}
 	refreshGUI();
     }
