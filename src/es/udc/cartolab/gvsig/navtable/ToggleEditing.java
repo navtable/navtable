@@ -40,6 +40,7 @@ import com.iver.cit.gvsig.EditionManager;
 import com.iver.cit.gvsig.EditionUtilities;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
+import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileWriteException;
 import com.iver.cit.gvsig.exceptions.layers.CancelEditingLayerException;
 import com.iver.cit.gvsig.exceptions.layers.LegendLayerException;
 import com.iver.cit.gvsig.exceptions.layers.StartEditionLayerException;
@@ -79,7 +80,6 @@ import com.iver.cit.gvsig.project.documents.table.gui.Table;
 import com.iver.cit.gvsig.project.documents.view.IProjectView;
 import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
-import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 /**
@@ -403,38 +403,20 @@ public class ToggleEditing {
      * 
      * @param layer
      *            the layer that contains the feature to be changed.
-     * @param rowPos
+     * @param rowPosition
      *            the data row to be changed.
-     * @param colPos
+     * @param colPosition
      *            the data column position to be changed.
      * @param newValue
      *            the String representation of the value to be saved.
      * 
      */
-    public void modifyValue(FLyrVect layer, int rowPos, int colPos,
+    public void modifyValue(FLyrVect layer, int rowPosition, int colPosition,
 	    String newValue) throws Exception {
-	VectorialEditableAdapter edAdapter = (VectorialEditableAdapter) layer
-		.getSource();
-	if (newValue == null) {
-	    newValue = "";
-	}
-	ITableDefinition tableDef;
-	tableDef = edAdapter.getTableDefinition();
-	FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
-	int type = fieldDesc[colPos].getFieldType();
-	if (type == 16) {
-	    // in this case type is boolean
-	    type = Types.BIT;
-	}
-	// System.out.println("El valor " + newValue + " es de tipo " +
-	// FieldDescription.typeToString(type));
-	Value val;
-	if (newValue.length() == 0) {
-	    val = ValueFactoryNT.createNullValue();
-	} else {
-	    val = ValueFactoryNT.createValueByType(newValue, type);
-	}
-	modifyValue(layer, rowPos, colPos, val);
+
+	IEditableSource source = (IEditableSource) layer.getSource();
+	Value value = getNewAttribute(source, colPosition, newValue);
+	modifyValue(layer, rowPosition, colPosition, value);
     }
 
     /**
@@ -443,9 +425,9 @@ public class ToggleEditing {
      * 
      * @param layer
      *            the layer that contains the feature to be changed.
-     * @param rowPos
+     * @param rowPosition
      *            the data row to be changed.
-     * @param colPos
+     * @param colPosition
      *            the data column position to be changed.
      * @param newValue
      *            the value to be saved.
@@ -454,71 +436,32 @@ public class ToggleEditing {
      * @throws IOException
      * 
      */
-    public void modifyValue(FLyrVect layer, int rowPos, int colPos,
+    public void modifyValue(FLyrVect layer, int rowPosition, int colPosition,
 	    Value newValue) throws Exception {
 
-	if (newValue == null) {
-	    newValue = ValueFactoryNT.createNullValue();
-	}
-	VectorialEditableAdapter edAdapter = (VectorialEditableAdapter) layer
-		.getSource();
-	IRowEdited row;
-	row = edAdapter.getRow(rowPos);
+	IEditableSource source = (IEditableSource) layer.getSource();
+	IRowEdited row = source.getRow(rowPosition);
 	Value[] attributes = row.getAttributes();
-	ITableDefinition tableDef;
-	tableDef = edAdapter.getTableDefinition();
-	FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
-	int type = fieldDesc[colPos].getFieldType();
-	if (type == 16) {
-	    // in this case type is boolean
-	    type = Types.BIT;
-	}
-	int valueType = newValue.getSQLType();
-	if (valueType == 0 || valueType == -1 || valueType == type) {
-	    if (row.getLinkedRow() instanceof IFeature) {
-		attributes[colPos] = newValue;
-		IGeometry geometry = ((DefaultFeature) row.getLinkedRow())
-			.getGeometry();
-		IRow newRow = new DefaultFeature(geometry, attributes,
-			row.getID());
-		edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY",
-			EditionEvent.ALPHANUMERIC);
-	    } else {
-		logger.error("This is not a geometry");
-	    }
+	if (row.getLinkedRow() instanceof IFeature) {
+	    attributes[colPosition] = newValue;
+	    IGeometry geometry = getTheGeom(source, rowPosition);
+	    IRow newRow = new DefaultFeature(geometry, attributes,
+		    row.getID());
+	    source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
+		    EditionEvent.ALPHANUMERIC);
 	} else {
-	    logger.error("Tipo incorrecto: values es " + newValue.getSQLType()
-		    + " y el campo es " + type);
+	    logger.error("Row has no geometry");
 	}
     }
 
-    public void modifyValue(IEditableSource source, int rowPos, int colPos,
+    public void modifyValue(IEditableSource source, int rowPosition, int colPosition,
 	    String newValue) throws Exception {
 
-	if (newValue == null) {
-	    newValue = "";
-	}
-	ITableDefinition tableDef;
-	tableDef = source.getTableDefinition();
-	FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
-	int type = fieldDesc[colPos].getFieldType();
-	if (type == 16) {
-	    // in this case type is boolean
-	    type = Types.BIT;
-	}
-	// System.out.println("El valor " + newValue + " es de tipo " +
-	// FieldDescription.typeToString(type));
-	Value val;
-	if (newValue.length() == 0) {
-	    val = ValueFactoryNT.createNullValue();
-	} else {
-	    val = ValueFactoryNT.createValueByType(newValue, type);
-	}
-	IRowEdited row = source.getRow(rowPos);
+	IRowEdited row = source.getRow(rowPosition);
 	Value[] attributes = row.getAttributes();
-	attributes[colPos] = val;
+	attributes[colPosition] = getNewAttribute(source, colPosition, newValue);
 	IRow newRow = new DefaultRow(attributes);
-	source.modifyRow(rowPos, newRow, "NAVTABLE MODIFY",
+	source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
 		EditionEvent.ALPHANUMERIC);
     }
 
@@ -528,68 +471,40 @@ public class ToggleEditing {
      * 
      * @param layer
      *            the layer that contains the feature to be changed.
-     * @param rowPos
+     * @param rowPosition
      *            the data row to be changed.
-     * @param attPos
+     * @param attIndexes
      *            An array that contains the index of the columns that will be
      *            modified.
-     * @param attStringValues
+     * @param attValues
      *            the new values to save (in correlative order with attPos)
      * 
      * @throws DriverException
      * @throws IOException
      * 
      */
-    public void modifyValues(FLyrVect layer, int rowPos, int[] attPos,
-	    String[] attStringValues) {
+    public void modifyValues(FLyrVect layer, 
+	    int rowPosition, 
+	    int[] attIndexes,
+	    String[] attValues) {
 
-	// definition of needed variables
-	int type;
-	Value[] attValues;
-	FieldDescription[] fieldDesc;
-	IGeometry geometry;
-	IRowEdited row;
-	VectorialEditableAdapter edAdapter;
 	try {
-	    // instantiate the needed classes and initialize vars
-	    edAdapter = (VectorialEditableAdapter) layer.getSource();
-	    row = edAdapter.getRow(rowPos);
-	    geometry = ((DefaultFeature) row.getLinkedRow()).getGeometry();
-	    attValues = row.getAttributes();
-	    ITableDefinition tableDef = edAdapter.getTableDefinition();
-	    fieldDesc = tableDef.getFieldsDesc();
-	} catch (Exception e) {
-	    logger.error(e.getMessage(), e);
-	    return;
-	}
-	// iterate throw the values that changed,
-	//   creating an array with all the new values of the row (attValues)
-	for (int i = 0; i < attPos.length; i++) {
-	    type = fieldDesc[attPos[i]].getFieldType();
-	    // modify the value that changed
-	    if (attStringValues[i] == null || attStringValues[i].length() == 0) {
-		attValues[attPos[i]] = ValueFactoryNT.createNullValue();
-	    } else {
-		try {
-		    attValues[attPos[i]] = ValueFactoryNT.createValueByType(
-			    attStringValues[i], type);
-		} catch (NumberFormatException e) {
-		    logger.error("Tipo incorrecto: El valor del campo "
-			    + fieldDesc[attPos[i]].getFieldName() + " es \""
-			    + attStringValues[i] + "\" y debería ser "
-			    + FieldDescription.typeToString(type), e);
-		} catch (java.text.ParseException e) {
-		    logger.error(e.getMessage(), e);
-		}
-	    }
-	}
-	// change the file on memory
-	row.setAttributes(attValues);
-	IRow newRow = new DefaultFeature(geometry, attValues, row.getID());
-	try {
-	    edAdapter.modifyRow(rowPos, newRow, "NAVTABLE MODIFY",
+	    IEditableSource source = (IEditableSource) layer.getSource();
+
+	    IGeometry geometry = getTheGeom(source, rowPosition);
+	    Value[] values = getNewAttributes(source, rowPosition, attIndexes, attValues);
+
+	    IRowEdited row = source.getRow(rowPosition);
+	    IRow newRow = new DefaultFeature(geometry, values, row.getID());
+	    source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
 		    EditionEvent.ALPHANUMERIC);
-	} catch (Exception e) {
+	} catch (ExpansionFileWriteException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (ExpansionFileReadException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (ValidateRowException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
 	}
     }
@@ -597,27 +512,9 @@ public class ToggleEditing {
     public void modifyValues(IEditableSource source, int rowPosition,
 	    int[] attIndexes, String[] attValues) {
 	try {
-	    IRowEdited row;
-	    row = source.getRow(rowPosition);
-	    Value[] attributes = row.getAttributes();
-	    Value val;
-	    int type;
-	    ITableDefinition tableDef;
-	    tableDef = source.getTableDefinition();
-	    FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
-	    for (int i = 0; i < attIndexes.length; i++) {
-		if (attValues[i].length() == 0 || attValues[i] == null) {
-		    val = ValueFactoryNT.createNullValue();
-		} else {
-		    type = fieldDesc[attIndexes[i]].getFieldType();
-		    if (type == 16) {// in this case type is boolean
-			type = Types.BIT;
-		    }
-		    val = ValueFactoryNT.createValueByType(
-			    attValues[i], type);
-		}
-		attributes[attIndexes[i]] = val;
-	    }
+	    Value[] attributes = getNewAttributes(
+		    source, rowPosition, attIndexes, attValues);
+
 	    IRow newRow = new DefaultRow(attributes);
 	    source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
 		    EditionEvent.ALPHANUMERIC);
@@ -625,10 +522,72 @@ public class ToggleEditing {
 	    logger.error(e.getMessage(), e);
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
-	} catch (ParseException e) {
-	    logger.error(e.getMessage(), e);
 	} catch (ValidateRowException e) {
 	    logger.error(e.getMessage(), e);
+	}
+    }
+
+    private Value[] getNewAttributes(IEditableSource source, 
+	    int rowPosition, 
+	    int[] attIndexes, 
+	    String[] attValues) {
+
+	Value val;
+	int type;
+	try {
+	    FieldDescription[] fieldDesc = source.getTableDefinition().getFieldsDesc();
+	    Value[] attributes = source.getRow(rowPosition).getAttributes();
+	    for (int i = 0; i < attIndexes.length; i++) {
+		if (attValues[i].length() == 0 || attValues[i] == null) {
+		    val = ValueFactoryNT.createNullValue();
+		} else {
+		    type = fieldDesc[attIndexes[i]].getFieldType();
+		    val = ValueFactoryNT.createValueByType(
+			    attValues[i], type);
+		}
+		attributes[attIndexes[i]] = val;
+	    }
+	    return attributes;
+	} catch (ParseException e) {
+	    logger.error(e.getMessage(), e);
+	    return null;
+	} catch (ReadDriverException e) {
+	    logger.error(e.getMessage(), e);
+	    return null;
+	}
+    }
+
+    private Value getNewAttribute(IEditableSource source, int colPosition, String newValue) {
+	if (newValue == null) {
+	    newValue = "";
+	}
+	try {
+	    ITableDefinition tableDef = source.getTableDefinition();
+	    FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
+	    int type = fieldDesc[colPosition].getFieldType();
+	    Value val;
+	    if (newValue.length() == 0) {
+		val = ValueFactoryNT.createNullValue();
+	    } else {
+		val = ValueFactoryNT.createValueByType(newValue, type);
+	    }
+	    return val;
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	    return null;
+	} catch (ParseException e) {
+	    e.printStackTrace();
+	    return null;
+	}
+    }
+
+    private IGeometry getTheGeom(IEditableSource source, int rowPosition) {
+	try {
+	    IRowEdited row = source.getRow(rowPosition);
+	    return ((DefaultFeature) row.getLinkedRow()).getGeometry();
+	} catch (Exception e) {
+	    logger.error(e.getMessage(), e);
+	    return null;
 	}
     }
 
