@@ -1057,7 +1057,10 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    return;
 	}
 	if (e.getSource() == onlySelectedCB) {
-	    alwaysSelectCB.setSelected(false);
+	    if(alwaysSelectCB.isSelected()) {
+		alwaysSelectCB.setSelected(false);
+		getRecordset().addSelectionListener(this);
+	    }
 	    showWarning();
 	    if (onlySelectedCB.isSelected()) {
 		if (getPosition() != EMPTY_REGISTER) {
