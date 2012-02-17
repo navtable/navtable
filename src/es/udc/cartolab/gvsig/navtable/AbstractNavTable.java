@@ -97,7 +97,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow,
-ActionListener, SelectionListener, IWindowListener, PositionListener {
+ActionListener, SelectionListener, IWindowListener {
 
     public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
@@ -171,7 +171,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	this.listener = new EditionListener(this, layer);
 	this.layer.addLayerListener(this.listener);
 	this.dataName = layer.getName();
-	this.addPositionListener(this);
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
 	window.setTitle(title + ": " + dataName);
@@ -1133,11 +1132,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
     }
 
-    @Deprecated
-    private void deleteRow() {
-	deleteRecord();
-    }
-
     public void deleteRecord() {
 	try {
 	    boolean layerEditing = true;
@@ -1238,9 +1232,5 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     }
 
     public abstract boolean isSavingValues();
-
-    public void onPositionChange(PositionEvent e) {
-	refreshGUI();
-    }
 
 }

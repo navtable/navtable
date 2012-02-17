@@ -74,6 +74,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
 import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
@@ -96,7 +98,7 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  * @author Pablo Sanxiao
  * @author Andres Maneiro
  */
-public class NavTable extends AbstractNavTable {
+public class NavTable extends AbstractNavTable implements PositionListener {
 
     private static final long serialVersionUID = 1L;
     private IWindow window;
@@ -761,6 +763,10 @@ public class NavTable extends AbstractNavTable {
 	    e.printStackTrace();
 	    return null;
 	}
+    }
+
+    public void onPositionChange(PositionEvent e) {
+	refreshGUI();
     }
 
 }
