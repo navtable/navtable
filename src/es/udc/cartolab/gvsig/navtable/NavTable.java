@@ -202,9 +202,12 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	TableColumn attribColumn = table.getColumn(PluginServices.getText(this,
 		"headerTableAttribute"));
 	attribColumn.setCellRenderer(this.cellRenderer);
-	attribColumn = table.getColumn(PluginServices.getText(this,
+	attribColumn.setPreferredWidth((getWindowInfo().getWidth()/3));
+	attribColumn.setMaxWidth(getWindowInfo().getWidth()/2);
+	
+	TableColumn valueColumn = table.getColumn(PluginServices.getText(this,
 		"headerTableValue"));
-	attribColumn.setCellRenderer(this.cellRenderer);
+	valueColumn.setCellRenderer(this.cellRenderer);
 
 	myTableModelListener = new MyTableModelListener();
 	model.addTableModelListener(myTableModelListener);

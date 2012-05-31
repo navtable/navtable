@@ -17,15 +17,18 @@
  *
  *
  * Authors:
- *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
+ *   Juan Ignacio Varela Garcia <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
- *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
+ *   Javier Estevez Valinas <valdaris (at) gmail (dot) com>
  */
 package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
@@ -420,6 +423,8 @@ ActionListener, SelectionListener, IWindowListener {
     protected JButton getNavTableButton(JButton button, String iconName,
 	    String toolTipName) {
 	JButton but = new JButton(getIcon(iconName));
+	but.setSize(12, 12);
+	but.setMargin(new Insets(1,1,1,1));
 	but.setToolTipText(PluginServices.getText(this, toolTipName));
 	but.addActionListener(this);
 	return but;
@@ -828,7 +833,9 @@ ActionListener, SelectionListener, IWindowListener {
 	    f.setLayout(new BorderLayout());
 	    f.add(getNorthPanel(), BorderLayout.NORTH);
 	    f.pack();
+	    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	    viewInfo.setWidth(f.getWidth() + 25);
+	    viewInfo.setWidth((1*dim.width)/3);
 	    f.add(getSouthPanel(), BorderLayout.SOUTH);
 	    JPanel centerPanel = getCenterPanel();
 	    if (centerPanel != null) {
@@ -836,6 +843,7 @@ ActionListener, SelectionListener, IWindowListener {
 	    }
 	    f.pack();
 	    viewInfo.setHeight(f.getHeight());
+	    viewInfo.setHeight(((2*dim.height)/3)-25);
 	}
 	return viewInfo;
     }
