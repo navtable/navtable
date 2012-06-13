@@ -342,6 +342,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	    if (sds.getRowCount() <= 0) {
 		JOptionPane.showMessageDialog(this,
 			PluginServices.getText(this, "emptyLayer"));
+		this.layer.removeLayerListener(this.listener);
 		return false;
 	    }
 	} catch (HeadlessException e) {
