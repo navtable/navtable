@@ -1135,6 +1135,7 @@ ActionListener, SelectionListener, IWindowListener {
     public void deleteRecord() {
 	try {
 	    boolean layerEditing = true;
+	    IWindow window = PluginServices.getMDIManager().getFocusWindow();
 	    ReadableVectorial feats = layer.getSource();
 	    feats.start();
 	    if (getPosition() > EMPTY_REGISTER) {
@@ -1152,6 +1153,12 @@ ActionListener, SelectionListener, IWindowListener {
 		    te.stopEditing(layer, false);
 		}
 		layer.setActive(true);
+		if (layer.getSource().getRecordset().getRowCount() <= 0) {
+			PluginServices.getMDIManager().closeWindow(window);
+			JOptionPane.showMessageDialog(this,
+					PluginServices.getText(this, "emptyLayer"));
+			return;
+		}
 		refreshGUI();
 	    }
 	} catch (ExpansionFileReadException e) {
