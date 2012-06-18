@@ -57,7 +57,7 @@ public class AttribTableCellRenderer extends JTextArea implements
     public Component getTableCellRendererComponent(JTable table, Object value,
 	    boolean isSelected, boolean hasFocus, int row, int column) {
 
-	this.setText(value.toString());
+	this.setText(value.toString().trim());
 	if (column == 0) {
 	    Font f = new Font("Sans", Font.BOLD, 12);
 	    this.setFont(f);
