@@ -25,12 +25,16 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
+
+import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
 import com.iver.andami.plugins.Extension;
 import com.iver.andami.preferences.IPreference;
 import com.iver.andami.preferences.IPreferenceExtension;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.cit.gvsig.About;
+import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.gui.panels.FPanelAbout;
@@ -48,28 +52,47 @@ import es.udc.cartolab.gvsig.navtable.utils.NavTableTocMenuEntry;
 public class NavTableExtension extends Extension implements
 	IPreferenceExtension {
 
-    private NavTable viewer = null;
     private IPreference[] preferencesPage;
+    protected static Logger logger = Logger.getLogger("NavTable");
+
 
     public void execute(String actionCommand) {
 
 	if (enableNavtable()) {
-	    BaseView view = (BaseView) PluginServices.getMDIManager()
-		    .getActiveWindow();
-	    FLayer[] activeLayers = view.getMapControl().getMapContext()
-		    .getLayers().getActives();
-	    for (FLayer lyr : activeLayers) {
-		if (lyr instanceof FLyrVect) {
-		    viewer = new NavTable((FLyrVect) lyr);
-		    if (viewer.init()) {
-			PluginServices.getMDIManager().addCentredWindow(viewer);
-		    }
+	    openNavtable();
+	} else if (enableAlphanumericNavtable()) {
+	    openAlphanumericNavtable();
+	}
+
+    }
+
+    private void openNavtable() {
+	BaseView view = (BaseView) PluginServices.getMDIManager()
+		.getActiveWindow();
+	FLayer[] activeLayers = view.getMapControl().getMapContext()
+		.getLayers().getActives();
+	for (FLayer lyr : activeLayers) {
+	    if (lyr instanceof FLyrVect) {
+		NavTable viewer = new NavTable((FLyrVect) lyr);
+		if (viewer.init()) {
+		    PluginServices.getMDIManager().addCentredWindow(viewer);
 		}
 	    }
 	}
+    }
 
-
-
+    private void openAlphanumericNavtable() {
+	Table table = (Table) PluginServices.getMDIManager().getActiveWindow();
+	IEditableSource model = table.getModel().getModelo();
+	AlphanumericNavTable viewer;
+	try {
+	    viewer = new AlphanumericNavTable(model, table.getModel().getName());
+	    if (viewer.init()) {
+		PluginServices.getMDIManager().addCentredWindow(viewer);
+	    }
+	} catch (ReadDriverException e) {
+	    logger.error(e.getMessage(), e);
+	}
     }
 
     public void initialize() {
@@ -104,6 +127,14 @@ public class NavTableExtension extends Extension implements
 	Preferences p = new Preferences(configDir);
     }
 
+    public boolean isVisible() {
+	return true;
+    }
+
+    public boolean isEnabled() {
+	return enableNavtable() || enableAlphanumericNavtable();
+    }
+
     protected boolean enableNavtable() {
 	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
 
@@ -132,13 +163,9 @@ public class NavTableExtension extends Extension implements
 	return ((Table) v).getModel().getAssociatedTable() == null;
     }
 
-    public boolean isEnabled() {
-	return enableNavtable() || enableAlphanumericNavtable();
-    }
 
-    public boolean isVisible() {
-	return true;
-    }
+
+
 
     public IPreference[] getPreferencesPages() {
 	if (preferencesPage == null) {
