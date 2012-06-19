@@ -31,9 +31,7 @@ import com.iver.andami.preferences.IPreference;
 import com.iver.andami.preferences.IPreferenceExtension;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.cit.gvsig.About;
-import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
-import com.iver.cit.gvsig.fmap.layers.FLayers;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.gui.panels.FPanelAbout;
 import com.iver.cit.gvsig.project.documents.table.gui.Table;
@@ -55,23 +53,23 @@ public class NavTableExtension extends Extension implements
 
     public void execute(String actionCommand) {
 
-	BaseView view = (BaseView) PluginServices.getMDIManager()
-		.getActiveWindow();
-	MapControl mapControl = view.getMapControl();
-	FLayers flayers = mapControl.getMapContext().getLayers();
-	FLyrVect actLayer = null;
-	for (int i = 0; i < flayers.getActives().length; i++) {
-	    if (!(flayers.getActives()[i] instanceof FLayers)) {
-		actLayer = (FLyrVect) flayers.getActives()[i];
-		viewer = new NavTable(actLayer);
-		if (viewer.init()) {
-		    PluginServices.getMDIManager().addCentredWindow(viewer);
+	if (enableNavtable()) {
+	    BaseView view = (BaseView) PluginServices.getMDIManager()
+		    .getActiveWindow();
+	    FLayer[] activeLayers = view.getMapControl().getMapContext()
+		    .getLayers().getActives();
+	    for (FLayer lyr : activeLayers) {
+		if (lyr instanceof FLyrVect) {
+		    viewer = new NavTable((FLyrVect) lyr);
+		    if (viewer.init()) {
+			PluginServices.getMDIManager().addCentredWindow(viewer);
+		    }
 		}
 	    }
 	}
 
-	// TODO: throw a message on the else (when there's no data)
-	// or something like that
+
+
     }
 
     public void initialize() {
