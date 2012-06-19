@@ -20,10 +20,12 @@
  *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
+ *   Francisco Puga Alonso <fpuga (at) cartolab (dot) com>
  */
 package es.udc.cartolab.gvsig.navtable;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -57,26 +59,18 @@ public class NavTableExtension extends Extension implements
 
 
     public void execute(String actionCommand) {
-
 	if (enableNavtable()) {
 	    openNavtable();
 	} else if (enableAlphanumericNavtable()) {
 	    openAlphanumericNavtable();
 	}
-
     }
 
     private void openNavtable() {
-	BaseView view = (BaseView) PluginServices.getMDIManager()
-		.getActiveWindow();
-	FLayer[] activeLayers = view.getMapControl().getMapContext()
-		.getLayers().getActives();
-	for (FLayer lyr : activeLayers) {
-	    if (lyr instanceof FLyrVect) {
-		NavTable viewer = new NavTable((FLyrVect) lyr);
-		if (viewer.init()) {
-		    PluginServices.getMDIManager().addCentredWindow(viewer);
-		}
+	for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
+	    NavTable navtable = new NavTable(vectorialLyr);
+	    if (navtable.init()) {
+		PluginServices.getMDIManager().addCentredWindow(navtable);
 	    }
 	}
     }
@@ -94,6 +88,7 @@ public class NavTableExtension extends Extension implements
 	    logger.error(e.getMessage(), e);
 	}
     }
+
 
     public void initialize() {
 	About about = (About) PluginServices.getExtension(About.class);
@@ -127,6 +122,7 @@ public class NavTableExtension extends Extension implements
 	Preferences p = new Preferences(configDir);
     }
 
+
     public boolean isVisible() {
 	return true;
     }
@@ -136,18 +132,7 @@ public class NavTableExtension extends Extension implements
     }
 
     protected boolean enableNavtable() {
-	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
-
-	if (iWindow instanceof BaseView) {
-	    FLayer[] activeLayers = ((BaseView) iWindow).getMapControl()
-		    .getMapContext().getLayers().getActives();
-	    for (FLayer lyr : activeLayers) {
-		if (lyr instanceof FLyrVect) {
-		    return true;
-		}
-	    }
-	}
-	return false;
+	return !getActiveVectorialLayersOnTheActiveWindow().isEmpty();
     }
 
     protected boolean enableAlphanumericNavtable() {
@@ -164,7 +149,21 @@ public class NavTableExtension extends Extension implements
     }
 
 
+    private ArrayList<FLyrVect> getActiveVectorialLayersOnTheActiveWindow() {
+	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
+	ArrayList<FLyrVect> activeVectorialLayers = new ArrayList<FLyrVect>();
 
+	if (iWindow instanceof BaseView) {
+	    FLayer[] activeLayers = ((BaseView) iWindow).getMapControl()
+		    .getMapContext().getLayers().getActives();
+	    for (FLayer lyr : activeLayers) {
+		if (lyr instanceof FLyrVect) {
+		    activeVectorialLayers.add((FLyrVect) lyr);
+		}
+	    }
+	}
+	return activeVectorialLayers;
+    }
 
 
     public IPreference[] getPreferencesPages() {
