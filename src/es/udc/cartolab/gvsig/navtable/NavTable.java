@@ -297,9 +297,37 @@ public class NavTable extends AbstractNavTable implements PositionListener {
     class MyTableModelListener implements TableModelListener {
 	public void tableChanged(TableModelEvent e) {
 	    if (e.getType() == TableModelEvent.UPDATE && !isFillingValues()) {
-		setChangedValues();
-		enableSaveButton(isChangedValues());
+		// if layer is on edition, we need to update the recordset
+		// with the values that changed. If not, the values will be
+		// saved in "batch mode" when clicking on saving button
+		if (isEditing()) {
+		    updateValueInRecordset(e);
+		} else {
+		    setChangedValues();
+		    enableSaveButton(isChangedValues());
+		}
 	    }
+	}
+
+	private void updateValueInRecordset(TableModelEvent e) {
+	    int col = 1; // edition only happens on editing column
+	    int row = e.getFirstRow();
+	    String newValue = ((DefaultTableModel) table.getModel())
+		    .getValueAt(row, col).toString();
+	    updateValue(Long.valueOf(getPosition()).intValue(), row, newValue);
+	}
+    }
+
+    protected boolean isEditing() {
+	return layer.isEditing();
+    }
+
+    protected void updateValue(int row, int col, String newValue) {
+	ToggleEditing te = new ToggleEditing();
+	try {
+	    te.modifyValue(layer, row, col, newValue);
+	} catch (Exception e) {
+	    e.printStackTrace();
 	}
     }
 
@@ -393,7 +421,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 		    + File.separator
 		    + dataName.substring(0, dataName.lastIndexOf("."))
 		    : Preferences.getAliasDir() + File.separator + dataName;
-		    fileAlias = new File(pathToken + ".alias");
+	    fileAlias = new File(pathToken + ".alias");
 	} else {
 	    ReadableVectorial source = layer.getSource();
 
