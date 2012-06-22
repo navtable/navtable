@@ -20,6 +20,7 @@
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Est�vez Vali�as <valdaris (at) gmail (dot) com>
  *   Andres Maneiro <andres.maneiro@gmail.com>
+ *   Jorge Lopez Fernandez<lopez.fernandez.jorge (at) gmail (dot) com>
  */
 package es.udc.cartolab.gvsig.navtable;
 
@@ -60,13 +61,21 @@ import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
+import com.iver.cit.gvsig.CADExtension;
+import com.iver.cit.gvsig.EditionManager;
+import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
+import com.iver.cit.gvsig.fmap.edition.EditionEvent;
+import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
+import com.iver.cit.gvsig.fmap.layers.LayerListener;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
+import com.iver.cit.gvsig.layers.VectorialLayerEdited;
+import com.iver.cit.gvsig.project.documents.view.gui.View;
 import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
@@ -97,6 +106,7 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  * @author Nacho Varela
  * @author Pablo Sanxiao
  * @author Andres Maneiro
+ * @author Jorge Lopez Fernandez
  */
 public class NavTable extends AbstractNavTable implements PositionListener {
 
@@ -370,7 +380,9 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	    if (sds.getRowCount() <= 0) {
 		JOptionPane.showMessageDialog(this,
 			PluginServices.getText(this, "emptyLayer"));
-		this.layer.removeLayerListener(this.listener);
+		if (this.layer != null) {
+		    this.layer.removeLayerListener(this.listener);
+		}
 		return false;
 	    }
 	} catch (HeadlessException e) {
@@ -640,13 +652,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
     protected boolean isSaveable() {
 	stopCellEdition();
 
-	// close all windows until get the view we're working on as the active
-	// window.
-	while (!window.equals(PluginServices.getMDIManager().getActiveWindow())) {
-	    PluginServices.getMDIManager().closeWindow(
-		    PluginServices.getMDIManager().getActiveWindow());
-	}
-
 	if (layer.isWritable()) {
 	    return true;
 	} else {
@@ -699,7 +704,55 @@ public class NavTable extends AbstractNavTable implements PositionListener {
     }
 
     @Override
+    public void deleteRecord() {
+	try {
+	    boolean layerEditing = true;
+	    ReadableVectorial feats = layer.getSource();
+	    feats.start();
+	    if (getPosition() > EMPTY_REGISTER) {
+		ToggleEditing te = new ToggleEditing();
+		if (updatableView()) {
+		    if (!layer.isEditing()) {
+		        layerEditing = false;
+		        te.startEditing(layer);
+		    }
+		    VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
+		    VectorialEditableAdapter vea = vle.getVEA();
+		    vea.removeRow((int) getPosition(), CADExtension.getCADTool()
+		        .getName(), EditionEvent.GRAPHIC);
+		    layer.getSelectionSupport().removeSelectionListener(vle);
+		    if (!layerEditing) {
+		        te.stopEditing(layer, false);
+		    }
+		} else {
+		    if (!layer.isEditing()) {
+		        layerEditing = false;
+		        te.startEditingWoUpdate(layer);
+		    }
+		    te.deleteRow(layer, (int) getPosition());
+		    if (!layerEditing) {
+		        te.stopEditingWoUpdate(layer, false);
+		    }
+		}
+		layer.setActive(true);
+		if (layer.getSource().getRecordset().getRowCount() <= 0) {
+		    PluginServices.getMDIManager().closeWindow(this);
+		    JOptionPane.showMessageDialog(this,
+		        PluginServices.getText(this, "emptyLayer"));
+		    return;
+		}
+		refreshGUI();
+	    }
+	} catch (ExpansionFileReadException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (ReadDriverException e) {
+	    logger.error(e.getMessage(), e);
+	}
+    }
+
+    @Override
     public boolean saveRecord() {
+
 	if (isSaveable()) {
 	    setSavingValues(true);
 	    int[] attIndexes = getIndexes();
@@ -708,12 +761,22 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	    try {
 		ToggleEditing te = new ToggleEditing();
 		boolean wasEditing = layer.isEditing();
-		if (!wasEditing) {
-		    te.startEditing(layer);
-		}
-		te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
-		if (!wasEditing) {
-		    te.stopEditing(layer, false);
+		if (updatableView()) {
+		    if (!wasEditing) {
+		        te.startEditing(layer);
+		    }
+		    te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
+		    if (!wasEditing) {
+		        te.stopEditing(layer, false);
+		    }
+		} else {
+		    if (!wasEditing) {
+		        te.startEditingWoUpdate(layer);
+		    }
+		    te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
+		    if (!wasEditing) {
+		        te.stopEditingWoUpdate(layer, false);
+		    }
 		}
 		setChangedValues(false);
 		return true;
@@ -727,7 +790,37 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	return false;
     }
 
-    /**
+    private void removeEditionManagerListeners() {
+        for (LayerListener listener : layer.getLayerListeners()) {
+            if (listener instanceof EditionManager) {
+                layer.removeLayerListener(listener);
+            }
+        }
+    }
+
+    private boolean updatableView() {
+        if (!(this.window instanceof View)) {
+            removeEditionManagerListeners();
+            return false;
+        }
+
+        for (IWindow window: PluginServices.getMDIManager().getAllWindows()) {
+            if (window.equals(this.window)) {
+                while ((PluginServices.getMDIManager().getActiveWindow() != null)) {
+                    if (window.equals(PluginServices.getMDIManager().getActiveWindow())) {
+                        return true;
+                    }
+                    PluginServices.getMDIManager().closeWindow(
+                        PluginServices.getMDIManager().getActiveWindow());
+                }
+            }
+        }
+
+        removeEditionManagerListeners();
+        return false;
+    }
+
+	/**
      * It stops the row editing when the save button is pressed.
      * 
      */
