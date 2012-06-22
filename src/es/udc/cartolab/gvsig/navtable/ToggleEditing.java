@@ -24,7 +24,6 @@
 package es.udc.cartolab.gvsig.navtable;
 
 import java.io.IOException;
-import java.sql.Types;
 import java.text.ParseException;
 
 import org.apache.log4j.Logger;
@@ -91,6 +90,7 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
  * @author Pablo Sanxiao
  * @author Francisco Puga
  * @author Andres Maneiro
+ * @author Jorge Lopez
  */
 
 public class ToggleEditing {
@@ -104,31 +104,24 @@ public class ToggleEditing {
     /**
      * @param layer
      *            The vectorial layer to be edited.
+     * @param mapcontrol
+     *            The MapControl of the View where we opened the NavTable
      */
-    public void startEditing(FLayer layer) {
-
-	CADExtension.initFocus();
-	com.iver.andami.ui.mdiManager.IWindow f = PluginServices
-		.getMDIManager().getActiveWindow();
-
-	if (f instanceof BaseView) {
-	    BaseView vista = (BaseView) f;
-	    MapControl mapControl = vista.getMapControl();
-
-	    IProjectView model = vista.getModel();
-	    FLayers layers = model.getMapContext().getLayers();
-	    layers.setAllActives(false);
+    public void startEditing(FLayer layer, MapControl mapcontrol) {
 
 	    if (layer instanceof FLyrVect) {
 		layer.setActive(true);
-		EditionManager editionManager = CADExtension
-			.getEditionManager();
-		editionManager.setMapControl(mapControl);
 
 		FLyrVect lv = (FLyrVect) layer;
 
+		EditionManager editionManager = null;
+		if (mapcontrol != null) {
+		editionManager = CADExtension
+			.getEditionManager();
+		editionManager.setMapControl(mapcontrol);
+
 		lv.addLayerListener(editionManager);
-		ILegend legendOriginal = lv.getLegend();
+	    }
 
 		try {
 		    lv.setEditing(true);
@@ -148,12 +141,10 @@ public class ToggleEditing {
 		    logger.error(e.getMessage(), e);
 		}
 
-		if (!(lv.getSource().getDriver() instanceof IndexedShpDriver)) {
-		    VectorialLayerEdited vle = (VectorialLayerEdited) editionManager
-			    .getLayerEdited(lv);
-		    vle.setLegend(legendOriginal);
+
+		if (mapcontrol != null) {
+		    vea.getCommandRecord().addCommandListener(mapcontrol);
 		}
-		vea.getCommandRecord().addCommandListener(mapControl);
 		// If there's a table linked to this layer, its model is changed
 		// to VectorialEditableAdapter.
 		ProjectExtension pe = (ProjectExtension) PluginServices
@@ -163,9 +154,7 @@ public class ToggleEditing {
 		    pt.setModel(vea);
 		    changeModelTable(pt, vea);
 		}
-		vista.repaintMap();
 	    }
-	}
     }
 
     public void startEditing(IEditableSource source) {
@@ -195,7 +184,7 @@ public class ToggleEditing {
 	    layers.setAllActives(false);
 	    layer = layers.getLayer(layerName);
 	}
-	startEditing(layer);
+	startEditing(layer, null);
     }
 
     /**
@@ -203,45 +192,41 @@ public class ToggleEditing {
      *            The layer wich edition will be stoped.
      * @param cancel
      *            false if we want to save the layer, true if we don't.
+     * @param mapcontrol
+     *            The MapControl of the View where we opened the NavTable.
      */
-    public void stopEditing(FLayer layer, boolean cancel) {
-
-	EditionManager edMan = CADExtension.getEditionManager();
-	com.iver.andami.ui.mdiManager.IWindow f = PluginServices
-		.getMDIManager().getActiveWindow();
+    public void stopEditing(FLayer layer, boolean cancel, MapControl mapcontrol) {
 
 	try {
-	    if (f instanceof BaseView) {
-		BaseView vista = (BaseView) f;
-		MapControl mapControl = vista.getMapControl();
-
-		IProjectView model = vista.getModel();
-		FLayers layers = model.getMapContext().getLayers();
-		layers.setAllActives(false);
+	    if (layer instanceof FLyrVect) {
+		if (mapcontrol != null) {
+		    FLayers layers = mapcontrol.getMapContext().getLayers();
+		    layers.setAllActives(false);
+		}
 		if (cancel) {
 		    cancelEdition((FLyrVect) layer);
 		} else {
 		    saveLayer((FLyrVect) layer);
 		}
+    	
+		if (CADExtension.getCADToolAdapter() != null) {
+		    EditionManager edMan = CADExtension.getEditionManager();
 
-		VectorialLayerEdited lyrEd = (VectorialLayerEdited) edMan
+		    VectorialLayerEdited lyrEd = (VectorialLayerEdited) edMan
 			.getActiveLayerEdited();
-		try {
-		    ((FLyrVect) layer).getRecordset().removeSelectionListener(
-			    lyrEd);
-		} catch (ReadDriverException e) {
-		    NotificationManager
-		    .addError("Remove Selection Listener", e);
+		    try {
+			((FLyrVect) layer).getRecordset().removeSelectionListener(
+				lyrEd);
+		    } catch (ReadDriverException e) {
+			NotificationManager
+			.addError("Remove Selection Listener", e);
+		    }
 		}
 
-		VectorialEditableAdapter vea = (VectorialEditableAdapter) ((FLyrVect) layer)
+		if (mapcontrol != null) {
+		    VectorialEditableAdapter vea = (VectorialEditableAdapter) ((FLyrVect) layer)
 			.getSource();
-		vea.getCommandRecord().removeCommandListener(mapControl);
-		if (!(((FLyrVect) layer).getSource().getDriver() instanceof IndexedShpDriver)) {
-		    VectorialLayerEdited vle = (VectorialLayerEdited) CADExtension
-			    .getEditionManager().getLayerEdited(layer);
-		    ((FLyrVect) layer).setLegend((IVectorLegend) vle
-			    .getLegend());
+		    vea.getCommandRecord().removeCommandListener(mapcontrol);
 		}
 		layer.setEditing(false);
 		layer.setActive(true);
@@ -249,8 +234,6 @@ public class ToggleEditing {
 	} catch (DriverException e) {
 	    logger.error(e.getMessage(), e);
 	} catch (IOException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (LegendLayerException e) {
 	    logger.error(e.getMessage(), e);
 	} catch (StartEditionLayerException e) {
 	    logger.error(e.getMessage(), e);
@@ -280,7 +263,7 @@ public class ToggleEditing {
 	    layer = layers.getLayer(layerName);
 	}
 
-	stopEditing(layer, cancel);
+	stopEditing(layer, cancel, null);
     }
 
     public void stopEditing(IEditableSource source) {
@@ -465,6 +448,17 @@ public class ToggleEditing {
 		EditionEvent.ALPHANUMERIC);
     }
 
+    public void deleteRow(FLyrVect layer, int rowPosition) {
+	try {
+	    IEditableSource source = (IEditableSource) layer.getSource();
+	    source.removeRow(rowPosition, "NAVTABLE DELETE", EditionEvent.ALPHANUMERIC);
+	} catch (ExpansionFileReadException e) {
+		e.printStackTrace();
+	} catch (ReadDriverException e) {
+		e.printStackTrace();
+	}
+    }
+
     /**
      * Modify an the desired of values of a register IMPORTANT: StartEditing and
      * StopEditing is required before and after call this method.
@@ -514,7 +508,6 @@ public class ToggleEditing {
 	try {
 	    Value[] attributes = getNewAttributes(
 		    source, rowPosition, attIndexes, attValues);
-
 	    IRow newRow = new DefaultRow(attributes);
 	    source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
 		    EditionEvent.ALPHANUMERIC);

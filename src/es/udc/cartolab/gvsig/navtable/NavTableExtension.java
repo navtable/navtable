@@ -36,6 +36,8 @@ import com.iver.andami.preferences.IPreference;
 import com.iver.andami.preferences.IPreferenceExtension;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.cit.gvsig.About;
+import com.iver.cit.gvsig.CADExtension;
+import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -67,8 +69,15 @@ public class NavTableExtension extends Extension implements
     }
 
     private void openNavtable() {
+	MapControl mapcontrol = null;
+	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
+
+	if (iWindow instanceof BaseView) {
+	    CADExtension.initFocus();
+	    mapcontrol = ((BaseView) iWindow).getMapControl();
+	}
 	for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
-	    NavTable navtable = new NavTable(vectorialLyr);
+	    NavTable navtable = new NavTable(vectorialLyr, mapcontrol);
 	    if (navtable.init()) {
 		PluginServices.getMDIManager().addCentredWindow(navtable);
 	    }

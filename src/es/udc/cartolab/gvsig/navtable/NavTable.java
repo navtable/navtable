@@ -20,6 +20,7 @@
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Est�vez Vali�as <valdaris (at) gmail (dot) com>
  *   Andres Maneiro <andres.maneiro@gmail.com>
+ *   Jorge Lopez Fernandez<lopez.fernandez.jorge (at) gmail (dot) com>
  */
 package es.udc.cartolab.gvsig.navtable;
 
@@ -60,13 +61,22 @@ import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
+import com.iver.cit.gvsig.CADExtension;
+import com.iver.cit.gvsig.EditionManager;
+import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
+import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
+import com.iver.cit.gvsig.fmap.edition.EditionEvent;
+import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
+import com.iver.cit.gvsig.fmap.layers.LayerListener;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
+import com.iver.cit.gvsig.layers.VectorialLayerEdited;
+import com.iver.cit.gvsig.project.documents.view.gui.View;
 import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
@@ -97,11 +107,11 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  * @author Nacho Varela
  * @author Pablo Sanxiao
  * @author Andres Maneiro
+ * @author Jorge Lopez Fernandez
  */
 public class NavTable extends AbstractNavTable implements PositionListener {
 
     private static final long serialVersionUID = 1L;
-    private IWindow window;
     protected WindowInfo viewInfo = null;
 
     private boolean isFillingValues = false;
@@ -120,8 +130,18 @@ public class NavTable extends AbstractNavTable implements PositionListener {
     // Mouse buttons constants
     final int BUTTON_RIGHT = 3;
 
+    public NavTable(FLyrVect layer, MapControl mapcontrol) {
+	super(layer, mapcontrol);
+	this.mapcontrol = mapcontrol;
+    }
+
     public NavTable(FLyrVect layer) {
-	super(layer);
+	super(layer, null);
+    }
+
+    public NavTable(SelectableDataSource recordset, String tableName, MapControl mapcontrol) {
+	super(recordset, tableName);
+	this.mapcontrol = mapcontrol;
     }
 
     public NavTable(SelectableDataSource recordset, String tableName) {
@@ -365,12 +385,13 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	SelectableDataSource sds = getRecordset();
 	sds.addSelectionListener(this);
 	this.addPositionListener(this);
-	window = PluginServices.getMDIManager().getActiveWindow();
 	try {
 	    if ((!openEmptyLayers) && (sds.getRowCount() <= 0)) {
 		JOptionPane.showMessageDialog(this,
 			PluginServices.getText(this, "emptyLayer"));
-		this.layer.removeLayerListener(this.listener);
+		if (this.layer != null) {
+		    this.layer.removeLayerListener(this.listener);
+		}
 		return false;
 	    }
 	} catch (HeadlessException e) {
@@ -573,11 +594,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 		value = String.valueOf(Math.round(geom.getLength()));
 		model.setValueAt(value, sds.getFieldCount(), 1);
 		// Fill GEOM_AREA
-		value = "0.0";
-		source.start();
-		g = source.getShape(new Long(getPosition()).intValue());
-		source.stop();
-		geom = g.toJTSGeometry();
 		// TODO Format number (Set units in Preferences)
 		value = String.valueOf(Math.round(geom.getArea()));
 		model.setValueAt(value, sds.getFieldCount() + 1, 1);
@@ -641,13 +657,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
     protected boolean isSaveable() {
 	stopCellEdition();
 
-	// close all windows until get the view we're working on as the active
-	// window.
-	while (!window.equals(PluginServices.getMDIManager().getActiveWindow())) {
-	    PluginServices.getMDIManager().closeWindow(
-		    PluginServices.getMDIManager().getActiveWindow());
-	}
-
 	if (layer.isWritable()) {
 	    return true;
 	} else {
@@ -709,13 +718,13 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	    try {
 		ToggleEditing te = new ToggleEditing();
 		boolean wasEditing = layer.isEditing();
-		if (!wasEditing) {
-		    te.startEditing(layer);
-		}
-		te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
-		if (!wasEditing) {
-		    te.stopEditing(layer, false);
-		}
+	    if (!wasEditing) {
+	        te.startEditing(layer, mapcontrol);
+	    }
+	    te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
+	    if (!wasEditing) {
+	        te.stopEditing(layer, false, mapcontrol);
+	    }
 		setChangedValues(false);
 		return true;
 	    } catch (Exception e) {
@@ -728,7 +737,55 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	return false;
     }
 
-    /**
+    @Override
+    public void deleteRecord() {
+	try {
+	    boolean layerEditing = true;
+	    ReadableVectorial feats = layer.getSource();
+	    feats.start();
+	    if (getPosition() > EMPTY_REGISTER) {
+		ToggleEditing te = new ToggleEditing();
+		if (!layer.isEditing()) {
+		    layerEditing = false;
+		    te.startEditing(layer, mapcontrol);
+		}
+		if (mapcontrol != null) {
+		    VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
+		    VectorialEditableAdapter vea = vle.getVEA();
+		    vea.removeRow((int) getPosition(), CADExtension.getCADTool()
+		        .getName(), EditionEvent.GRAPHIC);
+		    layer.getSelectionSupport().removeSelectionListener(vle);
+		} else {
+		    te.deleteRow(layer, (int) getPosition());
+		}
+		if (!layerEditing) {
+		    te.stopEditing(layer, false, mapcontrol);
+		}
+		layer.setActive(true);
+		if (layer.getSource().getRecordset().getRowCount() <= 0) {
+		    PluginServices.getMDIManager().closeWindow(this);
+		    JOptionPane.showMessageDialog(this,
+		        PluginServices.getText(this, "emptyLayer"));
+		    return;
+		}
+		refreshGUI();
+	    }
+	} catch (ExpansionFileReadException e) {
+	    logger.error(e.getMessage(), e);
+	} catch (ReadDriverException e) {
+	    logger.error(e.getMessage(), e);
+	}
+    }
+
+    private void removeEditionManagerListeners() {
+        for (LayerListener listener : layer.getLayerListeners()) {
+            if (listener instanceof EditionManager) {
+                layer.removeLayerListener(listener);
+            }
+        }
+    }
+
+	/**
      * It stops the row editing when the save button is pressed.
      * 
      */
