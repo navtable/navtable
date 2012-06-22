@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/libUIComponent"/>
 	<classpathentry kind="lib" path="/libFMap/lib/jts-1.12.jar"/>
+	<classpathentry kind="src" path="/extJDBC"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
