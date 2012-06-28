@@ -367,7 +367,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	this.addPositionListener(this);
 	window = PluginServices.getMDIManager().getActiveWindow();
 	try {
-	    if (sds.getRowCount() <= 0) {
+	    if ((!openEmptyLayers) && (sds.getRowCount() <= 0)) {
 		JOptionPane.showMessageDialog(this,
 			PluginServices.getText(this, "emptyLayer"));
 		this.layer.removeLayerListener(this.listener);
@@ -392,6 +392,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	getThisSouthPanel().add(southPanel);
 
 	fillAttributes();
+	setPosition(0);
 
 	refreshGUI();
 	super.repaint();

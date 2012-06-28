@@ -71,6 +71,7 @@ public class AlphanumericNavTable extends NavTable {
 	this.model = model;
 	this.model.addEditionListener(listener);
 	this.indexesOfRowsAdded = new ArrayList<Integer>();
+	this.openEmptyLayers = true;
     }
 
     public AlphanumericNavTable(IEditableSource model, String dataName,
@@ -80,6 +81,7 @@ public class AlphanumericNavTable extends NavTable {
 	this.model = model;
 	this.defaultValues = defaultValues;
 	this.model.addEditionListener(listener);
+	this.openEmptyLayers = true;
     }
 
     @Override

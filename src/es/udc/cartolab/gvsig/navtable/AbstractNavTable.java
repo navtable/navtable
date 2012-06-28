@@ -155,6 +155,7 @@ ActionListener, SelectionListener, IWindowListener {
     private JPanel actionsToolBar;
     private JPanel optionsPanel;
 
+    protected boolean openEmptyLayers = false;
     protected boolean isAlphanumericNT = false;
 
     /**
