@@ -51,6 +51,7 @@ import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
+import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
@@ -158,6 +159,8 @@ ActionListener, SelectionListener, IWindowListener {
     protected boolean openEmptyLayers = false;
     protected boolean isAlphanumericNT = false;
 
+    protected MapControl mapcontrol = null;
+
     /**
      * 
      * Constructor of the class. It gets the data from the layer and stores it
@@ -166,9 +169,10 @@ ActionListener, SelectionListener, IWindowListener {
      * @param layer
      *            Vectorial layer whose data will be accessed.
      */
-    public AbstractNavTable(FLyrVect layer) {
+    public AbstractNavTable(FLyrVect layer, MapControl mapcontrol) {
 	super();
 	this.layer = layer;
+	this.mapcontrol = mapcontrol;
 	this.listener = new EditionListener(this, layer);
 	this.layer.addLayerListener(this.listener);
 	this.dataName = layer.getName();
@@ -430,6 +434,10 @@ ActionListener, SelectionListener, IWindowListener {
 	cb = new JCheckBox(PluginServices.getText(this, toolTipName));
 	cb.addActionListener(this);
 	return cb;
+    }
+
+    public MapControl getMapControl() {
+	return mapcontrol;
     }
 
     private JPanel createNavigationToolBar() {
@@ -1133,41 +1141,7 @@ ActionListener, SelectionListener, IWindowListener {
 	}
     }
 
-    public void deleteRecord() {
-	try {
-	    boolean layerEditing = true;
-	    IWindow window = PluginServices.getMDIManager().getFocusWindow();
-	    ReadableVectorial feats = layer.getSource();
-	    feats.start();
-	    if (getPosition() > EMPTY_REGISTER) {
-		ToggleEditing te = new ToggleEditing();
-		if (!layer.isEditing()) {
-		    layerEditing = false;
-		    te.startEditing(layer);
-		}
-		VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
-		VectorialEditableAdapter vea = vle.getVEA();
-		vea.removeRow((int) getPosition(), CADExtension.getCADTool()
-			.getName(), EditionEvent.GRAPHIC);
-		layer.getSelectionSupport().removeSelectionListener(vle);
-		if (!layerEditing) {
-		    te.stopEditing(layer, false);
-		}
-		layer.setActive(true);
-		if (layer.getSource().getRecordset().getRowCount() <= 0) {
-			PluginServices.getMDIManager().closeWindow(window);
-			JOptionPane.showMessageDialog(this,
-					PluginServices.getText(this, "emptyLayer"));
-			return;
-		}
-		refreshGUI();
-	    }
-	} catch (ExpansionFileReadException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	}
-    }
+    public abstract void deleteRecord();
 
     private boolean isValidPosition(Long pos) {
 	if (pos == null) {
