@@ -101,7 +101,6 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
 public class NavTable extends AbstractNavTable implements PositionListener {
 
     private static final long serialVersionUID = 1L;
-    private IWindow window;
     protected WindowInfo viewInfo = null;
 
     private boolean isFillingValues = false;
@@ -365,7 +364,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	SelectableDataSource sds = getRecordset();
 	sds.addSelectionListener(this);
 	this.addPositionListener(this);
-	window = PluginServices.getMDIManager().getActiveWindow();
 	try {
 	    if ((!openEmptyLayers) && (sds.getRowCount() <= 0)) {
 		JOptionPane.showMessageDialog(this,
@@ -640,13 +638,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 
     protected boolean isSaveable() {
 	stopCellEdition();
-
-	// close all windows until get the view we're working on as the active
-	// window.
-	while (!window.equals(PluginServices.getMDIManager().getActiveWindow())) {
-	    PluginServices.getMDIManager().closeWindow(
-		    PluginServices.getMDIManager().getActiveWindow());
-	}
 
 	if (layer.isWritable()) {
 	    return true;
