@@ -136,6 +136,7 @@ ActionListener, SelectionListener, IWindowListener {
     protected JButton selectionB = null;
     protected JButton saveB = null;
     protected JButton removeB = null;
+    protected JButton undoB = null;
     // navigation buttons
     protected JButton firstB = null;
     protected JButton beforeB = null;
@@ -263,6 +264,7 @@ ActionListener, SelectionListener, IWindowListener {
      * Set true or false the boolean variable changedValues
      */
     protected void setChangedValues(boolean bool) {
+	undoB.setEnabled(bool);
 	changedValues = bool;
     }
 
@@ -474,6 +476,10 @@ ActionListener, SelectionListener, IWindowListener {
 
 	removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-remove", removeB);
+
+	undoB = getNavTableButton(undoB, "/edit-undo.png", "clearChangesButtonTooltip");
+	undoB.setEnabled(false);
+	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes", undoB);
     }
 
     /**
@@ -1083,6 +1089,10 @@ ActionListener, SelectionListener, IWindowListener {
 	    if (answer == 0) {
 		deleteRecord();
 	    }
+	} else if (e.getSource() == undoB) {
+	    fillValues();
+	    setChangedValues(false);
+	    refreshGUI();
 	}
     }
 
