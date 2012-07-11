@@ -41,6 +41,7 @@ import com.iver.cit.gvsig.fmap.MapControl;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
+import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.cit.gvsig.gui.panels.FPanelAbout;
 import com.iver.cit.gvsig.project.documents.table.gui.Table;
 import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
@@ -59,7 +60,6 @@ IPreferenceExtension {
     private IPreference[] preferencesPage;
     protected static Logger logger = Logger.getLogger("NavTable");
 
-
     public void execute(String actionCommand) {
 	if (enableNavtable()) {
 	    openNavtable();
@@ -74,12 +74,24 @@ IPreferenceExtension {
 	if(iWindow instanceof BaseView){
 	    CADExtension.initFocus();
 	    mc = ((BaseView) iWindow).getMapControl();
-	    for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
-		NavTable navtable = new NavTable(mc, vectorialLyr);
-		if (navtable.init()) {
-		    PluginServices.getMDIManager().addCentredWindow(navtable);
+	    if(isActiveWindowAttTableFromLayer()){
+		Table t = (Table) PluginServices.getMDIManager().getActiveWindow();
+		AlphanumericData data = t.getModel().getAssociatedTable();
+		if(data instanceof FLyrVect){
+		    NavTable nt = new NavTable(mc, (FLyrVect) data);
+		    if(nt.init()){
+			PluginServices.getMDIManager().addCentredWindow(nt);
+		    }
+		}
+	    } else {		
+		for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
+		    NavTable navtable = new NavTable(mc, vectorialLyr);
+		    if (navtable.init()) {
+			PluginServices.getMDIManager().addCentredWindow(navtable);
+		    }
 		}
 	    }
+
 	}
     }
 
@@ -140,20 +152,24 @@ IPreferenceExtension {
     }
 
     protected boolean enableNavtable() {
-	return !getActiveVectorialLayersOnTheActiveWindow().isEmpty();
+	return !getActiveVectorialLayersOnTheActiveWindow().isEmpty() || isActiveWindowAttTableFromLayer();
     }
 
     protected boolean enableAlphanumericNavtable() {
 	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
 	if ((iWindow != null) && (iWindow.getClass() == Table.class)
-		&& isAttTableFromLayer(iWindow)) {
+		&& isActiveWindowAttTableFromLayer()) {
 	    return true;
 	}
 	return false;
     }
 
-    private boolean isAttTableFromLayer(IWindow v) {
-	return ((Table) v).getModel().getAssociatedTable() == null;
+    private boolean isActiveWindowAttTableFromLayer() {
+	IWindow w = PluginServices.getMDIManager().getActiveWindow();
+	if(!(w instanceof Table)){
+	    return false;
+	}
+	return ((Table) w).getModel().getAssociatedTable() instanceof FLyrVect;
     }
 
 
