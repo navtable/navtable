@@ -24,7 +24,6 @@
 package es.udc.cartolab.gvsig.navtable;
 
 import java.io.IOException;
-import java.sql.Types;
 import java.text.ParseException;
 
 import org.apache.log4j.Logger;
@@ -42,7 +41,6 @@ import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
 import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileWriteException;
 import com.iver.cit.gvsig.exceptions.layers.CancelEditingLayerException;
-import com.iver.cit.gvsig.exceptions.layers.LegendLayerException;
 import com.iver.cit.gvsig.exceptions.layers.StartEditionLayerException;
 import com.iver.cit.gvsig.exceptions.table.CancelEditingTableException;
 import com.iver.cit.gvsig.exceptions.validate.ValidateRowException;
@@ -58,7 +56,6 @@ import com.iver.cit.gvsig.fmap.core.IRow;
 import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
 import com.iver.cit.gvsig.fmap.drivers.ILayerDefinition;
 import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
-import com.iver.cit.gvsig.fmap.drivers.shp.IndexedShpDriver;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.edition.EditionExceptionOld;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
@@ -72,13 +69,9 @@ import com.iver.cit.gvsig.fmap.edition.rules.RulePolygon;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLayers;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.fmap.rendering.ILegend;
-import com.iver.cit.gvsig.fmap.rendering.IVectorLegend;
 import com.iver.cit.gvsig.layers.VectorialLayerEdited;
 import com.iver.cit.gvsig.project.documents.table.ProjectTable;
 import com.iver.cit.gvsig.project.documents.table.gui.Table;
-import com.iver.cit.gvsig.project.documents.view.IProjectView;
-import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
@@ -91,199 +84,157 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
  * @author Pablo Sanxiao
  * @author Francisco Puga
  * @author Andres Maneiro
+ * @author Jorge Lopez
  */
 
 public class ToggleEditing {
 
     protected static Logger logger = Logger.getLogger("ToggleEditing");
 
-    public boolean toggle(FLayer layer) {
-	return true;
-    }
-
     /**
-     * @param layer
-     *            The vectorial layer to be edited.
+     * @param mapcontrol - The MapControl of the View where we opened the NavTable.
+     * @param layer - The vectorial layer to be edited.
      */
-    public void startEditing(FLayer layer) {
+    public boolean startEditing(MapControl mc, FLayer layer) {
 
-	CADExtension.initFocus();
-	com.iver.andami.ui.mdiManager.IWindow f = PluginServices
-		.getMDIManager().getActiveWindow();
-
-	if (f instanceof BaseView) {
-	    BaseView vista = (BaseView) f;
-	    MapControl mapControl = vista.getMapControl();
-
-	    IProjectView model = vista.getModel();
-	    FLayers layers = model.getMapContext().getLayers();
-	    layers.setAllActives(false);
-
-	    if (layer instanceof FLyrVect) {
-		layer.setActive(true);
-		EditionManager editionManager = CADExtension
-			.getEditionManager();
-		editionManager.setMapControl(mapControl);
-
-		FLyrVect lv = (FLyrVect) layer;
-
-		lv.addLayerListener(editionManager);
-		ILegend legendOriginal = lv.getLegend();
-
-		try {
-		    lv.setEditing(true);
-		} catch (StartEditionLayerException e) {
-		    logger.error(e.getMessage(), e);
-		}
-		VectorialEditableAdapter vea = (VectorialEditableAdapter) lv
-			.getSource();
-
-		vea.getRules().clear();
-		try {
-		    if (vea.getShapeType() == FShape.POLYGON) {
-			IRule rulePol = new RulePolygon();
-			vea.getRules().add(rulePol);
-		    }
-		} catch (ReadDriverException e) {
-		    logger.error(e.getMessage(), e);
-		}
-
-		if (!(lv.getSource().getDriver() instanceof IndexedShpDriver)) {
-		    VectorialLayerEdited vle = (VectorialLayerEdited) editionManager
-			    .getLayerEdited(lv);
-		    vle.setLegend(legendOriginal);
-		}
-		vea.getCommandRecord().addCommandListener(mapControl);
-		// If there's a table linked to this layer, its model is changed
-		// to VectorialEditableAdapter.
-		ProjectExtension pe = (ProjectExtension) PluginServices
-			.getExtension(ProjectExtension.class);
-		ProjectTable pt = pe.getProject().getTable(lv);
-		if (pt != null) {
-		    pt.setModel(vea);
-		    changeModelTable(pt, vea);
-		}
-		vista.repaintMap();
-	    }
+	boolean isOK = false;
+	if(mc == null){	    
+	    return isOK;
 	}
+
+	if (layer instanceof FLyrVect) {
+	    mc.getMapContext().getLayers().setAllActives(false);
+	    layer.setActive(true);
+
+	    EditionManager editionManager = CADExtension
+		    .getEditionManager();
+	    editionManager.setMapControl(mc);
+
+	    FLyrVect lv = (FLyrVect) layer;
+	    lv.addLayerListener(editionManager);
+
+	    try {
+		lv.setEditing(true);
+	    } catch (StartEditionLayerException e) {
+		logger.error(e.getMessage(), e);
+	    }
+	    VectorialEditableAdapter vea = (VectorialEditableAdapter) lv
+		    .getSource();
+
+	    vea.getRules().clear();
+	    try {
+		if (vea.getShapeType() == FShape.POLYGON) {
+		    IRule rulePol = new RulePolygon();
+		    vea.getRules().add(rulePol);
+		}
+	    } catch (ReadDriverException e) {
+		logger.error(e.getMessage(), e);
+		return false;
+	    }
+
+	    vea.getCommandRecord().addCommandListener(mc);
+
+	    // If there's a table linked to this layer, its model is changed
+	    // to VectorialEditableAdapter.
+	    ProjectExtension pe = (ProjectExtension) PluginServices
+		    .getExtension(ProjectExtension.class);
+	    ProjectTable pt = pe.getProject().getTable(lv);
+	    if (pt != null) {
+		pt.setModel(vea);
+		Table table = getModelTable(pt);
+		if(table != null){		    
+		    table.setModel(pt);
+		    vea.getCommandRecord().addCommandListener(table);
+		}
+	    }
+	isOK = true;
+	}
+	return isOK;
     }
 
-    public void startEditing(IEditableSource source) {
+    public boolean startEditing(IEditableSource source) {
 	try {
 	    source.startEdition(EditionEvent.ALPHANUMERIC);
+	    return true;
 	} catch (StartWriterVisitorException e) {
 	    logger.error(e.getMessage(), e);
+	    return false;
 	}
     }
 
     /**
-     * Checks the layers from the TOC and get the layer to be edited with its
-     * name.
-     * 
-     * @param layerName
-     *            The name of the layer to be edited.
+     * @param mapcontrol - The MapControl of the View where we opened the NavTable.
+     * @param layer - The layer wich edition will be stoped.
+     * @param cancel - false if we want to save the layer, true if we don't.
      */
-    @Deprecated
-    public void startEditing(String layerName) {
-	FLayer layer = null;
-	com.iver.andami.ui.mdiManager.IWindow f = PluginServices
-		.getMDIManager().getActiveWindow();
-	if (f instanceof BaseView) {
-	    BaseView vista = (BaseView) f;
-	    IProjectView model = vista.getModel();
-	    FLayers layers = model.getMapContext().getLayers();
-	    layers.setAllActives(false);
-	    layer = layers.getLayer(layerName);
+    public boolean stopEditing(MapControl mc, FLayer layer, boolean cancel) {
+
+	if(mc == null){
+	    return false;
 	}
-	startEditing(layer);
-    }
-
-    /**
-     * @param layer
-     *            The layer wich edition will be stoped.
-     * @param cancel
-     *            false if we want to save the layer, true if we don't.
-     */
-    public void stopEditing(FLayer layer, boolean cancel) {
-
-	EditionManager edMan = CADExtension.getEditionManager();
-	com.iver.andami.ui.mdiManager.IWindow f = PluginServices
-		.getMDIManager().getActiveWindow();
 
 	try {
-	    if (f instanceof BaseView) {
-		BaseView vista = (BaseView) f;
-		MapControl mapControl = vista.getMapControl();
-
-		IProjectView model = vista.getModel();
-		FLayers layers = model.getMapContext().getLayers();
+	    if(layer instanceof FLyrVect){
+		FLayers layers = mc.getMapContext().getLayers();
 		layers.setAllActives(false);
 		if (cancel) {
-		    cancelEdition((FLyrVect) layer);
+		    cancelEdition(layer);
 		} else {
 		    saveLayer((FLyrVect) layer);
 		}
 
-		VectorialLayerEdited lyrEd = (VectorialLayerEdited) edMan
-			.getActiveLayerEdited();
-		try {
-		    ((FLyrVect) layer).getRecordset().removeSelectionListener(
-			    lyrEd);
-		} catch (ReadDriverException e) {
-		    NotificationManager
-		    .addError("Remove Selection Listener", e);
-		}
+		if(CADExtension.getCADToolAdapter() != null){
+		    EditionManager em = CADExtension.getEditionManager();
+		    VectorialLayerEdited lyrEd = (VectorialLayerEdited) em.getActiveLayerEdited();
+		    try {
+			((FLyrVect) layer).getRecordset().removeSelectionListener(
+				lyrEd);
+		    } catch (ReadDriverException e) {
+			NotificationManager.addError("Remove Selection Listener", e);
+		    }
 
-		VectorialEditableAdapter vea = (VectorialEditableAdapter) ((FLyrVect) layer)
-			.getSource();
-		vea.getCommandRecord().removeCommandListener(mapControl);
-		if (!(((FLyrVect) layer).getSource().getDriver() instanceof IndexedShpDriver)) {
-		    VectorialLayerEdited vle = (VectorialLayerEdited) CADExtension
-			    .getEditionManager().getLayerEdited(layer);
-		    ((FLyrVect) layer).setLegend((IVectorLegend) vle
-			    .getLegend());
+		    VectorialEditableAdapter vea = (VectorialEditableAdapter) ((FLyrVect) layer)
+			    .getSource();
+		    vea.getCommandRecord().removeCommandListener(mc);
 		}
 		layer.setEditing(false);
 		layer.setActive(true);
+	    return true;
 	    }
+	    return false;
 	} catch (DriverException e) {
 	    logger.error(e.getMessage(), e);
-	} catch (IOException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (LegendLayerException e) {
-	    logger.error(e.getMessage(), e);
+	    return false;
 	} catch (StartEditionLayerException e) {
 	    logger.error(e.getMessage(), e);
+	    return false;
 	} catch (EditionExceptionOld e) {
 	    logger.error(e.getMessage(), e);
+	    return false;
 	}
     }
 
-    /**
-     * @param layer
-     *            The name of the layer wich edition will be stoped.
-     * @param cancel
-     *            false if we want to save the layer, true if we don't.
-     */
-    @Deprecated
-    public void stopEditing(String layerName, boolean cancel) {
-
-	FLayer layer = null;
-	com.iver.andami.ui.mdiManager.IWindow f = PluginServices
-		.getMDIManager().getActiveWindow();
-
-	if (f instanceof BaseView) {
-	    BaseView vista = (BaseView) f;
-	    IProjectView model = vista.getModel();
-	    FLayers layers = model.getMapContext().getLayers();
-	    layers.setAllActives(false);
-	    layer = layers.getLayer(layerName);
+    private void cancelEdition(FLayer layer) {
+	layer.setProperty("stoppingEditing", new Boolean(true));
+	VectorialEditableAdapter vea = (VectorialEditableAdapter) 
+		((FLyrVect) layer).getSource();
+	try {
+	    vea.cancelEdition(EditionEvent.GRAPHIC);
+	} catch (CancelEditingLayerException e) {
+	    logger.error(e.getMessage(), e);
 	}
-
-	stopEditing(layer, cancel);
+	Table table = getTableFromLayer(layer);
+	if(table != null){
+	    try {
+		table.cancelEditing();
+	    } catch (CancelEditingTableException e) {
+		logger.error(e.getMessage(), e);
+	    }	    
+	}
+	layer.setProperty("stoppingEditing", new Boolean(false));
     }
 
-    public void stopEditing(IEditableSource source) {
+    public boolean stopEditing(IEditableSource source) {
 	try {
 	    IWriteable w = (IWriteable) source;
 	    IWriter writer = w.getWriter();
@@ -292,60 +243,23 @@ public class ToggleEditing {
 			"No existe driver de escritura para la tabla"
 				+ source.getRecordset().getName(),
 				new EditionExceptionOld());
+		return false;
 	    } else {
 		ITableDefinition tableDef = source.getTableDefinition();
 		writer.initialize(tableDef);
 		source.stopEdition(writer, EditionEvent.ALPHANUMERIC);
+		return true;
 	    }
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
+	    return false;
 	} catch (InitializeWriterException e) {
 	    logger.error(e.getMessage(), e);
+	    return false;
 	} catch (StopWriterVisitorException e) {
 	    logger.error(e.getMessage(), e);
+	    return false;
 	}
-    }
-
-    private void changeModelTable(ProjectTable pt, VectorialEditableAdapter vea) {
-	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
-		.getMDIManager().getAllWindows();
-	for (int i = 0; i < views.length; i++) {
-	    if (views[i] instanceof Table) {
-		Table table = (Table) views[i];
-		ProjectTable model = table.getModel();
-		if (model.equals(pt)) {
-		    table.setModel(pt);
-		    vea.getCommandRecord().addCommandListener(table);
-		}
-	    }
-	}
-    }
-
-    private void cancelEdition(FLyrVect layer) throws IOException {
-	layer.setProperty("stoppingEditing", new Boolean(true));
-	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
-		.getMDIManager().getAllWindows();
-	VectorialEditableAdapter vea = (VectorialEditableAdapter) layer
-		.getSource();
-	try {
-	    vea.cancelEdition(EditionEvent.GRAPHIC);
-	} catch (CancelEditingLayerException e) {
-	    logger.error(e.getMessage(), e);
-	}
-	for (int j = 0; j < views.length; j++) {
-	    if (views[j] instanceof Table) {
-		Table table = (Table) views[j];
-		if (table.getModel().getAssociatedTable() != null
-			&& table.getModel().getAssociatedTable().equals(layer)) {
-		    try {
-			table.cancelEditing();
-		    } catch (CancelEditingTableException e) {
-			logger.error(e.getMessage(), e);
-		    }
-		}
-	    }
-	}
-	layer.setProperty("stoppingEditing", new Boolean(false));
     }
 
     private void saveLayer(FLyrVect layer) throws DriverException,
@@ -355,16 +269,9 @@ public class ToggleEditing {
 		.getSource();
 
 	ISpatialWriter writer = (ISpatialWriter) vea.getWriter();
-	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
-		.getMDIManager().getAllWindows();
-	for (int j = 0; j < views.length; j++) {
-	    if (views[j] instanceof Table) {
-		Table table = (Table) views[j];
-		if (table.getModel().getAssociatedTable() != null
-			&& table.getModel().getAssociatedTable().equals(layer)) {
-		    table.stopEditingCell();
-		}
-	    }
+	Table table = getTableFromLayer(layer);
+	if(table != null){	    
+	    table.stopEditingCell();
 	}
 	vea.cleanSelectableDatasource();
 	try {
@@ -589,6 +496,40 @@ public class ToggleEditing {
 	    logger.error(e.getMessage(), e);
 	    return null;
 	}
+    }
+
+    private Table getModelTable(ProjectTable pt) {
+	// TODO: see how drop this IWindow dependence, by getting the Table 
+	// from internal info (layer, MapControl) instead of iterating 
+	// through all windows
+	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
+		.getMDIManager().getAllWindows();
+	for (int i = 0; i < views.length; i++) {
+	    if (views[i] instanceof Table) {
+		Table table = (Table) views[i];
+		ProjectTable model = table.getModel();
+		if (model.equals(pt)) {
+		    return table;
+		}
+	    }
+	}
+	return null;
+    }
+
+    private Table getTableFromLayer(FLayer layer) {
+	//TODO: see how drop this IWindow dependence
+	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
+		.getMDIManager().getAllWindows();
+	for (int j = 0; j < views.length; j++) {
+	    if (views[j] instanceof Table) {
+		Table table = (Table) views[j];
+		if (table.getModel().getAssociatedTable() != null
+			&& table.getModel().getAssociatedTable().equals(layer)) {
+		    return table;
+		}
+	    }
+	}
+	return null;
     }
 
 }
