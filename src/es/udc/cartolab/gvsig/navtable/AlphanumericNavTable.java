@@ -145,12 +145,6 @@ public class AlphanumericNavTable extends NavTable {
     }
 
     @Override
-    @Deprecated
-    protected void saveRegister() {
-	saveRecord();
-    }
-
-    @Override
     public boolean saveRecord() {
 	if (isSaveable()) {
 	    setSavingValues(true);

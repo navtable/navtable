@@ -631,12 +631,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	table.setRowSelectionInterval(row, row);
     }
 
-    @Override
-    @Deprecated
-    protected void saveRegister() {
-	saveRecord();
-    }
-
     protected boolean isSaveable() {
 	stopCellEdition();
 

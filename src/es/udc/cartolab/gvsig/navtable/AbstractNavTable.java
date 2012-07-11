@@ -31,7 +31,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -247,31 +246,11 @@ ActionListener, SelectionListener, IWindowListener {
     public abstract void fillEmptyValues();
 
     /**
-     * Deprecated method. Use instead {@link #setPosition(long)}
-     * @param rowPosition
-     */
-    @Deprecated
-    public void fillValues(long rowPosition) {
-	currentPosition = rowPosition;
-	refreshGUI();
-    }
-
-    /**
      * It selects a specific row into the table.
      * 
      * @param row
      */
     public abstract void selectRow(int row);
-
-    /**
-     * Checks if there's changed values.
-     * 
-     * @return a vector with the position of the values that have changed.
-     */
-    @Deprecated
-    protected Vector checkChangedValues() {
-	return new Vector();
-    }
 
     /**
      * @return true is some value has changed, false otherwise
@@ -285,15 +264,6 @@ ActionListener, SelectionListener, IWindowListener {
      */
     protected void setChangedValues(boolean bool) {
 	changedValues = bool;
-    }
-
-    /**
-     * Saves the changes of the current data row.
-     * 
-     */
-    @Deprecated
-    protected void saveRegister() {
-	saveRecord();
     }
 
     /**
@@ -453,21 +423,6 @@ ActionListener, SelectionListener, IWindowListener {
 	    }
 	}
 	return actionsToolBar;
-    }
-
-    /**
-     * Deprecated method: the original aim for this method was enable the
-     * developers to have a way to override the buttons on the south panel for
-     * their child applications (add more, delete, etc). If you are a developer
-     * and want to get that behaviour, check NAVTABLE_ACTIONS_TOOLBAR
-     * extensionPoint. Through it, you will have complete access to the toolbar.
-     * Check also #registerNavTableButtonsOnActionsToolBarExtensionPoint()
-     * method for a concrete example on the prefered way to do it.
-     */
-    @Deprecated
-    protected void initNavTableSouthPanelButtons() {
-	registerNavTableButtonsOnNavigationToolBarExtensionPoint();
-	registerNavTableButtonsOnActionToolBarExtensionPoint();
     }
 
     private void registerNavTableButtonsOnNavigationToolBarExtensionPoint() {
