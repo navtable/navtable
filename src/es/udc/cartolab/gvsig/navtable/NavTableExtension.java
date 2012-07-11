@@ -21,6 +21,7 @@
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
  *   Francisco Puga Alonso <fpuga (at) cartolab (dot) com>
+ *   Jorge Lopez Fernandez <jlopez (at) cartolab (dot) es>
  */
 package es.udc.cartolab.gvsig.navtable;
 
@@ -51,8 +52,7 @@ import es.udc.cartolab.gvsig.navtable.preferences.NavTablePreferencesPage;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.utils.NavTableTocMenuEntry;
 
-public class NavTableExtension extends Extension implements
-	IPreferenceExtension {
+public class NavTableExtension extends Extension implements IPreferenceExtension {
 
     private IPreference[] preferencesPage;
     protected static Logger logger = Logger.getLogger("NavTable");
@@ -67,10 +67,13 @@ public class NavTableExtension extends Extension implements
     }
 
     private void openNavtable() {
-	for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
-	    NavTable navtable = new NavTable(vectorialLyr);
-	    if (navtable.init()) {
-		PluginServices.getMDIManager().addCentredWindow(navtable);
+	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
+	if(iWindow instanceof BaseView){
+	    for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
+		NavTable navtable = new NavTable(vectorialLyr);
+		if (navtable.init()) {
+		    PluginServices.getMDIManager().addCentredWindow(navtable);
+		}
 	    }
 	}
     }

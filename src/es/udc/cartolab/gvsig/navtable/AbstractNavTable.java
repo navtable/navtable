@@ -20,6 +20,7 @@
  *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
+ *   Jorge Lopez Fernandez <jlopez (at) cartolab (dot) es>
  */
 package es.udc.cartolab.gvsig.navtable;
 
@@ -48,12 +49,9 @@ import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
-import com.iver.cit.gvsig.CADExtension;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
-import com.iver.cit.gvsig.fmap.edition.EditionEvent;
-import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
@@ -61,7 +59,6 @@ import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
 import com.iver.cit.gvsig.fmap.layers.SelectionListener;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
-import com.iver.cit.gvsig.layers.VectorialLayerEdited;
 import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
@@ -94,6 +91,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  * @author Javier Estevez
  * @author Pablo Sanxiao
  * @author Andres Maneiro
+ * @author Jorge Lopez
  * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow,
@@ -1136,7 +1134,6 @@ ActionListener, SelectionListener, IWindowListener {
     public void deleteRecord() {
 	try {
 	    boolean layerEditing = true;
-	    IWindow window = PluginServices.getMDIManager().getFocusWindow();
 	    ReadableVectorial feats = layer.getSource();
 	    feats.start();
 	    if (getPosition() > EMPTY_REGISTER) {
@@ -1145,20 +1142,16 @@ ActionListener, SelectionListener, IWindowListener {
 		    layerEditing = false;
 		    te.startEditing(layer);
 		}
-		VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
-		VectorialEditableAdapter vea = vle.getVEA();
-		vea.removeRow((int) getPosition(), CADExtension.getCADTool()
-			.getName(), EditionEvent.GRAPHIC);
-		layer.getSelectionSupport().removeSelectionListener(vle);
+		te.deleteRow(layer, (int) getPosition());
 		if (!layerEditing) {
 		    te.stopEditing(layer, false);
 		}
 		layer.setActive(true);
 		if (layer.getSource().getRecordset().getRowCount() <= 0) {
-			PluginServices.getMDIManager().closeWindow(window);
-			JOptionPane.showMessageDialog(this,
-					PluginServices.getText(this, "emptyLayer"));
-			return;
+		    PluginServices.getMDIManager().closeWindow(this);
+		    JOptionPane.showMessageDialog(this,
+			    PluginServices.getText(this, "emptyLayer"));
+		    return;
 		}
 		refreshGUI();
 	    }
