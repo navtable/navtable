@@ -1107,11 +1107,15 @@ ActionListener, SelectionListener, IWindowListener {
 		    layerEditing = false;
 		    te.startEditing(mapControl, layer);
 		}
-		VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
-		VectorialEditableAdapter vea = vle.getVEA();
-		vea.removeRow((int) getPosition(), CADExtension.getCADTool()
-			.getName(), EditionEvent.GRAPHIC);
-		layer.getSelectionSupport().removeSelectionListener(vle);
+		if(mapControl != null){
+		    VectorialLayerEdited vle = CADExtension.getCADTool().getVLE();
+		    VectorialEditableAdapter vea = vle.getVEA();
+		    vea.removeRow((int) getPosition(), CADExtension.getCADTool()
+			    .getName(), EditionEvent.GRAPHIC);
+		    layer.getSelectionSupport().removeSelectionListener(vle);
+		} else {
+		    te.deleteRow(layer, (int) getPosition());
+		}
 		if (!layerEditing) {
 		    te.stopEditing(mapControl, layer, false);
 		}

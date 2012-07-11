@@ -147,7 +147,7 @@ public class ToggleEditing {
 		    vea.getCommandRecord().addCommandListener(table);
 		}
 	    }
-	isOK = true;
+	    isOK = true;
 	}
 	return isOK;
     }
@@ -199,7 +199,7 @@ public class ToggleEditing {
 		}
 		layer.setEditing(false);
 		layer.setActive(true);
-	    return true;
+		return true;
 	    }
 	    return false;
 	} catch (DriverException e) {
@@ -530,6 +530,17 @@ public class ToggleEditing {
 	    }
 	}
 	return null;
+    }
+
+    public void deleteRow(FLyrVect layer, int position) {
+	try {
+	    IEditableSource source = (IEditableSource) layer.getSource();
+	    source.removeRow(position, "NAVTABLE DELETE", EditionEvent.ALPHANUMERIC);
+	} catch (ExpansionFileReadException e) {
+	    e.printStackTrace();
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	}
     }
 
 }
