@@ -40,6 +40,7 @@ import com.iver.cit.gvsig.About;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
+import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.cit.gvsig.gui.panels.FPanelAbout;
 import com.iver.cit.gvsig.project.documents.table.gui.Table;
 import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
@@ -73,6 +74,14 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
 		NavTable navtable = new NavTable(vectorialLyr);
 		if (navtable.init()) {
 		    PluginServices.getMDIManager().addCentredWindow(navtable);
+		}
+	    }
+	} else if(isActiveWindowAttTableFromLayer()){
+	    AlphanumericData data = ((Table) iWindow).getModel().getAssociatedTable();
+	    if(data instanceof FLyrVect){
+		NavTable nt = new NavTable((FLyrVect) data);
+		if(nt.init()){
+		    PluginServices.getMDIManager().addCentredWindow(nt);
 		}
 	    }
 	}
@@ -135,20 +144,24 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
     }
 
     protected boolean enableNavtable() {
-	return !getActiveVectorialLayersOnTheActiveWindow().isEmpty();
+	return !getActiveVectorialLayersOnTheActiveWindow().isEmpty() || isActiveWindowAttTableFromLayer();
     }
 
     protected boolean enableAlphanumericNavtable() {
 	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
 	if ((iWindow != null) && (iWindow.getClass() == Table.class)
-		&& isAttTableFromLayer(iWindow)) {
+		&& !(isActiveWindowAttTableFromLayer())) {
 	    return true;
 	}
 	return false;
     }
 
-    private boolean isAttTableFromLayer(IWindow v) {
-	return ((Table) v).getModel().getAssociatedTable() == null;
+    private boolean isActiveWindowAttTableFromLayer() {
+	IWindow w = PluginServices.getMDIManager().getActiveWindow();
+	if(!(w instanceof Table)){
+	    return false;
+	}
+	return ((Table) w).getModel().getAssociatedTable() instanceof FLyrVect;
     }
 
 
