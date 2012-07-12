@@ -20,12 +20,17 @@
  *   Juan Ignacio Varela García <nachouve (at) gmail (dot) com>
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Estévez Valiñas <valdaris (at) gmail (dot) com>
+ *   Jorge Lopez Fernandez <jlopez (at) cartolab (dot) es>
  */
 package es.udc.cartolab.gvsig.navtable.utils;
 
+import java.util.ArrayList;
+
 import com.iver.andami.PluginServices;
+import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
+import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
 import com.iver.cit.gvsig.project.documents.view.toc.AbstractTocContextMenuAction;
 import com.iver.cit.gvsig.project.documents.view.toc.ITocItem;
 
@@ -33,13 +38,16 @@ import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
 
-    private NavTable viewer = null;
-
     @Override
     public void execute(ITocItem item, FLayer[] selectedItems) {
-	viewer = new NavTable((FLyrVect) selectedItems[0]);
-	if (viewer.init()) {
-	    PluginServices.getMDIManager().addCentredWindow(viewer);
+	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
+	if(iWindow instanceof BaseView){
+	    for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
+		NavTable navtable = new NavTable(vectorialLyr);
+		if (navtable.init()) {
+		    PluginServices.getMDIManager().addCentredWindow(navtable);
+		}
+	    }
 	}
     }
 
@@ -80,6 +88,22 @@ public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
 	    }
 	}
 	return false;
+    }
+
+    private ArrayList<FLyrVect> getActiveVectorialLayersOnTheActiveWindow() {
+	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
+	ArrayList<FLyrVect> activeVectorialLayers = new ArrayList<FLyrVect>();
+
+	if (iWindow instanceof BaseView) {
+	    FLayer[] activeLayers = ((BaseView) iWindow).getMapControl()
+		    .getMapContext().getLayers().getActives();
+	    for (FLayer lyr : activeLayers) {
+		if (lyr instanceof FLyrVect) {
+		    activeVectorialLayers.add((FLyrVect) lyr);
+		}
+	    }
+	}
+	return activeVectorialLayers;
     }
 
 }

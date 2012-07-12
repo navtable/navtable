@@ -20,6 +20,7 @@
  *   Pablo Sanxiao Roca <psanxiao (at) gmail (dot) com>
  *   Javier Est�vez Vali�as <valdaris (at) gmail (dot) com>
  *   Andres Maneiro <andres.maneiro@gmail.com>
+ *   Jorge Lopez Fernandez <jlopez (at) cartolab (dot) es>
  */
 package es.udc.cartolab.gvsig.navtable;
 
@@ -58,7 +59,6 @@ import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -97,11 +97,11 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  * @author Nacho Varela
  * @author Pablo Sanxiao
  * @author Andres Maneiro
+ * @author Jorge Lopez
  */
 public class NavTable extends AbstractNavTable implements PositionListener {
 
     private static final long serialVersionUID = 1L;
-    private IWindow window;
     protected WindowInfo viewInfo = null;
 
     private boolean isFillingValues = false;
@@ -365,7 +365,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	SelectableDataSource sds = getRecordset();
 	sds.addSelectionListener(this);
 	this.addPositionListener(this);
-	window = PluginServices.getMDIManager().getActiveWindow();
 	try {
 	    if ((!openEmptyLayers) && (sds.getRowCount() <= 0)) {
 		JOptionPane.showMessageDialog(this,
@@ -422,7 +421,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 		    + File.separator
 		    + dataName.substring(0, dataName.lastIndexOf("."))
 		    : Preferences.getAliasDir() + File.separator + dataName;
-	    fileAlias = new File(pathToken + ".alias");
+		    fileAlias = new File(pathToken + ".alias");
 	} else {
 	    ReadableVectorial source = layer.getSource();
 
@@ -632,21 +631,8 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	table.setRowSelectionInterval(row, row);
     }
 
-    @Override
-    @Deprecated
-    protected void saveRegister() {
-	saveRecord();
-    }
-
     protected boolean isSaveable() {
 	stopCellEdition();
-
-	// close all windows until get the view we're working on as the active
-	// window.
-	while (!window.equals(PluginServices.getMDIManager().getActiveWindow())) {
-	    PluginServices.getMDIManager().closeWindow(
-		    PluginServices.getMDIManager().getActiveWindow());
-	}
 
 	if (layer.isWritable()) {
 	    return true;
