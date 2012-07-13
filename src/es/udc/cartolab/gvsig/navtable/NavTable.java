@@ -28,6 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -46,6 +47,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -230,6 +232,23 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	     * activated if only 1 row is selected.
 	     */
 	    if (e.getButton() == BUTTON_RIGHT) {
+
+		if ((e.getSource() != null) && (e.getSource().equals(table))) {
+		    // get the coordinates of the mouse click
+		    Point p = e.getPoint();
+
+		    // get the row index that contains that coordinate
+		    int rowNumber = table.rowAtPoint( p );
+
+		    if (rowNumber > -1) {
+			// Get the ListSelectionModel of the JTable
+			ListSelectionModel model = table.getSelectionModel();
+
+			// set the selected interval of rows. Using the "rowNumber"
+			// variable for the beginning and end selects only that one row.
+			model.setSelectionInterval( rowNumber, rowNumber );
+		    }
+		}
 
 		JPopupMenu popup = new JPopupMenu();
 
