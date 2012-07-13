@@ -85,6 +85,7 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
 		xml.putProperty(contextMenu.getName(), value);
 	    }
 	    contextMenuMap.get(contextMenu).setSelected(value);
+	    contextMenu.setUserVisibility(value);
 	}
     }
 
