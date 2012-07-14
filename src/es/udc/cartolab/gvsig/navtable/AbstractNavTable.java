@@ -1108,7 +1108,9 @@ ActionListener, SelectionListener, IWindowListener {
 			    PluginServices.getText(this, "emptyLayer"));
 		    return;
 		}
-		refreshGUI();
+
+		// keep the current position within boundaries
+		setPosition(getPosition());
 	    }
 	} catch (ExpansionFileReadException e) {
 	    logger.error(e.getMessage(), e);
