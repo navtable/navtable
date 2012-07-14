@@ -173,11 +173,6 @@ public class AlphanumericNavTable extends NavTable {
 	return false;
     }
 
-    @Deprecated
-    private void addRow() {
-	addRecord();
-    }
-
     public void addRecord() {
 	// Create a new empty record
 	// showWarning();
