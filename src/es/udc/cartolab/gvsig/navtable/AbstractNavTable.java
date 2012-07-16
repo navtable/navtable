@@ -1098,6 +1098,8 @@ ActionListener, SelectionListener, IWindowListener {
 		    te.startEditing(layer);
 		}
 		te.deleteRow(layer, (int) getPosition());
+		// keep the current position within boundaries
+		setPosition(getPosition());
 		if (!layerEditing) {
 		    te.stopEditing(layer, false);
 		}
@@ -1108,9 +1110,6 @@ ActionListener, SelectionListener, IWindowListener {
 			    PluginServices.getText(this, "emptyLayer"));
 		    return;
 		}
-
-		// keep the current position within boundaries
-		setPosition(getPosition());
 	    }
 	} catch (ExpansionFileReadException e) {
 	    logger.error(e.getMessage(), e);
