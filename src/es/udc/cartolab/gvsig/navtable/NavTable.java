@@ -76,6 +76,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
 import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
+import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
@@ -559,17 +560,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	    setFillingValues(true);
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
-		Value value = sds.getFieldValue(getPosition(), i);
-		String textoValue;
-		if (value instanceof NullValue) {
-		    textoValue = "";
-		} else if (value instanceof DateValue) {
-		    textoValue = DateFormatNT.convertDateValueToString(value);
-		} else {
-		    textoValue = value
-			    .getStringValue(ValueWriter.internalValueWriter);
-		    textoValue = textoValue.replaceAll("'", "");
-		}
+		String textoValue = sds.getFieldValue(getPosition(), i).getStringValue(new ValueFormatNT());
 		model.setValueAt(textoValue, i, 1);
 	    }
 
