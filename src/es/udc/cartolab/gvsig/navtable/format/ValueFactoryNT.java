@@ -4,15 +4,15 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 
 /**
- * ValueFactory to create values from its type, 
- * taking into account the format of the value as stated in NavTableFormats.
+ * ValueFactory to create values from its type, taking into account the format
+ * of the value as stated in NavTableFormats.
  */
 public class ValueFactoryNT extends ValueFactory {
 
@@ -28,8 +28,8 @@ public class ValueFactoryNT extends ValueFactory {
 
 	case Types.BIT:
 	case Types.BOOLEAN:
-	    value = ValueFactory.createValue(
-		    Boolean.valueOf(text).booleanValue());
+	    value = ValueFactory.createValue(Boolean.valueOf(text)
+		    .booleanValue());
 	    break;
 
 	case Types.CHAR:
@@ -41,8 +41,8 @@ public class ValueFactoryNT extends ValueFactory {
 	case Types.DATE:
 	    try {
 		value = DateFormatNT.convertStringToValue(text);
-	    }catch (IllegalArgumentException e) {
-		throw new ParseException(e.getMessage(),0);
+	    } catch (IllegalArgumentException e) {
+		throw new ParseException(e.getMessage(), 0);
 	    }
 	    break;
 
@@ -50,13 +50,15 @@ public class ValueFactoryNT extends ValueFactory {
 	case Types.NUMERIC:
 	case Types.FLOAT:
 	case Types.DOUBLE:
-	    DecimalFormat doubleFormat = DoubleFormatNT.getDisplayingFormat();
-	    value = ValueFactory.createValue(doubleFormat.parse(text).doubleValue());
+	    NumberFormat doubleFormat = DoubleFormatNT.getDisplayingFormat();
+	    value = ValueFactory.createValue(doubleFormat.parse(text)
+		    .doubleValue());
 	    break;
 
 	case Types.INTEGER:
-	    DecimalFormat integerFormat = IntegerFormatNT.getDisplayingFormat();
-	    value = ValueFactory.createValue(integerFormat.parse(text).intValue());
+	    NumberFormat integerFormat = IntegerFormatNT.getDisplayingFormat();
+	    value = ValueFactory.createValue(integerFormat.parse(text)
+		    .intValue());
 	    break;
 
 	case Types.REAL:
@@ -75,8 +77,8 @@ public class ValueFactoryNT extends ValueFactory {
 	case Types.VARBINARY:
 	case Types.LONGVARBINARY:
 	    if ((text.length() / 2) != (text.length() / 2.0)) {
-		throw new ParseException("binary fields must have even number of characters.",
-			0);
+		throw new ParseException(
+			"binary fields must have even number of characters.", 0);
 	    }
 	    byte[] array = new byte[text.length() / 2];
 	    for (int i = 0; i < (text.length() / 2); i++) {
@@ -92,8 +94,8 @@ public class ValueFactoryNT extends ValueFactory {
 
 	case Types.TIME:
 	    DateFormat tf = DateFormat.getTimeInstance();
-	    value = ValueFactory.createValue(
-		    new Time(tf.parse(text).getTime()));
+	    value = ValueFactory
+		    .createValue(new Time(tf.parse(text).getTime()));
 	    break;
 
 	default:

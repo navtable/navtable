@@ -3,19 +3,19 @@ package es.udc.cartolab.gvsig.navtable.format;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 import com.hardcode.gdbms.engine.values.ValueWriter;
 
 /**
- * Class to manage how the strings are formatted to display them, 
- * taking into account the formats declared in NavTableFormats.
+ * Class to manage how the strings are formatted to display them, taking into
+ * account the formats declared in NavTableFormats.
  */
 public class ValueFormatNT implements ValueWriter {
 
-    private DecimalFormat doubleFormat;
-    private DecimalFormat integerFormat;
+    private NumberFormat doubleFormat;
+    private NumberFormat integerFormat;
     private SimpleDateFormat dateFormat;
     private SimpleDateFormat timeFormat;
 
@@ -34,21 +34,24 @@ public class ValueFormatNT implements ValueWriter {
     }
 
     /**
-     * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(int, int)
+     * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(int,
+     *      int)
      */
     public String getStatementString(int i, int sqlType) {
 	return integerFormat.format(i);
     }
 
     /**
-     * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(double, int)
+     * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(double,
+     *      int)
      */
     public String getStatementString(double d, int sqlType) {
 	return doubleFormat.format(d);
     }
 
     /**
-     * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(java.lang.String, int)
+     * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(java.lang.String,
+     *      int)
      */
     public String getStatementString(String str, int sqlType) {
 	return str;
@@ -58,7 +61,7 @@ public class ValueFormatNT implements ValueWriter {
      * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(java.sql.Date)
      */
     public String getStatementString(Date d) {
-	return dateFormat.format(d); 
+	return dateFormat.format(d);
     }
 
     /**
@@ -82,10 +85,15 @@ public class ValueFormatNT implements ValueWriter {
 	StringBuffer sb = new StringBuffer();
 	for (int i = 0; i < binary.length; i++) {
 	    int byte_ = binary[i];
-	    if (byte_ < 0) byte_ = byte_ + 256;
+	    if (byte_ < 0) {
+		byte_ = byte_ + 256;
+	    }
 	    String b = Integer.toHexString(byte_);
-	    if (b.length() == 1) sb.append("0").append(b);
-	    else sb.append(b);
+	    if (b.length() == 1) {
+		sb.append("0").append(b);
+	    } else {
+		sb.append(b);
+	    }
 
 	}
 	return sb.toString();
