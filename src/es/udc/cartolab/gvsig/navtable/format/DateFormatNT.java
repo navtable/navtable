@@ -1,6 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.format;
 
 import java.sql.Date;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -8,10 +9,14 @@ import com.hardcode.gdbms.engine.values.DateValue;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 
+/**
+ * 
+ * @author Andrés Maneiro <amaneiro@icarto.es>
+ * @author Jorge López <jlopez@cartolab.es>
+ * 
+ */
 public class DateFormatNT {
 
-    //see java Date API
-    private static final String DATE_PATTERN = "dd/MM/yyyy";
     private static SimpleDateFormat dateFormat;
 
     public static String convertDateValueToString(Value date) {
@@ -20,7 +25,7 @@ public class DateFormatNT {
 	    dateString = "";
 	} else {
 	    Date tmp = ((DateValue) date).getValue();
-	    SimpleDateFormat formatter = new SimpleDateFormat(DATE_PATTERN);	
+	    SimpleDateFormat formatter = getDateFormat();
 	    dateString = formatter.format(tmp);
 	}
 	return dateString;
@@ -30,7 +35,7 @@ public class DateFormatNT {
 	if(date == "") {
 	    return ValueFactoryNT.createNullValue();
 	} else {
-	    SimpleDateFormat formatter = new SimpleDateFormat(DATE_PATTERN);
+	    SimpleDateFormat formatter = getDateFormat();
 	    try {
 		return ValueFactoryNT.createValue(formatter.parse(date));
 	    } catch (ParseException e) {
@@ -41,10 +46,14 @@ public class DateFormatNT {
     }
 
     public static SimpleDateFormat getDateFormat() {
-	if(dateFormat != null) {
-	    return dateFormat;
+	dateFormat = (SimpleDateFormat) DateFormat
+		.getDateInstance(DateFormat.SHORT);
+	String p = dateFormat.toLocalizedPattern();
+	if (!p.contains("yyyy")) {
+	    p = p.replaceAll("yy", "yyyy");
+	    dateFormat = new SimpleDateFormat(p);
 	}
-	dateFormat = new SimpleDateFormat(DATE_PATTERN);
 	return dateFormat;
     }
+
 }
