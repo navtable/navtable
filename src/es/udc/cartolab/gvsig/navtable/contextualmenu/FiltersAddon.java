@@ -17,6 +17,7 @@ import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 import es.udc.cartolab.gvsig.navtable.NavTable;
+import es.udc.cartolab.gvsig.navtable.format.FormatAdapter;
 
 /**
  * @author Nacho Varela
@@ -77,8 +78,11 @@ public class FiltersAddon implements INavTableContextMenu {
 
 	} else if (attrType == java.sql.Types.DOUBLE
 		|| attrType == java.sql.Types.INTEGER) {
-
-	    getMenuItemsForNumeric(menus, attrValue, filterExt, st_expr);
+	    String attrValueWithgvSIGFormat = FormatAdapter.toGvSIGString(
+		    attrType, attrValue);
+	    getMenuItemsForNumeric(menus, attrValueWithgvSIGFormat, attrValue,
+		    filterExt,
+		    st_expr);
 
 	} else if (attrType == java.sql.Types.BOOLEAN
 		|| attrType == java.sql.Types.BIT) {
@@ -139,11 +143,12 @@ public class FiltersAddon implements INavTableContextMenu {
     }
 
     private void getMenuItemsForNumeric(ArrayList<JMenuItem> menus,
-	    final String attrValue, final FiltroExtension filterExt,
+	    final String attrValue, String attrValueAsNTFormat,
+	    final FiltroExtension filterExt,
 	    final String st_expr) {
 
 	JMenuItem tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_numeric_equals") + " \t'" + attrValue + "'");
+		"filter_numeric_equals") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = " + attrValue + ";";
@@ -153,7 +158,10 @@ public class FiltersAddon implements INavTableContextMenu {
 	menus.add(tmpMenuItem);
 
 	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_numeric_different") + " \t'" + attrValue + "'");
+		"filter_numeric_different")
+		+ " \t'"
+		+ attrValueAsNTFormat
+		+ "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " != " + attrValue + ";";
@@ -163,7 +171,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	menus.add(tmpMenuItem);
 
 	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_numeric_less") + " \t'" + attrValue + "'");
+		"filter_numeric_less") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		// TODO: Still not working. Remove option with
@@ -175,7 +183,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	menus.add(tmpMenuItem);
 
 	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_numeric_greater") + " \t'" + attrValue + "'");
+		"filter_numeric_greater") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		// TODO: Still not working. Remove option with
@@ -214,9 +222,9 @@ public class FiltersAddon implements INavTableContextMenu {
 	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
 		"filter_contains"));
 	tmpMenuItem.addActionListener(new StringFilterActionListener(navtable,
-			attrValue,
-			st_expr, 
-			filterExt));
+		attrValue,
+		st_expr,
+		filterExt));
 	menus.add(tmpMenuItem);
     }
 
@@ -263,8 +271,8 @@ public class FiltersAddon implements INavTableContextMenu {
     }
 
     public void executeFilter(final FiltroExtension filterExt,
-    		final String st_expr){
-    	filterExt.newSet(st_expr);
-    	navtable.setOnlySelected(true);
-    } 
+	    final String st_expr){
+	filterExt.newSet(st_expr);
+	navtable.setOnlySelected(true);
+    }
 }
