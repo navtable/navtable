@@ -82,7 +82,7 @@ public class FiltersAddon implements INavTableContextMenu {
 
 	} else if (attrType == java.sql.Types.BOOLEAN
 		|| attrType == java.sql.Types.BIT) {
-	    getMenuItemsFormBoolean(menus, filterExt, st_expr);
+	    getMenuItemsForBoolean(menus, filterExt, st_expr);
 
 	} else {
 	    // TODO OTHER TYPES (like DATE)
@@ -114,7 +114,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	return menus;
     }
 
-    private void getMenuItemsFormBoolean(ArrayList<JMenuItem> menus,
+    private void getMenuItemsForBoolean(ArrayList<JMenuItem> menus,
 	    final FiltroExtension filterExt, final String st_expr) {
 
 	JMenuItem tmpMenuItem = new JMenuItem(PluginServices.getText(this,
