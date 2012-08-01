@@ -46,12 +46,14 @@ public class DateFormatNT {
     }
 
     public static SimpleDateFormat getDateFormat() {
-	dateFormat = (SimpleDateFormat) DateFormat
-		.getDateInstance(DateFormat.SHORT);
-	String p = dateFormat.toLocalizedPattern();
-	if (!p.contains("yyyy")) {
-	    p = p.replaceAll("yy", "yyyy");
-	    dateFormat = new SimpleDateFormat(p);
+	if (dateFormat == null) {
+	    dateFormat = (SimpleDateFormat) DateFormat
+		    .getDateInstance(DateFormat.SHORT);
+	    String p = dateFormat.toLocalizedPattern();
+	    if (!p.contains("yyyy")) {
+		p = p.replaceAll("yy", "yyyy");
+		dateFormat = new SimpleDateFormat(p);
+	    }
 	}
 	return dateFormat;
     }
