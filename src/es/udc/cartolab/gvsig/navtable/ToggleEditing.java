@@ -35,6 +35,7 @@ import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
+import com.iver.andami.ui.mdiManager.MDIManager;
 import com.iver.cit.gvsig.EditionUtilities;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
@@ -120,13 +121,15 @@ public class ToggleEditing {
 	    // to VectorialEditableAdapter.
 	    ProjectExtension pe = (ProjectExtension) PluginServices
 		    .getExtension(ProjectExtension.class);
-	    ProjectTable pt = pe.getProject().getTable(lv);
-	    if (pt != null) {
-		pt.setModel(vea);
-		Table table = getModelTable(pt);
-		if(table != null){
-		    table.setModel(pt);
-		    vea.getCommandRecord().addCommandListener(table);
+	    if (pe != null) {
+		ProjectTable pt = pe.getProject().getTable(lv);
+		if (pt != null) {
+		    pt.setModel(vea);
+		    Table table = getModelTable(pt);
+		    if(table != null) {
+			table.setModel(pt);
+			vea.getCommandRecord().addCommandListener(table);
+		    }
 		}
 	    }
 	}
@@ -488,17 +491,20 @@ public class ToggleEditing {
 
     private Table getTableFromLayer(FLayer layer) {
 	//TODO: see how drop this IWindow dependence
-	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
-		.getMDIManager().getAllWindows();
-	for (int j = 0; j < views.length; j++) {
-	    if (views[j] instanceof Table) {
-		Table table = (Table) views[j];
-		if (table.getModel().getAssociatedTable() != null
-			&& table.getModel().getAssociatedTable().equals(layer)) {
-		    return table;
-		}
+	com.iver.andami.ui.mdiManager.IWindow[] views = null;
+	try {
+	    views = PluginServices.getMDIManager().getAllWindows();
+	    for (int j = 0; j < views.length; j++) {
+		    if (views[j] instanceof Table) {
+			Table table = (Table) views[j];
+			if (table.getModel().getAssociatedTable() != null
+				&& table.getModel().getAssociatedTable().equals(layer)) {
+			    return table;
+			}
+		    }
 	    }
-	}
+	} catch (NullPointerException e) {}
+	
 	return null;
     }
 
