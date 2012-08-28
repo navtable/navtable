@@ -7,36 +7,58 @@ import java.text.ParseException;
 /**
  * This class is responsible for adapting a value with the format displayed in
  * NavTable to a value with the format used by gvSIG.
- * 
+ *
  */
 public class FormatAdapter {
 
     public static String toGvSIGString(int type, String value) {
+	String gvSIGValue = null;
 	try {
-	    if (type == Types.INTEGER) {
-		return toGvSIGInteger(value);
-	    } else if (type == Types.DOUBLE) {
-		return toGvSIGDouble(value);
-	    } else {
-		return value;
+	    switch (type) {
+	    case Types.INTEGER:
+	    case Types.BIGINT:
+	    case Types.SMALLINT:
+		gvSIGValue = toGvSIGInteger(value);
+		break;
+	    case Types.DOUBLE:
+	    case Types.DECIMAL:
+	    case Types.NUMERIC:
+	    case Types.FLOAT:
+	    case Types.REAL:
+		gvSIGValue = toGvSIGDouble(value);
+		break;
+	    default:
+		gvSIGValue = value;
 	    }
 	} catch (ParseException e) {
-	    return value;
+	    gvSIGValue = value;
 	}
+	return gvSIGValue;
     }
 
     public static String toNavTableString(int type, String value) {
+	String navTableValue = null;
 	try {
-	    if(type == Types.INTEGER) {
-		return toNavTableInteger(value);
-	    } else if (type == Types.DOUBLE) {
-		return toNavTableDouble(value);
-	    } else {
-		return value;
+	    switch (type) {
+	    case Types.INTEGER:
+	    case Types.BIGINT:
+	    case Types.SMALLINT:
+		navTableValue = toNavTableInteger(value);
+		break;
+	    case Types.DOUBLE:
+	    case Types.DECIMAL:
+	    case Types.NUMERIC:
+	    case Types.FLOAT:
+	    case Types.REAL:
+		navTableValue = toNavTableDouble(value);
+		break;
+	    default:
+		navTableValue = value;
 	    }
 	} catch (NumberFormatException e) {
-	    return value;
+	    navTableValue = value;
 	}
+	return navTableValue;
     }
 
     private static String toGvSIGDouble(String doubleString)
