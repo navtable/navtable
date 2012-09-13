@@ -1205,8 +1205,6 @@ ActionListener, SelectionListener, IWindowListener {
 	getRecordset().reload();
     }
 
-    public abstract SelectableDataSource getRecordset();
-
     public String getDataName() {
 	return this.dataName;
     }
@@ -1220,5 +1218,14 @@ ActionListener, SelectionListener, IWindowListener {
     }
 
     public abstract boolean isSavingValues();
+
+    public SelectableDataSource getRecordset() {
+        try {
+            return layer.getSource().getRecordset();
+        } catch (ReadDriverException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

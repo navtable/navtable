@@ -738,16 +738,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	return this.table;
     }
 
-    @Override
-    public SelectableDataSource getRecordset() {
-	try {
-	    return layer.getSource().getRecordset();
-	} catch (ReadDriverException e) {
-	    e.printStackTrace();
-	    return null;
-	}
-    }
-
     public void onPositionChange(PositionEvent e) {
 	refreshGUI();
     }
