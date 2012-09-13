@@ -348,26 +348,27 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 
     @Override
     public boolean init() {
-	SelectableDataSource sds = getRecordset();
-	sds.addSelectionListener(this);
-	this.addPositionListener(this);
+	getRecordset().addSelectionListener(this);
 	try {
-	    if ((!openEmptyLayers) && (sds.getRowCount() <= 0)) {
+	    if ((!openEmptyLayers) && (getRecordset().getRowCount() <= 0)) {
 		JOptionPane.showMessageDialog(this,
 			PluginServices.getText(this, "emptyLayer"));
-		this.layer.removeLayerListener(this.listener);
+		layer.removeLayerListener(this.listener);
 		return false;
 	    }
-	} catch (HeadlessException e) {
-	    logger.error(e.getMessage(), e);
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
+	    JOptionPane.showMessageDialog(this,
+		    PluginServices.getText(this, "emptyLayer"));
+	    return false;
 	}
 
 	initGUI();
 
 	this.addPositionListener(this);
 
+	this.addPositionListener(this);
+	
 	fillAttributes();
 	setPosition(0);
 
@@ -375,8 +376,8 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	super.repaint();
 	super.setVisible(true);
 	setOpenNavTableForm(true);
+	
 	return true;
-
     }
 
     /**
