@@ -123,6 +123,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	super(layer);
     }
 
+    @Deprecated
     public NavTable(SelectableDataSource recordset, String tableName) {
 	super(recordset, tableName);
     }

@@ -66,7 +66,7 @@ public class AlphanumericNavTable extends NavTable {
 
     public AlphanumericNavTable(IEditableSource model, String dataName)
 	    throws ReadDriverException {
-	super(model.getRecordset(), dataName);
+	super(null, dataName);
 	this.isAlphanumericNT = true;
 	this.model = model;
 	this.model.addEditionListener(listener);
@@ -76,7 +76,7 @@ public class AlphanumericNavTable extends NavTable {
 
     public AlphanumericNavTable(IEditableSource model, String dataName,
 	    HashMap<String, String> defaultValues) throws ReadDriverException {
-	super(model.getRecordset(), dataName);
+	super(null, dataName);
 	this.isAlphanumericNT = true;
 	this.model = model;
 	this.defaultValues = defaultValues;

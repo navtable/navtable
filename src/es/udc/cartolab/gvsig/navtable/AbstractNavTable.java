@@ -182,6 +182,7 @@ ActionListener, SelectionListener, IWindowListener {
     // Maybe can be set as deprecated and be replaced by:
     // {@link AbstractNavTable(SelectableDataSource, String)}
     // with a properly name as string parameter.
+    @Deprecated
     public AbstractNavTable(SelectableDataSource recordset) {
 	this(recordset, recordset.getName());
     }
@@ -193,7 +194,12 @@ ActionListener, SelectionListener, IWindowListener {
      * @param recordset
      * @param tableName
      */
+    @Deprecated
     public AbstractNavTable(SelectableDataSource recordset, String tableName) {
+	this(tableName);
+    }
+    
+    public AbstractNavTable(String tableName) {
 	super();
 	this.listener = new EditionListener(this);
 	this.dataName = tableName;
