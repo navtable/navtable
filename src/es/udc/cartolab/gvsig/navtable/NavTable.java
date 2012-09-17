@@ -348,20 +348,12 @@ public class NavTable extends AbstractNavTable {
 
     
     @Override
-    public boolean init() {	
-	try {
-	    if ((!openEmptyLayers) && (getRecordset().getRowCount() <= 0)) {
-		JOptionPane.showMessageDialog(this,
-			PluginServices.getText(this, "emptyLayer"));
-		
-		return false;
-	    }
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	    JOptionPane.showMessageDialog(this,
-		    PluginServices.getText(this, "emptyLayer"));
+    public boolean init() {
+	
+	if ((!openEmptyLayers) && isEmpty()) {
+	    showEmptyLayerMessage();
 	    return false;
-	}
+	}	
 
 	initGUI();
 

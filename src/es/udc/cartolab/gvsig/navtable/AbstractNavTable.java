@@ -256,6 +256,25 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	removePositionListener(this);
     }
 
+    public boolean isEmpty(){
+	boolean empty = true;
+	try {
+	    empty = getRecordset().getRowCount() <= 0;
+	} catch (ReadDriverException e) {
+	    empty = false;
+	    logger.error(e.getMessage(), e);
+	}
+	return empty;
+    }
+
+    public void showEmptyLayerMessage() {
+
+	    if ((!openEmptyLayers) ) {
+		JOptionPane.showMessageDialog(this,
+			PluginServices.getText(this, "emptyLayer"));
+	    }
+    }
+
     /**
      * It shows the values of a data row in the main panel.
      * 
