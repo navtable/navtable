@@ -230,12 +230,38 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	return this.isAlphanumericNT;
     }
 
+    public boolean init() {
+
+	if ((!openEmptyLayers) && isEmpty()) {
+	    showEmptyLayerMessage();
+	    return false;
+	}
+
+	if (!initController()) {
+	    return false;
+	}
+
+	initGUI();
+
+	initWidgets();
+	
+
+	refreshGUI();
+	super.repaint();
+	super.setVisible(true);
+	setOpenNavTableForm(true);
+	setFocusCycleRoot(true);
+	
+	setLayerListeners();
+	return true;
+    }
+    
     /**
-     * It initializes the window.
-     * 
-     * @return true if it is successful, false if not.
+     * In NavTable it will get the attribute names from the layer and
+     * set it on the left column of the table. On AbstractForm it will
+     * initialize the widget vector from the Abeille file
      */
-    public abstract boolean init();
+    protected abstract void initWidgets();
     
     protected void initGUI() {
     	MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]","[][grow][]");
@@ -245,7 +271,16 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     	this.add(getSouthPanel(), "shrink, align center");
     }
 
-    protected abstract boolean initController();
+    protected boolean initController() {
+	try {
+	    layerController = new LayerController(this.layer);
+	    layerController.read(getPosition());
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	    return false;
+	}
+	return true;
+    }
     
     protected void setLayerListeners() {
 	listener = new EditionListener(this, layer);
@@ -1251,6 +1286,13 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     }
 
     public void onPositionChange(PositionEvent e) {
-	refreshGUI();
+	try {
+	    layerController.read(getPosition());
+	    refreshGUI();
+	} catch (ReadDriverException rde) {
+	    rde.printStackTrace();
+	    layerController.clearAll();
+	    refreshGUI();
+	}
     }
 }

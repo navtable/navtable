@@ -50,6 +50,7 @@ import com.iver.cit.gvsig.fmap.edition.IWriter;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 
 /**
  * @author Nacho Varela
@@ -320,5 +321,10 @@ public class AlphanumericNavTable extends NavTable {
 	this.newB.removeActionListener(this);
 	super.windowClosed();
 	this.model.removeEditionListener(listener);
+    }
+    
+    @Override
+    public void onPositionChange(PositionEvent e) {
+	//TODO: Not implemented jet
     }
 }

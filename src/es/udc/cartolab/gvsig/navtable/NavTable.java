@@ -26,8 +26,6 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -266,45 +264,6 @@ public class NavTable extends AbstractNavTable {
 	super.registerNavTableButtonsOnActionToolBarExtensionPoint();
     }
 
-    @Override
-    public boolean init() {
-
-	if ((!openEmptyLayers) && isEmpty()) {
-	    showEmptyLayerMessage();
-	    return false;
-	}
-
-	if (! initController()) {
-	    return false;
-	}
-	initGUI();
-
-	this.addPositionListener(this);
-	
-	fillAttributes();
-	setPosition(0);
-
-	refreshGUI();
-	super.repaint();
-	super.setVisible(true);
-	setOpenNavTableForm(true);
-
-	setLayerListeners();
-	return true;
-    }
-
-    @Override
-    protected boolean initController() {
-	try {
-	    layerController = new LayerController(this.layer);
-	    layerController.read(getPosition());
-	} catch (ReadDriverException e) {
-	    e.printStackTrace();
-	    return false;
-	}
-	return true;
-    }
-
     /**
      * It gets the alias name of the attributes in the alias file if exists
      * 
@@ -375,12 +334,7 @@ public class NavTable extends AbstractNavTable {
 	return alias;
     }
 
-    /**
-     * It gets the attributes names from the data table and sets them on the
-     * left column.
-     * 
-     */
-    private void fillAttributes() {
+    protected void initWidgets() {
 	try {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    model.setRowCount(0);
@@ -658,7 +612,7 @@ public class NavTable extends AbstractNavTable {
 
     public void reloadRecordset() throws ReadDriverException {
 	super.reloadRecordset();
-	fillAttributes();
+	initWidgets();
     }
 
     public JTable getTable() {
