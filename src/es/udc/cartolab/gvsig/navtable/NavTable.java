@@ -30,8 +30,6 @@ import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,13 +38,10 @@ import java.io.IOException;
 import java.sql.Types;
 import java.util.Vector;
 
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -70,9 +65,9 @@ import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 import com.vividsolutions.jts.geom.Geometry;
 
-import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
 import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
+import es.udc.cartolab.gvsig.navtable.listeners.MyMouseListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
@@ -112,7 +107,7 @@ public class NavTable extends AbstractNavTable {
     private MyMouseListener myMouseListener;
 
     // Mouse buttons constants
-    final int BUTTON_RIGHT = 3;
+    public static final int BUTTON_RIGHT = 3;
 
     public NavTable(FLyrVect layer) {
 	super(layer);
@@ -179,77 +174,7 @@ public class NavTable extends AbstractNavTable {
 	return centerPanel;
     }
 
-    class MyMouseListener implements MouseListener {
-
-	private NavTable navtable;
-
-	public MyMouseListener(NavTable navTable) {
-	    this.navtable = navTable;
-	}
-
-	public void mouseClicked(MouseEvent e) {
-	    /*
-	     * TODO At the moment, filters do not work with automatic calculated
-	     * fields "length" and "area". Besides, the filter panel only is
-	     * activated if only 1 row is selected.
-	     */
-	    if (e.getButton() == BUTTON_RIGHT) {
-
-		if ((e.getSource() != null) && (e.getSource().equals(table))) {
-		    // get the coordinates of the mouse click
-		    Point p = e.getPoint();
-
-		    // get the row index that contains that coordinate
-		    int rowNumber = table.rowAtPoint( p );
-
-		    if (rowNumber > -1) {
-			// Get the ListSelectionModel of the JTable
-			ListSelectionModel model = table.getSelectionModel();
-
-			// set the selected interval of rows. Using the "rowNumber"
-			// variable for the beginning and end selects only that one row.
-			model.setSelectionInterval( rowNumber, rowNumber );
-		    }
-		}
-
-		JPopupMenu popup = new JPopupMenu();
-
-		ExtensionPoint extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
-			.getInstance().get(
-				AbstractNavTable.NAVTABLE_CONTEXT_MENU);
-		for (Object contextMenuAddon : extensionPoint.values()) {
-		    try {
-			INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
-			c.setNavtableInstance(navtable);
-			if (c.isVisible()) {
-			    for (JMenuItem m : c.getMenuItems()) {
-				popup.add(m);
-			    }
-			}
-		    } catch (ClassCastException cce) {
-			logger.error("Class is not a navtable context menu",
-				cce);
-		    }
-		}
-		if (popup.getComponents().length != 0) {
-		    popup.show(table, e.getX(), e.getY());
-		}
-
-	    }
-	}
-
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-	}
-
-	public void mousePressed(MouseEvent e) {
-	}
-
-	public void mouseReleased(MouseEvent e) {
-	}
-    }
+    
 
     class MyKeyListener implements KeyListener {
 	public void keyPressed(KeyEvent e) {
