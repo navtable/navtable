@@ -63,6 +63,7 @@ import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
+import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
@@ -116,6 +117,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected WindowInfo viewInfo = null;
     private long currentPosition = 0;
 
+    protected LayerController layerController;
     protected FLyrVect layer = null;
     protected String dataName = "";
 
@@ -243,6 +245,8 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     	this.add(getSouthPanel(), "shrink, align center");
     }
 
+    protected abstract boolean initController();
+    
     protected void setLayerListeners() {
 	listener = new EditionListener(this, layer);
 	layer.addLayerListener(listener);
@@ -1154,34 +1158,17 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 
     public void deleteRecord() {
 	try {
-	    boolean layerEditing = true;
-	    ReadableVectorial feats = layer.getSource();
-	    feats.start();
-	    if (getPosition() > EMPTY_REGISTER) {
-		ToggleEditing te = new ToggleEditing();
-		if (!layer.isEditing()) {
-		    layerEditing = false;
-		    te.startEditing(layer);
-		}
-		te.deleteRow(layer, (int) getPosition());
-		// keep the current position within boundaries
-		setPosition(getPosition());
-		if (!layerEditing) {
-		    te.stopEditing(layer, false);
-		}
-		layer.setActive(true);
-		if (layer.getSource().getRecordset().getRowCount() <= 0) {
-		    PluginServices.getMDIManager().closeWindow(this);
-		    JOptionPane.showMessageDialog(this,
-			    PluginServices.getText(this, "emptyLayer"));
-		    return;
-		}
+	    long position = getPosition();
+	    layerController.delete(position);
+	    // keep the current position within boundaries
+	    setPosition(position);
+	    if (isEmpty()) {
+		showEmptyLayerMessage();
 	    }
-	} catch (ExpansionFileReadException e) {
-	    logger.error(e.getMessage(), e);
 	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	}
+	    logger.error(e.getMessage(), e.getCause());
+	}	
+	
     }
 
     private boolean isValidPosition(Long pos) {

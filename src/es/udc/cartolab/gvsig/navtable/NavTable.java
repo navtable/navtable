@@ -52,10 +52,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import net.miginfocom.swing.MigLayout;
-
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.values.DateValue;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
@@ -74,10 +71,8 @@ import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 import com.vividsolutions.jts.geom.Geometry;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
-import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
+import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
-import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
-import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
@@ -346,15 +341,17 @@ public class NavTable extends AbstractNavTable {
 	super.registerNavTableButtonsOnActionToolBarExtensionPoint();
     }
 
-    
     @Override
     public boolean init() {
-	
+
 	if ((!openEmptyLayers) && isEmpty()) {
 	    showEmptyLayerMessage();
 	    return false;
-	}	
+	}
 
+	if (! initController()) {
+	    return false;
+	}
 	initGUI();
 
 	this.addPositionListener(this);
@@ -366,8 +363,20 @@ public class NavTable extends AbstractNavTable {
 	super.repaint();
 	super.setVisible(true);
 	setOpenNavTableForm(true);
-	
+
 	setLayerListeners();
+	return true;
+    }
+
+    @Override
+    protected boolean initController() {
+	try {
+	    layerController = new LayerController(this.layer);
+	    layerController.read(getPosition());
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	    return false;
+	}
 	return true;
     }
 

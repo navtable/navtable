@@ -105,6 +105,12 @@ public class AlphanumericNavTable extends NavTable {
 
 	return true;
     }
+    
+    @Override
+    protected boolean initController() {
+	// TODO: Not implemented jet
+	return true;
+    }
 
     @Override
     protected boolean isSaveable() {
