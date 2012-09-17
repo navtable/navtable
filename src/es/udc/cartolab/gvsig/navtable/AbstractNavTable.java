@@ -95,7 +95,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow,
-ActionListener, SelectionListener, IWindowListener {
+ActionListener, SelectionListener, IWindowListener, PositionListener {
 
     public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
@@ -168,8 +168,6 @@ ActionListener, SelectionListener, IWindowListener {
     public AbstractNavTable(FLyrVect layer) {
 	super();
 	this.layer = layer;
-	this.listener = new EditionListener(this, layer);
-	this.layer.addLayerListener(this.listener);
 	this.dataName = layer.getName();
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
@@ -201,7 +199,6 @@ ActionListener, SelectionListener, IWindowListener {
     
     public AbstractNavTable(String tableName) {
 	super();
-	this.listener = new EditionListener(this);
 	this.dataName = tableName;
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
@@ -244,6 +241,19 @@ ActionListener, SelectionListener, IWindowListener {
     	this.add(getNorthPanel(), "shrink, wrap, align center");
     	this.add(getCenterPanel(), "shrink, growx, growy, wrap");
     	this.add(getSouthPanel(), "shrink, align center");
+    }
+
+    protected void setLayerListeners() {
+	listener = new EditionListener(this, layer);
+	layer.addLayerListener(listener);
+	getRecordset().addSelectionListener(this);
+	addPositionListener(this);
+    }
+    
+    protected void removeLayerListeners() {
+	layer.removeLayerListener(listener);
+	getRecordset().removeSelectionListener(this);
+	removePositionListener(this);
     }
 
     /**
@@ -1234,4 +1244,7 @@ ActionListener, SelectionListener, IWindowListener {
         }
     }
 
+    public void onPositionChange(PositionEvent e) {
+	refreshGUI();
+    }
 }

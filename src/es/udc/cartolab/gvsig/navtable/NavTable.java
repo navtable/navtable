@@ -101,7 +101,7 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  * @author Andres Maneiro
  * @author Jorge Lopez
  */
-public class NavTable extends AbstractNavTable implements PositionListener {
+public class NavTable extends AbstractNavTable {
 
     private static final long serialVersionUID = 1L;
     protected WindowInfo viewInfo = null;
@@ -346,14 +346,14 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	super.registerNavTableButtonsOnActionToolBarExtensionPoint();
     }
 
+    
     @Override
-    public boolean init() {
-	getRecordset().addSelectionListener(this);
+    public boolean init() {	
 	try {
 	    if ((!openEmptyLayers) && (getRecordset().getRowCount() <= 0)) {
 		JOptionPane.showMessageDialog(this,
 			PluginServices.getText(this, "emptyLayer"));
-		layer.removeLayerListener(this.listener);
+		
 		return false;
 	    }
 	} catch (ReadDriverException e) {
@@ -366,8 +366,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	initGUI();
 
 	this.addPositionListener(this);
-
-	this.addPositionListener(this);
 	
 	fillAttributes();
 	setPosition(0);
@@ -377,6 +375,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	super.setVisible(true);
 	setOpenNavTableForm(true);
 	
+	setLayerListeners();
 	return true;
     }
 
@@ -739,9 +738,4 @@ public class NavTable extends AbstractNavTable implements PositionListener {
     public JTable getTable() {
 	return this.table;
     }
-
-    public void onPositionChange(PositionEvent e) {
-	refreshGUI();
-    }
-
 }
