@@ -40,6 +40,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.apache.log4j.Logger;
 
 import com.hardcode.gdbms.driver.exceptions.InitializeDriverException;
@@ -49,7 +51,6 @@ import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
-import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -230,6 +231,14 @@ ActionListener, SelectionListener, IWindowListener {
      * @return true if it is successful, false if not.
      */
     public abstract boolean init();
+    
+    protected void initGUI() {
+    	MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]","[][grow][]");
+    	this.setLayout(thisLayout);
+    	this.add(getNorthPanel(), "shrink, wrap, align center");
+    	this.add(getCenterPanel(), "shrink, growx, growy, wrap");
+    	this.add(getSouthPanel(), "shrink, align center");
+    }
 
     /**
      * It shows the values of a data row in the main panel.

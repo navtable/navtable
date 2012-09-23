@@ -134,14 +134,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
     public void setFillingValues(boolean isFillingValues) {
 	this.isFillingValues = isFillingValues;
     }
-    
-    private void initGUI() {
-	MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]","[][grow][]");
-	this.setLayout(thisLayout);
-	this.add(getNorthPanel(), "shrink, wrap, align center");
-	this.add(getCenterPanel(), "shrink, growx, growy, wrap");
-	this.add(getSouthPanel(), "shrink, align center");
-    }
 
 
     /**
