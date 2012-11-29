@@ -1,4 +1,4 @@
-<project name="extNavigationTable" default="generate-without-source" basedir=".">
+<project name="extNavTable" default="generate-without-source" basedir=".">
 	<description>
     	NavTable
     </description>
