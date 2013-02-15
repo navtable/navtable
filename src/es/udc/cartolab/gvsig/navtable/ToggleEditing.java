@@ -33,6 +33,7 @@ import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.data.driver.DriverException;
 import com.hardcode.gdbms.engine.values.Value;
+import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
 import com.iver.andami.ui.mdiManager.MDIManager;
@@ -422,15 +423,16 @@ public class ToggleEditing {
 		    val = ValueFactoryNT.createNullValue();
 		} else {
 		    type = fieldDesc[attIndexes[i]].getFieldType();
-		    val = ValueFactoryNT.createValueByType(
-			    attValues[i], type);
+		    try {
+		        val = ValueFactoryNT.createValueByType(
+		            attValues[i], type);
+		    } catch (ParseException e) {
+		        val = ValueFactory.createNullValue();
+		    }
 		}
 		attributes[attIndexes[i]] = val;
 	    }
 	    return attributes;
-	} catch (ParseException e) {
-	    logger.error(e.getMessage(), e);
-	    return null;
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
 	    return null;
