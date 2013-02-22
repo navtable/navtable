@@ -366,6 +366,14 @@ ActionListener, SelectionListener, IWindowListener {
 	if (northPanel == null) {
 	    initNorthPanelButtons();
 	    northPanel = new JPanel(new BorderLayout());
+	    File iconFile = getHeaderFile();
+	    if (iconFile != null && iconFile.exists()) {
+		northPanel.setBackground(Color.WHITE);
+		ImageIcon logo = new ImageIcon(iconFile.getAbsolutePath());
+		JLabel icon = new JLabel();
+		icon.setIcon(logo);
+		northPanel.add(icon, BorderLayout.WEST);
+	    }
 	    northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
 	}
 	return northPanel;
