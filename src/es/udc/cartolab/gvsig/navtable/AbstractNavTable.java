@@ -70,29 +70,11 @@ import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 /**
- * 
- * AbstractNavTable is the base class that defines the layout of the window that
- * allows to navigate between the elements of the layer.
- * 
- * It has three panels:
- * <ul>
- * <li>The north panel, with the controls to handle the navigation behavior.
- * <li>The main panel, with the representation of the layer data, it must be
- * implemented in the subclasses.
- * <li>The south panel, with the navigation controls.
- * </ul>
- * 
  * <img src="images/NavTableWindow.png">
  * 
- * If there are a image on
+ * If there is an image on
  * 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png'
- * is loaded on the NorthPanel.
- * 
- * @author Nacho Varela
- * @author Javier Estevez
- * @author Pablo Sanxiao
- * @author Andres Maneiro
- * @author Jorge Lopez
+ * it will be loaded on the NorthPanel.
  * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow,
@@ -159,14 +141,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected boolean openEmptyLayers = false;
     protected boolean isAlphanumericNT = false;
 
-    /**
-     * 
-     * Constructor of the class. It gets the data from the layer and stores it
-     * in recordset to later uses.
-     * 
-     * @param layer
-     *            Vectorial layer whose data will be accessed.
-     */
     public AbstractNavTable(FLyrVect layer) {
 	super();
 	this.layer = layer;
@@ -190,9 +164,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     /**
      * Constructor of the class. This constructor is used by
      * AlphanumericNavTable
-     * 
-     * @param recordset
-     * @param tableName
      */
     @Deprecated
     public AbstractNavTable(SelectableDataSource recordset, String tableName) {
@@ -242,10 +213,8 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
 
 	initGUI();
-
 	initWidgets();
 	
-
 	refreshGUI();
 	super.repaint();
 	super.setVisible(true);
@@ -316,9 +285,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 
     /**
      * It shows the values of a data row in the main panel.
-     * 
-     * @param rowPosition
-     *            the row of the data to be shown.
      */
     public abstract void fillValues();
 
@@ -331,8 +297,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 
     /**
      * It selects a specific row into the table.
-     * 
-     * @param row
      */
     public abstract void selectRow(int row);
 
@@ -351,16 +315,8 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	changedValues = bool;
     }
 
-    /**
-     * Saves the changes of the current data row.
-     * 
-     */
     public abstract boolean saveRecord();
 
-    /**
-     * 
-     * @param true to enable the save button, false to disable it
-     */
     protected void enableSaveButton(boolean bool) {
 	if (layer != null && layer.isEditing()) {
 	    saveB.setEnabled(false);
@@ -440,11 +396,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		"gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
     }
 
-    /**
-     * Creates the upper panel.
-     * 
-     * @return the panel.
-     */
     protected JPanel getNorthPanel() {
 	if (northPanel == null) {
 	    initNorthPanelButtons();
@@ -462,11 +413,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	return northPanel;
     }
 
-    /**
-     * Creates the main panel.
-     * 
-     * @return the panel.
-     */
     public abstract JPanel getCenterPanel();
 
     public ImageIcon getIcon(String iconName) {
@@ -573,11 +519,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes", undoB);
     }
 
-    /**
-     * Creates the bottom panel.
-     * 
-     * @return the panel.
-     */
     protected JPanel getSouthPanel() {
 	if (southPanel == null) {
 	    southPanel = new JPanel(new BorderLayout());
