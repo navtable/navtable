@@ -43,6 +43,7 @@ import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
 import org.apache.log4j.Logger;
+import org.gvsig.exceptions.BaseException;
 
 import com.hardcode.gdbms.driver.exceptions.InitializeDriverException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
@@ -63,6 +64,7 @@ import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
+import es.udc.cartolab.gvsig.navtable.dataacces.IController;
 import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
@@ -99,7 +101,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected WindowInfo viewInfo = null;
     private long currentPosition = 0;
 
-    protected LayerController layerController;
+    protected IController layerController;
     protected FLyrVect layer = null;
     protected String dataName = "";
 
@@ -203,12 +205,17 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 
     public boolean init() {
 
-	if ((!openEmptyLayers) && isEmpty()) {
-	    showEmptyLayerMessage();
+	if (!initController()) {
 	    return false;
 	}
 
-	if (!initController()) {
+	try {
+	    if ((!openEmptyLayers) && (layerController.getRowCount() <= 0)) {
+		showEmptyLayerMessage();
+		return false;
+	    }
+	} catch (ReadDriverException e) {
+	    logger.error(e.getStackTrace());
 	    return false;
 	}
 
@@ -250,37 +257,26 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
 	return true;
     }
-    
+
     protected void setLayerListeners() {
 	listener = new EditionListener(this, layer);
 	layer.addLayerListener(listener);
 	getRecordset().addSelectionListener(this);
 	addPositionListener(this);
     }
-    
+
     protected void removeLayerListeners() {
 	layer.removeLayerListener(listener);
 	getRecordset().removeSelectionListener(this);
 	removePositionListener(this);
     }
 
-    public boolean isEmpty(){
-	boolean empty = true;
-	try {
-	    empty = getRecordset().getRowCount() <= 0;
-	} catch (ReadDriverException e) {
-	    empty = false;
-	    logger.error(e.getMessage(), e);
-	}
-	return empty;
-    }
-
     public void showEmptyLayerMessage() {
 
-	    if ((!openEmptyLayers) ) {
-		JOptionPane.showMessageDialog(this,
-			PluginServices.getText(this, "emptyLayer"));
-	    }
+	if ((!openEmptyLayers)) {
+	    JOptionPane.showMessageDialog(this,
+		    PluginServices.getText(this, "emptyLayer"));
+	}
     }
 
     /**
@@ -333,16 +329,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
     }
 
-    public void selectFeature(long feature) {
-	FBitSet bitset = null;
-	int pos = Long.valueOf(feature).intValue();
-	bitset = getRecordset().getSelection();
-	if (!bitset.get(pos)) {
-	    bitset.set(pos);
-	}
-	getRecordset().setSelection(bitset);
-    }
-
+    @Deprecated
     public void unselectFeature(long feature) {
 	FBitSet bitset = null;
 	int pos = Long.valueOf(feature).intValue();
@@ -354,13 +341,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	}
 	getRecordset().setSelection(bitset);
-    }
-
-    public boolean isFeatureSelected(long feature) {
-	FBitSet bitset = null;
-	int pos = Long.valueOf(feature).intValue();
-	bitset = getRecordset().getSelection();
-	return bitset.get(pos);
     }
 
     public void clearSelectedFeatures() {
@@ -753,6 +733,17 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	getRecordset().setSelection(bitset);
     }
 
+    @Deprecated
+    public void selectFeature(long feature) {
+	FBitSet bitset = null;
+	int pos = Long.valueOf(feature).intValue();
+	bitset = getRecordset().getSelection();
+	if (!bitset.get(pos)) {
+	    bitset.set(pos);
+	}
+	getRecordset().setSelection(bitset);
+    }
+
     /**
      * 
      * @return true if the current row is selected, false if not.
@@ -776,6 +767,11 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
 	bitset = getRecordset().getSelection();
 	return bitset.get(pos);
+    }
+
+    @Deprecated
+    public boolean isFeatureSelected(long feature) {
+	return isRecordSelected(feature);
     }
 
     /**
@@ -809,6 +805,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      * @return the configuration of the window.
      */
+    @Override
     public WindowInfo getWindowInfo() {
 	if (viewInfo == null) {
 	    viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
@@ -1032,6 +1029,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     /**
      * Handles the user actions.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
 	/*
 	 * Variable isSomeNavTableForm open is used as workaround to control
@@ -1138,13 +1136,12 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    layerController.delete(position);
 	    // keep the current position within boundaries
 	    setPosition(position);
-	    if (isEmpty()) {
+	    if (layerController.getRowCount() <= 0) {
 		showEmptyLayerMessage();
 	    }
-	} catch (ReadDriverException e) {
+	} catch (BaseException e) {
 	    logger.error(e.getMessage(), e.getCause());
-	}	
-	
+	}
     }
 
     private boolean isValidPosition(Long pos) {
@@ -1157,6 +1154,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	return true;
     }
 
+    @Override
     public void selectionChanged(SelectionEvent e) {
 	/*
 	 * Variable isSomeNavTableForm open is used as workaround to control
@@ -1174,6 +1172,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	refreshGUI();
     }
 
+    @Override
     public void windowClosed() {
 	showWarning();
 	getRecordset().removeSelectionListener(this);
@@ -1191,6 +1190,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	isSomeNavTableFormOpen = b;
     }
 
+    @Override
     public void windowActivated() {
     }
 
@@ -1226,6 +1226,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
         }
     }
 
+    @Override
     public void onPositionChange(PositionEvent e) {
 	try {
 	    layerController.read(getPosition());

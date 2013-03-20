@@ -17,103 +17,152 @@
 
 package es.udc.cartolab.gvsig.navtable.dataacces;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Set;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
+import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
+import com.hardcode.gdbms.engine.values.Value;
+import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
+import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
+import com.iver.cit.gvsig.fmap.core.DefaultRow;
+import com.iver.cit.gvsig.fmap.core.IRow;
+import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
+import com.iver.cit.gvsig.fmap.edition.EditionEvent;
+import com.iver.cit.gvsig.fmap.edition.IEditableSource;
+import com.iver.cit.gvsig.fmap.edition.IWriteable;
+import com.iver.cit.gvsig.fmap.edition.IWriter;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.ToggleEditing;
+import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 
 /**
- * Class to manage CRUD (Create, Read, Update, Delete) operations on a Layer.
+ * Class to manage CRUD (Create, Read, Update, Delete) operations on a Table.
  * 
  * @author Andrés Maneiro <amaneiro@icarto.es>
- * @author Francisco Puga <fpuga@cartolab.es>
+ * @author @author Francisco Puga <fpuga@cartolab.es>
  * 
  */
-public class LayerController implements IController {
+public class TableController implements IController {
 
-    private FLyrVect layer;
+    public static int NO_ROW = -1;
+
+    private IEditableSource model;
     private HashMap<String, Integer> indexes;
     private HashMap<String, Integer> types;
     private HashMap<String, String> values;
     private HashMap<String, String> valuesChanged;
 
-    public LayerController(FLyrVect layer) {
-	this.layer = layer;
+    public TableController(IEditableSource model) {
+	this.model = model;
 	this.indexes = new HashMap<String, Integer>();
 	this.types = new HashMap<String, Integer>();
 	this.values = new HashMap<String, String>();
 	this.valuesChanged = new HashMap<String, String>();
     }
-    
-    @Override
-    /**
-     * Not implemented jet
-     * the field with "geom" identifier will contain the WKT representation
-     * of the geometry
-     */
+
+    public void initMetadata() {
+	try {
+	    SelectableDataSource sds = model.getRecordset();
+	    for (int i = 0; i < sds.getFieldCount(); i++) {
+		String name = sds.getFieldName(i);
+		indexes.put(name, i);
+		types.put(name, sds.getFieldType(i));
+	    }
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	    clearAll();
+	}
+    }
+
     public long create(HashMap<String, String> newValues) throws Exception {
-	throw new NotImplementedException();
+
+	initMetadata();
+	Value[] vals = createValuesFromHashMap(newValues);
+
+	ToggleEditing te = new ToggleEditing();
+	if (!model.isEditing()) {
+	    te.startEditing(model);
+	}
+	long newPosition = NO_ROW;
+	if (model instanceof IWriteable) {
+	    IRow row = new DefaultRow(vals);
+	    newPosition = model.doAddRow(row, EditionEvent.ALPHANUMERIC);
+	}
+	te.stopEditing(model);
+	read(newPosition);
+	return newPosition;
+    }
+
+    private Value[] createValuesFromHashMap(HashMap<String, String> newValues) {
+	Value[] vals = new Value[indexes.size()];
+	for (int i = 0; i < indexes.size(); i++) {
+	    vals[i] = ValueFactoryNT.createNullValue();
+	}
+	for (String key : newValues.keySet()) {
+	    try {
+		vals[getIndex(key)] = ValueFactoryNT.createValueByType(
+			newValues.get(key), types.get(key));
+	    } catch (ParseException e) {
+		vals[getIndex(key)] = ValueFactoryNT.createNullValue();
+	    }
+	}
+	return vals;
     }
 
     @Override
     public void read(long position) throws ReadDriverException {
-	SelectableDataSource sds = layer.getSource().getRecordset();
-	if(position != AbstractNavTable.EMPTY_REGISTER) {
-	    clearAll();
+	SelectableDataSource sds = model.getRecordset();
+	clearAll();
+	if (position != AbstractNavTable.EMPTY_REGISTER) {
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
 		String name = sds.getFieldName(i);
+		indexes.put(name, i);
+		types.put(name, sds.getFieldType(i));
 		values.put(
 			name,
 			sds.getFieldValue(position, i).getStringValue(
 				new ValueFormatNT()));
-		indexes.put(name, i);
-		types.put(name, sds.getFieldType(i));
 	    }
 	}
-    }
-
-    @Deprecated
-    public void save(long position) throws ReadDriverException {
-	update(position);
     }
 
     @Override
     public void update(long position) throws ReadDriverException {
 	ToggleEditing te = new ToggleEditing();
-	boolean wasEditing = layer.isEditing();
+	boolean wasEditing = model.isEditing();
 	if (!wasEditing) {
-	    te.startEditing(layer);
+	    te.startEditing(model);
 	}
-	te.modifyValues(layer, (int) position,
-		this.getIndexesOfValuesChanged(),
-		this.getValuesChanged().values().toArray(new String[0]));
+	te.modifyValues(model, (int) position, getIndexesOfValuesChanged(),
+		getValuesChanged().values().toArray(new String[0]));
 	if (!wasEditing) {
-	    te.stopEditing(layer, false);
+	    te.stopEditing(model);
 	}
-	this.read((int) position);
+	read((int) position);
     }
 
     @Override
-    public void delete(long position) throws ReadDriverException {
-	    if (position > AbstractNavTable.EMPTY_REGISTER) {
-		ToggleEditing te = new ToggleEditing();
-		boolean wasEditing = layer.isEditing();
-		if (!wasEditing) {
-		    te.startEditing(layer);
-		}
-		te.deleteRow(layer, (int) position);
-		if (!wasEditing) {
-		    te.stopEditing(layer, false);
-		}
-	    }
+    public void delete(long position) throws StopWriterVisitorException,
+	    InitializeWriterException, StartWriterVisitorException,
+	    ReadDriverException {
+
+	model.startEdition(EditionEvent.ALPHANUMERIC);
+
+	IWriteable w = (IWriteable) model;
+	IWriter writer = w.getWriter();
+
+	ITableDefinition tableDef = model.getTableDefinition();
+	writer.initialize(tableDef);
+
+	model.doRemoveRow((int) position, EditionEvent.ALPHANUMERIC);
+	model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
+	model.getRecordset().reload();
+	clearAll();
     }
 
     @Override
@@ -150,17 +199,17 @@ public class LayerController implements IController {
     }
 
     @Override
+    public String getValueInLayer(String fieldName) {
+	return values.get(fieldName);
+    }
+
+    @Override
     public HashMap<String, String> getValues() {
 	HashMap<String, String> val = values;
 	for (String k : valuesChanged.keySet()) {
 	    val.put(k, valuesChanged.get(k));
 	}
 	return val;
-    }
-
-    @Override
-    public String getValueInLayer(String fieldName) {
-	return values.get(fieldName);
     }
 
     @Override
@@ -185,6 +234,6 @@ public class LayerController implements IController {
 
     @Override
     public long getRowCount() throws ReadDriverException {
-	return layer.getRecordset().getRowCount();
+	return model.getRowCount();
     }
 }
