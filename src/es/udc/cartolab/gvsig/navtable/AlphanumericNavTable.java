@@ -50,6 +50,7 @@ import com.iver.cit.gvsig.fmap.edition.IWriter;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 
 /**
  * @author Nacho Varela
@@ -66,7 +67,7 @@ public class AlphanumericNavTable extends NavTable {
 
     public AlphanumericNavTable(IEditableSource model, String dataName)
 	    throws ReadDriverException {
-	super(model.getRecordset(), dataName);
+	super(null, dataName);
 	this.isAlphanumericNT = true;
 	this.model = model;
 	this.model.addEditionListener(listener);
@@ -76,7 +77,7 @@ public class AlphanumericNavTable extends NavTable {
 
     public AlphanumericNavTable(IEditableSource model, String dataName,
 	    HashMap<String, String> defaultValues) throws ReadDriverException {
-	super(model.getRecordset(), dataName);
+	super(null, dataName);
 	this.isAlphanumericNT = true;
 	this.model = model;
 	this.defaultValues = defaultValues;
@@ -103,6 +104,12 @@ public class AlphanumericNavTable extends NavTable {
 	zoomB.getParent().add(newB);
 	// We must to rewrite selectionB listener and the others
 
+	return true;
+    }
+    
+    @Override
+    protected boolean initController() {
+	// TODO: Not implemented jet
 	return true;
     }
 
@@ -314,5 +321,10 @@ public class AlphanumericNavTable extends NavTable {
 	this.newB.removeActionListener(this);
 	super.windowClosed();
 	this.model.removeEditionListener(listener);
+    }
+    
+    @Override
+    public void onPositionChange(PositionEvent e) {
+	//TODO: Not implemented jet
     }
 }

@@ -40,7 +40,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.apache.log4j.Logger;
+import org.gvsig.exceptions.BaseException;
 
 import com.hardcode.gdbms.driver.exceptions.InitializeDriverException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
@@ -49,7 +52,6 @@ import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
-import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -62,39 +64,23 @@ import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
+import es.udc.cartolab.gvsig.navtable.dataacces.IController;
+import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 /**
- * 
- * AbstractNavTable is the base class that defines the layout of the window that
- * allows to navigate between the elements of the layer.
- * 
- * It has three panels:
- * <ul>
- * <li>The north panel, with the controls to handle the navigation behavior.
- * <li>The main panel, with the representation of the layer data, it must be
- * implemented in the subclasses.
- * <li>The south panel, with the navigation controls.
- * </ul>
- * 
  * <img src="images/NavTableWindow.png">
  * 
- * If there are a image on
+ * If there is an image on
  * 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png'
- * is loaded on the NorthPanel.
- * 
- * @author Nacho Varela
- * @author Javier Estevez
- * @author Pablo Sanxiao
- * @author Andres Maneiro
- * @author Jorge Lopez
+ * it will be loaded on the NorthPanel.
  * 
  */
 public abstract class AbstractNavTable extends JPanel implements IWindow,
-ActionListener, SelectionListener, IWindowListener {
+ActionListener, SelectionListener, IWindowListener, PositionListener {
 
     public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
@@ -115,6 +101,7 @@ ActionListener, SelectionListener, IWindowListener {
     protected WindowInfo viewInfo = null;
     private long currentPosition = 0;
 
+    protected IController layerController;
     protected FLyrVect layer = null;
     protected String dataName = "";
 
@@ -156,19 +143,9 @@ ActionListener, SelectionListener, IWindowListener {
     protected boolean openEmptyLayers = false;
     protected boolean isAlphanumericNT = false;
 
-    /**
-     * 
-     * Constructor of the class. It gets the data from the layer and stores it
-     * in recordset to later uses.
-     * 
-     * @param layer
-     *            Vectorial layer whose data will be accessed.
-     */
     public AbstractNavTable(FLyrVect layer) {
 	super();
 	this.layer = layer;
-	this.listener = new EditionListener(this, layer);
-	this.layer.addLayerListener(this.listener);
 	this.dataName = layer.getName();
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
@@ -181,6 +158,7 @@ ActionListener, SelectionListener, IWindowListener {
     // Maybe can be set as deprecated and be replaced by:
     // {@link AbstractNavTable(SelectableDataSource, String)}
     // with a properly name as string parameter.
+    @Deprecated
     public AbstractNavTable(SelectableDataSource recordset) {
 	this(recordset, recordset.getName());
     }
@@ -188,13 +166,14 @@ ActionListener, SelectionListener, IWindowListener {
     /**
      * Constructor of the class. This constructor is used by
      * AlphanumericNavTable
-     * 
-     * @param recordset
-     * @param tableName
      */
+    @Deprecated
     public AbstractNavTable(SelectableDataSource recordset, String tableName) {
+	this(tableName);
+    }
+    
+    public AbstractNavTable(String tableName) {
 	super();
-	this.listener = new EditionListener(this);
 	this.dataName = tableName;
 	WindowInfo window = this.getWindowInfo();
 	String title = window.getTitle();
@@ -224,18 +203,84 @@ ActionListener, SelectionListener, IWindowListener {
 	return this.isAlphanumericNT;
     }
 
+    public boolean init() {
+
+	if (!initController()) {
+	    return false;
+	}
+
+	try {
+	    if ((!openEmptyLayers) && (layerController.getRowCount() <= 0)) {
+		showEmptyLayerMessage();
+		return false;
+	    }
+	} catch (ReadDriverException e) {
+	    logger.error(e.getStackTrace());
+	    return false;
+	}
+
+	initGUI();
+	initWidgets();
+	
+	refreshGUI();
+	super.repaint();
+	super.setVisible(true);
+	setOpenNavTableForm(true);
+	setFocusCycleRoot(true);
+	
+	setLayerListeners();
+	return true;
+    }
+    
     /**
-     * It initializes the window.
-     * 
-     * @return true if it is successful, false if not.
+     * In NavTable it will get the attribute names from the layer and
+     * set it on the left column of the table. On AbstractForm it will
+     * initialize the widget vector from the Abeille file
      */
-    public abstract boolean init();
+    protected abstract void initWidgets();
+    
+    protected void initGUI() {
+    	MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]","[][grow][]");
+    	this.setLayout(thisLayout);
+    	this.add(getNorthPanel(), "shrink, wrap, align center");
+    	this.add(getCenterPanel(), "shrink, growx, growy, wrap");
+    	this.add(getSouthPanel(), "shrink, align center");
+    }
+
+    protected boolean initController() {
+	try {
+	    layerController = new LayerController(this.layer);
+	    layerController.read(getPosition());
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	    return false;
+	}
+	return true;
+    }
+
+    protected void setLayerListeners() {
+	listener = new EditionListener(this, layer);
+	layer.addLayerListener(listener);
+	getRecordset().addSelectionListener(this);
+	addPositionListener(this);
+    }
+
+    protected void removeLayerListeners() {
+	layer.removeLayerListener(listener);
+	getRecordset().removeSelectionListener(this);
+	removePositionListener(this);
+    }
+
+    public void showEmptyLayerMessage() {
+
+	if ((!openEmptyLayers)) {
+	    JOptionPane.showMessageDialog(this,
+		    PluginServices.getText(this, "emptyLayer"));
+	}
+    }
 
     /**
      * It shows the values of a data row in the main panel.
-     * 
-     * @param rowPosition
-     *            the row of the data to be shown.
      */
     public abstract void fillValues();
 
@@ -248,8 +293,6 @@ ActionListener, SelectionListener, IWindowListener {
 
     /**
      * It selects a specific row into the table.
-     * 
-     * @param row
      */
     public abstract void selectRow(int row);
 
@@ -268,16 +311,8 @@ ActionListener, SelectionListener, IWindowListener {
 	changedValues = bool;
     }
 
-    /**
-     * Saves the changes of the current data row.
-     * 
-     */
     public abstract boolean saveRecord();
 
-    /**
-     * 
-     * @param true to enable the save button, false to disable it
-     */
     protected void enableSaveButton(boolean bool) {
 	if (layer != null && layer.isEditing()) {
 	    saveB.setEnabled(false);
@@ -294,16 +329,7 @@ ActionListener, SelectionListener, IWindowListener {
 	}
     }
 
-    public void selectFeature(long feature) {
-	FBitSet bitset = null;
-	int pos = Long.valueOf(feature).intValue();
-	bitset = getRecordset().getSelection();
-	if (!bitset.get(pos)) {
-	    bitset.set(pos);
-	}
-	getRecordset().setSelection(bitset);
-    }
-
+    @Deprecated
     public void unselectFeature(long feature) {
 	FBitSet bitset = null;
 	int pos = Long.valueOf(feature).intValue();
@@ -315,13 +341,6 @@ ActionListener, SelectionListener, IWindowListener {
 	    }
 	}
 	getRecordset().setSelection(bitset);
-    }
-
-    public boolean isFeatureSelected(long feature) {
-	FBitSet bitset = null;
-	int pos = Long.valueOf(feature).intValue();
-	bitset = getRecordset().getSelection();
-	return bitset.get(pos);
     }
 
     public void clearSelectedFeatures() {
@@ -357,11 +376,6 @@ ActionListener, SelectionListener, IWindowListener {
 		"gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
     }
 
-    /**
-     * Creates the upper panel.
-     * 
-     * @return the panel.
-     */
     protected JPanel getNorthPanel() {
 	if (northPanel == null) {
 	    initNorthPanelButtons();
@@ -379,11 +393,6 @@ ActionListener, SelectionListener, IWindowListener {
 	return northPanel;
     }
 
-    /**
-     * Creates the main panel.
-     * 
-     * @return the panel.
-     */
     public abstract JPanel getCenterPanel();
 
     public ImageIcon getIcon(String iconName) {
@@ -490,11 +499,6 @@ ActionListener, SelectionListener, IWindowListener {
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes", undoB);
     }
 
-    /**
-     * Creates the bottom panel.
-     * 
-     * @return the panel.
-     */
     protected JPanel getSouthPanel() {
 	if (southPanel == null) {
 	    southPanel = new JPanel(new BorderLayout());
@@ -729,6 +733,17 @@ ActionListener, SelectionListener, IWindowListener {
 	getRecordset().setSelection(bitset);
     }
 
+    @Deprecated
+    public void selectFeature(long feature) {
+	FBitSet bitset = null;
+	int pos = Long.valueOf(feature).intValue();
+	bitset = getRecordset().getSelection();
+	if (!bitset.get(pos)) {
+	    bitset.set(pos);
+	}
+	getRecordset().setSelection(bitset);
+    }
+
     /**
      * 
      * @return true if the current row is selected, false if not.
@@ -752,6 +767,11 @@ ActionListener, SelectionListener, IWindowListener {
 	}
 	bitset = getRecordset().getSelection();
 	return bitset.get(pos);
+    }
+
+    @Deprecated
+    public boolean isFeatureSelected(long feature) {
+	return isRecordSelected(feature);
     }
 
     /**
@@ -785,6 +805,7 @@ ActionListener, SelectionListener, IWindowListener {
      * 
      * @return the configuration of the window.
      */
+    @Override
     public WindowInfo getWindowInfo() {
 	if (viewInfo == null) {
 	    viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
@@ -1008,6 +1029,7 @@ ActionListener, SelectionListener, IWindowListener {
     /**
      * Handles the user actions.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
 	/*
 	 * Variable isSomeNavTableForm open is used as workaround to control
@@ -1110,33 +1132,15 @@ ActionListener, SelectionListener, IWindowListener {
 
     public void deleteRecord() {
 	try {
-	    boolean layerEditing = true;
-	    ReadableVectorial feats = layer.getSource();
-	    feats.start();
-	    if (getPosition() > EMPTY_REGISTER) {
-		ToggleEditing te = new ToggleEditing();
-		if (!layer.isEditing()) {
-		    layerEditing = false;
-		    te.startEditing(layer);
-		}
-		te.deleteRow(layer, (int) getPosition());
-		// keep the current position within boundaries
-		setPosition(getPosition());
-		if (!layerEditing) {
-		    te.stopEditing(layer, false);
-		}
-		layer.setActive(true);
-		if (layer.getSource().getRecordset().getRowCount() <= 0) {
-		    PluginServices.getMDIManager().closeWindow(this);
-		    JOptionPane.showMessageDialog(this,
-			    PluginServices.getText(this, "emptyLayer"));
-		    return;
-		}
+	    long position = getPosition();
+	    layerController.delete(position);
+	    // keep the current position within boundaries
+	    setPosition(position);
+	    if (layerController.getRowCount() <= 0) {
+		showEmptyLayerMessage();
 	    }
-	} catch (ExpansionFileReadException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
+	} catch (BaseException e) {
+	    logger.error(e.getMessage(), e.getCause());
 	}
     }
 
@@ -1150,6 +1154,7 @@ ActionListener, SelectionListener, IWindowListener {
 	return true;
     }
 
+    @Override
     public void selectionChanged(SelectionEvent e) {
 	/*
 	 * Variable isSomeNavTableForm open is used as workaround to control
@@ -1167,6 +1172,7 @@ ActionListener, SelectionListener, IWindowListener {
 	refreshGUI();
     }
 
+    @Override
     public void windowClosed() {
 	showWarning();
 	getRecordset().removeSelectionListener(this);
@@ -1184,6 +1190,7 @@ ActionListener, SelectionListener, IWindowListener {
 	isSomeNavTableFormOpen = b;
     }
 
+    @Override
     public void windowActivated() {
     }
 
@@ -1195,8 +1202,6 @@ ActionListener, SelectionListener, IWindowListener {
     public void reloadRecordset() throws ReadDriverException {
 	getRecordset().reload();
     }
-
-    public abstract SelectableDataSource getRecordset();
 
     public String getDataName() {
 	return this.dataName;
@@ -1212,4 +1217,24 @@ ActionListener, SelectionListener, IWindowListener {
 
     public abstract boolean isSavingValues();
 
+    public SelectableDataSource getRecordset() {
+        try {
+            return layer.getSource().getRecordset();
+        } catch (ReadDriverException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void onPositionChange(PositionEvent e) {
+	try {
+	    layerController.read(getPosition());
+	    refreshGUI();
+	} catch (ReadDriverException rde) {
+	    rde.printStackTrace();
+	    layerController.clearAll();
+	    refreshGUI();
+	}
+    }
 }

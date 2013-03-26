@@ -26,12 +26,8 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.HeadlessException;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,22 +36,16 @@ import java.io.IOException;
 import java.sql.Types;
 import java.util.Vector;
 
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import net.miginfocom.swing.MigLayout;
-
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.values.DateValue;
 import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
@@ -73,11 +63,9 @@ import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 import com.vividsolutions.jts.geom.Geometry;
 
-import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
-import es.udc.cartolab.gvsig.navtable.format.DateFormatNT;
+import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
-import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
-import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
+import es.udc.cartolab.gvsig.navtable.listeners.MyMouseListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
@@ -101,7 +89,7 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  * @author Andres Maneiro
  * @author Jorge Lopez
  */
-public class NavTable extends AbstractNavTable implements PositionListener {
+public class NavTable extends AbstractNavTable {
 
     private static final long serialVersionUID = 1L;
     protected WindowInfo viewInfo = null;
@@ -117,12 +105,13 @@ public class NavTable extends AbstractNavTable implements PositionListener {
     private MyMouseListener myMouseListener;
 
     // Mouse buttons constants
-    final int BUTTON_RIGHT = 3;
+    public static final int BUTTON_RIGHT = 3;
 
     public NavTable(FLyrVect layer) {
 	super(layer);
     }
 
+    @Deprecated
     public NavTable(SelectableDataSource recordset, String tableName) {
 	super(recordset, tableName);
     }
@@ -133,14 +122,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 
     public void setFillingValues(boolean isFillingValues) {
 	this.isFillingValues = isFillingValues;
-    }
-    
-    private void initGUI() {
-	MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]","[][grow][]");
-	this.setLayout(thisLayout);
-	this.add(getNorthPanel(), "shrink, wrap, align center");
-	this.add(getCenterPanel(), "shrink, growx, growy, wrap");
-	this.add(getSouthPanel(), "shrink, align center");
     }
 
 
@@ -191,77 +172,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	return centerPanel;
     }
 
-    class MyMouseListener implements MouseListener {
-
-	private NavTable navtable;
-
-	public MyMouseListener(NavTable navTable) {
-	    this.navtable = navTable;
-	}
-
-	public void mouseClicked(MouseEvent e) {
-	    /*
-	     * TODO At the moment, filters do not work with automatic calculated
-	     * fields "length" and "area". Besides, the filter panel only is
-	     * activated if only 1 row is selected.
-	     */
-	    if (e.getButton() == BUTTON_RIGHT) {
-
-		if ((e.getSource() != null) && (e.getSource().equals(table))) {
-		    // get the coordinates of the mouse click
-		    Point p = e.getPoint();
-
-		    // get the row index that contains that coordinate
-		    int rowNumber = table.rowAtPoint( p );
-
-		    if (rowNumber > -1) {
-			// Get the ListSelectionModel of the JTable
-			ListSelectionModel model = table.getSelectionModel();
-
-			// set the selected interval of rows. Using the "rowNumber"
-			// variable for the beginning and end selects only that one row.
-			model.setSelectionInterval( rowNumber, rowNumber );
-		    }
-		}
-
-		JPopupMenu popup = new JPopupMenu();
-
-		ExtensionPoint extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
-			.getInstance().get(
-				AbstractNavTable.NAVTABLE_CONTEXT_MENU);
-		for (Object contextMenuAddon : extensionPoint.values()) {
-		    try {
-			INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
-			c.setNavtableInstance(navtable);
-			if (c.isVisible()) {
-			    for (JMenuItem m : c.getMenuItems()) {
-				popup.add(m);
-			    }
-			}
-		    } catch (ClassCastException cce) {
-			logger.error("Class is not a navtable context menu",
-				cce);
-		    }
-		}
-		if (popup.getComponents().length != 0) {
-		    popup.show(table, e.getX(), e.getY());
-		}
-
-	    }
-	}
-
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-	}
-
-	public void mousePressed(MouseEvent e) {
-	}
-
-	public void mouseReleased(MouseEvent e) {
-	}
-    }
+    
 
     class MyKeyListener implements KeyListener {
 	public void keyPressed(KeyEvent e) {
@@ -353,39 +264,6 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	super.registerNavTableButtonsOnActionToolBarExtensionPoint();
     }
 
-    @Override
-    public boolean init() {
-	SelectableDataSource sds = getRecordset();
-	sds.addSelectionListener(this);
-	this.addPositionListener(this);
-	try {
-	    if ((!openEmptyLayers) && (sds.getRowCount() <= 0)) {
-		JOptionPane.showMessageDialog(this,
-			PluginServices.getText(this, "emptyLayer"));
-		this.layer.removeLayerListener(this.listener);
-		return false;
-	    }
-	} catch (HeadlessException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	}
-
-	initGUI();
-
-	this.addPositionListener(this);
-
-	fillAttributes();
-	setPosition(0);
-
-	refreshGUI();
-	super.repaint();
-	super.setVisible(true);
-	setOpenNavTableForm(true);
-	return true;
-
-    }
-
     /**
      * It gets the alias name of the attributes in the alias file if exists
      * 
@@ -456,12 +334,7 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 	return alias;
     }
 
-    /**
-     * It gets the attributes names from the data table and sets them on the
-     * left column.
-     * 
-     */
-    private void fillAttributes() {
+    protected void initWidgets() {
 	try {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    model.setRowCount(0);
@@ -739,25 +612,10 @@ public class NavTable extends AbstractNavTable implements PositionListener {
 
     public void reloadRecordset() throws ReadDriverException {
 	super.reloadRecordset();
-	fillAttributes();
+	initWidgets();
     }
 
     public JTable getTable() {
 	return this.table;
     }
-
-    @Override
-    public SelectableDataSource getRecordset() {
-	try {
-	    return layer.getSource().getRecordset();
-	} catch (ReadDriverException e) {
-	    e.printStackTrace();
-	    return null;
-	}
-    }
-
-    public void onPositionChange(PositionEvent e) {
-	refreshGUI();
-    }
-
 }
