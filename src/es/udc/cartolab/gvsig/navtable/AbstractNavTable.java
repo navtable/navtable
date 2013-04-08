@@ -205,17 +205,17 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 
     public boolean init() {
 
-	if (!initController()) {
-	    return false;
-	}
-
 	try {
-	    if ((!openEmptyLayers) && (layerController.getRowCount() <= 0)) {
+	    if ((!openEmptyLayers) && (getRecordset().getRowCount() <= 0)) {
 		showEmptyLayerMessage();
 		return false;
 	    }
 	} catch (ReadDriverException e) {
 	    logger.error(e.getStackTrace());
+	    return false;
+	}
+
+	if (!initController()) {
 	    return false;
 	}
 
