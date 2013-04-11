@@ -8,7 +8,7 @@ import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
 import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
-public interface IController {
+public interface IController extends Cloneable {
 
     public long create(HashMap<String, String> newValues) throws Exception;
     
