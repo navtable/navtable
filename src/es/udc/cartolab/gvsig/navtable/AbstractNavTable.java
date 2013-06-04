@@ -26,6 +26,7 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,6 +49,7 @@ import org.gvsig.exceptions.BaseException;
 import com.hardcode.gdbms.driver.exceptions.InitializeDriverException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
+import com.iver.andami.ui.mdiFrame.MDIFrame;
 import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
@@ -98,7 +100,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected JPanel centerPanel = null;
     protected JPanel southPanel = null;
 
-    protected WindowInfo viewInfo = null;
+    protected WindowInfo windowInfo = null;
     private long currentPosition = 0;
 
     protected IController layerController;
@@ -147,9 +149,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	super();
 	this.layer = layer;
 	this.dataName = layer.getName();
-	WindowInfo window = this.getWindowInfo();
-	String title = window.getTitle();
-	window.setTitle(title + ": " + dataName);
     }
 
     // [nachouve] Check this method because
@@ -175,9 +174,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     public AbstractNavTable(String tableName) {
 	super();
 	this.dataName = tableName;
-	WindowInfo window = this.getWindowInfo();
-	String title = window.getTitle();
-	window.setTitle(title + "*: " + dataName);
     }
 
     protected JButton getButton(int buttonName) {
@@ -800,35 +796,42 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
     }
 
-    /**
-     * Sets the configuration of the window.
-     * 
-     * @return the configuration of the window.
-     */
     @Override
     public WindowInfo getWindowInfo() {
-	if (viewInfo == null) {
-	    viewInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
-		    | WindowInfo.RESIZABLE | WindowInfo.PALETTE);
-	    viewInfo.setTitle(PluginServices.getText(this, "NavTable"));
-	    // [NachoV] This Frame is just a trick to get the packed size
-	    // IWindow
-	    java.awt.Frame f = new java.awt.Frame();
-	    f.setLayout(new BorderLayout());
-	    f.add(getNorthPanel(), BorderLayout.NORTH);
-	    f.pack();
-	    f.add(getSouthPanel(), BorderLayout.SOUTH);
-	    JPanel centerPanel = getCenterPanel();
-	    if (centerPanel != null) {
-		f.add(centerPanel, BorderLayout.CENTER);
-	    }
-	    f.pack();
-	    viewInfo.setWidth(f.getWidth() + 25);
-	    viewInfo.setHeight(f.getHeight());
-	}
-	return viewInfo;
-    }
+	if (windowInfo == null) {
+	    windowInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
+		    | WindowInfo.PALETTE | WindowInfo.RESIZABLE);
+	    
+	    windowInfo.setTitle("NavTable: " + dataName);
+	    Dimension dim = getPreferredSize();
+	    // To calculate the maximum size of a form we take the size of the 
+	    // main frame minus a "magic number" for the menus, toolbar, state bar
+	    // Take into account that in edition mode there is less available space
+	    MDIFrame a = (MDIFrame) PluginServices.getMainFrame();
+	    final int MENU_TOOL_STATE_BAR = 205;
+	    int maxHeight = a.getHeight() - MENU_TOOL_STATE_BAR;
+	    int maxWidth = a.getWidth() - 15;
 
+	    int width, heigth = 0;
+	    if (dim.getHeight() > maxHeight) {
+		heigth = maxHeight;
+	    } else {
+		heigth = new Double(dim.getHeight()).intValue();
+	    }
+	    if (dim.getWidth() > maxWidth) {
+		width = maxWidth;
+	    } else {
+		width = new Double(dim.getWidth()).intValue();
+	    }
+	    
+	    // getPreferredSize doesn't take into account the borders and other stuff
+	    // introduced by Andami, neither scroll bars so we must increase the "preferred"
+	    // dimensions
+	    windowInfo.setWidth(width + 25);
+	    windowInfo.setHeight(heigth + 15);
+	}
+	return windowInfo;
+    }
     /**
      * Repaints the window.
      * 
