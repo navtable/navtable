@@ -24,8 +24,7 @@
  */
 package es.udc.cartolab.gvsig.navtable;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -63,7 +62,6 @@ import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 import com.vividsolutions.jts.geom.Geometry;
 
-import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 import es.udc.cartolab.gvsig.navtable.listeners.MyMouseListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
@@ -133,14 +131,7 @@ public class NavTable extends AbstractNavTable {
      */
     @Override
     public JPanel getCenterPanel() {
-	GridBagLayout glayout = new GridBagLayout();
-	GridBagConstraints c = new GridBagConstraints();
-
-	c.weightx = 1.0;
-	c.weighty = 1.0;
-	c.fill = GridBagConstraints.BOTH;
-
-	centerPanel = new JPanel(glayout);
+	
 	NavTableModel model = new NavTableModel();
 	table = new JTable(model);
 	table.getTableHeader().setReorderingAllowed(false);
@@ -167,8 +158,8 @@ public class NavTable extends AbstractNavTable {
 	model.addTableModelListener(myTableModelListener);
 
 	JScrollPane scrollPane = new JScrollPane(table);
-	centerPanel.add(scrollPane, c);
-	// centerPanel.setMinimumSize(new Dimension(300, 400));
+	centerPanel = new JPanel(new BorderLayout());
+	centerPanel.add(scrollPane, BorderLayout.CENTER);
 	return centerPanel;
     }
 
