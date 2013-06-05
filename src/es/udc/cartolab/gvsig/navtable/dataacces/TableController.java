@@ -236,4 +236,9 @@ public class TableController implements IController {
     public long getRowCount() throws ReadDriverException {
 	return model.getRowCount();
     }
+
+    @Override
+    public TableController clone() {
+	return new TableController(model);
+    }
 }
