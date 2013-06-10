@@ -187,4 +187,9 @@ public class LayerController implements IController {
     public long getRowCount() throws ReadDriverException {
 	return layer.getRecordset().getRowCount();
     }
+
+    @Override
+    public LayerController clone() {
+	return new LayerController(layer);
+    }
 }
