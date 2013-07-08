@@ -26,6 +26,7 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -54,6 +55,7 @@ import com.iver.andami.ui.mdiManager.IWindow;
 import com.iver.andami.ui.mdiManager.IWindowListener;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
+import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -307,7 +309,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	changedValues = bool;
     }
 
-    public abstract boolean saveRecord();
+    public abstract boolean saveRecord() throws StopWriterVisitorException;
 
     protected void enableSaveButton(boolean bool) {
 	if (layer != null && layer.isEditing()) {
@@ -1108,11 +1110,28 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    selectCurrentFeature();
 	    refreshGUI();
 	} else if (e.getSource() == saveB) {
-	    if (saveRecord()) {
-		refreshGUI();
-	    } else {
-		JOptionPane.showMessageDialog(this,
-			PluginServices.getText(this, "errorSavingData"), "",
+	    try {
+		if (saveRecord()) {
+		    refreshGUI();
+		} else {
+		    JOptionPane.showMessageDialog(this,
+			    PluginServices.getText(this, "errorSavingData"),
+			    "", JOptionPane.ERROR_MESSAGE);
+		}
+	    } catch (StopWriterVisitorException ex) {
+		ex.printStackTrace();
+		String errorMessage = (ex.getCause() != null) ? ex.getCause()
+			.getMessage() : ex.getMessage(), auxMessage = errorMessage
+			.replace("ERROR: ", "").replace(" ", "_")
+			.replace("\n", ""), auxMessageIntl = PluginServices
+			.getText(this, auxMessage);
+		if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+		    errorMessage = auxMessageIntl;
+		}
+		JOptionPane.showMessageDialog(
+			(Component) PluginServices.getMainFrame(),
+			errorMessage,
+			PluginServices.getText(this, "save_layer_error"),
 			JOptionPane.ERROR_MESSAGE);
 	    }
 	} else if (e.getSource() == removeB) {

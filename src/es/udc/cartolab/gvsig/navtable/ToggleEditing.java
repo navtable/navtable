@@ -36,7 +36,6 @@ import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueFactory;
 import com.iver.andami.PluginServices;
 import com.iver.andami.messages.NotificationManager;
-import com.iver.andami.ui.mdiManager.MDIManager;
 import com.iver.cit.gvsig.EditionUtilities;
 import com.iver.cit.gvsig.ProjectExtension;
 import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
@@ -148,33 +147,40 @@ public class ToggleEditing {
     }
 
     /**
-     * @param layer - The layer wich edition will be stoped.
-     * @param cancel - false if we want to save the layer, true if we don't.
+     * @param layer
+     *            - The layer wich edition will be stoped.
+     * @param cancel
+     *            - false if we want to save the layer, true if we don't.
+     * @throws StopWriterVisitorException
      */
-    public boolean stopEditing(FLayer layer, boolean cancel) {
+    public boolean stopEditing(FLayer layer, boolean cancel)
+	    throws StopWriterVisitorException {
 
-	try {
-	    if(layer instanceof FLyrVect){
+	if (layer instanceof FLyrVect) {
+	    try {
 		if (cancel) {
 		    cancelEdition(layer);
 		} else {
 		    saveLayer((FLyrVect) layer);
 		}
-		layer.setEditing(false);
-		layer.setActive(true);
-	    return true;
+	    } catch (DriverException e) {
+		logger.error(e.getMessage(), e);
+		return false;
+	    } catch (EditionExceptionOld e) {
+		logger.error(e.getMessage(), e);
+		return false;
+	    } finally {
+		try {
+		    layer.setActive(true);
+		    layer.setEditing(false);
+		} catch (StartEditionLayerException e) {
+		    logger.error(e.getMessage(), e);
+		    return false;
+		}
 	    }
-	    return false;
-	} catch (DriverException e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
-	} catch (StartEditionLayerException e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
-	} catch (EditionExceptionOld e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
+	    return true;
 	}
+	return false;
     }
 
     private void cancelEdition(FLayer layer) {
@@ -226,7 +232,7 @@ public class ToggleEditing {
     }
 
     private void saveLayer(FLyrVect layer) throws DriverException,
-    EditionExceptionOld {
+	    EditionExceptionOld, StopWriterVisitorException {
 	layer.setProperty("stoppingEditing", new Boolean(true));
 	VectorialEditableAdapter vea = (VectorialEditableAdapter) layer
 		.getSource();
@@ -260,8 +266,6 @@ public class ToggleEditing {
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
 	} catch (InitializeWriterException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (StopWriterVisitorException e) {
 	    logger.error(e.getMessage(), e);
 	}
     }

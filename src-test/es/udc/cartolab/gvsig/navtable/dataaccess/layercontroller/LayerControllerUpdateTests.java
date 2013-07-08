@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.hardcode.driverManager.DriverLoadException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.cit.gvsig.exceptions.layers.LoadLayerException;
+import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.crs.CRSFactory;
 import com.iver.cit.gvsig.fmap.drivers.VectorialFileDriver;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -46,7 +47,8 @@ public class LayerControllerUpdateTests {
 
     @Test
     public void testUpdateTextFieldFromShapeFile() throws LoadLayerException,
-	    ReadDriverException, DriverLoadException {
+	    ReadDriverException, DriverLoadException,
+	    StopWriterVisitorException {
 	FLyrVect layer = getFLyrVectFromFile();
 	IController lc = new LayerController(layer);
 	lc.read(0);
@@ -60,7 +62,8 @@ public class LayerControllerUpdateTests {
 
     @Test
     public void testUpdateDoubleFieldFromShapeFile() throws LoadLayerException,
-	    ReadDriverException, DriverLoadException {
+	    ReadDriverException, DriverLoadException,
+	    StopWriterVisitorException {
 	FLyrVect layer = getFLyrVectFromFile();
 	IController lc = new LayerController(layer);
 	lc.read(0);
@@ -74,7 +77,8 @@ public class LayerControllerUpdateTests {
 
     @Test
     public void testUpdateFloatFieldFromShapeFile() throws LoadLayerException,
-	    ReadDriverException, DriverLoadException {
+	    ReadDriverException, DriverLoadException,
+	    StopWriterVisitorException {
 	FLyrVect layer = getFLyrVectFromFile();
 	IController lc = new LayerController(layer);
 	lc.read(0);
@@ -88,7 +92,8 @@ public class LayerControllerUpdateTests {
 
     @Test
     public void testUpdateDateFieldFromShapeFile() throws LoadLayerException,
-	    ReadDriverException, DriverLoadException {
+	    ReadDriverException, DriverLoadException,
+	    StopWriterVisitorException {
 	FLyrVect layer = getFLyrVectFromFile();
 	IController lc = new LayerController(layer);
 	lc.read(0);
@@ -102,7 +107,8 @@ public class LayerControllerUpdateTests {
 
     @Test
     public void testUpdateShortIntFieldFromShapeFile()
-	    throws LoadLayerException, ReadDriverException, DriverLoadException {
+	    throws LoadLayerException, ReadDriverException,
+	    DriverLoadException, StopWriterVisitorException {
 	FLyrVect layer = getFLyrVectFromFile();
 	IController lc = new LayerController(layer);
 	lc.read(0);
@@ -116,7 +122,8 @@ public class LayerControllerUpdateTests {
 
     @Test
     public void testUpdateLongIntFieldFromShapeFile()
-	    throws LoadLayerException, ReadDriverException, DriverLoadException {
+	    throws LoadLayerException, ReadDriverException,
+	    DriverLoadException, StopWriterVisitorException {
 	FLyrVect layer = getFLyrVectFromFile();
 	IController lc = new LayerController(layer);
 	lc.read(0);

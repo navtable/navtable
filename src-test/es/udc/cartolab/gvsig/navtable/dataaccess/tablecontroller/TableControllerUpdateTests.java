@@ -12,6 +12,7 @@ import com.hardcode.driverManager.DriverLoadException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.data.DataSourceFactory;
 import com.hardcode.gdbms.engine.data.NoSuchTableException;
+import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.crs.CRSFactory;
 import com.iver.cit.gvsig.fmap.edition.EditableAdapter;
 import com.iver.cit.gvsig.fmap.edition.IEditableSource;
@@ -49,7 +50,8 @@ public class TableControllerUpdateTests {
 
     @Test
     public void testUpdateTextFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException,
+	    StopWriterVisitorException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -69,7 +71,8 @@ public class TableControllerUpdateTests {
 
     @Test
     public void testUpdateDoubleFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException,
+	    StopWriterVisitorException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -89,7 +92,8 @@ public class TableControllerUpdateTests {
 
     @Test
     public void testUpdateFloatFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException,
+	    StopWriterVisitorException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -109,7 +113,8 @@ public class TableControllerUpdateTests {
 
     @Test
     public void testUpdateDateFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException,
+	    StopWriterVisitorException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -129,7 +134,8 @@ public class TableControllerUpdateTests {
 
     @Test
     public void testUpdateShortIntFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException,
+	    StopWriterVisitorException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -149,7 +155,8 @@ public class TableControllerUpdateTests {
 
     @Test
     public void testUpdateLongIntFieldFromDBF() throws ReadDriverException,
-	    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException,
+	    StopWriterVisitorException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;

@@ -50,6 +50,7 @@ import com.hardcode.gdbms.engine.values.Value;
 import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.WindowInfo;
+import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
@@ -525,7 +526,7 @@ public class NavTable extends AbstractNavTable {
     }
 
     @Override
-    public boolean saveRecord() {
+    public boolean saveRecord() throws StopWriterVisitorException {
 	if (isSaveable()) {
 	    setSavingValues(true);
 	    int[] attIndexes = getIndexes();
@@ -543,6 +544,9 @@ public class NavTable extends AbstractNavTable {
 		}
 		setChangedValues(false);
 		return true;
+	    } catch (StopWriterVisitorException e) {
+		setSavingValues(false);
+		throw e;
 	    } catch (Exception e) {
 		logger.error(e.getMessage(), e);
 		return false;

@@ -23,6 +23,7 @@ import java.util.Set;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
+import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
@@ -81,12 +82,14 @@ public class LayerController implements IController {
     }
 
     @Deprecated
-    public void save(long position) throws ReadDriverException {
+    public void save(long position) throws ReadDriverException,
+	    StopWriterVisitorException {
 	update(position);
     }
 
     @Override
-    public void update(long position) throws ReadDriverException {
+    public void update(long position) throws ReadDriverException,
+	    StopWriterVisitorException {
 	ToggleEditing te = new ToggleEditing();
 	boolean wasEditing = layer.isEditing();
 	if (!wasEditing) {
@@ -102,7 +105,8 @@ public class LayerController implements IController {
     }
 
     @Override
-    public void delete(long position) throws ReadDriverException {
+    public void delete(long position) throws ReadDriverException,
+	    StopWriterVisitorException {
 	    if (position > AbstractNavTable.EMPTY_REGISTER) {
 		ToggleEditing te = new ToggleEditing();
 		boolean wasEditing = layer.isEditing();

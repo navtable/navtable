@@ -14,7 +14,8 @@ public interface IController extends Cloneable {
     
     public abstract void read(long position) throws ReadDriverException;
 
-    public abstract void update(long position) throws ReadDriverException;
+    public abstract void update(long position) throws ReadDriverException,
+	    StopWriterVisitorException;
 
     public abstract void delete(long position)
 	    throws StopWriterVisitorException, InitializeWriterException,
