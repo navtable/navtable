@@ -1170,7 +1170,24 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		    PluginServices.getText(null, "confirm_delete_register"),
 		    null, JOptionPane.YES_NO_OPTION);
 	    if (answer == 0) {
+		try {
 		deleteRecord();
+		} catch (StopWriterVisitorException ex) {
+		    ex.printStackTrace();
+		    String errorMessage = (ex.getCause() != null) ? ex
+			    .getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
+			    .replace("ERROR: ", "").replace(" ", "_")
+			    .replace("\n", ""), auxMessageIntl = PluginServices
+			    .getText(this, auxMessage);
+		    if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+			errorMessage = auxMessageIntl;
+		    }
+		    JOptionPane.showMessageDialog(
+			    (Component) PluginServices.getMainFrame(),
+			    errorMessage,
+			    PluginServices.getText(this, "save_layer_error"),
+			    JOptionPane.ERROR_MESSAGE);
+		}
 	    }
 	} else if (e.getSource() == undoB) {
 	    undoAction();
@@ -1183,7 +1200,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	refreshGUI();
     }
 
-    public void deleteRecord() {
+    public void deleteRecord() throws StopWriterVisitorException {
 	try {
 	    long position = getPosition();
 	    layerController.delete(position);
@@ -1192,6 +1209,8 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    if (layerController.getRowCount() <= 0) {
 		showEmptyLayerMessage();
 	    }
+	} catch (StopWriterVisitorException e) {
+	    throw e;
 	} catch (BaseException e) {
 	    logger.error(e.getMessage(), e.getCause());
 	}
