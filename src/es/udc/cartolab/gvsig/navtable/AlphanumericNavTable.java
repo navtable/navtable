@@ -231,9 +231,9 @@ public class AlphanumericNavTable extends NavTable {
      * Shows a warning to the user if there's unsaved data.
      * 
      */
-    protected void showWarning() {
+    protected boolean showWarning() {
 	if (getPosition() == AbstractNavTable.EMPTY_REGISTER) {
-	    return;
+	    return true;
 	}
 	if (isChangedValues()) {
 	    boolean save = false;
@@ -258,6 +258,7 @@ public class AlphanumericNavTable extends NavTable {
 		saveRecord();
 	    }
 	}
+	return true;
     }
 
     private void deleteAddedRows() {

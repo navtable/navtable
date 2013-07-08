@@ -510,9 +510,9 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * Shows a warning to the user if there's unsaved data.
      * 
      */
-    protected void showWarning() {
+    protected boolean showWarning() {
 	if (getPosition() == EMPTY_REGISTER) {
-	    return;
+	    return true;
 	}
 	if (isChangedValues()) {
 	    boolean save = false;
@@ -536,9 +536,31 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		// so it's not need to revert the changes done.
 	    }
 	    if (save) {
+		try {
 		saveRecord();
+		} catch (StopWriterVisitorException ex) {
+		    ex.printStackTrace();
+		    String errorMessage = ex.getCause().getMessage();
+		    int startIndex = errorMessage.indexOf("«"), endIndex = errorMessage
+			    .indexOf("»");
+		    if ((startIndex > -1) && (endIndex > startIndex)) {
+			String auxMessage = errorMessage.substring(
+				startIndex + 1, endIndex), aux_message_intl = PluginServices
+				.getText(this, auxMessage);
+			if (!aux_message_intl.equals(auxMessage)) {
+			    errorMessage = aux_message_intl;
+			}
+		    }
+		    JOptionPane.showMessageDialog(
+			    (Component) PluginServices.getMainFrame(),
+			    errorMessage,
+			    PluginServices.getText(this, "save_layer_error"),
+			    JOptionPane.ERROR_MESSAGE);
+		    return false;
+		}
 	    }
 	}
+	return true;
     }
 
     /**
@@ -546,17 +568,18 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      */
     public void next() {
-	showWarning();
-	try {
-	    if (onlySelectedCB.isSelected()) {
-		nextSelected();
-	    } else {
-		if (getPosition() < getRecordset().getRowCount()) {
-		    setPosition(getPosition() + 1);
+	if (showWarning()) {
+	    try {
+		if (onlySelectedCB.isSelected()) {
+		    nextSelected();
+		} else {
+		    if (getPosition() < getRecordset().getRowCount()) {
+			setPosition(getPosition() + 1);
+		    }
 		}
+	    } catch (ReadDriverException e) {
+		logger.error(e.getMessage(), e);
 	    }
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
 	}
     }
 
@@ -577,15 +600,16 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      */
     public void last() {
-	showWarning();
-	try {
-	    if (onlySelectedCB.isSelected()) {
-		lastSelected();
-	    } else {
-		setPosition(getRecordset().getRowCount() - 1);
+	if (showWarning()) {
+	    try {
+		if (onlySelectedCB.isSelected()) {
+		    lastSelected();
+		} else {
+		    setPosition(getRecordset().getRowCount() - 1);
+		}
+	    } catch (ReadDriverException e) {
+		logger.error(e.getMessage(), e);
 	    }
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
 	}
     }
 
@@ -606,11 +630,12 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      */
     public void first() {
-	showWarning();
-	if (onlySelectedCB.isSelected()) {
-	    firstSelected();
-	} else {
-	    setPosition(0);
+	if (showWarning()) {
+	    if (onlySelectedCB.isSelected()) {
+		firstSelected();
+	    } else {
+		setPosition(0);
+	    }
 	}
     }
 
@@ -631,12 +656,13 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      */
     public void before() {
-	showWarning();
-	if (onlySelectedCB.isSelected()) {
-	    beforeSelected();
-	} else {
-	    if (getPosition() > 0) {
-		setPosition(getPosition() - 1);
+	if (showWarning()) {
+	    if (onlySelectedCB.isSelected()) {
+		beforeSelected();
+	    } else {
+		if (getPosition() > 0) {
+		    setPosition(getPosition() - 1);
+		}
 	    }
 	}
     }
@@ -970,10 +996,12 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    logger.error(e.getMessage(), e);
 	    posNumber = getPosition();
 	} finally {
-	    showWarning();
-	    //user will set a 1-based index to navigate through layer, 
-	    // so we need to adapt it to currentPosition (a zero-based index)
-	    setPosition(posNumber-1);
+	    if (showWarning()) {
+		// user will set a 1-based index to navigate through layer,
+		// so we need to adapt it to currentPosition (a zero-based
+		// index)
+		setPosition(posNumber - 1);
+	    }
 	}
     }
 
@@ -1055,15 +1083,18 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		alwaysSelectCB.setSelected(false);
 		getRecordset().addSelectionListener(this);
 	    }
-	    showWarning();
-	    if (onlySelectedCB.isSelected()) {
-		if (getPosition() != EMPTY_REGISTER) {
-		    viewOnlySelected();
+	    if (showWarning()) {
+		if (onlySelectedCB.isSelected()) {
+		    if (getPosition() != EMPTY_REGISTER) {
+			viewOnlySelected();
+		    }
+		} else {
+		    if (getPosition() == EMPTY_REGISTER) {
+			setPosition(0);
+		    }
 		}
 	    } else {
-		if (getPosition() == EMPTY_REGISTER) {
-		    setPosition(0);
-		}
+		onlySelectedCB.setSelected(false);
 	    }
 	    refreshGUI();
 	} else if (e.getSource() == alwaysZoomCB) {
