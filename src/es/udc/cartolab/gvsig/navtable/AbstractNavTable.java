@@ -94,6 +94,9 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected static final int BUTTON_COPY_PREVIOUS = 4;
     protected static final int BUTTON_COPY_SELECTED = 5;
     private static final long serialVersionUID = 1L;
+    protected String deleteMessageKey = "confirm_delete_register";
+    protected String saveErrorTitleKey = "save_layer_error";
+    protected String saveErrorGenericMessageKey = "errorSavingData";
     protected static Logger logger = Logger.getLogger("NavTable");
     public static final String NAVTABLE_ACTIONS_TOOLBAR = "navtable_extension_point_actions_toolbar";
     public static final String NAVTABLE_CONTEXT_MENU = "navtable_extension_point_context_menu";
@@ -554,7 +557,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		    JOptionPane.showMessageDialog(
 			    (Component) PluginServices.getMainFrame(),
 			    errorMessage,
-			    PluginServices.getText(this, "save_layer_error"),
+			    PluginServices.getText(this, saveErrorTitleKey),
 			    JOptionPane.ERROR_MESSAGE);
 		    return false;
 		}
@@ -1146,7 +1149,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		    refreshGUI();
 		} else {
 		    JOptionPane.showMessageDialog(this,
-			    PluginServices.getText(this, "errorSavingData"),
+			    PluginServices.getText(this, saveErrorGenericMessageKey),
 			    "", JOptionPane.ERROR_MESSAGE);
 		}
 	    } catch (StopWriterVisitorException ex) {
@@ -1162,12 +1165,12 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		JOptionPane.showMessageDialog(
 			(Component) PluginServices.getMainFrame(),
 			errorMessage,
-			PluginServices.getText(this, "save_layer_error"),
+			PluginServices.getText(this, saveErrorTitleKey),
 			JOptionPane.ERROR_MESSAGE);
 	    }
 	} else if (e.getSource() == removeB) {
 	    int answer = JOptionPane.showConfirmDialog(null,
-		    PluginServices.getText(null, "confirm_delete_register"),
+		    PluginServices.getText(null, deleteMessageKey),
 		    null, JOptionPane.YES_NO_OPTION);
 	    if (answer == 0) {
 		try {
@@ -1185,7 +1188,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		    JOptionPane.showMessageDialog(
 			    (Component) PluginServices.getMainFrame(),
 			    errorMessage,
-			    PluginServices.getText(this, "save_layer_error"),
+			    PluginServices.getText(this, saveErrorTitleKey),
 			    JOptionPane.ERROR_MESSAGE);
 		}
 	    }
