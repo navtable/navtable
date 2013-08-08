@@ -123,7 +123,6 @@ public class NavTable extends AbstractNavTable {
 	this.isFillingValues = isFillingValues;
     }
 
-
     /**
      * It creates a panel with a table that shows the data linked to a feature
      * of the layer. Each row is a attribute-value pair.
@@ -132,7 +131,7 @@ public class NavTable extends AbstractNavTable {
      */
     @Override
     public JPanel getCenterPanel() {
-	
+
 	NavTableModel model = new NavTableModel();
 	table = new JTable(model);
 	table.getTableHeader().setReorderingAllowed(false);
@@ -164,12 +163,12 @@ public class NavTable extends AbstractNavTable {
 	return centerPanel;
     }
 
-    
-
     class MyKeyListener implements KeyListener {
+	@Override
 	public void keyPressed(KeyEvent e) {
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 	    // TODO If control + cursor ---> Inicio / Fin
 	    if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -186,11 +185,13 @@ public class NavTable extends AbstractNavTable {
 	    }
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 	}
     }
 
     class MyTableModelListener implements TableModelListener {
+	@Override
 	public void tableChanged(TableModelEvent e) {
 	    if (e.getType() == TableModelEvent.UPDATE && !isFillingValues()) {
 		// if layer is on edition, we need to update the recordset
@@ -201,6 +202,7 @@ public class NavTable extends AbstractNavTable {
 		} else {
 		    setChangedValues();
 		    enableSaveButton(isChangedValues());
+		    enableSaveSelectedButton();
 		}
 	    }
 	}
@@ -276,7 +278,7 @@ public class NavTable extends AbstractNavTable {
 		    + File.separator
 		    + dataName.substring(0, dataName.lastIndexOf("."))
 		    : Preferences.getAliasDir() + File.separator + dataName;
-		    fileAlias = new File(pathToken + ".alias");
+	    fileAlias = new File(pathToken + ".alias");
 	} else {
 	    ReadableVectorial source = layer.getSource();
 
@@ -326,6 +328,7 @@ public class NavTable extends AbstractNavTable {
 	return alias;
     }
 
+    @Override
     protected void initWidgets() {
 	try {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -365,6 +368,7 @@ public class NavTable extends AbstractNavTable {
 	}
     }
 
+    @Override
     public void fillEmptyValues() {
 	setFillingValues(true);
 	DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -374,6 +378,7 @@ public class NavTable extends AbstractNavTable {
 	setFillingValues(false);
     }
 
+    @Override
     public boolean isSavingValues() {
 	return isSavingValues;
     }
@@ -390,7 +395,8 @@ public class NavTable extends AbstractNavTable {
 	    setFillingValues(true);
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
-		String textoValue = sds.getFieldValue(getPosition(), i).getStringValue(new ValueFormatNT());
+		String textoValue = sds.getFieldValue(getPosition(), i)
+			.getStringValue(new ValueFormatNT());
 		model.setValueAt(textoValue, i, 1);
 	    }
 
@@ -538,7 +544,42 @@ public class NavTable extends AbstractNavTable {
 		if (!wasEditing) {
 		    te.startEditing(layer);
 		}
-		te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
+		te.modifyValues(layer, currentPos, attIndexes, attValues);
+		if (!wasEditing) {
+		    te.stopEditing(layer, false);
+		}
+		setChangedValues(false);
+		return true;
+	    } catch (StopWriterVisitorException e) {
+		setSavingValues(false);
+		throw e;
+	    } catch (Exception e) {
+		logger.error(e.getMessage(), e);
+		return false;
+	    } finally {
+		setSavingValues(false);
+	    }
+	}
+	return false;
+    }
+
+    @Override
+    public boolean saveSelectedRecords() throws StopWriterVisitorException {
+	if (isSaveable()) {
+	    setSavingValues(true);
+	    int[] attIndexes = getIndexes();
+	    String[] attValues = getValues();
+	    try {
+		ToggleEditing te = new ToggleEditing();
+		boolean wasEditing = layer.isEditing();
+		if (!wasEditing) {
+		    te.startEditing(layer);
+		}
+		for (int i = 0; i < layer.getRecordset().getRowCount(); i++) {
+		    if (layer.getRecordset().isSelected(i)) {
+			te.modifyValues(layer, i, attIndexes, attValues);
+		    }
+		}
 		if (!wasEditing) {
 		    te.stopEditing(layer, false);
 		}
@@ -601,10 +642,12 @@ public class NavTable extends AbstractNavTable {
 	super.windowClosed();
     }
 
+    @Override
     public Object getWindowProfile() {
 	return WindowInfo.PROPERTIES_PROFILE;
     }
 
+    @Override
     public void reloadRecordset() throws ReadDriverException {
 	super.reloadRecordset();
 	initWidgets();
