@@ -123,7 +123,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     // SOUTH
     // actions buttons
     protected JButton filterB = null;
-    protected JButton noFilterB = null;
     protected JButton copyPreviousB = null;
     protected JButton copySelectedB = null;
     protected JButton zoomB = null;
@@ -464,11 +463,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-enable-filter",
 		filterB);
-
-	noFilterB = getNavTableButton(noFilterB, "/nofilter.png",
-		"noFilterTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-disable-filter",
-		noFilterB);
 
 	copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png",
 		"copySelectedButtonTooltip");
@@ -921,6 +915,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    zoomB.setEnabled(navEnabled);
 	    selectionB.setEnabled(navEnabled);
 	    setIconAndPositionBackgroundForSelection();
+	    setIconForFiltering();
 	    enableSaveButton(navEnabled);
 	    removeB.setEnabled(navEnabled);
 
@@ -931,6 +926,22 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    nextB.setEnabled(navEnabled);
 	    lastB.setEnabled(navEnabled);
 
+	} catch (ReadDriverException e) {
+	    logger.error(e.getMessage(), e);
+	}
+    }
+
+    private void setIconForFiltering() {
+	try {
+	    if (layer.getRecordset().getSelection().isEmpty()) {
+		ImageIcon imagenFilter = getIcon("/filter.png");
+		filterB.setIcon(imagenFilter);
+		filterB.setToolTipText(PluginServices.getText(this, "filterTooltip"));
+	    } else {
+		ImageIcon imagenRemoveFilter = getIcon("/nofilter.png");
+		filterB.setIcon(imagenRemoveFilter);
+		filterB.setToolTipText(PluginServices.getText(this, "noFilterTooltip"));
+	    }
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
 	}
@@ -1115,12 +1126,18 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	    refreshGUI();
 	} else if (e.getSource() == filterB) {
-	    FiltroExtension fe = new FiltroExtension();
-	    fe.initialize();
-	    fe.setDatasource(getRecordset(), dataName);
-	    fe.execute("FILTER_DATASOURCE");
-	} else if (e.getSource() == noFilterB) {
-	    clearSelection();
+	    try {
+		if (layer.getRecordset().getSelection().isEmpty()) {
+		    FiltroExtension fe = new FiltroExtension();
+		    fe.initialize();
+		    fe.setDatasource(getRecordset(), dataName);
+		    fe.execute("FILTER_DATASOURCE");
+		} else {
+		    clearSelection();
+		    }
+		} catch (ReadDriverException exception) {
+		    logger.error(exception.getMessage(), exception);
+		    }
 	} else if (e.getSource() == nextB) {
 	    next();
 	} else if (e.getSource() == lastB) {
