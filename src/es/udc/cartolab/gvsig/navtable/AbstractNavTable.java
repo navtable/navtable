@@ -258,6 +258,11 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	return true;
     }
 
+    public void resetListeners() {
+	removeLayerListeners();
+	setLayerListeners();
+    }
+
     protected void setLayerListeners() {
 	listener = new EditionListener(this, layer);
 	layer.addLayerListener(listener);
