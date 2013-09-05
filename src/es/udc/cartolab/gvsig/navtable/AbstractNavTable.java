@@ -263,6 +263,11 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	setLayerListeners();
     }
 
+    public void reinit() {
+	resetListeners();
+	setOpenNavTableForm(true);
+    }
+
     protected void setLayerListeners() {
 	listener = new EditionListener(this, layer);
 	layer.addLayerListener(listener);
