@@ -2,7 +2,7 @@
 Manual básico de NavTable
 *************************
 
-.. image:: images/picture_1.png
+.. figure:: images/picture_1.png
 
 .. contents:: Índice
 
@@ -26,24 +26,27 @@ A lo largo del texto se usará los términos  y  como sinónimos para referirse 
 
 - Fco. Alberto Varela García
 
+- Jorge López Fernández
+
 **Revisiones**
 
 .. parsed-literal::
 
+  Revisión 1.0: 18 de septiembre de 2013
   Revisión 0.8: 24 febrero 2010
   Revisión 0.6: 19 mayo 2010
   Revisión 0.4: 18 septiembre 2009
   Revisión 0.2.2: 3 junio 2009
   Revisión 0.2.1: 16 mayo 2009
 
-Copyright 2009, 2010, 2011 - Cartolab http://www.cartolab.es
-		      2011 - iCarto http://www.icarto.es	
+Copyright 2009-2013 - Cartolab http://www.cartolab.es
+		      2011-2013 - iCarto http://www.icarto.es	
 
 El presente documento se distribuye bajo la licencia Creative Commons versión 3 con Reconocimiento y Compartir igual.
 
 Puede obtener más información sobre esta licencia en el siguiente enlace: http://creativecommons.org/licenses/by-sa/3.0/es/
 
-.. image:: images/picture_11.png
+.. figure:: images/picture_11.png
 
 
 1.- Introducción
@@ -51,7 +54,8 @@ Puede obtener más información sobre esta licencia en el siguiente enlace: http
 
 **NavTable** es una extensión de gvSIG para **visualizar** de forma ágil registros de las capas vectoriales de información geográfica. Su principal característica es que permite ver los atributos de un elemento de manera individualizada en una tabla vertical. Entre sus funcionalidades cuenta con la posibilidad de editar los valores alfanuméricos, así como navegar entre los elementos de la capa de información.
 
-.. image:: images/picture_0.png
+.. figure:: images/picture_0.png
+	:scale: 60 %
 
 **NavTable** es una herramienta pensada para mejorar la experiencia de los usuarios de SIG al manejar información alfanumérica, y resulta especialmente útil en el trabajo diario con este tipo de datos. NavTable permite navegar por tablas pudiendo visualizar y modificar datos de los registros existentes de forma ágil y sencilla.
 
@@ -92,7 +96,8 @@ NavTable cuenta con un diseño interno modular, lo que permite programar nuevas 
 
 La parte central es fácilmente adaptable, lo que permite crear formularios personalizados, más complejos y con características avanzadas para visualizar, editar e incluso procesar los datos. En la siguiente figura, se muestra un ejemplo de este tipo de ampliaciones de NavTable:
 
-.. image:: images/picture_2.png
+.. figure:: images/picture_2.png
+	:scale: 60 %
 
 Recuerde que el código fuente de NavTable se encuentra a su disposición en la página del proyecto.
 
@@ -102,7 +107,7 @@ Recuerde que el código fuente de NavTable se encuentra a su disposición en la 
 
 NavTable es multiplataforma por lo que puede ser instalada en entornos Windows, GNU/Linux y MacOS.
 
-Es necesario tener previamente una instalación de gvSIG en su versión 1.1.x, que se puede descargar desde http://www.gvsig.gva.es
+Es necesario tener previamente una instalación de gvSIG en su rama 1.x (versión posterior a la 1.0, anterior a la 2), que se puede descargar desde http://www.gvsig.gva.es
 
 Más información sobre requisitos de gvSIG:
 
@@ -114,7 +119,7 @@ Más información sobre requisitos de gvSIG:
 3.- Instalación
 ================
 
-Una vez instalado gvSIG versión 1.1.x en el ordenador, se puede instalar la extensión NavTable usando un instalador automático o de forma manual. Todos los archivos necesarios se encuentran accesibles en la web  http://navtable.forge.osor.eu/
+Una vez instalado gvSIG versión 1.x en el ordenador, se puede instalar la extensión NavTable usando un instalador automático o de forma manual. Todos los archivos necesarios se encuentran accesibles en la web  http://navtable.forge.osor.eu/
 
 
 3.1 Instalación automatizada mediante asistente
@@ -127,11 +132,11 @@ Descargar el instalador correspondiente a su sistema operativo y ejecutarlo. Seg
 
 Si quiere instalar NavTable manualmente puede descargar el fichero de binarios navTable_0.8.zip y descomprimirlo en la ruta siguiente:
 
-- Ejemplo en **Linux**:  /home/usuario/gvSIG_1.11/bin/gvSIG/extensiones/
+- Ejemplo en **Linux**:  /home/usuario/gvSIG_1.x/bin/gvSIG/extensiones/
 
-- Ejemplo en **Mac**:  /home/usuario/gvSIG_1.11/bin/gvSIG/extensiones/
+- Ejemplo en **Mac**:  /home/usuario/gvSIG_1.x/bin/gvSIG/extensiones/
 
-- Ejemplo en **Windows**: C:\Archivos de programa\gvSIG_1.11\bin\gvSIG\extensiones\
+- Ejemplo en **Windows**: C:\\Archivos de programa\\gvSIG_1.x\\bin\\gvSIG\\extensiones\\
 
 
 4.- Instrucciones de uso
@@ -139,7 +144,10 @@ Si quiere instalar NavTable manualmente puede descargar el fichero de binarios n
 
 Para activar NavTable es necesario tener seleccionada una capa vectorial en el ToC (listado de capas) dentro de gvSIG y pulsar el botón de NavTable
 
-.. image:: images/picture_6.png
+.. figure:: images/picture_6.png
+	:width: 75 px
+
+Alternativamente también se puede hacer click derecho sobre la capa en el ToC y seleccionar NavTable.
 
 La interfaz gráfica de NavTable cuenta con las siguientes partes básicas:
 
@@ -149,11 +157,12 @@ La interfaz gráfica de NavTable cuenta con las siguientes partes básicas:
 
 - **Parte inferior:** barra de navegación, botón de guardado y otros botones de manejo.
 
-.. image:: images/picture_23.png
+.. figure:: images/picture_23.png
+	:scale: 50 %
 
 NavTable puede utilizarse para la edición y visualización de datos en tablas alfanúmericas puras, que no tengan asociada geometría. Para estos casos, cuando se tenga el foco en una tabla de estas características, el icono de NavTable en la barra de herramientas tiene un tono azul
 
-.. image:: images/picture_8.png
+.. figure:: images/picture_8.png
 
 El título de la ventana de NavTable para tablas sin geometría tiene un '*' para distinguirla de las tablas normales.
 
@@ -163,7 +172,7 @@ El título de la ventana de NavTable para tablas sin geometría tiene un '*' par
 
 NavTable permite moverse entre los registros y elementos geométricos de modo muy simple. Para ello, en el panel inferior se encuentra la Barra de Navegación.
 
-.. image:: images/picture_16.png
+.. figure:: images/picture_16.png
 
 Pulsando estos botones se puede:
 
@@ -184,15 +193,17 @@ Si el foco está en la parte central de NavTable (haciendo click en alguna de la
 
 En caso de que esté seleccionado el checkbox "Seleccionados" el comportamiento de estos botones de navegación varía limitando la navegación a registros de elementos que se encuentran seleccionados en el SIG. Cuando un elemento se encuentra seleccionado la caja de posición de el panel inferior de NavTable se pone de color amarillo. Además se indicará entre paréntesis el número de elementos que se encuentran seleccionados en esa capa junto al total de elementos de ésta.
 
-.. image:: images/picture_21.png
+.. figure:: images/picture_21.png
 
 En la imagen superior se muestra un ejemplo en el que se visualiza el registro 8 de una capa que cuenta con 20 elementos de los cuales 7 están seleccionados.
 
 En caso de activar la opción de "Seleccionados", pero existir ningún registro seleccionado todos los valores de los atributos se mostrarán vacíos y la caja de posición no indicará ningún número.
 
-.. image:: images/picture_22.png
+.. figure:: images/picture_22.png
+	:width: 75 px
 
-.. image:: images/picture_18.png
+.. figure:: images/picture_18.png
+	:width: 75 px
 
 Este tipo de selección actúa sólo en el registro actual respetando el estado de la selección del resto de elementos.
 
@@ -200,11 +211,13 @@ Otro interesante comportamiento configurable en NavTable es la opción "Seleccio
 
 En el panel superior está el "botón de filtro" 
 
-.. image:: images/picture_14.png
+.. figure:: images/picture_14.png
+	:width: 75 px
 
 que permite construir consultas en gvSIG y obtener selecciones complejas de los elementos de la capa. Pulsando el botón de eliminar filtro 
 
-.. image:: images/picture_7.png
+.. figure:: images/picture_7.png
+	:width: 75 px
  
 se eliminan todas las selecciones.
 
@@ -213,11 +226,13 @@ se eliminan todas las selecciones.
 
 Si se pulsa el botón de zoom
 
-.. image:: images/picture_20.png
+.. figure:: images/picture_20.png
+	:width: 75 px
 
- la vista asociada se centrará en la geometría del elemento que se está visualizando en NavTable en ese momento. La escala se ajusta para contener el elemento de la mejor forma posible. En el caso de ser una geometría de tipo punto, la escala toma un valor que permita ver el entorno al elemento puntual.
+la vista asociada se centrará en la geometría del elemento que se está visualizando en NavTable en ese momento. La escala se ajusta para contener el elemento de la mejor forma posible. En el caso de ser una geometría de tipo punto, la escala toma un valor que permita ver el entorno al elemento puntual.
 
-.. image:: images/picture_12.png
+.. figure:: images/picture_12.png
+	:scale: 70 %
 
 Si se activa la opción "Siempre Zoom" en el checkbox del panel superior, provocará que NavTable haga zoom extensión de forma automática al elemento mostrado cuando se pulsen los botones de navegación. En el caso de activar la opción "Escala fija", se centrará la vista dejando en el centro el elemento visualizado en NavTable, pero sin variar la escala actual de la Vista. La escala se puede ajustar cambiando su valor numérico en el checkbox de la parte inferior derecha de la Vista en gvSIG, junto a las coordenadas.
 
@@ -234,9 +249,10 @@ Si el campo seleccionado es de tipo "texto" se mostrarán las siguientes opcione
 * **Distinto a** [texto actual]
 * **Contiene...** (activará un diálogo para introducir la subcadena de texto a buscar entre todos los registros)
 * **Filtro** (esta opción enlazaría con la extensión de filtrado de gvSIG, como en el panel superior)
-* **Quitar filtro** (Si existe algún registro selecionado)
+* **Quitar filtro**
 
-.. image:: images/picture_24.png
+.. figure:: images/picture_24.png
+	:scale: 50 %
 
 En el caso de activar el menú de filtro rápido sobre un atributo de tipo numérico, las opciones serían:
 
@@ -247,7 +263,8 @@ En el caso de activar el menú de filtro rápido sobre un atributo de tipo numé
 * **Filtro** 
 * **Quitar filtro** 
 
-.. image:: images/picture_25.png
+.. figure:: images/picture_25.png
+	:scale: 50 %
 
 También existe la posibilidad de hacer filtros en los atributos booleanos donde las opciones disponibles serán:
 
@@ -256,11 +273,14 @@ También existe la posibilidad de hacer filtros en los atributos booleanos donde
 * **Filtro** 
 * **Quitar filtro** 
 
+.. figure:: images/picture_27.png
+	:scale: 50 %
+
 En el caso de que exista algún registro seleccionado, entre las opciones desplegadas en el menú estará la de "Quitar filtro" para limpiar la selección actual. De todos modos, al seleccionar un nuevo filtro rápido se elimina la selección actual automáticamente.
 
-Nota: Se debe recordar que en caso de tener activa la opción de "Seleccionados" de NavTable y si se hace un filtro donde no exista ningún registro que cumpla dicha condición, NavTable mostrará un registro vacío.
+Nota: se debe recordar que en caso de tener activa la opción de "Seleccionados" de NavTable y si se hace un filtro donde no exista ningún registro que cumpla dicha condición, NavTable mostrará un registro vacío.
 
-Advertencia: Si el número de registros es muy elevado (al igual que sucede con la extensión de Filtro de gvSIG) las operaciones pueden llevar un tiempo de procesamiento elevado. Otra cosa a tener en cuenta, es que hay un error conocido en gvSIG al trabajar con filtros cuando el número es un decimal y la operación "Igual a". Los filtros para atributos de tipo fecha aún no han sido implementados.
+Advertencia: si el número de registros es muy elevado (al igual que sucede con la extensión de Filtro de gvSIG) las operaciones pueden llevar un tiempo de procesamiento importante. Otra cosa a tener en cuenta es que hay un error conocido en gvSIG al trabajar con filtros cuando el número es un decimal y la operación "Igual a". Los filtros para atributos de tipo fecha aún no han sido implementados.
 
 4.2 Edición
 ^^^^^^^^^^^
@@ -273,7 +293,8 @@ La principal novedad que representa NavTable a la hora de editar datos es que no
 
 3. Pulsar el botón de guardado 
 
-.. image:: images/picture_4.png
+.. figure:: images/picture_4.png
+	:width: 75 px
 
 Una vez hecho eso, el nuevo valor quedará registrado. Sin embargo, a la hora de salvar datos cabe destacar ciertos casos especiales:
 
@@ -287,23 +308,37 @@ Una vez hecho eso, el nuevo valor quedará registrado. Sin embargo, a la hora de
 
 Además se dispone de un botón para edición rápida. Si se decide que el registro actual debe tener los mismos valores que otro registro existente, o comparte la mayoría de ellos, se puede seleccionar el registro que se desea copiar y pulsar el botón de copiar el registro seleccionado
 
- .. image:: images/picture_10.png
+.. figure:: images/picture_10.png
+	:width: 75 px
 
-para que se carguen automáticamente. Sin embargo, no se modificarán los datos definitivamente hasta que se haga click en el botón de guardar.
+para que se carguen automáticamente. También podemos copiar los valores del registro anterior con el botón
+
+.. figure:: images/picture_28.png
+	:width: 75 px
+
+Sin embargo, no se modificarán los datos definitivamente hasta que se haga click en el botón de guardar.
 
 **Eliminación de elementos**
 
 Se puede eliminar el elemento actual que se está visualizando en NavTable mendiante el botón de eliminar registro 
 
-.. image:: images/picture_19.png
+.. figure:: images/picture_19.png
 
 En caso de que ese registro tenga geometría asociada esta será eliminada también.
+
+**Deshacer cambios en el registro actual**
+
+Podemos eliminar los cambios no guardados en el registro actual pulsando el botón
+
+.. figure:: images/picture_29.png
+	:width: 75 px
 
 **Creación de registros en tablas alfanuméricas**
 
 NavTable en modo de tabla alfanumérica sin geometría cuenta con el botón 
 
-.. image:: images/picture_15.png
+.. figure:: images/picture_15.png
+	:width: 75 px
 
 Pulsándolo es posible crear un nuevo registro a continuación del último registro.
 
@@ -317,13 +352,14 @@ Para ello es necesario definir un fichero de texto con el mismo nombre que tiene
 
 Cuando se instala gvSIG, éste crea un directorio del mismo nombre dentro del directorio del usuario. En **Windows** típicamente se encuentra dentro de "C:\Documents and Settings\usuario\"
 
-.. image:: images/picture_9.jpg
+.. figure:: images/picture_9.jpg
+	:scale: 70 %
 
 En **GNU/Linux** lo encontramos típicamente en el «home» del usuario, por ejemplo: "/home/usuario/gvSIG"
 
 Dentro de este directorio, gvSIG, NavTable en el momento de instalarla, crea un directorio llamado NavTable y dentro de este otro llamado alias, que será donde se guardan los ficheros «.alias»
 
-.. image:: images/picture_17.png
+.. figure:: images/picture_17.png
 
 En este fichero se pueden definir nombres largos o alias para los nombres de los campos.
 
@@ -335,7 +371,8 @@ Cuando se abre navTable, se comprueba si existe este fichero ".alias", si es as�
 
 **Ejemplo:** Tenemos un dbf con los siguientes campos:
 
-.. image:: images/picture_26.png
+.. figure:: images/picture_26.png
+	:scale: 70 %
 
 Definimos un fichero de alias con el mismo nombre del shp: *Borde_mun.alias* en este caso. En este fichero escribimos el siguiente contenido:
 
@@ -346,7 +383,8 @@ Definimos un fichero de alias con el mismo nombre del shp: *Borde_mun.alias* en 
 
 Este fichero *Borde_mun.alias* lo guardamos en el mismo directorio que el fichero *Borde_mun.shp*. Ahora abrimos de nuevo la capa con navTable y vemos lo siguiente:
 
-.. image:: images/picture_5.png
+.. figure:: images/picture_5.png
+	:scale: 70 %
 
 **Importante para Windows:**
 
@@ -374,9 +412,13 @@ Puedes colaborar en NavTable aportando ideas, comentarios, informando de errores
 
 - **Correo electrónico:** cartolab@udc.es
 
-- **Listas de correo del proyecto gvSIG:** http://www.gvsig.org/web/?id=listas-distribucion&amp%3bL=0&amp%3bK=1%252Findex.php%253Fid%253D-1%2520union%2520select--
+- **Listas de correo del proyecto gvSIG:** `http://www.gvsig.org/web/?id=listas-distribucion &amp%3bL=0&amp%3bK=1%252Findex.php%253Fid%253D-1%2520union%2520select--`__
+
+.. __: http://www.gvsig.org/web/?id=listas-distribucion&amp%3bL=0&amp%3bK=1%252Findex.php%253Fid%253D-1%2520union%2520select--
 
 - **Reporte de errores:** http://forge.osor.eu/tracker/?atid=462&amp;group_id=122&amp;func=browse
+
+|
 
 ¡Ayúdanos a construir una herramienta todavía más útil!
 
@@ -385,7 +427,8 @@ Puedes colaborar en NavTable aportando ideas, comentarios, informando de errores
 7.- Créditos
 =============
 
-.. image:: images/picture_13.png
+.. figure:: images/picture_13.png
+	:width: 100px
 
 CartoLab - Universidade da Coruña 
 http://www.cartolab.es/
@@ -402,7 +445,9 @@ http://www.cartolab.es/
 
 - Francisco Puga Alonso
 
-- Andrés Maneiro
+- Andrés Maneiro Boga
+
+- Jorge López Fernández
 
 Han aportado ideas, comentarios, sugerencias y/o informado de errores:
 
@@ -417,6 +462,10 @@ Han aportado ideas, comentarios, sugerencias y/o informado de errores:
 - Jorge Ocampo [iC]
 
 - Carmen Molejón [iC]
+
+- Vanessa Ros [C]
+
+- Concepción Alonso [C]
 
 - Juan Fuentes [C]
 
