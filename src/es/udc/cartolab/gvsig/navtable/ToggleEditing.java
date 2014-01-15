@@ -423,7 +423,7 @@ public class ToggleEditing {
 	    FieldDescription[] fieldDesc = source.getTableDefinition().getFieldsDesc();
 	    Value[] attributes = source.getRow(rowPosition).getAttributes();
 	    for (int i = 0; i < attIndexes.length; i++) {
-		if (attValues[i].length() == 0 || attValues[i] == null) {
+		if (attValues[i] == null || attValues[i].length() == 0) {
 		    val = ValueFactoryNT.createNullValue();
 		} else {
 		    type = fieldDesc[attIndexes[i]].getFieldType();
