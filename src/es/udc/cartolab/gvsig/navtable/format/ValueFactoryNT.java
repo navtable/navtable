@@ -98,11 +98,49 @@ public class ValueFactoryNT extends ValueFactory {
 		    .createValue(new Time(tf.parse(text).getTime()));
 	    break;
 
+	case Types.OTHER:
+	    // We check if the text can be parsed as a number after stripping
+	    // starting and trailing zeroes
+	    doubleFormat = DoubleFormatNT.getDisplayingFormat();
+	    String aux = removeStartingTrailingZeros(text);
+	    try {
+		Double doubleValue = doubleFormat.parse(aux).doubleValue();
+		// If the parsed number has the same length as the string, we
+		// can confirm it can be represented as a number
+		if ((doubleValue.toString().length() == aux.length())
+			&& (doubleValue >= 0.0)) {
+		    // If double value and int value are the same, then we
+		    // return an int
+		    if (doubleValue.intValue() == doubleValue.doubleValue()) {
+			return ValueFactory.createValue(doubleValue.intValue());
+		    }
+		    return ValueFactory.createValue(doubleValue);
+		}
+	    } catch (ParseException e) {
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+
 	default:
+	    // By default, we return the original string
 	    value = ValueFactory.createValue(text);
 	}
 
 	return value;
+    }
+
+    private static String removeStartingTrailingZeros(String number) {
+	char decimalSeparator = DoubleFormatNT.getDisplayingFormat()
+		.format(1.1).charAt(1);
+	String aux = number.replaceAll("^[0]*", "").replaceAll("[0]*$", "")
+		.replaceAll("\\" + decimalSeparator + "$", "");
+	if (!aux.contains("" + decimalSeparator)) {
+	    aux += decimalSeparator + "0";
+	}
+	if (aux.startsWith("" + decimalSeparator)) {
+	    aux = "0" + aux;
+	}
+	return aux;
     }
 
 }
