@@ -132,13 +132,18 @@ public class ValueFactoryNT extends ValueFactory {
     private static String removeStartingTrailingZeros(String number) {
 	char decimalSeparator = DoubleFormatNT.getDisplayingFormat()
 		.format(1.1).charAt(1);
-	String aux = number.replaceAll("^[0]*", "").replaceAll("[0]*$", "")
+	String aux;
+	if (!number.contains(decimalSeparator + "")) {
+	    aux = number.replaceAll("^[0]*", "");
+	} else {
+	    aux = number.replaceAll("^[0]*", "").replaceAll("[0]*$", "")
 		.replaceAll("\\" + decimalSeparator + "$", "");
-	if (!aux.contains("" + decimalSeparator)) {
-	    aux += decimalSeparator + "0";
-	}
-	if (aux.startsWith("" + decimalSeparator)) {
-	    aux = "0" + aux;
+	    if (!aux.contains("" + decimalSeparator)) {
+		aux += decimalSeparator + "0";
+	    }
+	    if (aux.startsWith("" + decimalSeparator)) {
+		aux = "0" + aux;
+	    }
 	}
 	return aux;
     }
