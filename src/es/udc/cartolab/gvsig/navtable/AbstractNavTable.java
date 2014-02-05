@@ -73,6 +73,7 @@ import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
+import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 /**
@@ -382,8 +383,13 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * @return the File of the image.
      */
     protected File getHeaderFile() {
-	return new File(
+	File header = new File(
 		"gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
+	if (!header.exists()) {
+	    header = new File(Preferences.getConfigDir()
+		    + "/navtable_header.png");
+	}
+	return header;
     }
 
     protected JPanel getNorthPanel() {
