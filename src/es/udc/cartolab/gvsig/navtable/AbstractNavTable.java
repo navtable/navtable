@@ -383,8 +383,9 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * @return the File of the image.
      */
     protected File getHeaderFile() {
-	File header = new File(
-		"gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png");
+	File folder = PluginServices.getPluginServices(this).getPluginDirectory();
+	File header = new File (folder.getAbsolutePath() + File.separator + "images" + File.separator + "navtable_header.png");
+	
 	if (!header.exists()) {
 	    header = new File(Preferences.getConfigDir()
 		    + "/navtable_header.png");
