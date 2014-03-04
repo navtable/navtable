@@ -215,12 +215,12 @@ Otro interesante comportamiento configurable en NavTable es la opción "Seleccio
 
 En el panel superior está el "botón de filtro" 
 
-.. figure:: images/picture_14.png
+.. figure:: images/picture_14.jpg
 	:width: 75 px
 
 que permite construir consultas en gvSIG y obtener selecciones complejas de los elementos de la capa. Pulsando el botón de eliminar filtro 
 
-.. figure:: images/picture_7.png
+.. figure:: images/picture_7.jpg
 	:width: 75 px
  
 se eliminan todas las selecciones.
