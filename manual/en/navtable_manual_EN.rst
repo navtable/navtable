@@ -30,6 +30,8 @@ Along this text register and element will be used as synonim of items (features)
 
 - Andrés Maneiro
 
+- Jorge López
+
 
 **Revisions**
 
@@ -116,7 +118,7 @@ More informaticon about gvSIG requirements:
 3.- Installation
 ================
 
-Once gvSIG version 1.9 is installed in the system, NavTable can be installed with an installer or with a manual installation. First step is to download the installation files for Navtable. You can get them from: http://navtable.forge.osor.eu/. Save the downloaded file in a folder.
+Once gvSIG version 1.9 is installed in the system, NavTable can be installed with an installer or with a manual installation. First step is to download the installation files for Navtable. You can get them from: http://navtable.github.io/. Save the downloaded file in a folder.
 
 
 3.1 Automatic installation:
@@ -332,7 +334,7 @@ In this file you can define long names or alias for the field names.
 
  Name_original_field=long_name
 
-It's only necessary to describe a row for the fields you want to define an alias name for. The order of the lines isn't important, that means, you don't need to follow the same sequence like the field's names of the table.
+It's only necessary to describe a row for the fields you want to define an alias name for. The order of the lines isn't important, that means, you don't need to follow the same sequence like the field's names of the table. Spaces are not allowed between the "=" sign and the name of the fields, but are allowed in the middle of the long name.
 
 When Navtable is opened, the according "alias" text file will be found automatically. If new names for the fields are available there, Navtable will use these ones instead of the original names.
 
@@ -360,11 +362,11 @@ In order to have a correct result for this functionality we recommend you to dea
 5.- More about NavTable
 ========================
 
-NavTable is hosted by the OSOR Forge[1]. On this page you can find useful information about the project and also related documents, mailing lists, bug reporting system, etc.
+NavTable is hosted by the github Forge[1]. On this page you can find useful information about the project and also related documents, mailing lists, bug reporting system, etc.
 
 In the section "Future Work" on the project website you will find some of the things we want to incorporate in NavTable in the near future.
 
-[1]: http://navtable.forge.osor.eu/
+[1]: http://navtable.github.io/
 
 
 6.- Collaboration
@@ -378,7 +380,7 @@ You can collaborate in NavTable providing ideas, comments, reporting bugs, trans
 
 - **gvSIG Mailing lists:** http://www.gvsig.org/web/?id=listas-distribucion&amp%3bL=0&amp%3bK=1%252Findex.php%253Fid%253D-1%2520union%2520select--
 
-- **BugTracker:** http://forge.osor.eu/tracker/?atid=462&amp;group_id=122&amp;func=browse
+- **BugTracker:** https://github.com/navtable/navtable/issues
 
 Help us build a tool even more useful!
 

@@ -30,6 +30,8 @@ In questo documento saranno utilizzati i termini record o elemento come sinonimi
 
 - Andrés Maneiro
 
+- Jorge López
+
 La traduzione in lingua italiana del presente documento è stata realizzata da:
 
 - Giuliano Ramat
@@ -132,7 +134,7 @@ Ulteriori informazioni sui requisiti di gvSIG:
 
 Appena installato gvSIG 1.11, è possibile procedere con l'installazione dell'estensione NavTable usando un installatore automatico oppure manualmente.
 
-Tutti gli archivi con i file necessari si possono reperire liberamente nella pagina web http://forge.osor.eu/frs/?group_id=122
+Tutti gli archivi con i file necessari si possono reperire liberamente nella pagina web  http://navtable.github.io/
 
 
 3.1 Installazione automatica mediante procedura guidata
@@ -371,7 +373,7 @@ In questo file è possibile definire nomi di campi di lunghezza superiore a 10 c
 
 Nome_campo_originale=Nome_lungo
 
-È necessario scrivere una riga di testo con questo formato per tutti i campi per i quali si desidera utilizzare un alias. L'ordine di definizione degli alias è libero, pertanto non è necessario seguire lo stesso ordine dei campi del file dbf.
+È necessario scrivere una riga di testo con questo formato per tutti i campi per i quali si desidera utilizzare un alias. L'ordine di definizione degli alias è libero, pertanto non è necessario seguire lo stesso ordine dei campi del file dbf. Non sono consentiti spazi tra i campi uguali e nome.
 Appena si apre NavTable, l'estensione verificherà se esiste o meno questo file “.alias”. In caso affermativo, per tutti i campi per i quali è stato definito un alias sarà mostrato 
 
 Esempio: Consideriamo un dbf con i seguenti campi:
@@ -398,10 +400,10 @@ Per impostazione predefinita, Windows nasconde le estensioni dei file e pertanto
 5.- Maggiori informazioni su NavTable
 =======================================
 
-NavTable è disponibile presso la pagina web del OSOR [1]. In questa pagina è possibile ottenere informazioni utili su questo progetto come documenti, relazioni, mailing list, bug tracker, ecc. 
+NavTable è disponibile presso la pagina web del github [1]. In questa pagina è possibile ottenere informazioni utili su questo progetto come documenti, relazioni, mailing list, bug tracker, ecc. 
 Nella sezione “Roadmap” della stessa pagina web del progetto è possibile sapere quelle che saranno le nuove funzionalità che saranno implementate in futuro in NavTable
 
-[1]:  http://navtable.forge.osor.eu/
+[1]:   http://navtable.github.io/
 
 6.- Collaborazione
 ===================
@@ -414,7 +416,7 @@ E' possibile collaborare con il team di NavTable apportando idee, commenti, segn
 
 - Mailing list del progetto gvSIG: http://www.gvsig.org/web/home/community/mailing-lists
 
-- Segnalazioni di errori: http://forge.osor.eu/tracker/?atid=462&amp;group_id=122&amp;func=browse
+- Segnalazioni di errori: https://github.com/navtable/navtable/issues
 
 Aiutateci a rendere NavTable ancora migliore!
 

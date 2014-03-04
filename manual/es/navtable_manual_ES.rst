@@ -18,15 +18,19 @@ A lo largo del texto se usará los términos  y  como sinónimos para referirse 
 
 **Autores**:
 
+- Fco. Alberto Varela García
+
+- Juan Ignacio Varela García
+
 - Javier Estévez Valiñas
 
 - Pablo Sanxiao
 
-- Juan Ignacio Varela García
+- Francisco Puga
 
-- Fco. Alberto Varela García
+- Andrés Maneiro
 
-- Jorge López Fernández
+- Jorge López
 
 **Revisiones**
 
@@ -40,7 +44,7 @@ A lo largo del texto se usará los términos  y  como sinónimos para referirse 
   Revisión 0.2.1: 16 mayo 2009
 
 Copyright 2009-2013 - Cartolab http://www.cartolab.es
-		      2011-2013 - iCarto http://www.icarto.es	
+		      2011-2013 - iCarto http://www.icarto.es
 
 El presente documento se distribuye bajo la licencia Creative Commons versión 3 con Reconocimiento y Compartir igual.
 
@@ -119,7 +123,7 @@ Más información sobre requisitos de gvSIG:
 3.- Instalación
 ================
 
-Una vez instalado gvSIG versión 1.x en el ordenador, se puede instalar la extensión NavTable usando un instalador automático o de forma manual. Todos los archivos necesarios se encuentran accesibles en la web  http://navtable.forge.osor.eu/
+Una vez instalado gvSIG versión 1.x en el ordenador, se puede instalar la extensión NavTable usando un instalador automático o de forma manual. Todos los archivos necesarios se encuentran accesibles en la web  http://navtable.github.io/
 
 
 3.1 Instalación automatizada mediante asistente
@@ -365,7 +369,7 @@ En este fichero se pueden definir nombres largos o alias para los nombres de los
 
    Nombre_campo_original=Nombre_largo
 
-Sólo es necesario escribir una línea con este formato para aquellos campos para los cuales se quiera definir un alias. El orden de estas líneas es libre, es decir, no es necesario seguir el orden de los campos en el fichero dbf.
+Sólo es necesario escribir una línea con este formato para aquellos campos para los cuales se quiera definir un alias. El orden de estas líneas es libre, es decir, no es necesario seguir el orden de los campos en el fichero dbf. El nombre largo puede contener espacio, pero el igual que separa un campo de otro debe ir pegado a los caracteres, es decir no debe haber espacios entre el igual y los nombres de los campos.
 
 Cuando se abre navTable, se comprueba si existe este fichero ".alias", si es así, para los campos que tienen definido un alias, se muestra éste en lugar del nombre original del campo.
 
@@ -395,11 +399,11 @@ Por defecto Windows oculta la extensión de los archivos, por lo que es probable
 5.- Más información sobre NavTable
 ===================================
 
-NavTable está alojado en la forja de OSOR[1]. En esta página puedes encontrar información útil sobre este proyecto como documentos relacionados, listas de correo, sistema para informar de errores, etc.
+NavTable está alojado en la forja de github [1]. En esta página puedes encontrar información útil sobre este proyecto como documentos relacionados, listas de correo, sistema para informar de errores, etc.
 
 En la sección de "Trabajos futuros" en página web del proyecto encontrarás algunas de las cosas que queremos incorporar próximamente en NavTable.
 
-[1]:  http://navtable.forge.osor.eu/
+[1]: http://navtable.github.io/
 
 
 
@@ -416,7 +420,7 @@ Puedes colaborar en NavTable aportando ideas, comentarios, informando de errores
 
 .. __: http://www.gvsig.org/web/?id=listas-distribucion&amp%3bL=0&amp%3bK=1%252Findex.php%253Fid%253D-1%2520union%2520select--
 
-- **Reporte de errores:** http://forge.osor.eu/tracker/?atid=462&amp;group_id=122&amp;func=browse
+- **Reporte de errores:** https://github.com/navtable/navtable/issues
 
 |
 
