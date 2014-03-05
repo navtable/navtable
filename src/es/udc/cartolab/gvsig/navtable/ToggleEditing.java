@@ -257,8 +257,7 @@ public class ToggleEditing {
 	    for (int i = 0; i < flds.length; i++) {
 		aux = aux + ", " + flds[i].getFieldAlias();
 	    }
-	    // System.err.println("Escribiendo la capa " + lyrDef.getName() +
-	    // " con los campos " + aux);
+
 	    lyrDef.setShapeType(layer.getShapeType());
 	    writer.initialize(lyrDef);
 	    vea.stopEdition(writer, EditionEvent.GRAPHIC);
@@ -271,7 +270,7 @@ public class ToggleEditing {
     }
 
     /**
-     * Modidify a single value of a register. It creates the new value from its
+     * Modify a single value of a register. It creates the new value from its
      * String representation. IMPORTANT: StartEditing and StopEditing is
      * required before and after call this method.
      * 
@@ -417,24 +416,23 @@ public class ToggleEditing {
 	    int[] attIndexes, 
 	    String[] attValues) {
 
-	Value val;
 	int type;
 	try {
 	    FieldDescription[] fieldDesc = source.getTableDefinition().getFieldsDesc();
 	    Value[] attributes = source.getRow(rowPosition).getAttributes();
 	    for (int i = 0; i < attIndexes.length; i++) {
-		if (attValues[i] == null || attValues[i].length() == 0) {
-		    val = ValueFactoryNT.createNullValue();
+		String att = attValues[i];
+		int idx = attIndexes[i];
+		if (att == null || att.length() == 0) {
+		    attributes[idx] = ValueFactoryNT.createNullValue();
 		} else {
-		    type = fieldDesc[attIndexes[i]].getFieldType();
+		    type = fieldDesc[idx].getFieldType();
 		    try {
-		        val = ValueFactoryNT.createValueByType(
-		            attValues[i], type);
+			attributes[idx] = ValueFactoryNT.createValueByType(att, type);
 		    } catch (ParseException e) {
-		        val = ValueFactory.createNullValue();
+		        logger.warn(e.getStackTrace(), e);
 		    }
 		}
-		attributes[attIndexes[i]] = val;
 	    }
 	    return attributes;
 	} catch (ReadDriverException e) {
@@ -459,10 +457,10 @@ public class ToggleEditing {
 	    }
 	    return val;
 	} catch (ReadDriverException e) {
-	    e.printStackTrace();
+	    logger.error(e.getStackTrace(), e);
 	    return null;
 	} catch (ParseException e) {
-	    e.printStackTrace();
+	    logger.warn(e.getStackTrace(), e);
 	    return null;
 	}
     }
