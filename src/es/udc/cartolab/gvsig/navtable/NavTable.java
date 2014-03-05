@@ -103,6 +103,8 @@ public class NavTable extends AbstractNavTable {
     private MyTableModelListener myTableModelListener;
     private MyKeyListener myKeyListener;
     private MyMouseListener myMouseListener;
+    
+    private final ValueFormatNT valueFormatNT = new ValueFormatNT();
 
     // Mouse buttons constants
     public static final int BUTTON_RIGHT = 3;
@@ -378,7 +380,7 @@ public class NavTable extends AbstractNavTable {
 	    setFillingValues(true);
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
-		String textoValue = sds.getFieldValue(getPosition(), i).getStringValue(new ValueFormatNT());
+		String textoValue = sds.getFieldValue(getPosition(), i).getStringValue(valueFormatNT);
 		model.setValueAt(textoValue, i, 1);
 	    }
 
@@ -425,17 +427,9 @@ public class NavTable extends AbstractNavTable {
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
 		String tableValue = model.getValueAt(i, 1).toString();
 		Value value = sds.getFieldValue(getPosition(), i);
-		String layerValue = value
-			.getStringValue(ValueWriter.internalValueWriter);
-		layerValue = layerValue.replaceAll("'", "");
-		if (value instanceof NullValue) {
-		    if (tableValue.compareTo("") != 0) {
-			changedValues.add(new Integer(i));
-		    }
-		} else {
-		    if (tableValue.compareTo(layerValue) != 0) {
-			changedValues.add(new Integer(i));
-		    }
+		String layerValue = value.getStringValue(valueFormatNT);
+		if (tableValue.compareTo(layerValue) != 0) {
+		    changedValues.add(new Integer(i));
 		}
 	    }
 	} catch (ReadDriverException e) {
