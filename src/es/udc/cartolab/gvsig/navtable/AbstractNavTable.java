@@ -325,9 +325,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     public abstract boolean saveRecord() throws StopWriterVisitorException;
 
     protected void enableSaveButton(boolean bool) {
-	if (layer != null && layer.isEditing()) {
-	    saveB.setEnabled(false);
-	} else if (!isChangedValues()) {
+	if (!isChangedValues()) {
 	    saveB.setEnabled(false);
 	} else {
 	    saveB.setEnabled(bool);
@@ -550,33 +548,12 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		// so it's not need to revert the changes done.
 	    }
 	    if (save) {
-		try {
-		saveRecord();
-		} catch (StopWriterVisitorException ex) {
-		    ex.printStackTrace();
-		    String errorMessage = ex.getCause().getMessage();
-		    int startIndex = errorMessage.indexOf("«"), endIndex = errorMessage
-			    .indexOf("»");
-		    if ((startIndex > -1) && (endIndex > startIndex)) {
-			String auxMessage = errorMessage.substring(
-				startIndex + 1, endIndex), aux_message_intl = PluginServices
-				.getText(this, auxMessage);
-			if (!aux_message_intl.equals(auxMessage)) {
-			    errorMessage = aux_message_intl;
-			}
-		    }
-		    JOptionPane.showMessageDialog(
-			    (Component) PluginServices.getMainFrame(),
-			    errorMessage,
-			    PluginServices.getText(this, saveErrorTitleKey),
-			    JOptionPane.ERROR_MESSAGE);
-		    return false;
-		}
+		tryToSave();
 	    }
 	}
 	return true;
     }
-
+   
     /**
      * Goes to the next row of the data.
      * 
@@ -1178,30 +1155,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    selectCurrentFeature();
 	    refreshGUI();
 	} else if (e.getSource() == saveB) {
-	    try {
-		if (saveRecord()) {
-		    refreshGUI();
-		} else {
-		    JOptionPane.showMessageDialog(this,
-			    PluginServices.getText(this, saveErrorGenericMessageKey),
-			    "", JOptionPane.ERROR_MESSAGE);
-		}
-	    } catch (StopWriterVisitorException ex) {
-		ex.printStackTrace();
-		String errorMessage = (ex.getCause() != null) ? ex.getCause()
-			.getMessage() : ex.getMessage(), auxMessage = errorMessage
-			.replace("ERROR: ", "").replace(" ", "_")
-			.replace("\n", ""), auxMessageIntl = PluginServices
-			.getText(this, auxMessage);
-		if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-		    errorMessage = auxMessageIntl;
-		}
-		JOptionPane.showMessageDialog(
-			(Component) PluginServices.getMainFrame(),
-			errorMessage,
-			PluginServices.getText(this, saveErrorTitleKey),
-			JOptionPane.ERROR_MESSAGE);
-	    }
+	    tryToSave();
 	} else if (e.getSource() == removeB) {
 	    int answer = JOptionPane.showConfirmDialog(null,
 		    PluginServices.getText(null, deleteMessageKey),
@@ -1228,6 +1182,33 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	} else if (e.getSource() == undoB) {
 	    undoAction();
+	}
+    }
+
+    private void tryToSave() {
+	try {
+	if (saveRecord()) {
+	    refreshGUI();
+	} else {
+	    JOptionPane.showMessageDialog(this,
+		    PluginServices.getText(this, saveErrorGenericMessageKey),
+		    "", JOptionPane.ERROR_MESSAGE);
+	}
+	} catch (StopWriterVisitorException ex) {
+	logger.error(ex.getStackTrace(), ex);
+	String errorMessage = (ex.getCause() != null) ? ex.getCause()
+		.getMessage() : ex.getMessage(), auxMessage = errorMessage
+		.replace("ERROR: ", "").replace(" ", "_")
+		.replace("\n", ""), auxMessageIntl = PluginServices
+		.getText(this, auxMessage);
+	if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+	    errorMessage = auxMessageIntl;
+	}
+	JOptionPane.showMessageDialog(
+		(Component) PluginServices.getMainFrame(),
+		errorMessage,
+		PluginServices.getText(this, saveErrorTitleKey),
+		JOptionPane.ERROR_MESSAGE);
 	}
     }
 

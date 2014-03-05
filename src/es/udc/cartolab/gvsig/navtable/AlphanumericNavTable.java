@@ -142,6 +142,8 @@ public class AlphanumericNavTable extends NavTable {
     }
 
     @Override
+    @Deprecated
+    //deprecated by fpuga, 28/02/2014
     protected void updateValue(int row, int col, String newValue) {
 	ToggleEditing te = new ToggleEditing();
 	try {

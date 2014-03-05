@@ -87,6 +87,7 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  * @author Pablo Sanxiao
  * @author Andres Maneiro
  * @author Jorge Lopez
+ * @author Francisco Puga
  */
 public class NavTable extends AbstractNavTable {
 
@@ -193,24 +194,9 @@ public class NavTable extends AbstractNavTable {
     class MyTableModelListener implements TableModelListener {
 	public void tableChanged(TableModelEvent e) {
 	    if (e.getType() == TableModelEvent.UPDATE && !isFillingValues()) {
-		// if layer is on edition, we need to update the recordset
-		// with the values that changed. If not, the values will be
-		// saved in "batch mode" when clicking on saving button
-		if (isEditing()) {
-		    updateValueInRecordset(e);
-		} else {
-		    setChangedValues();
-		    enableSaveButton(isChangedValues());
-		}
+		setChangedValues();
+		enableSaveButton(isChangedValues());
 	    }
-	}
-
-	private void updateValueInRecordset(TableModelEvent e) {
-	    int col = 1; // edition only happens on editing column
-	    int row = e.getFirstRow();
-	    String newValue = ((DefaultTableModel) table.getModel())
-		    .getValueAt(row, col).toString();
-	    updateValue(Long.valueOf(getPosition()).intValue(), row, newValue);
 	}
     }
 
@@ -218,6 +204,8 @@ public class NavTable extends AbstractNavTable {
 	return layer.isEditing();
     }
 
+    @Deprecated
+    //deprecated by fpuga, 28/02/2014
     protected void updateValue(int row, int col, String newValue) {
 	ToggleEditing te = new ToggleEditing();
 	try {
@@ -547,9 +535,6 @@ public class NavTable extends AbstractNavTable {
 	    } catch (StopWriterVisitorException e) {
 		setSavingValues(false);
 		throw e;
-	    } catch (Exception e) {
-		logger.error(e.getMessage(), e);
-		return false;
 	    } finally {
 		setSavingValues(false);
 	    }
