@@ -51,6 +51,8 @@ import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
+import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
+
 
 /**
  * @author Nacho Varela
@@ -70,7 +72,6 @@ public class AlphanumericNavTable extends NavTable {
 	super(null, dataName);
 	this.isAlphanumericNT = true;
 	this.model = model;
-	this.model.addEditionListener(listener);
 	this.indexesOfRowsAdded = new ArrayList<Integer>();
 	this.openEmptyLayers = true;
     }
@@ -81,7 +82,6 @@ public class AlphanumericNavTable extends NavTable {
 	this.isAlphanumericNT = true;
 	this.model = model;
 	this.defaultValues = defaultValues;
-	this.model.addEditionListener(listener);
 	this.openEmptyLayers = true;
     }
 
@@ -111,6 +111,21 @@ public class AlphanumericNavTable extends NavTable {
     protected boolean initController() {
 	// TODO: Not implemented jet
 	return true;
+    }
+    
+    @Override
+    protected void setLayerListeners() {
+	listener = new EditionListener(this);
+	model.addEditionListener(listener);
+	getRecordset().addSelectionListener(this);
+	addPositionListener(this);
+    }
+
+    @Override
+    protected void removeLayerListeners() {
+	model.removeEditionListener(listener);
+	getRecordset().removeSelectionListener(this);
+	removePositionListener(this);
     }
 
     @Override

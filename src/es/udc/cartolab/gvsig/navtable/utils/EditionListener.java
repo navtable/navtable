@@ -50,8 +50,8 @@ public class EditionListener implements LayerListener, IEditionListener {
     protected static Logger logger = Logger.getLogger("NavTable");
 
     public EditionListener(AbstractNavTable nt, FLyrVect layer) {
-	this(nt);
-	if (layer.isEditing()) {
+	this.nt = nt;
+	if (layer != null && layer.isEditing()) {
 	    source = (IEditableSource) (layer).getSource();
 	    source.addEditionListener(this);
 	}
