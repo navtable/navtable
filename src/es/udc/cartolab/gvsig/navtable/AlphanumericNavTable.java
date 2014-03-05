@@ -49,8 +49,8 @@ import com.iver.cit.gvsig.fmap.edition.IWriteable;
 import com.iver.cit.gvsig.fmap.edition.IWriter;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
+import es.udc.cartolab.gvsig.navtable.dataacces.TableController;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
-import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 
@@ -60,6 +60,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  * @author Pablo Sanxiao
  * @author Andres Maneiro
  */
+@SuppressWarnings("serial")
 public class AlphanumericNavTable extends NavTable {
 
     private JButton newB = null;
@@ -109,7 +110,13 @@ public class AlphanumericNavTable extends NavTable {
     
     @Override
     protected boolean initController() {
-	// TODO: Not implemented jet
+	try {
+	    layerController = new TableController(model);
+	    layerController.read(getPosition());
+	} catch (ReadDriverException e) {
+	    logger.error(e.getStackTrace(), e);
+	    return false;
+	}
 	return true;
     }
     
@@ -341,8 +348,4 @@ public class AlphanumericNavTable extends NavTable {
 	this.model.removeEditionListener(listener);
     }
     
-    @Override
-    public void onPositionChange(PositionEvent e) {
-	//TODO: Not implemented jet
-    }
 }

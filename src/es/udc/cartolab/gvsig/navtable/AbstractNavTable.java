@@ -253,7 +253,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    layerController = new LayerController(this.layer);
 	    layerController.read(getPosition());
 	} catch (ReadDriverException e) {
-	    e.printStackTrace();
+	    logger.error(e.getStackTrace(), e);
 	    return false;
 	}
 	return true;
@@ -1320,7 +1320,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    layerController.read(getPosition());
 	    refreshGUI();
 	} catch (ReadDriverException rde) {
-	    rde.printStackTrace();
+	    logger.error(rde.getStackTrace(), rde);
 	    layerController.clearAll();
 	    refreshGUI();
 	}
