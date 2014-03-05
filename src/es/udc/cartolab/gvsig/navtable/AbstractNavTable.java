@@ -926,18 +926,16 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     }
 
     private void setIconForFiltering() {
-	try {
-	    if (layer.getRecordset().getSelection().isEmpty()) {
-		ImageIcon imagenFilter = getIcon("/filter.png");
-		filterB.setIcon(imagenFilter);
-		filterB.setToolTipText(PluginServices.getText(this, "filterTooltip"));
-	    } else {
-		ImageIcon imagenRemoveFilter = getIcon("/nofilter.png");
-		filterB.setIcon(imagenRemoveFilter);
-		filterB.setToolTipText(PluginServices.getText(this, "noFilterTooltip"));
-	    }
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
+	if (getRecordset().getSelection().isEmpty()) {
+	    ImageIcon imagenFilter = getIcon("/filter.png");
+	    filterB.setIcon(imagenFilter);
+	    filterB.setToolTipText(PluginServices
+		    .getText(this, "filterTooltip"));
+	} else {
+	    ImageIcon imagenRemoveFilter = getIcon("/nofilter.png");
+	    filterB.setIcon(imagenRemoveFilter);
+	    filterB.setToolTipText(PluginServices.getText(this,
+		    "noFilterTooltip"));
 	}
     }
 
