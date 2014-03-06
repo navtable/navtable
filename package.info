@@ -1,0 +1,21 @@
+#
+#Thu Mar 06 17:32:46 CET 2014
+owner=Cartolab
+code=es.udc.cartolab.gvsig.navtable
+java-version=j1_6
+official=true
+type=plugin
+version=1.0.3
+state=final
+operating-system=all
+dependencies=
+sources-url=https\://github.com/navtable/navtable
+web-url=http\://navtable.github.io/
+architecture=all
+model-version=1.0.2
+categories=
+description=gvSIG plugin to navigate through the records of a layer in a vertical way
+owner-url=http\://cartolab.udc.es
+buildNumber=1
+gvSIG-version=1.12.0
+name=NavTable
