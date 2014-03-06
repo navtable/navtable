@@ -794,12 +794,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      */
     public void clearSelection() {
-	FBitSet bitset = null;
-	if (layer instanceof AlphanumericData) {
-	    bitset = getRecordset().getSelection();
-	    bitset.clear();
-	    getRecordset().setSelection(bitset);
-	}
+	getRecordset().clearSelection();
     }
 
     /**
@@ -1118,18 +1113,14 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	    refreshGUI();
 	} else if (e.getSource() == filterB) {
-	    try {
-		if (layer.getRecordset().getSelection().isEmpty()) {
-		    FiltroExtension fe = new FiltroExtension();
-		    fe.initialize();
-		    fe.setDatasource(getRecordset(), dataName);
-		    fe.execute("FILTER_DATASOURCE");
-		} else {
-		    clearSelection();
-		    }
-		} catch (ReadDriverException exception) {
-		    logger.error(exception.getMessage(), exception);
-		    }
+	    if (getRecordset().getSelection().isEmpty()) {
+		FiltroExtension fe = new FiltroExtension();
+		fe.initialize();
+		fe.setDatasource(getRecordset(), dataName);
+		fe.execute("FILTER_DATASOURCE");
+	    } else {
+		clearSelection();
+	    }
 	} else if (e.getSource() == nextB) {
 	    next();
 	} else if (e.getSource() == lastB) {
@@ -1309,7 +1300,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
         try {
             return layer.getSource().getRecordset();
         } catch (ReadDriverException e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace(), e);
             return null;
         }
     }
