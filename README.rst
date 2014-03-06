@@ -1,56 +1,61 @@
 Introduction
-===============
+============
 
-This document covers the description of:
+NavTable is a gvSIG's extension to view in a agile way the records of vectorial geographical information layers. Its main characteristic is that allows to see the element's attributes one by one and in vertical direction. Some of its features are: edit alphanumeric values and navigate among the elements of an information layer.
 
-* Version information.
+>NavTable has been developed by the Cartography Engineering Laboratory of University of A Coruña, CartoLab and it's currently maintained by `iCarto<http://icarto.es>`_ and `CartoLab<http://cartolab.udc.es>`_. It has been released under the terms of the version 3 of the GNU General Public License. We encourage to any user to let us know any suggest, comment, bug reports, etc...
 
-* Build instructions.
+Installation Instructions
+=========================
 
-* Packaging instructions.
-
-* Internationalization notes.
-
+NavTable is a default plugin of gvSIG 1.x, so you should have it installed on your system. If it's not or you want to update it follow the instructions that can be found in the `web of the project<http://navtable.github.io/>`.
 
 Version information
-============================
+===================
 
-The policy carried out in order to increment the version number is the same as gvSIG but taking into account the following:
+NavTable follows `Semantic Versioning<http://semver.org/>`_ style. That is:
 
-- Changes to the micro number only must be both forward- and backward-compatible.
+Given a version number MAJOR.MINOR.PATCH, increment the:
 
-- Changes to the minor number must be backward-compatible.
+#. MAJOR version when you make incompatible API changes,
+#. MINOR version when you add functionality in a backwards-compatible manner, and
+#. PATCH version when you make backwards-compatible bug fixes.
 
-- Changes to the major number indicates that the version can not be forward- and backward-compatible.
-
-- The parity of the minor number indicates the stability of the software: even means stable, odd means unstable.
-
-The version number is specified in the file "install/intall.xml"
-on the tag: <appversion> 0.8 </ AppVersion>
-
-It should also be changed in the file "config/about.htm" in tag:
-<h2> NavTable Extension v0.8 </h2>
+The actual version can be found under the property **version** in file **package.info**. Also, when a new gvsig package (gvspkg) is build the file about.htm that can seen in the about tool of gvSIG will show the version number.
 
 Build instructions
-===============================
+==================
 
-The code is compatible with the 1.5 JVM.
+The code compatibility with the jvm can be found in the **java-version** property of the file **package.info**. Anyway, there are not plans to move it from the actual 1.6 to a higher version.
 
-Setting up a workspace to version 1.11 of gvSIG and then include this project into that workspace.
+Setting up a workspace to the gvSIG version specified in the property **gvSIG-version** in **package.info** and then include this project into that workspace.
 
-To build it from the workspace can be launched build.xml to generate the necessary packaging within _fwAndami.
+To build it from the workspace use the ant script contained in the file build.xml to generate the necessary packaging within _fwAndami.
 
 Packaging instructions
-===============================
+======================
 
-To build an installer packaged with this plugin you can run the ant file "install/buildExt.xml."
+To build a gvsig package (for NavTable devs):
 
-To create a new tag we will have to do a Team/tags and use as tag name:
+#. Decide the next version number. For example v1.0.4
+#. Create a milestone on github, and retag the issues to this milestone
+#. Change the appropiate values in the **package.info** file. Usually you will have only to change **version** and **gvSIG-version**
+#. Run the target **make-gvsig-pkg** of the **build.xml** ant script. It will replace the placeholder ##VERSION## in the about.htm file and creates a file called navtable-v${version}-for-gvSIG-${gvSIG-version}.gvspkg in /tmp
+#. Create a release in github with the same name used in **version** (it will create a new tag automatically)
+#. Create a changelog in the release notes
+#. Upload the gvspkg to the release
+#. Publish the url of the package. It can be used as the url installation in the gvsig plugin manager, or it can be downloaded, unzipped and manually installed
 
-NavTable_[MAJOR]_[MINOR]_[MICRO]
+To build a gvsig package (for others):
+
+#. Change the appropiate values in the **package.info** file. Usually you will have only to change **version** and **gvSIG-version**
+#. Run the target **make-gvsig-pkg** of the **build.xml** ant script. It will replace the placeholder ##VERSION## in the about.htm file and creates a file called navtable-v${version}-for-gvSIG-${gvSIG-version}.gvspkg in /tmp
+#. That's all. You can share the created file with your coworkers.
+
+
 
 Internationalization notes
-===================================
+===========================
 
 * Where you can find the translation strings.
 
