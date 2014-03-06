@@ -1,19 +1,16 @@
-Introduction
-============
+# Introduction
 
 NavTable is a gvSIG's extension to view in a agile way the records of vectorial geographical information layers. Its main characteristic is that allows to see the element's attributes one by one and in vertical direction. Some of its features are: edit alphanumeric values and navigate among the elements of an information layer.
 
->NavTable has been developed by the Cartography Engineering Laboratory of University of A Coruña, CartoLab and it's currently maintained by `iCarto<http://icarto.es>`_ and `CartoLab<http://cartolab.udc.es>`_. It has been released under the terms of the version 3 of the GNU General Public License. We encourage to any user to let us know any suggest, comment, bug reports, etc...
+NavTable has been developed by the Cartography Engineering Laboratory of University of A Coruña, CartoLab and it's currently maintained by [iCarto](http://icarto.es) and [CartoLab](http://cartolab.udc.es). It has been released under the terms of the version 3 of the GNU General Public License. We encourage to any user to let us know any suggest, comment, bug reports, etc...
 
-Installation Instructions
-=========================
+# Installation Instructions
 
-NavTable is a default plugin of gvSIG 1.x, so you should have it installed on your system. If it's not or you want to update it follow the instructions that can be found in the `web of the project<http://navtable.github.io/>`.
+NavTable is a default plugin of gvSIG 1.x, so you should have it installed on your system. If it's not or you want to update it follow the instructions that can be found in the [web of the project](http://navtable.github.io/).
 
-Version information
-===================
+# Version information
 
-NavTable follows `Semantic Versioning<http://semver.org/>`_ style. That is:
+NavTable follows [Semantic Versioning](http://semver.org/) style. That is:
 
 Given a version number MAJOR.MINOR.PATCH, increment the:
 
@@ -23,8 +20,7 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
 
 The actual version can be found under the property **version** in file **package.info**. Also, when a new gvsig package (gvspkg) is build the file about.htm that can seen in the about tool of gvSIG will show the version number.
 
-Build instructions
-==================
+# Build instructions
 
 The code compatibility with the jvm can be found in the **java-version** property of the file **package.info**. Anyway, there are not plans to move it from the actual 1.6 to a higher version.
 
@@ -32,8 +28,7 @@ Setting up a workspace to the gvSIG version specified in the property **gvSIG-ve
 
 To build it from the workspace use the ant script contained in the file build.xml to generate the necessary packaging within _fwAndami.
 
-Packaging instructions
-======================
+# Packaging instructions
 
 To build a gvsig package (for NavTable devs):
 
@@ -54,8 +49,7 @@ To build a gvsig package (for others):
 
 
 
-Internationalization notes
-===========================
+# Internationalization notes
 
 * Where you can find the translation strings.
 
