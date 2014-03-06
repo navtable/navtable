@@ -1113,14 +1113,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	    refreshGUI();
 	} else if (e.getSource() == filterB) {
-	    if (getRecordset().getSelection().isEmpty()) {
-		FiltroExtension fe = new FiltroExtension();
-		fe.initialize();
-		fe.setDatasource(getRecordset(), dataName);
-		fe.execute("FILTER_DATASOURCE");
-	    } else {
-		clearSelection();
-	    }
+	    filterButtonClicked();
 	} else if (e.getSource() == nextB) {
 	    next();
 	} else if (e.getSource() == lastB) {
@@ -1171,6 +1164,17 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	} else if (e.getSource() == undoB) {
 	    undoAction();
+	}
+    }
+
+    private void filterButtonClicked() {
+	if (getRecordset().getSelection().isEmpty()) {
+	    FiltroExtension fe = new FiltroExtension();
+	    fe.initialize();
+	    fe.setDatasource(getRecordset(), dataName);
+	    fe.execute("FILTER_DATASOURCE");
+	} else {
+	    clearSelection();
 	}
     }
 
