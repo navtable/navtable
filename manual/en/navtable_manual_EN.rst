@@ -1,4 +1,3 @@
-
 NavTable User Manual
 ********************
 
@@ -287,7 +286,7 @@ After that, the new value will be saved. It's important to consider these specia
 
 - If you try to save a value into a not appropriate field (for example from type „text“ into type „numerical“), the original value will be written.
 
-- If you want to save an empty text, the default value will be saved. But if the field is from type „string“, the record will be saved with an empty value.
+- If you want to save an empty value, the default value will be saved. But if the field is from type „string“, the record will be saved with an empty text.
 
 With Navtable it is also possible to use options for advanced editing. For example you can copy and paste records. For that you should select the record you want to copy first and click then on the button "copy selected feature".
 
