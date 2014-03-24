@@ -1,4 +1,3 @@
-
 Manuale introduttivo di NavTable
 ********************************
 
@@ -319,11 +318,11 @@ La novità principale rappresentata da NavTable quando si editano dati è che no
 
 Una volta salvato, il nuovo valore sarà registrato. Tuttavia, all'atto del salvataggio dei dati possono verificarsi alcune situazioni particolari:
 
-- Nel caso in cui il tipo di dato sia booleano, saranno accettati esclusivamente i valori true e false (a prescindere dalle maiuscole o minuscole). Qualora non sia utilizzato nessuno dei due, sarà mantenuto il valore precedente.
+- Nel caso in cui il tipo di dato sia booleano, saranno accettati esclusivamente i valori true e false (a prescindere dalle maiuscole o minuscole). Qualora non sia utilizzato nessuno dei due, sarà mantenuto il valore predefinito, che è false.
 
 - Analogamente, quando si cerca di salvare un tipo di dato scorretto (ad esempio, un testo in un campo numerico), sarà mantenuto il valore precedente.
 
-- Se invece si tenta di salvare una cella vuota, sarà salvato il valore predefinito che è stato assegnato, ad eccezione del caso in cui il dato sia di tipo String, in cui sarà salvata la cella vuota.
+- Se invece si tenta di salvare una cella vuota, sarà salvato il valore predefinito che è stato assegnato, ad eccezione del caso in cui il dato sia di tipo String, in cui sarà salvata come testo vuoto.
 
 **Copiare un elemento**
 
