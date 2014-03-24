@@ -282,7 +282,7 @@ The main new functionality in Navtable is that you don't need to start the editi
 
 After that, the new value will be saved. It's important to consider these special cases if you want to save the edition:
 
-- with boolean fields you can only use *true* or *false* (the expression is not case sensitive). If you enter another value, the original one will be saved.
+- with boolean fields you can only use *true* or *false* (the expression is not case sensitive). If you enter another value, the record will be saved with the default value, false.
 
 - If you try to save a value into a not appropriate field (for example from type „text“ into type „numerical“), the original value will be written.
 
