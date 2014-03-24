@@ -1,4 +1,3 @@
-
 Manual básico de NavTable
 *************************
 
@@ -302,13 +301,13 @@ La principal novedad que representa NavTable a la hora de editar datos es que no
 
 Una vez hecho eso, el nuevo valor quedará registrado. Sin embargo, a la hora de salvar datos cabe destacar ciertos casos especiales:
 
-- En el caso de que el tipo de dato sea un booleano, sólo se aceptarán los valores *true* o *false* (sin importar las mayúsculas/minúsculas). En caso de no ser ninguno de ellos, se mantendrá el valor inicial.
+- En el caso de que el tipo de dato sea un booleano, sólo se aceptarán los valores *true* o *false* (sin importar las mayúsculas/minúsculas). En caso de no ser ninguno de ellos, se mantendrá el valor por defecto, false.
 
 
 - Igualmente en el caso de que se trate de guardar un tipo de dato incorrecto (por ejemplo un texto en un campo numérico), se mantendrá el valor inicial.
 
 
-- Si se trata de guardar un texto vacío, se guardará el valor por defecto que se haya asignado, salvo que el tipo de dato sea String, en el que se guardará el texto vacío.
+- Si se trata de guardar un campo sin valor, se guardará el valor por defecto que se haya asignado, salvo que el tipo de dato sea String, en el que se guardará como un texto vacío.
 
 Además se dispone de un botón para edición rápida. Si se decide que el registro actual debe tener los mismos valores que otro registro existente, o comparte la mayoría de ellos, se puede seleccionar el registro que se desea copiar y pulsar el botón de copiar el registro seleccionado
 
