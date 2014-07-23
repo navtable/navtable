@@ -3,6 +3,7 @@ package es.udc.cartolab.gvsig.navtable.contextualmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Types;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
@@ -17,7 +18,7 @@ import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
 import es.udc.cartolab.gvsig.navtable.NavTable;
-import es.udc.cartolab.gvsig.navtable.format.FormatAdapter;
+import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 /**
  * @author Nacho Varela
@@ -86,8 +87,12 @@ public class FiltersAddon implements INavTableContextMenu {
 	case Types.NUMERIC:
 	case Types.FLOAT:
 	case Types.REAL:
-	    String attrValueWithgvSIGFormat = FormatAdapter.toGvSIGString(
-		    attrType, attrValue);
+	    String attrValueWithgvSIGFormat = "";
+	    try {
+		attrValueWithgvSIGFormat = ValueFactoryNT.createValueByType(attrValue, attrType).toString();
+	    } catch (ParseException e) {
+		logger.error(e.getStackTrace(), e);
+	    }
 	    menus = getMenuItemsForNumeric(filterExt, st_expr,
 		    attrValueWithgvSIGFormat, attrValue);
 	    break;
