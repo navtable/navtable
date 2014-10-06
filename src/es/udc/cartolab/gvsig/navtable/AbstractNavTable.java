@@ -107,9 +107,9 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected JPanel southPanel = null;
 
     protected WindowInfo windowInfo = null;
-    private long currentPosition = 0;
 
     protected IController layerController;
+    private Navigation navigation;
     protected FLyrVect layer = null;
     protected String dataName = "";
 
@@ -131,18 +131,11 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected JButton saveB = null;
     protected JButton removeB = null;
     protected JButton undoB = null;
-    // navigation buttons
-    protected JButton firstB = null;
-    protected JButton beforeB = null;
-    protected JTextField posTF = null;
-    protected JLabel totalLabel = null;
-    protected JButton nextB = null;
-    protected JButton lastB = null;
+    
 
     private boolean isSomeNavTableFormOpen = false;
 
     protected EditionListener listener;
-    private PositionEventSource positionEventSource = new PositionEventSource();
 
     private JPanel actionsToolBar;
     private JPanel optionsPanel;
@@ -154,6 +147,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	super();
 	this.layer = layer;
 	this.dataName = layer.getName();
+	navigation = new Navigation(this);
     }
 
     // [nachouve] Check this method because
@@ -434,18 +428,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	return cb;
     }
 
-    private JPanel createNavigationToolBar() {
-	registerNavTableButtonsOnNavigationToolBarExtensionPoint();
-	JPanel navToolBar = new JPanel(new FlowLayout());
-	navToolBar.add(firstB);
-	navToolBar.add(beforeB);
-	navToolBar.add(posTF);
-	navToolBar.add(totalLabel);
-	navToolBar.add(nextB);
-	navToolBar.add(lastB);
-	return navToolBar;
-    }
-
     public JPanel getActionsToolBar() {
 	if (actionsToolBar == null) {
 	    actionsToolBar = new JPanel(new FlowLayout());
@@ -457,18 +439,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	}
 	return actionsToolBar;
-    }
-
-    private void registerNavTableButtonsOnNavigationToolBarExtensionPoint() {
-	firstB = getNavTableButton(firstB, "/go-first.png",
-		"goFirstButtonTooltip");
-	beforeB = getNavTableButton(beforeB, "/go-previous.png",
-		"goPreviousButtonTooltip");
-	posTF = new JTextField(5);
-	posTF.addActionListener(this);
-	totalLabel = new JLabel();
-	nextB = getNavTableButton(nextB, "/go-next.png", "goNextButtonTooltip");
-	lastB = getNavTableButton(lastB, "/go-last.png", "goLastButtonTooltip");
     }
 
     protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
@@ -512,7 +482,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected JPanel getSouthPanel() {
 	if (southPanel == null) {
 	    southPanel = new JPanel(new BorderLayout());
-	    southPanel.add(createNavigationToolBar(), BorderLayout.SOUTH);
+	    southPanel.add(navigation.getToolBar(), BorderLayout.SOUTH);
 	    southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
 	}
 	return southPanel;
@@ -552,126 +522,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	}
 	return true;
-    }
-   
-    /**
-     * Goes to the next row of the data.
-     * 
-     */
-    public void next() {
-	if (showWarning()) {
-	    try {
-		if (onlySelectedCB.isSelected()) {
-		    nextSelected();
-		} else {
-		    if (getPosition() < getRecordset().getRowCount()) {
-			setPosition(getPosition() + 1);
-		    }
-		}
-	    } catch (ReadDriverException e) {
-		logger.error(e.getMessage(), e);
-	    }
-	}
-    }
-
-    /**
-     * Goes to the next selected row of the data.
-     */
-    protected void nextSelected() {
-	FBitSet bitset = getRecordset().getSelection();
-	int currentPos = Long.valueOf(getPosition()).intValue();
-	int pos = bitset.nextSetBit(currentPos + 1);
-	if (pos != EMPTY_REGISTER) {
-	    setPosition(pos);
-	}
-    }
-
-    /**
-     * Goes to the last row of the data.
-     * 
-     */
-    public void last() {
-	if (showWarning()) {
-	    try {
-		if (onlySelectedCB.isSelected()) {
-		    lastSelected();
-		} else {
-		    setPosition(getRecordset().getRowCount() - 1);
-		}
-	    } catch (ReadDriverException e) {
-		logger.error(e.getMessage(), e);
-	    }
-	}
-    }
-
-    /**
-     * Goes to the last selected row of the data.
-     * 
-     */
-    private void lastSelected() {
-	FBitSet bitset = getRecordset().getSelection();
-	int pos = bitset.length();
-	if (pos != 0) {
-	    setPosition(pos - 1);
-	}
-    }
-
-    /**
-     * Goes to the first row of the data.
-     * 
-     */
-    public void first() {
-	if (showWarning()) {
-	    if (onlySelectedCB.isSelected()) {
-		firstSelected();
-	    } else {
-		setPosition(0);
-	    }
-	}
-    }
-
-    /**
-     * Goes to the first selected row of the data.
-     * 
-     */
-    private void firstSelected() {
-	FBitSet bitset = getRecordset().getSelection();
-	int pos = bitset.nextSetBit(0);
-	if (pos != EMPTY_REGISTER) {
-	    setPosition(pos);
-	}
-    }
-
-    /**
-     * Goes to the previous row of the data.
-     * 
-     */
-    public void before() {
-	if (showWarning()) {
-	    if (onlySelectedCB.isSelected()) {
-		beforeSelected();
-	    } else {
-		if (getPosition() > 0) {
-		    setPosition(getPosition() - 1);
-		}
-	    }
-	}
-    }
-
-    /**
-     * Goes to the previous selected row of the data.
-     * 
-     */
-    private void beforeSelected() {
-	FBitSet bitset = getRecordset().getSelection();
-	int currentPos = Long.valueOf(getPosition()).intValue() - 1;
-	int pos = currentPos;
-	for (; pos >= 0 && !bitset.get(pos); pos--) {
-	    ;
-	}
-	if (pos != EMPTY_REGISTER) {
-	    setPosition(pos);
-	}
     }
 
     /**
@@ -763,7 +613,8 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      * @return true if the current row is selected, false if not.
      */
-    private boolean isRecordSelected() {
+    // TODO: change visibility - navigation refactoring
+    boolean isRecordSelected() {
 	return isRecordSelected(getPosition());
     }
 
@@ -771,7 +622,8 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      * @return true if the current row is selected, false if not.
      */
-    private boolean isRecordSelected(long position) {
+ // TODO: change visibility - navigation refactoring
+    boolean isRecordSelected(long position) {
 	FBitSet bitset = null;
 	if (position == EMPTY_REGISTER) {
 	    return false;
@@ -857,8 +709,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		return;
 	    }
 
-	    if (getPosition() == EMPTY_REGISTER) {
-		posTF.setText("");
+	    if (navigation.isEmptyRegister()) {
 		navEnabled = false;
 		fillEmptyValues();
 	    } else {
@@ -872,9 +723,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    fixScaleCB.setEnabled(navEnabled);
 
 	    if (isSomeRowToWorkOn()) {
-		//we need to adapt a zero-based index (currentPosition)
-		// to what user introduces (a 1-based index)
-		posTF.setText(String.valueOf(getPosition() + 1));
 		if (alwaysSelectCB.isSelected()) {
 		    selectionB.setEnabled(false);
 		    clearSelection();
@@ -895,7 +743,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		}
 	    } else {
 		fillEmptyValues();
-		posTF.setText("");
 	    }
 
 	    // south panel option buttons
@@ -908,12 +755,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    enableSaveButton(navEnabled);
 	    removeB.setEnabled(navEnabled);
 
-	    // south panel navigation buttons
-	    firstB.setEnabled(navEnabled);
-	    beforeB.setEnabled(navEnabled);
-	    setTotalLabelText();
-	    nextB.setEnabled(navEnabled);
-	    lastB.setEnabled(navEnabled);
+	    navigation.refreshGUI(navEnabled);
 
 	} catch (ReadDriverException e) {
 	    logger.error(e.getMessage(), e);
@@ -931,16 +773,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    filterB.setIcon(imagenRemoveFilter);
 	    filterB.setToolTipText(PluginServices.getText(this,
 		    "noFilterTooltip"));
-	}
-    }
-
-    private void setTotalLabelText() throws ReadDriverException {
-	long numberOfRowsInRecordset = getRecordset().getRowCount();
-	if (onlySelectedCB.isSelected()) {
-	    totalLabel.setText("/" + "(" + getNumberOfRowsSelected() + ") "
-		    + numberOfRowsInRecordset);
-	} else {
-	    totalLabel.setText("/" + numberOfRowsInRecordset);
 	}
     }
 
@@ -964,11 +796,9 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	if (isRecordSelected()) {
 	    ImageIcon imagenUnselect = getIcon("/Unselect.png");
 	    selectionB.setIcon(imagenUnselect);
-	    posTF.setBackground(Color.YELLOW);
 	} else {
 	    ImageIcon imagenSelect = getIcon("/Select.png");
 	    selectionB.setIcon(imagenSelect);
-	    posTF.setBackground(Color.WHITE);
 	}
     }
 
@@ -983,60 +813,17 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
     }
 
-    private int getNumberOfRowsSelected() {
+ // TODO: change visibility - navigation refactoring
+    int getNumberOfRowsSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	return bitset.cardinality();
     }
 
-    protected void posTFChanged() {
-	String pos = posTF.getText();
-	Long posNumber = null;
-	try {
-	    posNumber = new Long(pos);
-	} catch (NumberFormatException e) {
-	    logger.error(e.getMessage(), e);
-	    posNumber = getPosition();
-	} finally {
-	    if (showWarning()) {
-		// user will set a 1-based index to navigate through layer,
-		// so we need to adapt it to currentPosition (a zero-based
-		// index)
-		setPosition(posNumber - 1);
-	    }
-	}
-    }
-
-    /**
-     * {@link #init()} method must be called before this
-     * 
-     * @param newPosition zero-based index on recordset
-     */
-    public void setPosition(long newPosition) {
-	if(!isValidPosition(newPosition)) {
-	    return;
-	}
-	try {
-	    if (newPosition >= getRecordset().getRowCount()) {
-		newPosition = getRecordset().getRowCount() - 1;
-	    } else if (newPosition < EMPTY_REGISTER) {
-		newPosition = 0;
-	    }
-	    currentPosition = newPosition;
-	    positionEventSource.fireEvent(new PositionEvent(this));
-	} catch (ReadDriverException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    public long getPosition() {
-	return currentPosition;
-    }
-
     public void copyPrevious() {
-	long current = getPosition();
-	currentPosition = current - 1;
+	long current = navigation.getPosition();
+	navigation.setPosition(current - 1);
 	fillValues();
-	currentPosition = current;
+	navigation.setPosition(current);
 	setChangedValues(true);
 	enableSaveButton(true);
     }
@@ -1053,9 +840,9 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    long current = getPosition();
 	    FBitSet selection = getRecordset().getSelection();
 	    long selectedRow = selection.nextSetBit(0);
-	    currentPosition = selectedRow;
+	    navigation.setPosition(selectedRow);
 	    fillValues();
-	    currentPosition = current;
+	    navigation.setPosition(current);
 	    return true;
 	}
     }
@@ -1086,11 +873,11 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    }
 	    if (showWarning()) {
 		if (onlySelectedCB.isSelected()) {
-		    if (getPosition() != EMPTY_REGISTER) {
+		    if (! navigation.isEmptyRegister()) {
 			viewOnlySelected();
 		    }
 		} else {
-		    if (getPosition() == EMPTY_REGISTER) {
+		    if (navigation.isEmptyRegister()) {
 			setPosition(0);
 		    }
 		}
@@ -1114,16 +901,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    refreshGUI();
 	} else if (e.getSource() == filterB) {
 	    filterButtonClicked();
-	} else if (e.getSource() == nextB) {
-	    next();
-	} else if (e.getSource() == lastB) {
-	    last();
-	} else if (e.getSource() == firstB) {
-	    first();
-	} else if (e.getSource() == beforeB) {
-	    before();
-	} else if (e.getSource() == posTF) {
-	    posTFChanged();
 	} else if (e.getSource() == copySelectedB) {
 	    if (copySelected()) {
 		setChangedValues(true);
@@ -1227,16 +1004,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
     }
 
-    private boolean isValidPosition(Long pos) {
-	if (pos == null) {
-	    return false;
-	}
-	if (onlySelectedCB.isSelected()) {
-	    return isRecordSelected(pos.longValue());
-	}
-	return true;
-    }
-
     @Override
     public void selectionChanged(SelectionEvent e) {
 	/*
@@ -1291,11 +1058,11 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     }
 
     public void addPositionListener(PositionListener l) {
-	positionEventSource.addEventListener(l);
+	navigation.addEventListener(l);
     }
 
     public void removePositionListener(PositionListener l) {
-	positionEventSource.removeEventListener(l);
+	navigation.removeEventListener(l);
     }
 
     public abstract boolean isSavingValues();
@@ -1320,4 +1087,33 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    refreshGUI();
 	}
     }
+    
+    
+    
+    public void next() {
+	navigation.next();
+    }
+    public void last() {
+	navigation.last();
+    }
+    private void lastSelected() { 
+	navigation.lastSelected();
+    }
+    public void first() {
+	navigation.first();
+    }
+    private void firstSelected() {
+	navigation.firstSelected();
+    }
+    public void before() {
+	navigation.previous();
+    }
+  
+    public void setPosition(long newPosition) {
+	navigation.setPosition(newPosition);
+    }
+    public long getPosition() {
+	return navigation.getPosition();
+    }
+    
 }
