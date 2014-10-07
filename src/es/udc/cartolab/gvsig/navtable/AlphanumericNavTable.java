@@ -255,7 +255,7 @@ public class AlphanumericNavTable extends NavTable {
      * Shows a warning to the user if there's unsaved data.
      * 
      */
-    protected boolean showWarning() {
+    public boolean showWarning() {
 	if (getPosition() == AbstractNavTable.EMPTY_REGISTER) {
 	    return true;
 	}
