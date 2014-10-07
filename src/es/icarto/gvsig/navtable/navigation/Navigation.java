@@ -35,7 +35,6 @@ public class Navigation implements ActionListener {
 
     private final PositionEventSource positionEventSource = new PositionEventSource();
 
-    // navigation buttons
     private JButton firstB = null;
     private JButton beforeB = null;
     private JTextField posTF = null;
@@ -83,10 +82,6 @@ public class Navigation implements ActionListener {
 	lastB = getNavTableButton(lastB, "/go-last.png", "goLastButtonTooltip");
     }
 
-    /**
-     * Goes to the next row of the data.
-     * 
-     */
     public void next() {
 	try {
 	    if (onlySelectedCB.isSelected()) {
@@ -104,9 +99,6 @@ public class Navigation implements ActionListener {
 	}
     }
 
-    /**
-     * Goes to the next selected row of the data.
-     */
     private void nextSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	int currentPos = Long.valueOf(getPosition()).intValue();
@@ -127,10 +119,6 @@ public class Navigation implements ActionListener {
 	}
     }
 
-    /**
-     * Goes to the last row of the data.
-     * 
-     */
     public void last() {
 	if (onlySelectedCB.isSelected()) {
 	    lastSelected();
@@ -142,10 +130,6 @@ public class Navigation implements ActionListener {
 	}
     }
 
-    /**
-     * Goes to the last selected row of the data.
-     * 
-     */
     public void lastSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	int pos = bitset.length();
@@ -154,10 +138,6 @@ public class Navigation implements ActionListener {
 	}
     }
 
-    /**
-     * Goes to the first row of the data.
-     * 
-     */
     public void first() {
 	if (onlySelectedCB.isSelected()) {
 	    firstSelected();
@@ -168,10 +148,6 @@ public class Navigation implements ActionListener {
 	}
     }
 
-    /**
-     * Goes to the first selected row of the data.
-     * 
-     */
     public void firstSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	int pos = bitset.nextSetBit(0);
@@ -180,10 +156,6 @@ public class Navigation implements ActionListener {
 	}
     }
 
-    /**
-     * Goes to the previous row of the data.
-     * 
-     */
     public void previous() {
 	if (onlySelectedCB.isSelected()) {
 	    previousSelected();
@@ -193,15 +165,10 @@ public class Navigation implements ActionListener {
 			.convertRowIndexToView((int) getPosition()) - 1);
 		setPosition(pos);
 		// setPosition(getPosition() - 1);
-
 	    }
 	}
     }
 
-    /**
-     * Goes to the previous selected row of the data.
-     * 
-     */
     private void previousSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	int currentPos = Long.valueOf(getPosition()).intValue() - 1;
@@ -335,12 +302,6 @@ public class Navigation implements ActionListener {
 	}
 
     }
-
-    // public void setRowSorter(RowSorter<? extends SelectableDataSource>
-    // sorter) {
-    // this.sorter = sorter;
-    // refreshGUI(firstB.isEnabled());
-    // }
 
     public void setSortKeys(List<? extends SortKey> keys) {
 	if (keys == null) {
