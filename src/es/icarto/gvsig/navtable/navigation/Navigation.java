@@ -88,22 +88,19 @@ public class Navigation implements ActionListener {
      * 
      */
     public void next() {
-	if (showWarning()) {
-	    try {
-		if (onlySelectedCB.isSelected()) {
-		    nextSelected();
-		} else {
-		    if (getPosition() < getRecordset().getRowCount()) {
-			int pos = sorter
-				.convertRowIndexToModel(sorter
-					.convertRowIndexToView((int) getPosition()) + 1);
-			setPosition(pos);
-			// setPosition(getPosition() + 1);
-		    }
+	try {
+	    if (onlySelectedCB.isSelected()) {
+		nextSelected();
+	    } else {
+		if (getPosition() < getRecordset().getRowCount()) {
+		    int pos = sorter.convertRowIndexToModel(sorter
+			    .convertRowIndexToView((int) getPosition()) + 1);
+		    setPosition(pos);
+		    // setPosition(getPosition() + 1);
 		}
-	    } catch (ReadDriverException e) {
-		logger.error(e.getMessage(), e);
 	    }
+	} catch (ReadDriverException e) {
+	    logger.error(e.getMessage(), e);
 	}
     }
 
@@ -135,15 +132,13 @@ public class Navigation implements ActionListener {
      * 
      */
     public void last() {
-	if (showWarning()) {
-	    if (onlySelectedCB.isSelected()) {
-		lastSelected();
-	    } else {
-		int pos = sorter.convertRowIndexToModel(sorter
-			.getViewRowCount() - 1);
-		setPosition(pos);
-		// setPosition(getRecordset().getRowCount() - 1);
-	    }
+	if (onlySelectedCB.isSelected()) {
+	    lastSelected();
+	} else {
+	    int pos = sorter
+		    .convertRowIndexToModel(sorter.getViewRowCount() - 1);
+	    setPosition(pos);
+	    // setPosition(getRecordset().getRowCount() - 1);
 	}
     }
 
@@ -164,14 +159,12 @@ public class Navigation implements ActionListener {
      * 
      */
     public void first() {
-	if (showWarning()) {
-	    if (onlySelectedCB.isSelected()) {
-		firstSelected();
-	    } else {
-		int pos = sorter.convertRowIndexToModel(0);
-		setPosition(pos);
-		// setPosition(0);
-	    }
+	if (onlySelectedCB.isSelected()) {
+	    firstSelected();
+	} else {
+	    int pos = sorter.convertRowIndexToModel(0);
+	    setPosition(pos);
+	    // setPosition(0);
 	}
     }
 
@@ -192,17 +185,15 @@ public class Navigation implements ActionListener {
      * 
      */
     public void previous() {
-	if (showWarning()) {
-	    if (onlySelectedCB.isSelected()) {
-		previousSelected();
-	    } else {
-		if (getPosition() > 0) {
-		    int pos = sorter.convertRowIndexToModel(sorter
-			    .convertRowIndexToView((int) getPosition()) - 1);
-		    setPosition(pos);
-		    // setPosition(getPosition() - 1);
+	if (onlySelectedCB.isSelected()) {
+	    previousSelected();
+	} else {
+	    if (getPosition() > 0) {
+		int pos = sorter.convertRowIndexToModel(sorter
+			.convertRowIndexToView((int) getPosition()) - 1);
+		setPosition(pos);
+		// setPosition(getPosition() - 1);
 
-		}
 	    }
 	}
     }
@@ -284,31 +275,30 @@ public class Navigation implements ActionListener {
 	    logger.error(e.getMessage(), e);
 	    posNumber = getPosition();
 	} finally {
-	    if (showWarning()) {
-		// user will set a 1-based index to navigate through layer,
-		// so we need to adapt it to currentPosition (a zero-based
-		// index)
-		int posTmp = sorter.convertRowIndexToModel(sorter
-			.convertRowIndexToView(posNumber.intValue() - 1));
-		setPosition(posTmp);
-		// setPosition(posNumber - 1);
-
-	    }
+	    // user will set a 1-based index to navigate through layer,
+	    // so we need to adapt it to currentPosition (a zero-based
+	    // index)
+	    int posTmp = sorter.convertRowIndexToModel(sorter
+		    .convertRowIndexToView(posNumber.intValue() - 1));
+	    setPosition(posTmp);
+	    // setPosition(posNumber - 1);
 	}
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-	if (e.getSource() == nextB) {
-	    next();
-	} else if (e.getSource() == lastB) {
-	    last();
-	} else if (e.getSource() == firstB) {
-	    first();
-	} else if (e.getSource() == beforeB) {
-	    previous();
-	} else if (e.getSource() == posTF) {
-	    posTFChanged();
+	if (showWarning()) {
+	    if (e.getSource() == nextB) {
+		next();
+	    } else if (e.getSource() == lastB) {
+		last();
+	    } else if (e.getSource() == firstB) {
+		first();
+	    } else if (e.getSource() == beforeB) {
+		previous();
+	    } else if (e.getSource() == posTF) {
+		posTFChanged();
+	    }
 	}
     }
 
