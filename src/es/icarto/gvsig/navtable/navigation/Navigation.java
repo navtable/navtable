@@ -83,19 +83,16 @@ public class Navigation implements ActionListener {
     }
 
     public void next() {
-	try {
-	    if (onlySelectedCB.isSelected()) {
-		nextSelected();
-	    } else {
-		if (getPosition() < getRecordset().getRowCount()) {
-		    int pos = sorter.convertRowIndexToModel(sorter
-			    .convertRowIndexToView((int) getPosition()) + 1);
-		    setPosition(pos);
-		    // setPosition(getPosition() + 1);
-		}
+	if (onlySelectedCB.isSelected()) {
+	    nextSelected();
+	} else {
+	    // setPosition(getPosition() + 1);
+	    int viewPos = sorter.convertRowIndexToView((int) getPosition());
+	    int viewLastPos = sorter.getViewRowCount() - 1;
+	    if (viewPos < viewLastPos) {
+		int modelNextPos = sorter.convertRowIndexToModel(viewPos + 1);
+		setPosition(modelNextPos);
 	    }
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
 	}
     }
 
@@ -123,10 +120,10 @@ public class Navigation implements ActionListener {
 	if (onlySelectedCB.isSelected()) {
 	    lastSelected();
 	} else {
-	    int pos = sorter
-		    .convertRowIndexToModel(sorter.getViewRowCount() - 1);
-	    setPosition(pos);
 	    // setPosition(getRecordset().getRowCount() - 1);
+	    int viewLastPos = sorter.getViewRowCount() - 1;
+	    int modelLastPos = sorter.convertRowIndexToModel(viewLastPos);
+	    setPosition(modelLastPos);
 	}
     }
 
@@ -142,9 +139,10 @@ public class Navigation implements ActionListener {
 	if (onlySelectedCB.isSelected()) {
 	    firstSelected();
 	} else {
-	    int pos = sorter.convertRowIndexToModel(0);
-	    setPosition(pos);
 	    // setPosition(0);
+	    int viewFirstPos = 0;
+	    int modelFirstPos = sorter.convertRowIndexToModel(viewFirstPos);
+	    setPosition(modelFirstPos);
 	}
     }
 
@@ -160,11 +158,12 @@ public class Navigation implements ActionListener {
 	if (onlySelectedCB.isSelected()) {
 	    previousSelected();
 	} else {
-	    if (getPosition() > 0) {
-		int pos = sorter.convertRowIndexToModel(sorter
-			.convertRowIndexToView((int) getPosition()) - 1);
-		setPosition(pos);
-		// setPosition(getPosition() - 1);
+	    // setPosition(getPosition() - 1);
+	    int viewPos = sorter.convertRowIndexToView((int) getPosition());
+	    int viewFirstPos = 0;
+	    if (viewPos > viewFirstPos) {
+		int modelPrevPos = sorter.convertRowIndexToModel(viewPos - 1);
+		setPosition(modelPrevPos);
 	    }
 	}
     }
@@ -208,12 +207,9 @@ public class Navigation implements ActionListener {
 	return currentPosition;
     }
 
-    private boolean isValidPosition(Long pos) {
-	if (pos == null) {
-	    return false;
-	}
+    private boolean isValidPosition(long pos) {
 	if (onlySelectedCB.isSelected()) {
-	    return isRecordSelected(pos.longValue());
+	    return isRecordSelected(pos);
 	}
 	return true;
     }
@@ -235,20 +231,13 @@ public class Navigation implements ActionListener {
 
     private void posTFChanged() {
 	String pos = posTF.getText();
-	Long posNumber = null;
 	try {
-	    posNumber = new Long(pos);
+	    long userViewPos = Long.parseLong(pos) - 1;
+	    int modelPos = sorter.convertRowIndexToModel((int) userViewPos);
+	    setPosition(modelPos);
 	} catch (NumberFormatException e) {
 	    logger.error(e.getMessage(), e);
-	    posNumber = getPosition();
-	} finally {
-	    // user will set a 1-based index to navigate through layer,
-	    // so we need to adapt it to currentPosition (a zero-based
-	    // index)
-	    int posTmp = sorter.convertRowIndexToModel(sorter
-		    .convertRowIndexToView(posNumber.intValue() - 1));
-	    setPosition(posTmp);
-	    // setPosition(posNumber - 1);
+	    refreshGUI(firstB.isEnabled());
 	}
     }
 
@@ -290,6 +279,9 @@ public class Navigation implements ActionListener {
 	if (isEmptyRegister()) {
 	    posTF.setText("");
 	} else {
+	    // user will set a 1-based index to navigate through layer,
+	    // so we need to adapt it to currentPosition (a zero-based
+	    // index)
 	    int p = sorter.convertRowIndexToView((int) getPosition());
 	    posTF.setText(String.valueOf(p + 1));
 	    // posTF.setText(String.valueOf(getPosition() + 1));
