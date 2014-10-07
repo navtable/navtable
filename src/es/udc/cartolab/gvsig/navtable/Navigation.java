@@ -13,6 +13,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
 
 import org.apache.log4j.Logger;
 
@@ -42,7 +43,9 @@ public class Navigation implements ActionListener {
     private long currentPosition = 0;
     private JPanel navToolBar;
 
-    private AbstractNavTable nt;
+    private final AbstractNavTable nt;
+
+    private RowSorter<? extends SelectableDataSource> sorter;
 
     public Navigation(AbstractNavTable nt) {
 	this.nt = nt;
@@ -88,7 +91,15 @@ public class Navigation implements ActionListener {
 		    nextSelected();
 		} else {
 		    if (getPosition() < getRecordset().getRowCount()) {
-			setPosition(getPosition() + 1);
+			// TODO implement a mock sorter to avoid this
+			if (sorter != null) {
+			    int pos = sorter
+				    .convertRowIndexToModel(sorter
+					    .convertRowIndexToView((int) getPosition()) + 1);
+			    setPosition(pos);
+			} else {
+			    setPosition(getPosition() + 1);
+			}
 		    }
 		}
 	    } catch (ReadDriverException e) {
@@ -119,7 +130,13 @@ public class Navigation implements ActionListener {
 		if (onlySelectedCB.isSelected()) {
 		    lastSelected();
 		} else {
-		    setPosition(getRecordset().getRowCount() - 1);
+		    if (sorter != null) {
+			int pos = sorter.convertRowIndexToModel(sorter
+				.getViewRowCount() - 1);
+			setPosition(pos);
+		    } else {
+			setPosition(getRecordset().getRowCount() - 1);
+		    }
 		}
 	    } catch (ReadDriverException e) {
 		logger.error(e.getMessage(), e);
@@ -148,7 +165,12 @@ public class Navigation implements ActionListener {
 	    if (onlySelectedCB.isSelected()) {
 		firstSelected();
 	    } else {
-		setPosition(0);
+		if (sorter != null) {
+		    int pos = sorter.convertRowIndexToModel(0);
+		    setPosition(pos);
+		} else {
+		    setPosition(0);
+		}
 	    }
 	}
     }
@@ -175,7 +197,14 @@ public class Navigation implements ActionListener {
 		previousSelected();
 	    } else {
 		if (getPosition() > 0) {
-		    setPosition(getPosition() - 1);
+		    if (sorter != null) {
+			int pos = sorter
+				.convertRowIndexToModel(sorter
+					.convertRowIndexToView((int) getPosition()) - 1);
+			setPosition(pos);
+		    } else {
+			setPosition(getPosition() - 1);
+		    }
 		}
 	    }
 	}
@@ -257,7 +286,13 @@ public class Navigation implements ActionListener {
 		// user will set a 1-based index to navigate through layer,
 		// so we need to adapt it to currentPosition (a zero-based
 		// index)
-		setPosition(posNumber - 1);
+		if (sorter != null) {
+		    int posTmp = sorter.convertRowIndexToModel(sorter
+			    .convertRowIndexToView(posNumber.intValue() - 1));
+		    setPosition(posTmp);
+		} else {
+		    setPosition(posNumber - 1);
+		}
 	    }
 	}
     }
@@ -290,7 +325,7 @@ public class Navigation implements ActionListener {
     }
 
     public void refreshGUI(boolean navEnabled) throws ReadDriverException {
-	this.onlySelectedCB = nt.onlySelectedCB; //TODO: remove
+	this.onlySelectedCB = nt.onlySelectedCB; // TODO: remove
 	firstB.setEnabled(navEnabled);
 	beforeB.setEnabled(navEnabled);
 	nextB.setEnabled(navEnabled);
@@ -298,7 +333,12 @@ public class Navigation implements ActionListener {
 	if (isEmptyRegister()) {
 	    posTF.setText("");
 	} else {
-	    posTF.setText(String.valueOf(getPosition() + 1));
+	    if (sorter != null) {
+		int p = sorter.convertRowIndexToView((int) getPosition());
+		posTF.setText(String.valueOf(p + 1));
+	    } else {
+		posTF.setText(String.valueOf(getPosition() + 1));
+	    }
 	}
 	setTotalLabelText();
 	if (isRecordSelected()) {
@@ -309,7 +349,14 @@ public class Navigation implements ActionListener {
 
     }
 
-    
+    public void setRowSorter(RowSorter<? extends SelectableDataSource> sorter) {
+	if (this.sorter != null) {
+	    this.sorter = null;
+	}
+	this.sorter = sorter;
+	refreshGUI(firstB.isEnabled());
+    }
+
     // //////
     // / Probably should be removed and use a factory instead
     // /////
@@ -331,12 +378,27 @@ public class Navigation implements ActionListener {
 	but.addActionListener(this);
 	return but;
     }
-    
-    //TODO
+
+    // TODO
     private JCheckBox onlySelectedCB;
-    private SelectableDataSource getRecordset() {return nt.getRecordset();}
-    private boolean isRecordSelected() {return nt.isRecordSelected();}
-    private boolean isRecordSelected(long n) {return nt.isRecordSelected(n);}
-    private int getNumberOfRowsSelected() {return nt.getNumberOfRowsSelected();}
-    private boolean showWarning() { return nt.showWarning(); }
+
+    private SelectableDataSource getRecordset() {
+	return nt.getRecordset();
+    }
+
+    private boolean isRecordSelected() {
+	return nt.isRecordSelected();
+    }
+
+    private boolean isRecordSelected(long n) {
+	return nt.isRecordSelected(n);
+    }
+
+    private int getNumberOfRowsSelected() {
+	return nt.getNumberOfRowsSelected();
+    }
+
+    private boolean showWarning() {
+	return nt.showWarning();
+    }
 }
