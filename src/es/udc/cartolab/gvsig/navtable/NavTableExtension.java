@@ -49,6 +49,7 @@ import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.FiltersAddon;
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
+import es.udc.cartolab.gvsig.navtable.contextualmenu.SorterAddon;
 import es.udc.cartolab.gvsig.navtable.preferences.NavTablePreferencesPage;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.utils.NavTableTocMenuEntry;
@@ -118,6 +119,9 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
 	INavTableContextMenu filtersAddon = new FiltersAddon();
 	extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU,
 		filtersAddon.getName(), filtersAddon);
+	INavTableContextMenu sorterAddon = new SorterAddon();
+	extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU,
+		sorterAddon.getName(), sorterAddon);
 
 	// Creating config Dir
 	File configDir;
