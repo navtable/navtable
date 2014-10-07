@@ -45,9 +45,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.values.NullValue;
 import com.hardcode.gdbms.engine.values.Value;
-import com.hardcode.gdbms.engine.values.ValueWriter;
 import com.iver.andami.PluginServices;
 import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
@@ -294,9 +292,10 @@ public class NavTable extends AbstractNavTable {
 	    return fieldName;
 	}
 
+	BufferedReader fileReader = null;
 	try {
 	    String line;
-	    BufferedReader fileReader = new BufferedReader(new FileReader(
+	    fileReader = new BufferedReader(new FileReader(
 		    fileAlias));
 	    while ((line = fileReader.readLine()) != null) {
 		String tokens[] = line.split("=");
@@ -312,6 +311,14 @@ public class NavTable extends AbstractNavTable {
 	    logger.error(e.getMessage(), e);
 	} catch (IOException e) {
 	    logger.error(e.getMessage(), e);
+	} finally {
+	    try {
+		if (fileReader != null) {
+		    fileReader.close();
+		}
+	    } catch (IOException e) {
+		logger.error(e.getStackTrace(), e);
+	    }
 	}
 	return alias;
     }
