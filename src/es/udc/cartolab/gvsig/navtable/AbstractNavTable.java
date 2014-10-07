@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -1114,6 +1115,10 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     }
     public long getPosition() {
 	return navigation.getPosition();
+    }
+    
+    public void setRowSorter(RowSorter<? extends SelectableDataSource> sorter) {
+	navigation.setRowSorter(sorter);
     }
     
 }
