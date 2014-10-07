@@ -263,14 +263,19 @@ public class Navigation implements ActionListener {
 	return true;
     }
 
-    private void setTotalLabelText() throws ReadDriverException {
-	long numberOfRowsInRecordset = getRecordset().getRowCount();
-	if (onlySelectedCB.isSelected()) {
-	    totalLabel.setText("/" + "(" + getNumberOfRowsSelected() + ") "
-		    + numberOfRowsInRecordset);
-	} else {
-	    totalLabel.setText("/" + numberOfRowsInRecordset);
+    private void setTotalLabelText() {
+	try {
+	    long numberOfRowsInRecordset = getRecordset().getRowCount();
+	    if (onlySelectedCB.isSelected()) {
+		totalLabel.setText("/" + "(" + getNumberOfRowsSelected() + ") "
+			+ numberOfRowsInRecordset);
+	    } else {
+		totalLabel.setText("/" + numberOfRowsInRecordset);
+	    }
+	} catch (ReadDriverException e) {
+	    logger.error(e.getStackTrace(), e);
 	}
+
     }
 
     private void posTFChanged() {
@@ -324,7 +329,7 @@ public class Navigation implements ActionListener {
 	positionEventSource.removeEventListener(l);
     }
 
-    public void refreshGUI(boolean navEnabled) throws ReadDriverException {
+    public void refreshGUI(boolean navEnabled) {
 	this.onlySelectedCB = nt.onlySelectedCB; // TODO: remove
 	firstB.setEnabled(navEnabled);
 	beforeB.setEnabled(navEnabled);

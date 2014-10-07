@@ -705,62 +705,57 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      */
     public void refreshGUI() {
 	boolean navEnabled = false;
-	try {
-	    if (getRecordset() == null) {
-		return;
-	    }
-
-	    if (navigation.isEmptyRegister()) {
-		navEnabled = false;
-		fillEmptyValues();
-	    } else {
-		navEnabled = true;
-		fillValues();
-	    }
-
-	    // north panel buttons
-	    alwaysZoomCB.setEnabled(navEnabled);
-	    alwaysSelectCB.setEnabled(navEnabled);
-	    fixScaleCB.setEnabled(navEnabled);
-
-	    if (isSomeRowToWorkOn()) {
-		if (alwaysSelectCB.isSelected()) {
-		    selectionB.setEnabled(false);
-		    clearSelection();
-		    selectCurrentFeature();
-		} else {
-		    selectionB.setEnabled(true);
-		}
-
-		if (alwaysZoomCB.isSelected()) {
-		    zoomB.setEnabled(false);
-		    zoom();
-		} else {
-		    zoomB.setEnabled(true);
-		}
-
-		if (fixScaleCB.isSelected()) {
-		    fixScale();
-		}
-	    } else {
-		fillEmptyValues();
-	    }
-
-	    // south panel option buttons
-	    enableCopySelectedButton(navEnabled);
-	    enableCopyPreviousButton(navEnabled);
-	    zoomB.setEnabled(navEnabled);
-	    selectionB.setEnabled(navEnabled);
-	    setIconAndPositionBackgroundForSelection();
-	    setIconForFiltering();
-	    enableSaveButton(navEnabled);
-	    removeB.setEnabled(navEnabled);
-
-	    navigation.refreshGUI(navEnabled);
-
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
+	if (getRecordset() == null) {
+	    return;
 	}
+
+	if (navigation.isEmptyRegister()) {
+	    navEnabled = false;
+	    fillEmptyValues();
+	} else {
+	    navEnabled = true;
+	    fillValues();
+	}
+
+	// north panel buttons
+	alwaysZoomCB.setEnabled(navEnabled);
+	alwaysSelectCB.setEnabled(navEnabled);
+	fixScaleCB.setEnabled(navEnabled);
+
+	if (isSomeRowToWorkOn()) {
+	    if (alwaysSelectCB.isSelected()) {
+		selectionB.setEnabled(false);
+		clearSelection();
+		selectCurrentFeature();
+	    } else {
+		selectionB.setEnabled(true);
+	    }
+
+	    if (alwaysZoomCB.isSelected()) {
+		zoomB.setEnabled(false);
+		zoom();
+	    } else {
+		zoomB.setEnabled(true);
+	    }
+
+	    if (fixScaleCB.isSelected()) {
+		fixScale();
+	    }
+	} else {
+	    fillEmptyValues();
+	}
+
+	// south panel option buttons
+	enableCopySelectedButton(navEnabled);
+	enableCopyPreviousButton(navEnabled);
+	zoomB.setEnabled(navEnabled);
+	selectionB.setEnabled(navEnabled);
+	setIconAndPositionBackgroundForSelection();
+	setIconForFiltering();
+	enableSaveButton(navEnabled);
+	removeB.setEnabled(navEnabled);
+
+	navigation.refreshGUI(navEnabled);
     }
 
     private void setIconForFiltering() {
