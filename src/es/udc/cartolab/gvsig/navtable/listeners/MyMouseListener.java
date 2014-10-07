@@ -3,9 +3,12 @@ package es.udc.cartolab.gvsig.navtable.listeners;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
@@ -56,17 +59,17 @@ public class MyMouseListener implements MouseListener {
 		ExtensionPoint extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
 			.getInstance().get(
 				AbstractNavTable.NAVTABLE_CONTEXT_MENU);
-		for (Object contextMenuAddon : extensionPoint.values()) {
-		    try {
-			INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
-			c.setNavtableInstance(navtable);
-			if (c.isVisible()) {
-			    for (JMenuItem m : c.getMenuItems()) {
-				popup.add(m);
-			    }
+		Iterator<INavTableContextMenu> it = extensionPoint.values().iterator();
+		while (it.hasNext()) {
+		    INavTableContextMenu c = it.next();
+		    c.setNavtableInstance(navtable);
+		    if (c.isVisible()) {
+			for (JMenuItem m : c.getMenuItems()) {
+			    popup.add(m);
 			}
-		    } catch (ClassCastException cce) {
-			cce.printStackTrace();
+		    }
+		    if (it.hasNext()) {
+			popup.add(new JSeparator());
 		    }
 		}
 		if (popup.getComponents().length != 0) {
