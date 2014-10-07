@@ -1,4 +1,4 @@
-package es.udc.cartolab.gvsig.navtable;
+package es.icarto.gvsig.navtable.navigation;
 
 import static es.udc.cartolab.gvsig.navtable.AbstractNavTable.EMPTY_REGISTER;
 
@@ -24,6 +24,7 @@ import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
+import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
@@ -112,9 +113,20 @@ public class Navigation implements ActionListener {
     private void nextSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	int currentPos = Long.valueOf(getPosition()).intValue();
-	int pos = bitset.nextSetBit(currentPos + 1);
-	if (pos != EMPTY_REGISTER) {
-	    setPosition(pos);
+	if (sorter != null) {
+	    int viewPos = sorter.convertRowIndexToView(currentPos);
+	    for (int i = viewPos + 1; i < sorter.getViewRowCount(); i++) {
+		int nextModelPos = sorter.convertRowIndexToModel(i);
+		if (bitset.get(nextModelPos)) {
+		    setPosition(nextModelPos);
+		    return;
+		}
+	    }
+	} else {
+	    int pos = bitset.nextSetBit(currentPos + 1);
+	    if (pos != EMPTY_REGISTER) {
+		setPosition(pos);
+	    }
 	}
     }
 
@@ -139,7 +151,7 @@ public class Navigation implements ActionListener {
      * Goes to the last selected row of the data.
      * 
      */
-    protected void lastSelected() {
+    public void lastSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	int pos = bitset.length();
 	if (pos != 0) {
@@ -167,7 +179,7 @@ public class Navigation implements ActionListener {
      * Goes to the first selected row of the data.
      * 
      */
-    protected void firstSelected() {
+    public void firstSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	int pos = bitset.nextSetBit(0);
 	if (pos != EMPTY_REGISTER) {

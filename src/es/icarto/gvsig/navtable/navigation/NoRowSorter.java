@@ -1,4 +1,4 @@
-package es.udc.cartolab.gvsig.navtable;
+package es.icarto.gvsig.navtable.navigation;
 
 import java.util.List;
 

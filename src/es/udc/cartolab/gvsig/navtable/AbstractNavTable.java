@@ -69,6 +69,7 @@ import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
+import es.icarto.gvsig.navtable.navigation.Navigation;
 import es.udc.cartolab.gvsig.navtable.dataacces.IController;
 import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
@@ -116,7 +117,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected boolean changedValues = false;
 
     // NORTH
-    protected JCheckBox onlySelectedCB = null;
+    public JCheckBox onlySelectedCB = null;
     protected JCheckBox fixScaleCB = null;
     protected JCheckBox alwaysZoomCB = null;
     protected JCheckBox alwaysSelectCB = null;
@@ -492,7 +493,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * Shows a warning to the user if there's unsaved data.
      * 
      */
-    protected boolean showWarning() {
+    public boolean showWarning() {
 	if (getPosition() == EMPTY_REGISTER) {
 	    return true;
 	}
@@ -613,7 +614,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      * @return true if the current row is selected, false if not.
      */
-    // TODO: change visibility - navigation refactoring
+    public // TODO: change visibility - navigation refactoring
     boolean isRecordSelected() {
 	return isRecordSelected(getPosition());
     }
@@ -622,7 +623,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * 
      * @return true if the current row is selected, false if not.
      */
- // TODO: change visibility - navigation refactoring
+ public // TODO: change visibility - navigation refactoring
     boolean isRecordSelected(long position) {
 	FBitSet bitset = null;
 	if (position == EMPTY_REGISTER) {
@@ -809,7 +810,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     }
 
  // TODO: change visibility - navigation refactoring
-    int getNumberOfRowsSelected() {
+    public int getNumberOfRowsSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	return bitset.cardinality();
     }
