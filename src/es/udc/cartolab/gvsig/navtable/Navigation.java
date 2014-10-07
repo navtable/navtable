@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -14,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.RowSorter;
+import javax.swing.RowSorter.SortKey;
 
 import org.apache.log4j.Logger;
 
@@ -49,8 +51,8 @@ public class Navigation implements ActionListener {
 
     public Navigation(AbstractNavTable nt) {
 	this.nt = nt;
-	this.onlySelectedCB = nt.onlySelectedCB;
 	initWidgets();
+	sorter = new NoRowSorter<SelectableDataSource>(nt.getRecordset());
     }
 
     public JPanel getToolBar() {
@@ -91,15 +93,11 @@ public class Navigation implements ActionListener {
 		    nextSelected();
 		} else {
 		    if (getPosition() < getRecordset().getRowCount()) {
-			// TODO implement a mock sorter to avoid this
-			if (sorter != null) {
-			    int pos = sorter
-				    .convertRowIndexToModel(sorter
-					    .convertRowIndexToView((int) getPosition()) + 1);
-			    setPosition(pos);
-			} else {
-			    setPosition(getPosition() + 1);
-			}
+			int pos = sorter
+				.convertRowIndexToModel(sorter
+					.convertRowIndexToView((int) getPosition()) + 1);
+			setPosition(pos);
+			// setPosition(getPosition() + 1);
 		    }
 		}
 	    } catch (ReadDriverException e) {
@@ -126,20 +124,13 @@ public class Navigation implements ActionListener {
      */
     public void last() {
 	if (showWarning()) {
-	    try {
-		if (onlySelectedCB.isSelected()) {
-		    lastSelected();
-		} else {
-		    if (sorter != null) {
-			int pos = sorter.convertRowIndexToModel(sorter
-				.getViewRowCount() - 1);
-			setPosition(pos);
-		    } else {
-			setPosition(getRecordset().getRowCount() - 1);
-		    }
-		}
-	    } catch (ReadDriverException e) {
-		logger.error(e.getMessage(), e);
+	    if (onlySelectedCB.isSelected()) {
+		lastSelected();
+	    } else {
+		int pos = sorter.convertRowIndexToModel(sorter
+			.getViewRowCount() - 1);
+		setPosition(pos);
+		// setPosition(getRecordset().getRowCount() - 1);
 	    }
 	}
     }
@@ -165,12 +156,9 @@ public class Navigation implements ActionListener {
 	    if (onlySelectedCB.isSelected()) {
 		firstSelected();
 	    } else {
-		if (sorter != null) {
-		    int pos = sorter.convertRowIndexToModel(0);
-		    setPosition(pos);
-		} else {
-		    setPosition(0);
-		}
+		int pos = sorter.convertRowIndexToModel(0);
+		setPosition(pos);
+		// setPosition(0);
 	    }
 	}
     }
@@ -197,14 +185,11 @@ public class Navigation implements ActionListener {
 		previousSelected();
 	    } else {
 		if (getPosition() > 0) {
-		    if (sorter != null) {
-			int pos = sorter
-				.convertRowIndexToModel(sorter
-					.convertRowIndexToView((int) getPosition()) - 1);
-			setPosition(pos);
-		    } else {
-			setPosition(getPosition() - 1);
-		    }
+		    int pos = sorter.convertRowIndexToModel(sorter
+			    .convertRowIndexToView((int) getPosition()) - 1);
+		    setPosition(pos);
+		    // setPosition(getPosition() - 1);
+
 		}
 	    }
 	}
@@ -291,13 +276,11 @@ public class Navigation implements ActionListener {
 		// user will set a 1-based index to navigate through layer,
 		// so we need to adapt it to currentPosition (a zero-based
 		// index)
-		if (sorter != null) {
-		    int posTmp = sorter.convertRowIndexToModel(sorter
-			    .convertRowIndexToView(posNumber.intValue() - 1));
-		    setPosition(posTmp);
-		} else {
-		    setPosition(posNumber - 1);
-		}
+		int posTmp = sorter.convertRowIndexToModel(sorter
+			.convertRowIndexToView(posNumber.intValue() - 1));
+		setPosition(posTmp);
+		// setPosition(posNumber - 1);
+
 	    }
 	}
     }
@@ -338,12 +321,9 @@ public class Navigation implements ActionListener {
 	if (isEmptyRegister()) {
 	    posTF.setText("");
 	} else {
-	    if (sorter != null) {
-		int p = sorter.convertRowIndexToView((int) getPosition());
-		posTF.setText(String.valueOf(p + 1));
-	    } else {
-		posTF.setText(String.valueOf(getPosition() + 1));
-	    }
+	    int p = sorter.convertRowIndexToView((int) getPosition());
+	    posTF.setText(String.valueOf(p + 1));
+	    // posTF.setText(String.valueOf(getPosition() + 1));
 	}
 	setTotalLabelText();
 	if (isRecordSelected()) {
@@ -354,12 +334,24 @@ public class Navigation implements ActionListener {
 
     }
 
-    public void setRowSorter(RowSorter<? extends SelectableDataSource> sorter) {
-	if (this.sorter != null) {
-	    this.sorter = null;
+    // public void setRowSorter(RowSorter<? extends SelectableDataSource>
+    // sorter) {
+    // this.sorter = sorter;
+    // refreshGUI(firstB.isEnabled());
+    // }
+
+    public void setSortKeys(List<? extends SortKey> keys) {
+	if (keys == null) {
+	    sorter = new NoRowSorter<SelectableDataSource>(nt.getRecordset());
+	} else if (sorter instanceof NoRowSorter) {
+	    sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
 	}
-	this.sorter = sorter;
+	sorter.setSortKeys(keys);
 	refreshGUI(firstB.isEnabled());
+    }
+
+    public List<? extends SortKey> getSortKeys() {
+	return sorter.getSortKeys();
     }
 
     // //////

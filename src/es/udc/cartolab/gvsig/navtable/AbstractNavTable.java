@@ -33,6 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,8 +41,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.RowSorter;
+import javax.swing.RowSorter.SortKey;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -72,7 +72,6 @@ import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 import es.udc.cartolab.gvsig.navtable.dataacces.IController;
 import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
-import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
@@ -1112,8 +1111,12 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	return navigation.getPosition();
     }
     
-    public void setRowSorter(RowSorter<? extends SelectableDataSource> sorter) {
-	navigation.setRowSorter(sorter);
+    public void setSortKeys(List<? extends SortKey> keys) {
+	navigation.setSortKeys(keys);
+    }
+
+    public List<? extends SortKey> getSortKeys() {
+	return navigation.getSortKeys();
     }
     
 }

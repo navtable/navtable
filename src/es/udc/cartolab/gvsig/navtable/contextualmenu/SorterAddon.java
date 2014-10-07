@@ -10,9 +10,7 @@ import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
 import com.iver.andami.PluginServices;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
-import es.udc.cartolab.gvsig.navtable.NTRowSorter;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class SorterAddon implements INavTableContextMenu {
@@ -41,10 +39,7 @@ public class SorterAddon implements INavTableContextMenu {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 		SortKey sortKey = new SortKey(rowSelected, SortOrder.ASCENDING);
-		NTRowSorter<SelectableDataSource> sorter = new NTRowSorter<SelectableDataSource>(
-			navtable.getRecordset());
-		sorter.setSortKeys(Arrays.asList(sortKey));
-		navtable.setRowSorter(sorter);
+		navtable.setSortKeys(Arrays.asList(sortKey));
 	    }
 	});
 	menu[0] = asc;
@@ -55,10 +50,7 @@ public class SorterAddon implements INavTableContextMenu {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 		SortKey sortKey = new SortKey(rowSelected, SortOrder.DESCENDING);
-		NTRowSorter<SelectableDataSource> sorter = new NTRowSorter<SelectableDataSource>(
-			navtable.getRecordset());
-		sorter.setSortKeys(Arrays.asList(sortKey));
-		navtable.setRowSorter(sorter);
+		navtable.setSortKeys(Arrays.asList(sortKey));
 	    }
 	});
 	menu[1] = desc;
@@ -72,7 +64,7 @@ public class SorterAddon implements INavTableContextMenu {
 	defaultSort.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
-		navtable.setRowSorter(null);
+		navtable.setSortKeys(null);
 	    }
 	});
 	menu[3] = defaultSort;
