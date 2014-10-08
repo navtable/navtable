@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
+import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
@@ -371,5 +372,16 @@ public class Navigation implements ActionListener {
 
     private boolean showWarning() {
 	return nt.showWarning();
+    }
+
+    public void modelChanged() {
+	if (sorter instanceof NoRowSorter) {
+	    sorter = new NoRowSorter<SelectableDataSource>(nt.getRecordset());
+	} else if (sorter instanceof NTRowSorter) {
+	    List<? extends SortKey> sortKeys = sorter.getSortKeys();
+	    sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
+	    sorter.setSortKeys(sortKeys);
+	}
+	refreshGUI(firstB.isEnabled());
     }
 }
