@@ -58,6 +58,7 @@ import com.iver.andami.ui.mdiManager.WindowInfo;
 import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
+import com.iver.cit.gvsig.fmap.edition.AfterFieldEditEvent;
 import com.iver.cit.gvsig.fmap.edition.AfterRowEditEvent;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
@@ -1126,13 +1127,19 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     /**
      * Only process stop edition events. And when this occurs all the sort is
      * recalculated. In case that recalculate the full sorting has bad
-     * performance we should process FIELD_EDITION, ROW_EDITION events, and
+     * performance we should process FIELD_EDITION, ROW_EDITION EditionEvents, and
      * reorder only the affected rows, or test the performance of not create a
      * new instance of the sorter.
      */
     public void layerEvent(LayerEvent e) {
 	if ((e.getEventType() == LayerEvent.EDITION_CHANGED) && !layer.isEditing()) {
 	    navigation.modelChanged();
+	}
+    }
+
+    public void editionEvent(EditionEvent e) {
+	if ((e instanceof AfterFieldEditEvent) && (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
+	    navigation.setSortKeys(null);	    
 	}
     }
     

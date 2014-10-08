@@ -88,6 +88,7 @@ public class EditionListener implements LayerListener, IEditionListener {
      */
     public void afterFieldEditEvent(AfterFieldEditEvent e) {
 	refresh();
+	nt.editionEvent(e);
     }
 
     public void visibilityChanged(LayerEvent e) {
