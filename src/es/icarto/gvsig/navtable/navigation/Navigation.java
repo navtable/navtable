@@ -96,22 +96,22 @@ public class Navigation implements ActionListener {
 	}
     }
 
+    // int pos = bitset.nextSetBit((int) getPosition() + 1);
+    // if (pos != EMPTY_REGISTER) {
+    // setPosition(pos);
+    // }
+    /**
+     * This implementation should be tested with spare selections on big files
+     * to check if has an acceptable performance
+     */
     private void nextSelected() {
 	FBitSet bitset = getRecordset().getSelection();
-	int currentPos = Long.valueOf(getPosition()).intValue();
-	if (sorter != null) {
-	    int viewPos = sorter.convertRowIndexToView(currentPos);
-	    for (int i = viewPos + 1; i < sorter.getViewRowCount(); i++) {
-		int nextModelPos = sorter.convertRowIndexToModel(i);
-		if (bitset.get(nextModelPos)) {
-		    setPosition(nextModelPos);
-		    return;
-		}
-	    }
-	} else {
-	    int pos = bitset.nextSetBit(currentPos + 1);
-	    if (pos != EMPTY_REGISTER) {
-		setPosition(pos);
+	int viewPos = sorter.convertRowIndexToView((int) getPosition());
+	for (int i = viewPos + 1; i < sorter.getViewRowCount(); i++) {
+	    int modelPos = sorter.convertRowIndexToModel(i);
+	    if (bitset.get(modelPos)) {
+		setPosition(modelPos);
+		return;
 	    }
 	}
     }
@@ -127,11 +127,19 @@ public class Navigation implements ActionListener {
 	}
     }
 
+    // int pos = bitset.length();
+    // if (pos != 0) {
+    // setPosition(pos - 1);
+    // }
     public void lastSelected() {
 	FBitSet bitset = getRecordset().getSelection();
-	int pos = bitset.length();
-	if (pos != 0) {
-	    setPosition(pos - 1);
+	int viewLastPos = sorter.getViewRowCount() - 1;
+	for (int i = viewLastPos; i >= 0; i--) {
+	    int modelPos = sorter.convertRowIndexToModel(i);
+	    if (bitset.get(modelPos)) {
+		setPosition(modelPos);
+		return;
+	    }
 	}
     }
 
@@ -148,9 +156,13 @@ public class Navigation implements ActionListener {
 
     public void firstSelected() {
 	FBitSet bitset = getRecordset().getSelection();
-	int pos = bitset.nextSetBit(0);
-	if (pos != EMPTY_REGISTER) {
-	    setPosition(pos);
+	int viewFirstPos = 0;
+	for (int i = viewFirstPos; i < sorter.getViewRowCount(); i++) {
+	    int modelPos = sorter.convertRowIndexToModel(i);
+	    if (bitset.get(modelPos)) {
+		setPosition(modelPos);
+		return;
+	    }
 	}
     }
 
@@ -168,15 +180,22 @@ public class Navigation implements ActionListener {
 	}
     }
 
+    // int pos = (int) (getPosition() - 1);
+    // for (; pos >= 0 && !bitset.get(pos); pos--) {
+    // ;
+    // }
+    // if (pos != EMPTY_REGISTER) {
+    // setPosition(pos);
+    // }
     private void previousSelected() {
 	FBitSet bitset = getRecordset().getSelection();
-	int currentPos = Long.valueOf(getPosition()).intValue() - 1;
-	int pos = currentPos;
-	for (; pos >= 0 && !bitset.get(pos); pos--) {
-	    ;
-	}
-	if (pos != EMPTY_REGISTER) {
-	    setPosition(pos);
+	int viewPos = sorter.convertRowIndexToView((int) getPosition());
+	for (int i = viewPos - 1; i >= 0; i--) {
+	    int modelPos = sorter.convertRowIndexToModel(i);
+	    if (bitset.get(modelPos)) {
+		setPosition(modelPos);
+		return;
+	    }
 	}
     }
 
