@@ -61,12 +61,18 @@ public class EditionListener implements LayerListener, IEditionListener {
 	this.nt = nt;
     }
 
+    /**
+     * Launch after start/stop edition on the IEditableSource
+     */
     public void processEvent(EditionEvent e) {
     }
 
     public void beforeRowEditEvent(IRow feat, BeforeRowEditEvent e) {
     }
 
+    /**
+     * Launched after a record is updated, removed or inserted
+     */
     public void afterRowEditEvent(IRow feat, AfterRowEditEvent e) {
 	if (!nt.isSavingValues() 
 		&& (nt.getPosition() == e.getNumRow())) {
@@ -77,6 +83,9 @@ public class EditionListener implements LayerListener, IEditionListener {
     public void beforeFieldEditEvent(BeforeFieldEditEvent e) {
     }
 
+    /**
+     * Launched when the structure of the layer has changed
+     */
     public void afterFieldEditEvent(AfterFieldEditEvent e) {
 	refresh();
     }
@@ -90,6 +99,9 @@ public class EditionListener implements LayerListener, IEditionListener {
     public void nameChanged(LayerEvent e) {
     }
 
+    /**
+     * Launch after start/stop edition on the layer
+     */
     public void editionChanged(LayerEvent e) {
 	FLayer layer = e.getSource();
 	if (layer instanceof FLyrVect) {
@@ -102,6 +114,7 @@ public class EditionListener implements LayerListener, IEditionListener {
 	    }
 	    refresh();
 	}
+	nt.layerEvent(e);
     }
 
     public void drawValueChanged(LayerEvent e) {
