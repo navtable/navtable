@@ -17,9 +17,9 @@ import sun.font.AttributeMap;
 
 import com.iver.andami.PluginServices;
 
-import es.icarto.gvsig.commons.Field;
 import es.icarto.gvsig.commons.gui.AbstractIWindow;
 import es.icarto.gvsig.commons.gui.WidgetFactory;
+import es.icarto.gvsig.commons.utils.Field;
 
 @SuppressWarnings("serial")
 public class ChooseSortFieldDialog extends AbstractIWindow implements
@@ -30,7 +30,7 @@ public class ChooseSortFieldDialog extends AbstractIWindow implements
 
     public ChooseSortFieldDialog(final List<Field> fields) {
 	super(new MigLayout("insets 10, wrap 1"));
-	WidgetFactory.acceptCancelPanel(this, this, this);
+	WidgetFactory.okCancelPanel(this, this, this);
 
 	final JButton addAnother = linkButton(PluginServices.getPluginServices(
 		this).getText("sort_add_another"));

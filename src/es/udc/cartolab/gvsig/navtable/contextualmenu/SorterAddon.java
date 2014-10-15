@@ -17,8 +17,8 @@ import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
-import es.icarto.gvsig.commons.Field;
 import es.icarto.gvsig.commons.gui.OkCancelPanel;
+import es.icarto.gvsig.commons.utils.Field;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class SorterAddon implements INavTableContextMenu {
