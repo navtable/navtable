@@ -30,9 +30,9 @@ import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 
-public class Navigation implements ActionListener {
+public class NavigationHandler implements ActionListener {
 
-    private static final Logger logger = Logger.getLogger(Navigation.class);
+    private static final Logger logger = Logger.getLogger(NavigationHandler.class);
 
     private final PositionEventSource positionEventSource = new PositionEventSource();
 
@@ -50,7 +50,7 @@ public class Navigation implements ActionListener {
 
     private RowSorter<? extends SelectableDataSource> sorter;
 
-    public Navigation(AbstractNavTable nt) {
+    public NavigationHandler(AbstractNavTable nt) {
 	this.nt = nt;
 	initWidgets();
 	sorter = new NoRowSorter<SelectableDataSource>(nt.getRecordset());
