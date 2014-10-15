@@ -2,18 +2,28 @@ package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JMenuItem;
 import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
-import com.iver.andami.PluginServices;
+import org.apache.log4j.Logger;
 
+import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
+import com.iver.andami.PluginServices;
+import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
+
+import es.icarto.gvsig.commons.Field;
+import es.icarto.gvsig.commons.gui.OkCancelPanel;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class SorterAddon implements INavTableContextMenu {
+
+    private static final Logger logger = Logger.getLogger(SorterAddon.class);
 
     private NavTable navtable;
     private JTable table;
@@ -58,6 +68,40 @@ public class SorterAddon implements INavTableContextMenu {
 	JMenuItem advanced = new JMenuItem(PluginServices.getText(this,
 		"sort_advanced"));
 	menu[2] = advanced;
+	advanced.addActionListener(new ActionListener() {
+	    @Override
+	    public void actionPerformed(ActionEvent e) {
+		String[] fieldNames = new String[0];
+		try {
+		    fieldNames = navtable.getRecordset().getFieldNames();
+		} catch (ReadDriverException e2) {
+		    logger.error(e2.getStackTrace(), e2);
+		}
+
+		List<Field> fields = new ArrayList<Field>();
+		for (String name : fieldNames) {
+		    fields.add(new Field(name, name));
+		}
+		ChooseSortFieldDialog dialog = new ChooseSortFieldDialog(fields);
+
+		if (dialog.open().equals(OkCancelPanel.OK_ACTION_COMMAND)) {
+		    List<Field> sortedFields = dialog.getFields();
+		    List<SortKey> sortKeys = new ArrayList<SortKey>();
+		    SelectableDataSource sds = navtable.getRecordset();
+		    for (Field field : sortedFields) {
+			try {
+			    int fieldIdx = sds.getFieldIndexByName(field
+				    .getKey());
+			    sortKeys.add(new SortKey(fieldIdx, field
+				    .getSortOrder()));
+			} catch (ReadDriverException e1) {
+			    logger.error(e1.getStackTrace(), e1);
+			}
+		    }
+		    navtable.setSortKeys(sortKeys);
+		}
+	    }
+	});
 
 	JMenuItem defaultSort = new JMenuItem(PluginServices.getText(this,
 		"sort_default"));
