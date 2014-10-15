@@ -73,7 +73,7 @@ import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
-import es.icarto.gvsig.navtable.navigation.Navigation;
+import es.icarto.gvsig.navtable.navigation.NavigationHandler;
 import es.udc.cartolab.gvsig.navtable.dataacces.IController;
 import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
@@ -114,7 +114,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected WindowInfo windowInfo = null;
 
     protected IController layerController;
-    private Navigation navigation;
+    private NavigationHandler navigation;
     protected FLyrVect layer = null;
     protected String dataName = "";
 
@@ -152,7 +152,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	super();
 	this.layer = layer;
 	this.dataName = layer.getName();
-	navigation = new Navigation(this);
+	navigation = new NavigationHandler(this);
     }
 
     // [nachouve] Check this method because
