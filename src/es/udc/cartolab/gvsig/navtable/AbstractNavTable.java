@@ -180,25 +180,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	this.dataName = tableName;
     }
 
-    protected JButton getButton(int buttonName) {
-	switch (buttonName) {
-	case BUTTON_COPY_SELECTED:
-	    return copySelectedB;
-	case BUTTON_COPY_PREVIOUS:
-	    return copyPreviousB;
-	case BUTTON_ZOOM:
-	    return zoomB;
-	case BUTTON_SELECTION:
-	    return selectionB;
-	case BUTTON_SAVE:
-	    return saveB;
-	case BUTTON_REMOVE:
-	    return removeB;
-	default:
-	    return null;
-	}
-    }
-
     public boolean isAlphanumericNT() {
 	return this.isAlphanumericNT;
     }
@@ -335,24 +316,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	if (bool != onlySelectedCB.isSelected()){
 	    onlySelectedCB.doClick();
 	}
-    }
-
-    @Deprecated
-    public void unselectFeature(long feature) {
-	FBitSet bitset = null;
-	int pos = Long.valueOf(feature).intValue();
-	bitset = getRecordset().getSelection();
-	if (bitset.get(pos)) {
-	    bitset.clear(pos);
-	    if (onlySelectedCB.isSelected()) {
-		lastSelected();
-	    }
-	}
-	getRecordset().setSelection(bitset);
-    }
-
-    public void clearSelectedFeatures() {
-	getRecordset().clearSelection();
     }
 
     protected void initNorthPanelButtons() {
@@ -523,7 +486,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		// so it's not need to revert the changes done.
 	    }
 	    if (save) {
-		tryToSave();
+		return tryToSave();
 	    }
 	}
 	return true;
@@ -639,11 +602,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
 	bitset = getRecordset().getSelection();
 	return bitset.get(pos);
-    }
-
-    @Deprecated
-    public boolean isFeatureSelected(long feature) {
-	return isRecordSelected(feature);
     }
 
     /**
@@ -955,7 +913,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
     }
 
-    private void tryToSave() {
+    private boolean tryToSave() {
 	try {
 	if (saveRecord()) {
 	    refreshGUI();
@@ -979,7 +937,9 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 		errorMessage,
 		PluginServices.getText(this, saveErrorTitleKey),
 		JOptionPane.ERROR_MESSAGE);
+	return false;
 	}
+	return true;
     }
 
     protected void undoAction() {
