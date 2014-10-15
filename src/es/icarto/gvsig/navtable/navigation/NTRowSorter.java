@@ -21,9 +21,11 @@ public class NTRowSorter<M extends SelectableDataSource> extends
     private final ValueComparator comparator;
 
     public NTRowSorter(M model) {
+	super();
 	this.model = model;
+	setMaxSortKeys(5);
 	setModelWrapper(new NTRowSorterModelWrapper());
-	setSortsOnUpdates(true); // TODO: listen for changes
+	setSortsOnUpdates(true);
 	comparator = new ValueComparator();
     }
 

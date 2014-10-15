@@ -21,7 +21,6 @@ import org.apache.log4j.Logger;
 
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
-import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
@@ -32,7 +31,8 @@ import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 
 public class NavigationHandler implements ActionListener {
 
-    private static final Logger logger = Logger.getLogger(NavigationHandler.class);
+    private static final Logger logger = Logger
+	    .getLogger(NavigationHandler.class);
 
     private final PositionEventSource positionEventSource = new PositionEventSource();
 
@@ -53,7 +53,7 @@ public class NavigationHandler implements ActionListener {
     public NavigationHandler(AbstractNavTable nt) {
 	this.nt = nt;
 	initWidgets();
-	sorter = new NoRowSorter<SelectableDataSource>(nt.getRecordset());
+	sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
     }
 
     public JPanel getToolBar() {
@@ -316,11 +316,6 @@ public class NavigationHandler implements ActionListener {
     }
 
     public void setSortKeys(List<? extends SortKey> keys) {
-	if (keys == null) {
-	    sorter = new NoRowSorter<SelectableDataSource>(nt.getRecordset());
-	} else if (sorter instanceof NoRowSorter) {
-	    sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
-	}
 	sorter.setSortKeys(keys);
 	refreshGUI(firstB.isEnabled());
     }
@@ -375,13 +370,10 @@ public class NavigationHandler implements ActionListener {
     }
 
     public void modelChanged() {
-	if (sorter instanceof NoRowSorter) {
-	    sorter = new NoRowSorter<SelectableDataSource>(nt.getRecordset());
-	} else if (sorter instanceof NTRowSorter) {
-	    List<? extends SortKey> sortKeys = sorter.getSortKeys();
-	    sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
-	    sorter.setSortKeys(sortKeys);
-	}
+	List<? extends SortKey> sortKeys = sorter.getSortKeys();
+	sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
+	sorter.setSortKeys(sortKeys);
+
 	refreshGUI(firstB.isEnabled());
     }
 }
