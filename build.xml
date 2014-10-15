@@ -28,7 +28,8 @@
 
 	<target name="create-jar">
 		<mkdir dir="${dist}" />
-		<jar jarfile="${dist}/lib/${plugin}.jar" basedir="${build}" includes="es/udc/cartolab/**" />
+		<jar jarfile="${dist}/${lib}/${jarName}" basedir="${build}"/>
+		<jar jarfile="${dist}/lib/${plugin}.jar" basedir="${build}" />
 		<jar update="true" jarfile="${dist}/lib/${plugin}.jar" basedir="images" includes="*" />
 	</target>
 
