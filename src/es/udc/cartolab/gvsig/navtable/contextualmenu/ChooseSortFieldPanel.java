@@ -14,7 +14,7 @@ import net.miginfocom.swing.MigLayout;
 
 import com.iver.andami.PluginServices;
 
-import es.icarto.gvsig.commons.Field;
+import es.icarto.gvsig.commons.utils.Field;
 
 @SuppressWarnings("serial")
 public class ChooseSortFieldPanel extends JPanel {
