@@ -63,8 +63,6 @@ import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.fmap.layers.LayerEvent;
 import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
-import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
-import com.iver.cit.gvsig.fmap.layers.SelectionListener;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
 import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
@@ -88,7 +86,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  * 
  */
 public abstract class AbstractNavTable extends AbstractIWindow implements
-ActionListener, SelectionListener, IWindowListener, PositionListener {
+ActionListener, IWindowListener, PositionListener {
 
     public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
@@ -250,15 +248,20 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     }
 
     protected void setLayerListeners() {
-	listener = new EditionListener(this, layer);
-	layer.addLayerListener(listener);
-	getRecordset().addSelectionListener(this);
+	if (layer!=null) {
+	    //TODO. Alphanumeric navtable adds the listener to the model
+	    listener = new EditionListener(this, layer);
+	    layer.addLayerListener(listener);
+	}
+	navigation.setListeners();
 	addPositionListener(this);
     }
 
     protected void removeLayerListeners() {
-	layer.removeLayerListener(listener);
-	getRecordset().removeSelectionListener(this);
+	if (layer != null) {
+	    layer.removeLayerListener(listener);	    
+	}
+	navigation.removeListeners();
 	removePositionListener(this);
     }
 
@@ -925,24 +928,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	} catch (BaseException e) {
 	    logger.error(e.getMessage(), e.getCause());
 	}
-    }
-
-    @Override
-    public void selectionChanged(SelectionEvent e) {
-	/*
-	 * Variable isSomeNavTableForm open is used as workaround to control
-	 * null pointers exceptions when all forms using navtable are closed
-	 * but, for some strange reason, some of the listeners is still active.
-	 */
-	if (!isSomeNavTableFormOpen()) {
-	    return;
-	}
-
-	if(onlySelectedCB.isSelected()
-		&& !isRecordSelected()) {
-	    first();
-	}
-	refreshGUI();
     }
 
     @Override

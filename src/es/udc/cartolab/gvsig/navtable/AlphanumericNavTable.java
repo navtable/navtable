@@ -122,17 +122,15 @@ public class AlphanumericNavTable extends NavTable {
     
     @Override
     protected void setLayerListeners() {
+	super.setLayerListeners();
 	listener = new EditionListener(this);
 	model.addEditionListener(listener);
-	getRecordset().addSelectionListener(this);
-	addPositionListener(this);
     }
 
     @Override
     protected void removeLayerListeners() {
+	super.removeLayerListeners();
 	model.removeEditionListener(listener);
-	getRecordset().removeSelectionListener(this);
-	removePositionListener(this);
     }
 
     @Override
