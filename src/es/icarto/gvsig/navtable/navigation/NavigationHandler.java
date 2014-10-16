@@ -108,7 +108,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
      * to check if has an acceptable performance
      */
     private void nextSelected() {
-	FBitSet bitset = getRecordset().getSelection();
+	FBitSet bitset = nt.getRecordset().getSelection();
 	int viewPos = sorter.convertRowIndexToView((int) getPosition());
 	for (int i = viewPos + 1; i < sorter.getViewRowCount(); i++) {
 	    int modelPos = sorter.convertRowIndexToModel(i);
@@ -135,7 +135,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     // setPosition(pos - 1);
     // }
     public void lastSelected() {
-	FBitSet bitset = getRecordset().getSelection();
+	FBitSet bitset = nt.getRecordset().getSelection();
 	int viewLastPos = sorter.getViewRowCount() - 1;
 	for (int i = viewLastPos; i >= 0; i--) {
 	    int modelPos = sorter.convertRowIndexToModel(i);
@@ -158,7 +158,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     }
 
     public void firstSelected() {
-	FBitSet bitset = getRecordset().getSelection();
+	FBitSet bitset = nt.getRecordset().getSelection();
 	int viewFirstPos = 0;
 	for (int i = viewFirstPos; i < sorter.getViewRowCount(); i++) {
 	    int modelPos = sorter.convertRowIndexToModel(i);
@@ -191,7 +191,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     // setPosition(pos);
     // }
     private void previousSelected() {
-	FBitSet bitset = getRecordset().getSelection();
+	FBitSet bitset = nt.getRecordset().getSelection();
 	int viewPos = sorter.convertRowIndexToView((int) getPosition());
 	for (int i = viewPos - 1; i >= 0; i--) {
 	    int modelPos = sorter.convertRowIndexToModel(i);
@@ -213,8 +213,8 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	    return;
 	}
 	try {
-	    if (newPosition >= getRecordset().getRowCount()) {
-		newPosition = getRecordset().getRowCount() - 1;
+	    if (newPosition >= nt.getRecordset().getRowCount()) {
+		newPosition = nt.getRecordset().getRowCount() - 1;
 	    } else if (newPosition < EMPTY_REGISTER) {
 		newPosition = 0;
 	    }
@@ -242,10 +242,10 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 
     private void setTotalLabelText() {
 	try {
-	    long numberOfRowsInRecordset = getRecordset().getRowCount();
-	    if (onlySelectedCB.isSelected()) {
-		totalLabel.setText("/" + "(" + getNumberOfRowsSelected() + ") "
-			+ numberOfRowsInRecordset);
+	    long numberOfRowsInRecordset = nt.getRecordset().getRowCount();
+	    if (isOnlySelected()) {
+		totalLabel.setText("/" + "(" + nt.getNumberOfRowsSelected()
+			+ ") " + numberOfRowsInRecordset);
 	    } else {
 		totalLabel.setText("/" + numberOfRowsInRecordset);
 	    }
@@ -334,8 +334,9 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	} else {
 	    posTF.setBackground(Color.WHITE);
 	}
-
     }
+
+    
 
     public void setSortKeys(List<? extends SortKey> keys) {
 	sorter.setSortKeys(keys);
@@ -368,7 +369,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 
     private JButton getNavTableButton(JButton button, String iconName,
 	    String toolTipName) {
-	JButton but = new JButton(getIcon(iconName));
+	JButton but = new JButton(nt.getIcon(iconName));
 	but.setToolTipText(PluginServices.getText(this, toolTipName));
 	but.addActionListener(this);
 	return but;
@@ -376,10 +377,6 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 
     // TODO
     private JCheckBox onlySelectedCB;
-
-    private SelectableDataSource getRecordset() {
-	return nt.getRecordset();
-    }
 
     private boolean isRecordSelected() {
 	return nt.isRecordSelected();
@@ -389,8 +386,6 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	return nt.isRecordSelected(n);
     }
 
-    private int getNumberOfRowsSelected() {
-	return nt.getNumberOfRowsSelected();
     }
 
     private boolean showWarning() {
