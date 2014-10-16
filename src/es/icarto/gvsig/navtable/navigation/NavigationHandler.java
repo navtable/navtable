@@ -216,8 +216,12 @@ public class NavigationHandler implements ActionListener {
 	    } else if (newPosition < EMPTY_REGISTER) {
 		newPosition = 0;
 	    }
+
+	    PositionEvent evt = new PositionEvent(this, currentPosition,
+		    newPosition);
+	    positionEventSource.fireBeforePositionChange(evt);
 	    currentPosition = newPosition;
-	    positionEventSource.fireEvent(new PositionEvent(this));
+	    positionEventSource.fireOnPositionChange(evt);
 	} catch (ReadDriverException e) {
 	    e.printStackTrace();
 	}
