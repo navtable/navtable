@@ -205,8 +205,8 @@ public class AlphanumericNavTable extends NavTable {
     public void addRecord() {
 	// Create a new empty record
 	// showWarning();
-	if (onlySelectedCB.isSelected()) {
-	    onlySelectedCB.setSelected(false);
+	if (isOnlySelected()) {
+	    setOnlySelected(false);
 	}
 	try {
 	    ToggleEditing te = new ToggleEditing();

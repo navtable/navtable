@@ -56,7 +56,6 @@ import com.iver.cit.gvsig.FiltroExtension;
 import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
 import com.iver.cit.gvsig.fmap.core.IGeometry;
 import com.iver.cit.gvsig.fmap.edition.AfterFieldEditEvent;
-import com.iver.cit.gvsig.fmap.edition.AfterRowEditEvent;
 import com.iver.cit.gvsig.fmap.edition.EditionEvent;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -111,16 +110,16 @@ ActionListener, IWindowListener, PositionListener {
 
     protected IController layerController;
     private NavigationHandler navigation;
+    
     protected FLyrVect layer = null;
     protected String dataName = "";
 
     protected boolean changedValues = false;
 
     // NORTH
-    public JCheckBox onlySelectedCB = null;
     protected JCheckBox fixScaleCB = null;
     protected JCheckBox alwaysZoomCB = null;
-    protected JCheckBox alwaysSelectCB = null;
+    
 
     // SOUTH
     // actions buttons
@@ -128,7 +127,6 @@ ActionListener, IWindowListener, PositionListener {
     protected JButton copyPreviousB = null;
     protected JButton copySelectedB = null;
     protected JButton zoomB = null;
-    protected JButton selectionB = null;
     protected JButton saveB = null;
     protected JButton removeB = null;
     protected JButton undoB = null;
@@ -316,23 +314,23 @@ ActionListener, IWindowListener, PositionListener {
     }
 
     public void setOnlySelected(boolean bool) {
-	if (bool != onlySelectedCB.isSelected()){
-	    onlySelectedCB.doClick();
-	}
+	navigation.setOnlySelected(bool);
+    }
+    
+    public boolean isOnlySelected() {
+	return navigation.isOnlySelected();
     }
 
-    protected void initNorthPanelButtons() {
-	onlySelectedCB = getNavTableCheckBox(onlySelectedCB, "selectedCheckBox");
-	alwaysSelectCB = getNavTableCheckBox(alwaysSelectCB, "selectCheckBox");
+    private void initNorthPanelButtons() {
+	// alwaysSelectCB and onlySelectedCB are init in SelectionHandler
 	alwaysZoomCB = getNavTableCheckBox(alwaysZoomCB, "alwaysZoomCheckBox");
 	fixScaleCB = getNavTableCheckBox(fixScaleCB, "fixedScaleCheckBox");
     }
 
-    protected JPanel getOptionsPanel() {
+    private JPanel getOptionsPanel() {
 	if (optionsPanel == null) {
 	    optionsPanel = new JPanel(new FlowLayout());
-	    optionsPanel.add(onlySelectedCB);
-	    optionsPanel.add(alwaysSelectCB);
+	    optionsPanel.add(navigation.getOptionsPanel());
 	    optionsPanel.add(alwaysZoomCB);
 	    optionsPanel.add(fixScaleCB);
 	}
@@ -385,14 +383,18 @@ ActionListener, IWindowListener, PositionListener {
 	return icon;
     }
 
-    protected JButton getNavTableButton(JButton button, String iconName,
+    // Probably should be removed and use a factory instead
+    // is duplicated with NavigationHandler
+    private JButton getNavTableButton(JButton button, String iconName,
 	    String toolTipName) {
 	JButton but = new JButton(getIcon(iconName));
 	but.setToolTipText(PluginServices.getText(this, toolTipName));
 	but.addActionListener(this);
 	return but;
     }
-
+    
+    // Probably should be removed and use a factory instead
+    // is duplicated with NavigationHandler
     private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
 	cb = new JCheckBox(PluginServices.getText(this, toolTipName));
 	cb.addActionListener(this);
@@ -432,12 +434,12 @@ ActionListener, IWindowListener, PositionListener {
 
 	zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-zoom", zoomB);
-
-	selectionB = getNavTableButton(selectionB, "/Select.png",
-		"selectionButtonTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-selection",
-		selectionB);
-
+	
+	//TODO. This is a hack. It's more logic that navigation registers the bt
+	// itself. But as NavTable overrides this methods, and cleans the list
+	// it can not be done
+	navigation.registerNavTableButtonsOnActionToolBarExtensionPoint();
+	
 	saveB = getNavTableButton(saveB, "/save.png", "saveButtonTooltip");
 	saveB.setEnabled(false);
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-save", saveB);
@@ -562,7 +564,7 @@ ActionListener, IWindowListener, PositionListener {
 	    bitset.set(pos);
 	} else {
 	    bitset.clear(pos);
-	    if (onlySelectedCB.isSelected()) {
+	    if (isOnlySelected()) {
 		lastSelected();
 	    }
 	}
@@ -581,33 +583,6 @@ ActionListener, IWindowListener, PositionListener {
     }
 
     /**
-     * 
-     * @return true if the current row is selected, false if not.
-     */
-    public // TODO: change visibility - navigation refactoring
-    boolean isRecordSelected() {
-	return isRecordSelected(getPosition());
-    }
-
-    /**
-     * 
-     * @return true if the current row is selected, false if not.
-     */
- public // TODO: change visibility - navigation refactoring
-    boolean isRecordSelected(long position) {
-	FBitSet bitset = null;
-	if (position == EMPTY_REGISTER) {
-	    return false;
-	}
-	int pos = Long.valueOf(position).intValue();
-	if (getRecordset() == null) {
-	    return false;
-	}
-	bitset = getRecordset().getSelection();
-	return bitset.get(pos);
-    }
-
-    /**
      * Removes all selections of the layer.
      * 
      */
@@ -616,18 +591,6 @@ ActionListener, IWindowListener, PositionListener {
     }
 
     /**
-     * Forces the application to navigate only between selected features.
-     * 
-     */
-    private void viewOnlySelected() {
-	if (getNumberOfRowsSelected() == 0) {
-	    setPosition(EMPTY_REGISTER);
-	}
-	if (!isRecordSelected()) {
-	    firstSelected();
-	}
-    }
-
      * Repaints the window.
      * 
      */
@@ -647,18 +610,10 @@ ActionListener, IWindowListener, PositionListener {
 
 	// north panel buttons
 	alwaysZoomCB.setEnabled(navEnabled);
-	alwaysSelectCB.setEnabled(navEnabled);
+	
 	fixScaleCB.setEnabled(navEnabled);
 
 	if (isSomeRowToWorkOn()) {
-	    if (alwaysSelectCB.isSelected()) {
-		selectionB.setEnabled(false);
-		clearSelection();
-		selectCurrentFeature();
-	    } else {
-		selectionB.setEnabled(true);
-	    }
-
 	    if (alwaysZoomCB.isSelected()) {
 		zoomB.setEnabled(false);
 		zoom();
@@ -677,12 +632,10 @@ ActionListener, IWindowListener, PositionListener {
 	enableCopySelectedButton(navEnabled);
 	enableCopyPreviousButton(navEnabled);
 	zoomB.setEnabled(navEnabled);
-	selectionB.setEnabled(navEnabled);
-	setIconAndPositionBackgroundForSelection();
+	
 	setIconForFiltering();
 	enableSaveButton(navEnabled);
 	removeB.setEnabled(navEnabled);
-
 	navigation.refreshGUI(navEnabled);
     }
 
@@ -716,28 +669,15 @@ ActionListener, IWindowListener, PositionListener {
 	}
     }
 
-    private void setIconAndPositionBackgroundForSelection() {
-	if (isRecordSelected()) {
-	    ImageIcon imagenUnselect = getIcon("/Unselect.png");
-	    selectionB.setIcon(imagenUnselect);
-	} else {
-	    ImageIcon imagenSelect = getIcon("/Select.png");
-	    selectionB.setIcon(imagenSelect);
-	}
-    }
-
-    protected boolean isSomeRowToWorkOn() {
-	if (onlySelectedCB == null) {
-	    return false;
-	}
-	if (onlySelectedCB.isSelected() && getNumberOfRowsSelected() == 0) {
+    private boolean isSomeRowToWorkOn() {
+	if (isOnlySelected() && getNumberOfRowsSelected() == 0) {
 	    return false;
 	} else {
 	    return true;
 	}
     }
 
- // TODO: change visibility - navigation refactoring
+    // TODO. Visibility changed after the refactor to implement the sorter
     public int getNumberOfRowsSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	return bitset.cardinality();
@@ -790,40 +730,13 @@ ActionListener, IWindowListener, PositionListener {
 	    // do nothing.
 	    return;
 	}
-	if (e.getSource() == onlySelectedCB) {
-	    if(alwaysSelectCB.isSelected()) {
-		alwaysSelectCB.setSelected(false);
-		getRecordset().addSelectionListener(this);
-	    }
-	    if (showWarning()) {
-		if (onlySelectedCB.isSelected()) {
-		    if (! navigation.isEmptyRegister()) {
-			viewOnlySelected();
-		    }
-		} else {
-		    if (navigation.isEmptyRegister()) {
-			setPosition(0);
-		    }
-		}
-	    } else {
-		onlySelectedCB.setSelected(false);
-	    }
-	    refreshGUI();
-	} else if (e.getSource() == alwaysZoomCB) {
+	if (e.getSource() == alwaysZoomCB) {
 	    fixScaleCB.setSelected(false);
 	    refreshGUI();
 	} else if (e.getSource() == fixScaleCB) {
 	    alwaysZoomCB.setSelected(false);
 	    refreshGUI();
-	} else if (e.getSource() == alwaysSelectCB) {
-	    onlySelectedCB.setSelected(false);
-	    if (alwaysSelectCB.isSelected()) {
-		getRecordset().removeSelectionListener(this);
-	    } else {
-		getRecordset().addSelectionListener(this);
-	    }
-	    refreshGUI();
-	} else if (e.getSource() == filterB) {
+	}  else if (e.getSource() == filterB) {
 	    filterButtonClicked();
 	} else if (e.getSource() == copySelectedB) {
 	    if (copySelected()) {
@@ -834,9 +747,6 @@ ActionListener, IWindowListener, PositionListener {
 	    copyPrevious();
 	} else if (e.getSource() == zoomB) {
 	    zoom();
-	} else if (e.getSource() == selectionB) {
-	    selectCurrentFeature();
-	    refreshGUI();
 	} else if (e.getSource() == saveB) {
 	    tryToSave();
 	} else if (e.getSource() == removeB) {
@@ -1013,7 +923,9 @@ ActionListener, IWindowListener, PositionListener {
     public void first() {
 	navigation.first();
     }
-    private void firstSelected() {
+    
+    // TODO. Visibility changed after the refactor to implement the sorter
+    public void firstSelected() {
 	navigation.firstSelected();
     }
     public void before() {
