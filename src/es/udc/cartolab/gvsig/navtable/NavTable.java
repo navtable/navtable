@@ -63,6 +63,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 import es.udc.cartolab.gvsig.navtable.listeners.MyMouseListener;
+import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.table.AttribTableCellRenderer;
 import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
@@ -556,27 +557,9 @@ public class NavTable extends AbstractNavTable {
     }
 
     @Override
-    public void next() {
+    public void beforePositionChange(PositionEvent e) {
 	stopCellEdition();
-	super.next();
-    }
-
-    @Override
-    public void before() {
-	stopCellEdition();
-	super.before();
-    }
-
-    @Override
-    public void last() {
-	stopCellEdition();
-	super.last();
-    }
-
-    @Override
-    public void first() {
-	stopCellEdition();
-	super.first();
+	super.beforePositionChange(e);
     }
 
     @Override

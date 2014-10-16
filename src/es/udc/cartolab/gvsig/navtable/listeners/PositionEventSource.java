@@ -14,7 +14,7 @@ public class PositionEventSource {
 	listenerList.remove(PositionListener.class, listener);
     }
     
-    public void fireEvent(PositionEvent evt) {
+    public void fireOnPositionChange(PositionEvent evt) {
 	Object[] listeners = listenerList.getListenerList();
 	for (int i=0; i<listeners.length; i+=2) {
 	    if(listeners[i] == PositionListener.class) {
@@ -23,4 +23,12 @@ public class PositionEventSource {
 	}
     }
 
+    public void fireBeforePositionChange(PositionEvent evt) {
+	Object[] listeners = listenerList.getListenerList();
+	for (int i=0; i<listeners.length; i+=2) {
+	    if(listeners[i] == PositionListener.class) {
+		((PositionListener) listeners[i+1]).beforePositionChange(evt);
+	    }
+	}
+    }
 }

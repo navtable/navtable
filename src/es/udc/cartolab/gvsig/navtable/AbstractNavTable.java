@@ -460,7 +460,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
      * Shows a warning to the user if there's unsaved data.
      * 
      */
-    public boolean showWarning() {
+    protected boolean showWarning() {
 	if (getPosition() == EMPTY_REGISTER) {
 	    return true;
 	}
@@ -1048,7 +1048,13 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	}
     }
     
-    
+    @Override
+    public void beforePositionChange(PositionEvent e) {
+	showWarning();
+	// TODO. If showWarning returns false, the record was not correctly
+	// saved so we should not move to the next position. Or if is a movement 
+	// for other reason like click onlySelected, the click should be avoided
+    }
     
     public void next() {
 	navigation.next();
