@@ -91,7 +91,6 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
 public class NavTable extends AbstractNavTable {
 
     private static final long serialVersionUID = 1L;
-    protected WindowInfo viewInfo = null;
 
     private boolean isFillingValues = false;
     private boolean isSavingValues = false;
