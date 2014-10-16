@@ -948,11 +948,7 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     @Override
     public void windowClosed() {
 	showWarning();
-	getRecordset().removeSelectionListener(this);
-	if (this.layer != null) {
-	    this.layer.removeLayerListener(this.listener);
-	}
-	setOpenNavTableForm(false);
+	removeLayerListeners();
     }
 
     private boolean isSomeNavTableFormOpen() {
