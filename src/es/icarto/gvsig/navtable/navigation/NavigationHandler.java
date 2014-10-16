@@ -3,6 +3,7 @@ package es.icarto.gvsig.navtable.navigation;
 import static es.udc.cartolab.gvsig.navtable.AbstractNavTable.EMPTY_REGISTER;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +26,8 @@ import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
 import com.iver.cit.gvsig.fmap.layers.SelectionListener;
+import com.iver.utiles.extensionPoints.ExtensionPoints;
+import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
 
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
@@ -44,9 +47,15 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     private JLabel totalLabel = null;
     private JButton nextB = null;
     private JButton lastB = null;
+    private JPanel navToolBar;
+
+    // Selection widgets
+    private JCheckBox onlySelectedCB = null;
+    private JCheckBox alwaysSelectCB = null;
+    private JButton selectionB = null;
+    private JPanel optionsPanel;
 
     private long currentPosition = 0;
-    private JPanel navToolBar;
 
     private final AbstractNavTable nt;
 
@@ -63,6 +72,11 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     }
 
     private void initWidgets() {
+	initNavigationWidgets();
+	initSelectionWidgets();
+    }
+
+    private void initNavigationWidgets() {
 	registerNavTableButtonsOnNavigationToolBarExtensionPoint();
 	navToolBar = new JPanel(new FlowLayout());
 	navToolBar.add(firstB);
@@ -71,6 +85,14 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	navToolBar.add(totalLabel);
 	navToolBar.add(nextB);
 	navToolBar.add(lastB);
+    }
+
+    private void initSelectionWidgets() {
+	onlySelectedCB = getNavTableCheckBox(onlySelectedCB, "selectedCheckBox");
+	alwaysSelectCB = getNavTableCheckBox(alwaysSelectCB, "selectCheckBox");
+	optionsPanel = new JPanel(new FlowLayout());
+	optionsPanel.add(onlySelectedCB);
+	optionsPanel.add(alwaysSelectCB);
     }
 
     private void registerNavTableButtonsOnNavigationToolBarExtensionPoint() {
@@ -86,7 +108,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     }
 
     public void next() {
-	if (onlySelectedCB.isSelected()) {
+	if (isOnlySelected()) {
 	    nextSelected();
 	} else {
 	    // setPosition(getPosition() + 1);
@@ -120,7 +142,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     }
 
     public void last() {
-	if (onlySelectedCB.isSelected()) {
+	if (isOnlySelected()) {
 	    lastSelected();
 	} else {
 	    // setPosition(getRecordset().getRowCount() - 1);
@@ -147,7 +169,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     }
 
     public void first() {
-	if (onlySelectedCB.isSelected()) {
+	if (isOnlySelected()) {
 	    firstSelected();
 	} else {
 	    // setPosition(0);
@@ -170,7 +192,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     }
 
     public void previous() {
-	if (onlySelectedCB.isSelected()) {
+	if (isOnlySelected()) {
 	    previousSelected();
 	} else {
 	    // setPosition(getPosition() - 1);
@@ -234,7 +256,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     }
 
     private boolean isValidPosition(long pos) {
-	if (onlySelectedCB.isSelected()) {
+	if (isOnlySelected()) {
 	    return isRecordSelected(pos);
 	}
 	return true;
@@ -269,19 +291,80 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-	if (showWarning()) {
-	    if (e.getSource() == nextB) {
-		next();
-	    } else if (e.getSource() == lastB) {
-		last();
-	    } else if (e.getSource() == firstB) {
-		first();
-	    } else if (e.getSource() == beforeB) {
-		previous();
-	    } else if (e.getSource() == posTF) {
-		posTFChanged();
+	if (e.getSource() == nextB) {
+	    next();
+	} else if (e.getSource() == lastB) {
+	    last();
+	} else if (e.getSource() == firstB) {
+	    first();
+	} else if (e.getSource() == beforeB) {
+	    previous();
+	} else if (e.getSource() == posTF) {
+	    posTFChanged();
+	} else if (e.getSource() == onlySelectedCB) {
+	    if (alwaysSelectCB.isSelected()) {
+		alwaysSelectCB.setSelected(false);
+		nt.getRecordset().addSelectionListener(this);
 	    }
+
+	    if (onlySelectedCB.isSelected()) {
+		if (!isEmptyRegister()) {
+		    viewOnlySelected();
+		}
+	    } else {
+		if (isEmptyRegister()) {
+		    setPosition(0);
+		}
+	    }
+	    nt.refreshGUI();
+	} else if (e.getSource() == alwaysSelectCB) {
+	    onlySelectedCB.setSelected(false);
+	    if (alwaysSelectCB.isSelected()) {
+		nt.getRecordset().removeSelectionListener(this);
+		
+	    } else {
+		nt.getRecordset().addSelectionListener(this);
+	    }
+	    nt.refreshGUI();
+	} else if (e.getSource() == selectionB) {
+	    nt.selectCurrentFeature();
+	    nt.refreshGUI();
 	}
+    }
+
+    /**
+     * Forces the application to navigate only between selected features.
+     */
+    private void viewOnlySelected() {
+	if (nt.getNumberOfRowsSelected() == 0) {
+	    setPosition(EMPTY_REGISTER);
+	}
+	if (!isRecordSelected()) {
+	    nt.firstSelected();
+	} else {
+	    refreshGUI(onlySelectedCB.isEnabled());
+	}
+    }
+
+    /**
+     * @return true if the current row is selected, false if not.
+     */
+    private boolean isRecordSelected() {
+	return isRecordSelected(getPosition());
+    }
+
+    private boolean isRecordSelected(long position) {
+	FBitSet bitset = null;
+	if (position == EMPTY_REGISTER) {
+	    return false;
+	}
+	int pos = Long.valueOf(position).intValue();
+	if (nt.getRecordset() == null) {
+	    return false;
+	}
+	bitset = nt.getRecordset().getSelection();
+	return bitset.get(pos);
+    }
 
     @Override
     public void selectionChanged(SelectionEvent e) {
@@ -312,8 +395,43 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	positionEventSource.removeEventListener(l);
     }
 
+    public Component getOptionsPanel() {
+	return optionsPanel;
+    }
+
+    public void setOnlySelected(boolean bool) {
+	if (bool != onlySelectedCB.isSelected()) {
+	    onlySelectedCB.doClick();
+	}
+    }
+
+    public boolean isOnlySelected() {
+	return onlySelectedCB.isSelected();
+    }
+
     public void refreshGUI(boolean navEnabled) {
-	this.onlySelectedCB = nt.onlySelectedCB; // TODO: remove
+	refreshGUISelection(navEnabled);
+	refreshGUINavigation(navEnabled);
+    }
+
+    private void refreshGUISelection(boolean navEnabled) {
+	if (alwaysSelectCB.isSelected()) {
+	    nt.clearSelection();
+	    nt.selectCurrentFeature();
+	}
+	
+	if (isRecordSelected()) {
+	    ImageIcon imagenUnselect = nt.getIcon("/Unselect.png");
+	    selectionB.setIcon(imagenUnselect);
+	} else {
+	    ImageIcon imagenSelect = nt.getIcon("/Select.png");
+	    selectionB.setIcon(imagenSelect);
+	}
+	selectionB.setEnabled(navEnabled);
+	alwaysSelectCB.setEnabled(navEnabled);
+    }
+    
+    private void refreshGUINavigation(boolean navEnabled) {
 	firstB.setEnabled(navEnabled);
 	beforeB.setEnabled(navEnabled);
 	nextB.setEnabled(navEnabled);
@@ -347,18 +465,14 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	return sorter.getSortKeys();
     }
 
-    // //////
-    // / Probably should be removed and use a factory instead
-    // /////
+    public void modelChanged() {
+	List<? extends SortKey> sortKeys = sorter.getSortKeys();
+	sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
+	sorter.setSortKeys(sortKeys);
 
-    private ImageIcon getIcon(String iconName) {
-	java.net.URL imgURL = getClass().getResource(iconName);
-	if (imgURL == null) {
-	    imgURL = AbstractNavTable.class.getResource(iconName);
-	}
+	refreshGUI(firstB.isEnabled());
+    }
 
-	ImageIcon icon = new ImageIcon(imgURL);
-	return icon;
     public void setListeners() {
 	nt.getRecordset().addSelectionListener(this);
     }
@@ -367,6 +481,8 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	nt.getRecordset().removeSelectionListener(this);
     }
 
+    // Probably should be removed and use a factory instead
+    // is duplicated with NavigationHandler
     private JButton getNavTableButton(JButton button, String iconName,
 	    String toolTipName) {
 	JButton but = new JButton(nt.getIcon(iconName));
@@ -375,28 +491,20 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	return but;
     }
 
-    // TODO
-    private JCheckBox onlySelectedCB;
-
-    private boolean isRecordSelected() {
-	return nt.isRecordSelected();
+    // Probably should be removed and use a factory instead
+    // is duplicated with NavigationHandler
+    private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
+	cb = new JCheckBox(PluginServices.getText(this, toolTipName));
+	cb.addActionListener(this);
+	return cb;
     }
 
-    private boolean isRecordSelected(long n) {
-	return nt.isRecordSelected(n);
-    }
-
-    }
-
-    private boolean showWarning() {
-	return nt.showWarning();
-    }
-
-    public void modelChanged() {
-	List<? extends SortKey> sortKeys = sorter.getSortKeys();
-	sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
-	sorter.setSortKeys(sortKeys);
-
-	refreshGUI(firstB.isEnabled());
+    public void registerNavTableButtonsOnActionToolBarExtensionPoint() {
+	ExtensionPoints extensionPoints = ExtensionPointsSingleton
+		.getInstance();
+	selectionB = getNavTableButton(selectionB, "/Select.png",
+		"selectionButtonTooltip");
+	extensionPoints.add(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR,
+		"button-selection", selectionB);
     }
 }
