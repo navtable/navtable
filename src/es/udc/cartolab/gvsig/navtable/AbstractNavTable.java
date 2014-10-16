@@ -134,7 +134,7 @@ ActionListener, IWindowListener, PositionListener {
     protected JButton undoB = null;
     
 
-    private boolean isSomeNavTableFormOpen = false;
+//    private boolean isSomeNavTableFormOpen = false;
 
     protected EditionListener listener;
 
@@ -204,7 +204,7 @@ ActionListener, IWindowListener, PositionListener {
 	refreshGUI();
 	super.repaint();
 	super.setVisible(true);
-	setOpenNavTableForm(true);
+//	setOpenNavTableForm(true);
 	setFocusCycleRoot(true);
 	
 	setLayerListeners();
@@ -244,7 +244,7 @@ ActionListener, IWindowListener, PositionListener {
 
     public void reinit() {
 	resetListeners();
-	setOpenNavTableForm(true);
+//	setOpenNavTableForm(true);
     }
 
     protected void setLayerListeners() {
@@ -781,9 +781,9 @@ ActionListener, IWindowListener, PositionListener {
 	 * null pointers exceptions when all forms using navtable are closed
 	 * but, for some strange reason, some of the listeners is still active.
 	 */
-	if (!isSomeNavTableFormOpen()) {
-	    return;
-	}
+//	if (!isSomeNavTableFormOpen()) {
+//	    return;
+//	}
 
 	if (getRecordset() == null) {
 	    // If there is an error on the recordset of the layer 
@@ -934,15 +934,16 @@ ActionListener, IWindowListener, PositionListener {
     public void windowClosed() {
 	showWarning();
 	removeLayerListeners();
+//	setOpenNavTableForm(false);
     }
 
-    private boolean isSomeNavTableFormOpen() {
-	return isSomeNavTableFormOpen;
-    }
-
-    protected void setOpenNavTableForm(boolean b) {
-	isSomeNavTableFormOpen = b;
-    }
+//    private boolean isSomeNavTableFormOpen() {
+//	return isSomeNavTableFormOpen;
+//    }
+//
+//    protected void setOpenNavTableForm(boolean b) {
+//	isSomeNavTableFormOpen = b;
+//    }
 
     @Override
     public void windowActivated() {
