@@ -23,13 +23,15 @@ import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.iver.andami.PluginServices;
 import com.iver.cit.gvsig.fmap.layers.FBitSet;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
+import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
+import com.iver.cit.gvsig.fmap.layers.SelectionListener;
 
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 
-public class NavigationHandler implements ActionListener {
+public class NavigationHandler implements ActionListener, SelectionListener {
 
     private static final Logger logger = Logger
 	    .getLogger(NavigationHandler.class);
@@ -280,6 +282,22 @@ public class NavigationHandler implements ActionListener {
 		posTFChanged();
 	    }
 	}
+
+    @Override
+    public void selectionChanged(SelectionEvent e) {
+	/*
+	 * Variable isSomeNavTableForm open is used as workaround to control
+	 * null pointers exceptions when all forms using navtable are closed
+	 * but, for some strange reason, some of the listeners is still active.
+	 */
+	// if (!isSomeNavTableFormOpen()) {
+	// return;
+	// }
+
+	if (onlySelectedCB.isSelected() && !isRecordSelected()) {
+	    nt.first();
+	}
+	nt.refreshGUI();
     }
 
     public boolean isEmptyRegister() {
@@ -340,6 +358,12 @@ public class NavigationHandler implements ActionListener {
 
 	ImageIcon icon = new ImageIcon(imgURL);
 	return icon;
+    public void setListeners() {
+	nt.getRecordset().addSelectionListener(this);
+    }
+
+    public void removeListeners() {
+	nt.getRecordset().removeSelectionListener(this);
     }
 
     private JButton getNavTableButton(JButton button, String iconName,
