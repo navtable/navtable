@@ -18,6 +18,7 @@ import sun.font.AttributeMap;
 import com.iver.andami.PluginServices;
 
 import es.icarto.gvsig.commons.gui.AbstractIWindow;
+import es.icarto.gvsig.commons.gui.OkCancelPanel;
 import es.icarto.gvsig.commons.gui.WidgetFactory;
 import es.icarto.gvsig.commons.utils.Field;
 
@@ -26,7 +27,7 @@ public class ChooseSortFieldDialog extends AbstractIWindow implements
 	ActionListener {
 
     List<ChooseSortFieldPanel> list = new ArrayList<ChooseSortFieldPanel>();
-    private String status;
+    private String status = OkCancelPanel.CANCEL_ACTION_COMMAND;
 
     public ChooseSortFieldDialog(final List<Field> fields) {
 	super(new MigLayout("insets 10, wrap 1"));
