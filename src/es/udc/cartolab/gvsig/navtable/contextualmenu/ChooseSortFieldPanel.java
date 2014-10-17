@@ -1,5 +1,6 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -19,7 +20,7 @@ import es.icarto.gvsig.commons.utils.Field;
 @SuppressWarnings("serial")
 public class ChooseSortFieldPanel extends JPanel {
 
-    private static final String PROTOTYPE_DISPLAY_VALUE = "XXXXXXXXXXXXXXX";
+    private static final String PROTOTYPE_DISPLAY_VALUE = "XXXXXXXXXXXXXXXXXXXXXXXX";
 
     private final ButtonGroup buttonGroup;
 
@@ -34,6 +35,7 @@ public class ChooseSortFieldPanel extends JPanel {
 		    "sort_by");
 	}
 	add(new JLabel(jLabelText), "cell 0 0 1 2");
+	Collections.sort(fields);
 	Vector<Field> v = new Vector<Field>(fields);
 	v.add(0, Field.EMPTY_FIELD);
 	jComboBox = new JComboBox(v);
