@@ -106,8 +106,6 @@ ActionListener, IWindowListener, PositionListener {
     protected JPanel centerPanel = null;
     protected JPanel southPanel = null;
 
-    protected WindowInfo windowInfo = null;
-
     protected IController layerController;
     private NavigationHandler navigation;
     
