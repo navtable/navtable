@@ -1,9 +1,12 @@
 package es.udc.cartolab.gvsig.navtable.format;
 
+
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import org.apache.log4j.Logger;
 
 import com.hardcode.gdbms.engine.values.DateValue;
 import com.hardcode.gdbms.engine.values.NullValue;
@@ -17,6 +20,9 @@ import com.hardcode.gdbms.engine.values.Value;
  */
 public class DateFormatNT {
 
+    
+    private static final Logger logger = Logger.getLogger(DateFormatNT.class);
+    
     private static SimpleDateFormat dateFormat;
 
     public static String convertDateValueToString(Value date) {
@@ -44,6 +50,21 @@ public class DateFormatNT {
 	    }
 	}
     }
+    
+    public static java.util.Date convertStringToDate(String strDate) {
+	java.util.Date date = null;
+	if (strDate.isEmpty()) {
+	    return null;
+	}
+	SimpleDateFormat formatter = getDateFormat();
+	try {
+	    date = formatter.parse(strDate);
+	} catch (ParseException e) {
+	    logger.error(e.getStackTrace(), e);
+	}
+	return date;
+    }
+	
 
     public static SimpleDateFormat getDateFormat() {
 	if (dateFormat == null) {
