@@ -85,7 +85,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  * 
  */
 public abstract class AbstractNavTable extends AbstractIWindow implements
-ActionListener, IWindowListener, PositionListener {
+	ActionListener, IWindowListener, PositionListener {
 
     public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
@@ -108,7 +108,7 @@ ActionListener, IWindowListener, PositionListener {
 
     protected IController layerController;
     private NavigationHandler navigation;
-    
+
     protected FLyrVect layer = null;
     protected String dataName = "";
 
@@ -117,7 +117,6 @@ ActionListener, IWindowListener, PositionListener {
     // NORTH
     protected JCheckBox fixScaleCB = null;
     protected JCheckBox alwaysZoomCB = null;
-    
 
     // SOUTH
     // actions buttons
@@ -128,9 +127,8 @@ ActionListener, IWindowListener, PositionListener {
     protected JButton saveB = null;
     protected JButton removeB = null;
     protected JButton undoB = null;
-    
 
-//    private boolean isSomeNavTableFormOpen = false;
+    // private boolean isSomeNavTableFormOpen = false;
 
     protected EditionListener listener;
 
@@ -146,7 +144,8 @@ ActionListener, IWindowListener, PositionListener {
 	this.dataName = layer.getName();
 	navigation = new NavigationHandler(this);
 	setWindowTitle("NavTable: " + dataName);
-	setWindowInfoProperties(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE | WindowInfo.RESIZABLE);
+	setWindowInfoProperties(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE
+		| WindowInfo.RESIZABLE);
     }
 
     // [nachouve] Check this method because
@@ -168,7 +167,7 @@ ActionListener, IWindowListener, PositionListener {
     public AbstractNavTable(SelectableDataSource recordset, String tableName) {
 	this(tableName);
     }
-    
+
     public AbstractNavTable(String tableName) {
 	super();
 	this.dataName = tableName;
@@ -196,30 +195,31 @@ ActionListener, IWindowListener, PositionListener {
 
 	initGUI();
 	initWidgets();
-	
+
 	refreshGUI();
 	super.repaint();
 	super.setVisible(true);
-//	setOpenNavTableForm(true);
+	// setOpenNavTableForm(true);
 	setFocusCycleRoot(true);
-	
+
 	setLayerListeners();
 	return true;
     }
-    
+
     /**
-     * In NavTable it will get the attribute names from the layer and
-     * set it on the left column of the table. On AbstractForm it will
-     * initialize the widget vector from the Abeille file
+     * In NavTable it will get the attribute names from the layer and set it on
+     * the left column of the table. On AbstractForm it will initialize the
+     * widget vector from the Abeille file
      */
     protected abstract void initWidgets();
-    
+
     protected void initGUI() {
-    	MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]","[][grow][]");
-    	this.setLayout(thisLayout);
-    	this.add(getNorthPanel(), "shrink, wrap, align center");
-    	this.add(getCenterPanel(), "shrink, growx, growy, wrap");
-    	this.add(getSouthPanel(), "shrink, align center");
+	MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]",
+		"[][grow][]");
+	this.setLayout(thisLayout);
+	this.add(getNorthPanel(), "shrink, wrap, align center");
+	this.add(getCenterPanel(), "shrink, growx, growy, wrap");
+	this.add(getSouthPanel(), "shrink, align center");
     }
 
     protected boolean initController() {
@@ -240,12 +240,12 @@ ActionListener, IWindowListener, PositionListener {
 
     public void reinit() {
 	resetListeners();
-//	setOpenNavTableForm(true);
+	// setOpenNavTableForm(true);
     }
 
     protected void setLayerListeners() {
-	if (layer!=null) {
-	    //TODO. Alphanumeric navtable adds the listener to the model
+	if (layer != null) {
+	    // TODO. Alphanumeric navtable adds the listener to the model
 	    listener = new EditionListener(this, layer);
 	    layer.addLayerListener(listener);
 	}
@@ -255,7 +255,7 @@ ActionListener, IWindowListener, PositionListener {
 
     protected void removeLayerListeners() {
 	if (layer != null) {
-	    layer.removeLayerListener(listener);	    
+	    layer.removeLayerListener(listener);
 	}
 	navigation.removeListeners();
 	removePositionListener(this);
@@ -314,7 +314,7 @@ ActionListener, IWindowListener, PositionListener {
     public void setOnlySelected(boolean bool) {
 	navigation.setOnlySelected(bool);
     }
-    
+
     public boolean isOnlySelected() {
 	return navigation.isOnlySelected();
     }
@@ -342,9 +342,11 @@ ActionListener, IWindowListener, PositionListener {
      * @return the File of the image.
      */
     protected File getHeaderFile() {
-	File folder = PluginServices.getPluginServices(this).getPluginDirectory();
-	File header = new File (folder.getAbsolutePath() + File.separator + "images" + File.separator + "navtable_header.png");
-	
+	File folder = PluginServices.getPluginServices(this)
+		.getPluginDirectory();
+	File header = new File(folder.getAbsolutePath() + File.separator
+		+ "images" + File.separator + "navtable_header.png");
+
 	if (!header.exists()) {
 	    header = new File(Preferences.getConfigDir()
 		    + "/navtable_header.png");
@@ -390,7 +392,7 @@ ActionListener, IWindowListener, PositionListener {
 	but.addActionListener(this);
 	return but;
     }
-    
+
     // Probably should be removed and use a factory instead
     // is duplicated with NavigationHandler
     private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
@@ -432,12 +434,13 @@ ActionListener, IWindowListener, PositionListener {
 
 	zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-zoom", zoomB);
-	
-	//TODO. This is a hack. It's more logic that navigation registers the bt
+
+	// TODO. This is a hack. It's more logic that navigation registers the
+	// bt
 	// itself. But as NavTable overrides this methods, and cleans the list
 	// it can not be done
 	navigation.registerNavTableButtonsOnActionToolBarExtensionPoint();
-	
+
 	saveB = getNavTableButton(saveB, "/save.png", "saveButtonTooltip");
 	saveB.setEnabled(false);
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-save", saveB);
@@ -445,9 +448,11 @@ ActionListener, IWindowListener, PositionListener {
 	removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
 	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-remove", removeB);
 
-	undoB = getNavTableButton(undoB, "/edit-undo.png", "clearChangesButtonTooltip");
+	undoB = getNavTableButton(undoB, "/edit-undo.png",
+		"clearChangesButtonTooltip");
 	undoB.setEnabled(false);
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes", undoB);
+	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes",
+		undoB);
     }
 
     protected JPanel getSouthPanel() {
@@ -484,7 +489,7 @@ ActionListener, IWindowListener, PositionListener {
 	    } else {
 		save = false;
 		setChangedValues(false);
-		//The values will be restored as they are
+		// The values will be restored as they are
 		// when filling again the table/form,
 		// so it's not need to revert the changes done.
 	    }
@@ -528,7 +533,7 @@ ActionListener, IWindowListener, PositionListener {
 		    }
 		    if (rectangle != null) {
 			layer.getMapContext().getViewPort()
-			.setExtent(rectangle);
+				.setExtent(rectangle);
 		    }
 		} else {
 		    JOptionPane.showMessageDialog(this, PluginServices.getText(
@@ -608,7 +613,7 @@ ActionListener, IWindowListener, PositionListener {
 
 	// north panel buttons
 	alwaysZoomCB.setEnabled(navEnabled);
-	
+
 	fixScaleCB.setEnabled(navEnabled);
 
 	if (isSomeRowToWorkOn()) {
@@ -630,7 +635,7 @@ ActionListener, IWindowListener, PositionListener {
 	enableCopySelectedButton(navEnabled);
 	enableCopyPreviousButton(navEnabled);
 	zoomB.setEnabled(navEnabled);
-	
+
 	setIconForFiltering();
 	enableSaveButton(navEnabled);
 	removeB.setEnabled(navEnabled);
@@ -683,9 +688,9 @@ ActionListener, IWindowListener, PositionListener {
 
     public void copyPrevious() {
 	long current = navigation.getPosition();
-	navigation.setPosition(current - 1);
+	navigation.setPosition(navigation.getPreviousPositionInModel(), false);
 	fillValues();
-	navigation.setPosition(current);
+	navigation.setPosition(current, false);
 	setChangedValues(true);
 	enableSaveButton(true);
     }
@@ -702,9 +707,9 @@ ActionListener, IWindowListener, PositionListener {
 	    long current = getPosition();
 	    FBitSet selection = getRecordset().getSelection();
 	    long selectedRow = selection.nextSetBit(0);
-	    navigation.setPosition(selectedRow);
+	    navigation.setPosition(selectedRow, false);
 	    fillValues();
-	    navigation.setPosition(current);
+	    navigation.setPosition(current, false);
 	    return true;
 	}
     }
@@ -719,12 +724,12 @@ ActionListener, IWindowListener, PositionListener {
 	 * null pointers exceptions when all forms using navtable are closed
 	 * but, for some strange reason, some of the listeners is still active.
 	 */
-//	if (!isSomeNavTableFormOpen()) {
-//	    return;
-//	}
+	// if (!isSomeNavTableFormOpen()) {
+	// return;
+	// }
 
 	if (getRecordset() == null) {
-	    // If there is an error on the recordset of the layer 
+	    // If there is an error on the recordset of the layer
 	    // do nothing.
 	    return;
 	}
@@ -734,7 +739,7 @@ ActionListener, IWindowListener, PositionListener {
 	} else if (e.getSource() == fixScaleCB) {
 	    alwaysZoomCB.setSelected(false);
 	    refreshGUI();
-	}  else if (e.getSource() == filterB) {
+	} else if (e.getSource() == filterB) {
 	    filterButtonClicked();
 	} else if (e.getSource() == copySelectedB) {
 	    if (copySelected()) {
@@ -749,11 +754,11 @@ ActionListener, IWindowListener, PositionListener {
 	    tryToSave();
 	} else if (e.getSource() == removeB) {
 	    int answer = JOptionPane.showConfirmDialog(null,
-		    PluginServices.getText(null, deleteMessageKey),
-		    null, JOptionPane.YES_NO_OPTION);
+		    PluginServices.getText(null, deleteMessageKey), null,
+		    JOptionPane.YES_NO_OPTION);
 	    if (answer == 0) {
 		try {
-		deleteRecord();
+		    deleteRecord();
 		} catch (StopWriterVisitorException ex) {
 		    ex.printStackTrace();
 		    String errorMessage = (ex.getCause() != null) ? ex
@@ -789,29 +794,27 @@ ActionListener, IWindowListener, PositionListener {
 
     private boolean tryToSave() {
 	try {
-	if (saveRecord()) {
-	    refreshGUI();
-	} else {
-	    JOptionPane.showMessageDialog(this,
-		    PluginServices.getText(this, saveErrorGenericMessageKey),
-		    "", JOptionPane.ERROR_MESSAGE);
-	}
+	    if (saveRecord()) {
+		refreshGUI();
+	    } else {
+		JOptionPane.showMessageDialog(this, PluginServices.getText(
+			this, saveErrorGenericMessageKey), "",
+			JOptionPane.ERROR_MESSAGE);
+	    }
 	} catch (StopWriterVisitorException ex) {
-	logger.error(ex.getStackTrace(), ex);
-	String errorMessage = (ex.getCause() != null) ? ex.getCause()
-		.getMessage() : ex.getMessage(), auxMessage = errorMessage
-		.replace("ERROR: ", "").replace(" ", "_")
-		.replace("\n", ""), auxMessageIntl = PluginServices
-		.getText(this, auxMessage);
-	if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-	    errorMessage = auxMessageIntl;
-	}
-	JOptionPane.showMessageDialog(
-		(Component) PluginServices.getMainFrame(),
-		errorMessage,
-		PluginServices.getText(this, saveErrorTitleKey),
-		JOptionPane.ERROR_MESSAGE);
-	return false;
+	    logger.error(ex.getStackTrace(), ex);
+	    String errorMessage = (ex.getCause() != null) ? ex.getCause()
+		    .getMessage() : ex.getMessage(), auxMessage = errorMessage
+		    .replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = PluginServices
+		    .getText(this, auxMessage);
+	    if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+		errorMessage = auxMessageIntl;
+	    }
+	    JOptionPane.showMessageDialog(
+		    (Component) PluginServices.getMainFrame(), errorMessage,
+		    PluginServices.getText(this, saveErrorTitleKey),
+		    JOptionPane.ERROR_MESSAGE);
+	    return false;
 	}
 	return true;
     }
@@ -842,16 +845,16 @@ ActionListener, IWindowListener, PositionListener {
     public void windowClosed() {
 	showWarning();
 	removeLayerListeners();
-//	setOpenNavTableForm(false);
+	// setOpenNavTableForm(false);
     }
 
-//    private boolean isSomeNavTableFormOpen() {
-//	return isSomeNavTableFormOpen;
-//    }
-//
-//    protected void setOpenNavTableForm(boolean b) {
-//	isSomeNavTableFormOpen = b;
-//    }
+    // private boolean isSomeNavTableFormOpen() {
+    // return isSomeNavTableFormOpen;
+    // }
+    //
+    // protected void setOpenNavTableForm(boolean b) {
+    // isSomeNavTableFormOpen = b;
+    // }
 
     @Override
     public void windowActivated() {
@@ -881,12 +884,12 @@ ActionListener, IWindowListener, PositionListener {
     public abstract boolean isSavingValues();
 
     public SelectableDataSource getRecordset() {
-        try {
-            return layer.getSource().getRecordset();
-        } catch (ReadDriverException e) {
-            logger.error(e.getStackTrace(), e);
-            return null;
-        }
+	try {
+	    return layer.getSource().getRecordset();
+	} catch (ReadDriverException e) {
+	    logger.error(e.getStackTrace(), e);
+	    return null;
+	}
     }
 
     @Override
@@ -900,43 +903,48 @@ ActionListener, IWindowListener, PositionListener {
 	    refreshGUI();
 	}
     }
-    
+
     @Override
     public void beforePositionChange(PositionEvent e) {
 	showWarning();
 	// TODO. If showWarning returns false, the record was not correctly
-	// saved so we should not move to the next position. Or if is a movement 
+	// saved so we should not move to the next position. Or if is a movement
 	// for other reason like click onlySelected, the click should be avoided
     }
-    
+
     public void next() {
 	navigation.next();
     }
+
     public void last() {
 	navigation.last();
     }
-    private void lastSelected() { 
+
+    private void lastSelected() {
 	navigation.lastSelected();
     }
+
     public void first() {
 	navigation.first();
     }
-    
+
     // TODO. Visibility changed after the refactor to implement the sorter
     public void firstSelected() {
 	navigation.firstSelected();
     }
+
     public void before() {
-	navigation.previous();
+	navigation.goToPreviousInView();
     }
-  
+
     public void setPosition(long newPosition) {
 	navigation.setPosition(newPosition);
     }
+
     public long getPosition() {
 	return navigation.getPosition();
     }
-    
+
     public void setSortKeys(List<? extends SortKey> keys) {
 	navigation.setSortKeys(keys);
     }
@@ -948,20 +956,22 @@ ActionListener, IWindowListener, PositionListener {
     /**
      * Only process stop edition events. And when this occurs all the sort is
      * recalculated. In case that recalculate the full sorting has bad
-     * performance we should process FIELD_EDITION, ROW_EDITION EditionEvents, and
-     * reorder only the affected rows, or test the performance of not create a
-     * new instance of the sorter.
+     * performance we should process FIELD_EDITION, ROW_EDITION EditionEvents,
+     * and reorder only the affected rows, or test the performance of not create
+     * a new instance of the sorter.
      */
     public void layerEvent(LayerEvent e) {
-	if ((e.getEventType() == LayerEvent.EDITION_CHANGED) && !layer.isEditing()) {
+	if ((e.getEventType() == LayerEvent.EDITION_CHANGED)
+		&& !layer.isEditing()) {
 	    navigation.modelChanged();
 	}
     }
 
     public void editionEvent(EditionEvent e) {
-	if ((e instanceof AfterFieldEditEvent) && (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
-	    navigation.setSortKeys(null);	    
+	if ((e instanceof AfterFieldEditEvent)
+		&& (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
+	    navigation.setSortKeys(null);
 	}
     }
-    
+
 }
