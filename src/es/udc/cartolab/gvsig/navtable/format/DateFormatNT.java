@@ -53,7 +53,7 @@ public class DateFormatNT {
     
     public static java.util.Date convertStringToDate(String strDate) {
 	java.util.Date date = null;
-	if (strDate.isEmpty()) {
+	if ((strDate == null) || (strDate.isEmpty())) {
 	    return null;
 	}
 	SimpleDateFormat formatter = getDateFormat();
