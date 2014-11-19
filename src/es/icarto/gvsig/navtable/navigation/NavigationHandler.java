@@ -191,18 +191,40 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	}
     }
 
-    public void previous() {
+    // returns the index of the record in the datasource that matches the
+    // previous (getPosition() - 1) record in the view
+    // if the view position is the first (0) it returns -1
+    public int getPreviousPositionInModel() {
+	int viewPos = sorter.convertRowIndexToView((int) getPosition());
+	if (viewPos == 0) {
+	    return -1;
+	}
+	int modelPrevPos = sorter.convertRowIndexToModel(viewPos - 1);
+	return modelPrevPos;
+    }
+
+    public void goToPreviousInView() {
 	if (isOnlySelected()) {
-	    previousSelected();
+	    goToPreviousSelectedInView();
 	} else {
-	    // setPosition(getPosition() - 1);
-	    int viewPos = sorter.convertRowIndexToView((int) getPosition());
-	    int viewFirstPos = 0;
-	    if (viewPos > viewFirstPos) {
-		int modelPrevPos = sorter.convertRowIndexToModel(viewPos - 1);
+	    int modelPrevPos = getPreviousPositionInModel();
+	    if (modelPrevPos > -1) {
 		setPosition(modelPrevPos);
 	    }
 	}
+    }
+
+    private int getPreviusPositionSelectedInModel() {
+	FBitSet bitset = nt.getRecordset().getSelection();
+	int viewPos = sorter.convertRowIndexToView((int) getPosition());
+	for (int i = viewPos - 1; i >= 0; i--) {
+	    int modelPos = sorter.convertRowIndexToModel(i);
+	    if (bitset.get(modelPos)) {
+		return modelPos;
+	    }
+	}
+
+	return -1;
     }
 
     // int pos = (int) (getPosition() - 1);
@@ -212,15 +234,10 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     // if (pos != EMPTY_REGISTER) {
     // setPosition(pos);
     // }
-    private void previousSelected() {
-	FBitSet bitset = nt.getRecordset().getSelection();
-	int viewPos = sorter.convertRowIndexToView((int) getPosition());
-	for (int i = viewPos - 1; i >= 0; i--) {
-	    int modelPos = sorter.convertRowIndexToModel(i);
-	    if (bitset.get(modelPos)) {
-		setPosition(modelPos);
-		return;
-	    }
+    private void goToPreviousSelectedInView() {
+	int modelPos = getPreviusPositionSelectedInModel();
+	if (modelPos != -1) {
+	    setPosition(modelPos);
 	}
     }
 
@@ -298,7 +315,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	} else if (e.getSource() == firstB) {
 	    first();
 	} else if (e.getSource() == beforeB) {
-	    previous();
+	    goToPreviousInView();
 	} else if (e.getSource() == posTF) {
 	    posTFChanged();
 	} else if (e.getSource() == onlySelectedCB) {
@@ -321,7 +338,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	    onlySelectedCB.setSelected(false);
 	    if (alwaysSelectCB.isSelected()) {
 		nt.getRecordset().removeSelectionListener(this);
-		
+
 	    } else {
 		nt.getRecordset().addSelectionListener(this);
 	    }
@@ -419,7 +436,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	    nt.clearSelection();
 	    nt.selectCurrentFeature();
 	}
-	
+
 	if (isRecordSelected()) {
 	    ImageIcon imagenUnselect = nt.getIcon("/Unselect.png");
 	    selectionB.setIcon(imagenUnselect);
@@ -430,7 +447,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	selectionB.setEnabled(navEnabled);
 	alwaysSelectCB.setEnabled(navEnabled);
     }
-    
+
     private void refreshGUINavigation(boolean navEnabled) {
 	firstB.setEnabled(navEnabled);
 	beforeB.setEnabled(navEnabled);
@@ -453,8 +470,6 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	    posTF.setBackground(Color.WHITE);
 	}
     }
-
-    
 
     public void setSortKeys(List<? extends SortKey> keys) {
 	sorter.setSortKeys(keys);
@@ -506,5 +521,25 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 		"selectionButtonTooltip");
 	extensionPoints.add(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR,
 		"button-selection", selectionB);
+    }
+
+    @Deprecated
+    /** fpuga. 19/11/2014. Don't use this method. It's created as a workaround to
+     *  make copyPrevious and copySelected work 
+     */
+    public void setPosition(long newPosition, boolean b) {
+	if (!isValidPosition(newPosition)) {
+	    return;
+	}
+	try {
+	    if (newPosition >= nt.getRecordset().getRowCount()) {
+		newPosition = nt.getRecordset().getRowCount() - 1;
+	    } else if (newPosition < EMPTY_REGISTER) {
+		newPosition = 0;
+	    }
+	    currentPosition = newPosition;
+	} catch (ReadDriverException e) {
+	    e.printStackTrace();
+	}
     }
 }
