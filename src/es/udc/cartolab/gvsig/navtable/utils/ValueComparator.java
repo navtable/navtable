@@ -28,8 +28,11 @@ public class ValueComparator implements Comparator<Value> {
     public int compare(Value o1, Value o2) {
 	// Value
 	// ValueFactory.getValueByType
-
-	if (o1 instanceof NumericValue) {
+	if (o1 instanceof NullValue) {
+	    return 1;
+	} else if (o2 instanceof NullValue) {
+	    return -1;
+	} else if (o1 instanceof NumericValue) {
 	    // } else if (o1 instanceof ByteValue) { // extends Numeric
 	    // } else if (o1 instanceof DoubleValue) { // extends Numeric
 	    // } else if (o1 instanceof FloatValue) { // extends Numeric
