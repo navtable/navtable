@@ -2,7 +2,6 @@ package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
@@ -15,6 +14,7 @@ import net.miginfocom.swing.MigLayout;
 
 import com.iver.andami.PluginServices;
 
+import es.icarto.gvsig.commons.gui.WidgetFactory;
 import es.icarto.gvsig.commons.utils.Field;
 
 @SuppressWarnings("serial")
@@ -27,7 +27,7 @@ public class ChooseSortFieldPanel extends JPanel {
     private final JComboBox jComboBox;
 
     public ChooseSortFieldPanel(int priority, List<Field> fields) {
-	super(new MigLayout("insets 10", "[100!][][]"));
+	super(new MigLayout("insets 10", "[90!][][]"));
 	String jLabelText = PluginServices.getPluginServices(this).getText(
 		"sort_then_by");
 	if (priority == 0) {
@@ -36,10 +36,13 @@ public class ChooseSortFieldPanel extends JPanel {
 	}
 	add(new JLabel(jLabelText), "cell 0 0 1 2");
 	Collections.sort(fields);
-	Vector<Field> v = new Vector<Field>(fields);
-	v.add(0, Field.EMPTY_FIELD);
-	jComboBox = new JComboBox(v);
+	jComboBox = WidgetFactory.combobox();
+	jComboBox.addItem(Field.EMPTY_FIELD);
+	for (Field f : fields) {
+	    jComboBox.addItem(f);
+	}
 	jComboBox.setPrototypeDisplayValue(PROTOTYPE_DISPLAY_VALUE);
+
 	add(jComboBox, "cell 1 0 1 2");
 	buttonGroup = new ButtonGroup();
 
