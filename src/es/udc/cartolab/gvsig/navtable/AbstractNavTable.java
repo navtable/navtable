@@ -88,7 +88,10 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  */
 
 public abstract class AbstractNavTable extends JPanel implements IWindow,
-ActionListener, SelectionListener, IWindowListener, PositionListener {
+	ActionListener, IWindowListener, PositionListener {
+
+    private static final Logger logger = Logger
+	    .getLogger(AbstractNavTable.class);
 
     public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
@@ -101,7 +104,6 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
     protected String deleteMessageKey = "confirm_delete_register";
     protected String saveErrorTitleKey = "save_layer_error";
     protected String saveErrorGenericMessageKey = "errorSavingData";
-    protected static Logger logger = Logger.getLogger("NavTable");
     public static final String NAVTABLE_ACTIONS_TOOLBAR = "navtable_extension_point_actions_toolbar";
     public static final String NAVTABLE_CONTEXT_MENU = "navtable_extension_point_context_menu";
 
@@ -595,30 +597,19 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	getRecordset().clearSelection();
     }
 
-    /**
-     * Forces the application to navigate only between selected features.
-     * 
-     */
-    private void viewOnlySelected() {
-	if (getNumberOfRowsSelected() == 0) {
-	    setPosition(EMPTY_REGISTER);
-	}
-	if (!isRecordSelected()) {
-	    firstSelected();
-	}
-    }
-
     @Override
     public WindowInfo getWindowInfo() {
 	if (windowInfo == null) {
 	    windowInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
 		    | WindowInfo.PALETTE | WindowInfo.RESIZABLE);
-	    
+
 	    windowInfo.setTitle("NavTable: " + dataName);
 	    Dimension dim = getPreferredSize();
-	    // To calculate the maximum size of a form we take the size of the 
-	    // main frame minus a "magic number" for the menus, toolbar, state bar
-	    // Take into account that in edition mode there is less available space
+	    // To calculate the maximum size of a form we take the size of the
+	    // main frame minus a "magic number" for the menus, toolbar, state
+	    // bar
+	    // Take into account that in edition mode there is less available
+	    // space
 	    MDIFrame a = (MDIFrame) PluginServices.getMainFrame();
 	    final int MENU_TOOL_STATE_BAR = 205;
 	    int maxHeight = a.getHeight() - MENU_TOOL_STATE_BAR;
@@ -635,15 +626,18 @@ ActionListener, SelectionListener, IWindowListener, PositionListener {
 	    } else {
 		width = new Double(dim.getWidth()).intValue();
 	    }
-	    
-	    // getPreferredSize doesn't take into account the borders and other stuff
-	    // introduced by Andami, neither scroll bars so we must increase the "preferred"
+
+	    // getPreferredSize doesn't take into account the borders and other
+	    // stuff
+	    // introduced by Andami, neither scroll bars so we must increase the
+	    // "preferred"
 	    // dimensions
 	    windowInfo.setWidth(width + 25);
 	    windowInfo.setHeight(heigth + 15);
 	}
 	return windowInfo;
     }
+
     /**
      * Repaints the window.
      * 
