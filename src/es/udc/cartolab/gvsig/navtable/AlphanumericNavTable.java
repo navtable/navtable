@@ -33,6 +33,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+import org.apache.log4j.Logger;
+
 import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.values.Value;
@@ -53,7 +55,6 @@ import es.udc.cartolab.gvsig.navtable.dataacces.TableController;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
-
 /**
  * @author Nacho Varela
  * @author Javier Estevez
@@ -62,6 +63,9 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  */
 @SuppressWarnings("serial")
 public class AlphanumericNavTable extends NavTable {
+
+    private static final Logger logger = Logger
+	    .getLogger(AlphanumericNavTable.class);
 
     private JButton newB = null;
     protected IEditableSource model;
@@ -107,7 +111,7 @@ public class AlphanumericNavTable extends NavTable {
 
 	return true;
     }
-    
+
     @Override
     protected boolean initController() {
 	try {
@@ -119,7 +123,7 @@ public class AlphanumericNavTable extends NavTable {
 	}
 	return true;
     }
-    
+
     @Override
     protected void setLayerListeners() {
 	super.setLayerListeners();
@@ -163,7 +167,7 @@ public class AlphanumericNavTable extends NavTable {
 
     @Override
     @Deprecated
-    //deprecated by fpuga, 28/02/2014
+    // deprecated by fpuga, 28/02/2014
     protected void updateValue(int row, int col, String newValue) {
 	ToggleEditing te = new ToggleEditing();
 	try {
@@ -253,6 +257,7 @@ public class AlphanumericNavTable extends NavTable {
      * Shows a warning to the user if there's unsaved data.
      * 
      */
+    @Override
     public boolean showWarning() {
 	if (getPosition() == AbstractNavTable.EMPTY_REGISTER) {
 	    return true;
@@ -345,5 +350,5 @@ public class AlphanumericNavTable extends NavTable {
 	super.windowClosed();
 	this.model.removeEditionListener(listener);
     }
-    
+
 }

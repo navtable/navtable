@@ -44,6 +44,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
+
 import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
 import com.hardcode.gdbms.engine.values.Value;
 import com.iver.andami.PluginServices;
@@ -90,6 +92,8 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  */
 public class NavTable extends AbstractNavTable {
 
+    private static final Logger logger = Logger.getLogger(NavTable.class);
+
     private static final long serialVersionUID = 1L;
 
     private boolean isFillingValues = false;
@@ -101,7 +105,7 @@ public class NavTable extends AbstractNavTable {
     private MyTableModelListener myTableModelListener;
     private MyKeyListener myKeyListener;
     private MyMouseListener myMouseListener;
-    
+
     private final ValueFormatNT valueFormatNT = new ValueFormatNT();
 
     // Mouse buttons constants
@@ -124,7 +128,6 @@ public class NavTable extends AbstractNavTable {
 	this.isFillingValues = isFillingValues;
     }
 
-
     /**
      * It creates a panel with a table that shows the data linked to a feature
      * of the layer. Each row is a attribute-value pair.
@@ -133,7 +136,7 @@ public class NavTable extends AbstractNavTable {
      */
     @Override
     public JPanel getCenterPanel() {
-	
+
 	NavTableModel model = new NavTableModel();
 	table = new JTable(model);
 	table.getTableHeader().setReorderingAllowed(false);
@@ -165,12 +168,12 @@ public class NavTable extends AbstractNavTable {
 	return centerPanel;
     }
 
-    
-
     class MyKeyListener implements KeyListener {
+	@Override
 	public void keyPressed(KeyEvent e) {
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 	    // TODO If control + cursor ---> Inicio / Fin
 	    if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -187,11 +190,13 @@ public class NavTable extends AbstractNavTable {
 	    }
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {
 	}
     }
 
     class MyTableModelListener implements TableModelListener {
+	@Override
 	public void tableChanged(TableModelEvent e) {
 	    if (e.getType() == TableModelEvent.UPDATE && !isFillingValues()) {
 		setChangedValues();
@@ -205,7 +210,7 @@ public class NavTable extends AbstractNavTable {
     }
 
     @Deprecated
-    //deprecated by fpuga, 28/02/2014
+    // deprecated by fpuga, 28/02/2014
     protected void updateValue(int row, int col, String newValue) {
 	ToggleEditing te = new ToggleEditing();
 	try {
@@ -264,7 +269,7 @@ public class NavTable extends AbstractNavTable {
 		    + File.separator
 		    + dataName.substring(0, dataName.lastIndexOf("."))
 		    : Preferences.getAliasDir() + File.separator + dataName;
-		    fileAlias = new File(pathToken + ".alias");
+	    fileAlias = new File(pathToken + ".alias");
 	} else {
 	    ReadableVectorial source = layer.getSource();
 
@@ -295,8 +300,7 @@ public class NavTable extends AbstractNavTable {
 	BufferedReader fileReader = null;
 	try {
 	    String line;
-	    fileReader = new BufferedReader(new FileReader(
-		    fileAlias));
+	    fileReader = new BufferedReader(new FileReader(fileAlias));
 	    while ((line = fileReader.readLine()) != null) {
 		String tokens[] = line.split("=");
 		if (tokens.length == 2) {
@@ -323,6 +327,7 @@ public class NavTable extends AbstractNavTable {
 	return alias;
     }
 
+    @Override
     protected void initWidgets() {
 	try {
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -362,6 +367,7 @@ public class NavTable extends AbstractNavTable {
 	}
     }
 
+    @Override
     public void fillEmptyValues() {
 	setFillingValues(true);
 	DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -371,6 +377,7 @@ public class NavTable extends AbstractNavTable {
 	setFillingValues(false);
     }
 
+    @Override
     public boolean isSavingValues() {
 	return isSavingValues;
     }
@@ -387,7 +394,8 @@ public class NavTable extends AbstractNavTable {
 	    setFillingValues(true);
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
-		String textoValue = sds.getFieldValue(getPosition(), i).getStringValue(valueFormatNT);
+		String textoValue = sds.getFieldValue(getPosition(), i)
+			.getStringValue(valueFormatNT);
 		model.setValueAt(textoValue, i, 1);
 	    }
 
@@ -527,7 +535,7 @@ public class NavTable extends AbstractNavTable {
 		if (!wasEditing) {
 		    te.startEditing(layer);
 		}
-		te.modifyValues(layer, (int) currentPos, attIndexes, attValues);
+		te.modifyValues(layer, currentPos, attIndexes, attValues);
 		if (!wasEditing) {
 		    te.stopEditing(layer, false);
 		}
@@ -569,10 +577,12 @@ public class NavTable extends AbstractNavTable {
 	super.windowClosed();
     }
 
+    @Override
     public Object getWindowProfile() {
 	return WindowInfo.PROPERTIES_PROFILE;
     }
 
+    @Override
     public void reloadRecordset() throws ReadDriverException {
 	super.reloadRecordset();
 	initWidgets();
