@@ -18,14 +18,13 @@ import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.layers.LayerFactory;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
-import es.udc.cartolab.gvsig.navtable.TestProperties;
+import es.icarto.gvsig.commons.testutils.TestProperties;
 import es.udc.cartolab.gvsig.navtable.dataacces.IController;
 import es.udc.cartolab.gvsig.navtable.dataacces.TableController;
 
 public class TableControllerReadTests {
 
-    public static IProjection TEST_PROJECTION = CRSFactory
-	    .getCRS("EPSG:23030");
+    public static IProjection TEST_PROJECTION = CRSFactory.getCRS("EPSG:23030");
 
     @BeforeClass
     public static void loadDrivers() throws Exception {
@@ -49,7 +48,7 @@ public class TableControllerReadTests {
 
     @Test
     public void testReadTextFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -64,7 +63,7 @@ public class TableControllerReadTests {
 
     @Test
     public void testReadDoubleFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -79,7 +78,7 @@ public class TableControllerReadTests {
 
     @Test
     public void testReadFloatFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -94,7 +93,7 @@ public class TableControllerReadTests {
 
     @Test
     public void testReadDateFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -108,9 +107,8 @@ public class TableControllerReadTests {
     }
 
     @Test
-    public void testReadShortIntFieldFromDBF()
-	    throws ReadDriverException, DriverLoadException,
-	    NoSuchTableException {
+    public void testReadShortIntFieldFromDBF() throws ReadDriverException,
+	    DriverLoadException, NoSuchTableException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -125,7 +123,7 @@ public class TableControllerReadTests {
 
     @Test
     public void testReadLongIntFieldFromDBF() throws ReadDriverException,
-    DriverLoadException, NoSuchTableException {
+	    DriverLoadException, NoSuchTableException {
 	// fields and values:
 	// f_text=test; f_double=2.4; f_float=2.9; f_int_shor=2; f_int_long=290;
 	// f_date=1983-08-25;
@@ -148,7 +146,7 @@ public class TableControllerReadTests {
 			DataSourceFactory.MANUAL_OPENING));
 	EditableAdapter ea2 = new EditableAdapter();
 	ea2.setOriginalDataSource(sds2);
-	return (IEditableSource) ea2;
+	return ea2;
     }
 
 }

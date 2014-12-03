@@ -3,7 +3,6 @@ package es.udc.cartolab.gvsig.navtable.dataaccess.tablecontroller;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.text.ParseException;
 import java.util.HashMap;
 
 import org.cresques.cts.IProjection;
@@ -20,7 +19,7 @@ import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.layers.LayerFactory;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
-import es.udc.cartolab.gvsig.navtable.TestProperties;
+import es.icarto.gvsig.commons.testutils.TestProperties;
 import es.udc.cartolab.gvsig.navtable.dataacces.TableController;
 
 public class TableControllerCreateTests {
@@ -87,7 +86,7 @@ public class TableControllerCreateTests {
 			DataSourceFactory.MANUAL_OPENING));
 	EditableAdapter ea2 = new EditableAdapter();
 	ea2.setOriginalDataSource(sds2);
-	return (IEditableSource) ea2;
+	return ea2;
     }
 
 }

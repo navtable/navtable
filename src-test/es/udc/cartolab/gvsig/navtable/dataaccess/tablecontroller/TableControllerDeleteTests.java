@@ -21,14 +21,13 @@ import com.iver.cit.gvsig.fmap.edition.IEditableSource;
 import com.iver.cit.gvsig.fmap.layers.LayerFactory;
 import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
-import es.udc.cartolab.gvsig.navtable.TestProperties;
+import es.icarto.gvsig.commons.testutils.TestProperties;
 import es.udc.cartolab.gvsig.navtable.dataacces.IController;
 import es.udc.cartolab.gvsig.navtable.dataacces.TableController;
 
 public class TableControllerDeleteTests {
 
-    public static IProjection TEST_PROJECTION = CRSFactory
-	    .getCRS("EPSG:23030");
+    public static IProjection TEST_PROJECTION = CRSFactory.getCRS("EPSG:23030");
 
     @BeforeClass
     public static void loadDrivers() throws Exception {
@@ -73,7 +72,7 @@ public class TableControllerDeleteTests {
 			DataSourceFactory.MANUAL_OPENING));
 	EditableAdapter ea2 = new EditableAdapter();
 	ea2.setOriginalDataSource(sds2);
-	return (IEditableSource) ea2;
+	return ea2;
     }
 
 }
