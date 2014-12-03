@@ -19,9 +19,9 @@ import com.iver.cit.gvsig.fmap.core.ShapeFactory;
 import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 
-import es.udc.cartolab.gvsig.navtable.ToggleEditing;
-import es.udc.cartolab.gvsig.testutils.Drivers;
-import es.udc.cartolab.gvsig.testutils.FieldDescriptionFactory;
+import es.icarto.gvsig.commons.datasources.FieldDescriptionFactory;
+import es.icarto.gvsig.commons.testutils.Drivers;
+import es.icarto.gvsig.commons.testutils.TestProperties;
 import es.udc.cartolab.gvsig.testutils.SHPFactory;
 
 public class ToggleEditingTest {
@@ -35,11 +35,10 @@ public class ToggleEditingTest {
 	Drivers.initgvSIGDrivers(TestProperties.driversPath);
     }
 
-
     @Test
     public void writeStringInNumericField() throws Exception {
 	File file = temp.newFile("layer.shp");
-	
+
 	FieldDescriptionFactory fdFactory = new FieldDescriptionFactory();
 	fdFactory.addString("control");
 	fdFactory.addDouble("doublefld");
@@ -57,26 +56,25 @@ public class ToggleEditingTest {
 	SHPFactory.createSHP(file, fieldsDesc, FShape.POINT,
 		new IFeature[] { feat });
 	layer = SHPFactory.getFLyrVectFromSHP(file);
-	
+
 	ToggleEditing te = new ToggleEditing();
 	te.startEditing(layer);
-	te.modifyValues(layer, 0, new int[] { 1, 2 },
-		new String[] { "string in numeric field", "string in string field" });
+	te.modifyValues(layer, 0, new int[] { 1, 2 }, new String[] {
+		"string in numeric field", "string in string field" });
 	te.stopEditing(layer, false);
 
-	Value[] actualAttributes = layer.getSource().getFeature(0).getAttributes();
-	
+	Value[] actualAttributes = layer.getSource().getFeature(0)
+		.getAttributes();
+
 	// control field is not modified or blanked
 	assertEquals(values[0], actualAttributes[0]);
-	
-	//numeric field is not modified
+
+	// numeric field is not modified
 	assertEquals(values[1], actualAttributes[1]);
-	
+
 	// rest of the fields are correctly modified
 	assertEquals("string in string field", actualAttributes[2].toString());
-	
+
     }
-    
-    
 
 }
