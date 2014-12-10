@@ -459,9 +459,21 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	    // user will set a 1-based index to navigate through layer,
 	    // so we need to adapt it to currentPosition (a zero-based
 	    // index)
-	    int p = sorter.convertRowIndexToView((int) getPosition());
-	    posTF.setText(String.valueOf(p + 1));
-	    // posTF.setText(String.valueOf(getPosition() + 1));
+	    try {
+		int p = sorter.convertRowIndexToView((int) getPosition());
+		posTF.setText(String.valueOf(p + 1));
+
+	    } catch (IndexOutOfBoundsException e) {
+		/*
+		 * fpuga. 10/12/2014. Workaround When the user delete the last
+		 * record the editionChanged in EditionListener is called, and
+		 * the gui is refreshed, but getPosition returns a removed
+		 * position
+		 */
+		logger.error(e.getStackTrace(), e);
+		int p = sorter.convertRowIndexToView((int) getPosition() - 1);
+		posTF.setText(String.valueOf(p + 1));
+	    }
 	}
 	setTotalLabelText();
 	if (isRecordSelected()) {
