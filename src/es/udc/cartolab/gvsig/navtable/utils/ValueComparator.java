@@ -39,8 +39,8 @@ public class ValueComparator implements Comparator<Value> {
 	    // } else if (o1 instanceof IntValue) { // extends Numeric
 	    // } else if (o1 instanceof LongValue) { // extends Numeric
 	    // } else if (o1 instanceof ShortValue) { // extends Numeric
-	    return (int) (((NumericValue) o1).doubleValue() - ((NumericValue) o2)
-		    .doubleValue());
+	    return Double.compare(((NumericValue) o1).doubleValue(),
+		    ((NumericValue) o2).doubleValue());
 
 	} else if (o1 instanceof StringValue) {
 	    Collator collator = Collator.getInstance();
