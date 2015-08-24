@@ -2,6 +2,7 @@ package es.udc.cartolab.gvsig.testutils;
 
 import java.util.Collections;
 
+import com.iver.cit.gvsig.fmap.core.IFeature;
 import com.iver.cit.gvsig.fmap.drivers.FeatureCollectionMemoryDriver;
 import com.iver.cit.gvsig.fmap.drivers.LayerDefinition;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
@@ -20,7 +21,7 @@ public class FLyrVectStub extends FLyrVect {
 	LayerDefinition layerDefinition = new LayerDefinition();
 	layerDefinition.setFieldsDesc(fieldDescriptionFactory.getFields());
 	FeatureCollectionMemoryDriver fcmd = new FeatureCollectionMemoryDriver(
-		"foo", Collections.EMPTY_LIST, layerDefinition);
+		"foo", Collections.<IFeature> emptyList(), layerDefinition);
 	rv.setDriver(fcmd);
 	setSource(rv);
     }
