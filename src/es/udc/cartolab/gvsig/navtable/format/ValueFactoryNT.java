@@ -20,6 +20,10 @@ public class ValueFactoryNT extends ValueFactory {
 	    throws ParseException {
 
 	Value value;
+	
+	if (text == null) {
+	    return ValueFactory.createNullValue();
+	}
 
 	switch (type) {
 	case Types.BIGINT:
