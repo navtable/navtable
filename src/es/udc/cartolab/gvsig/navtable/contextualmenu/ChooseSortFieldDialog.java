@@ -1,6 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Insets;
@@ -24,14 +25,15 @@ import es.icarto.gvsig.commons.utils.Field;
 
 @SuppressWarnings("serial")
 public class ChooseSortFieldDialog extends AbstractIWindow implements
-	ActionListener {
+ActionListener {
 
     List<ChooseSortFieldPanel> list = new ArrayList<ChooseSortFieldPanel>();
     private String status = OkCancelPanel.CANCEL_ACTION_COMMAND;
+    private final OkCancelPanel okPanel;
 
     public ChooseSortFieldDialog(final List<Field> fields) {
 	super(new MigLayout("insets 10, wrap 1"));
-	WidgetFactory.okCancelPanel(this, this, this);
+	okPanel = WidgetFactory.okCancelPanel(this, this, this);
 
 	final JButton addAnother = linkButton(PluginServices.getPluginServices(
 		this).getText("sort_add_another"));
@@ -48,8 +50,8 @@ public class ChooseSortFieldDialog extends AbstractIWindow implements
 		repaint();
 		getWindowInfo().setHeight(
 			getWindowInfo().getHeight()
-				+ field.getPreferredSize().height
-				+ addAnother.getPreferredSize().height);
+			+ field.getPreferredSize().height
+			+ addAnother.getPreferredSize().height);
 	    }
 	});
 	add(addAnother, "dock south");
@@ -99,8 +101,18 @@ public class ChooseSortFieldDialog extends AbstractIWindow implements
     }
 
     public String open() {
-	PluginServices.getMDIManager().addCentredWindow(this);
+	super.openDialog();
 	return status;
+    }
+
+    @Override
+    protected JButton getDefaultButton() {
+	return okPanel.getOkButton();
+    }
+
+    @Override
+    protected Component getDefaultFocusComponent() {
+	return null;
     }
 
 }
