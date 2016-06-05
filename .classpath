@@ -3,20 +3,23 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="src-test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="/_fwAndami"/>
-	<classpathentry kind="src" path="/appgvSIG"/>
-	<classpathentry kind="src" path="/libFMap"/>
-	<classpathentry kind="src" path="/libGDBMS"/>
-	<classpathentry kind="src" path="/libDriverManager"/>
-	<classpathentry kind="src" path="/libIverUtiles"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/extCAD"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/libExceptions"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/libProjection"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/libUIComponent"/>
-	<classpathentry kind="lib" path="/libFMap/lib/jts-1.12.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/_fwAndami/lib/log4j-1.2.14.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/es.icarto.gvsig.commons"/>
 	<classpathentry kind="lib" path="/es.icarto.gvsig.commons/lib/miglayout-swing-5.1-20150404.220019-96.jar"/>
+	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/log4j/log4j/1.2.16/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/com/vividsolutions/jts/1.13/jts-1.13.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.andami"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.app.mainplugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.mapcontext.api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.utils"/>
+	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/gvsig/org.gvsig.tools.lib/3.0.88/org.gvsig.tools.lib-3.0.88.jar"/>
+	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/slf4j/slf4j-api/1.7.2/slf4j-api-1.7.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.control"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.app.document.table.app.mainplugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.about.api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.dal.api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.ui"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.geometry.api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.geometry.generalpath"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
