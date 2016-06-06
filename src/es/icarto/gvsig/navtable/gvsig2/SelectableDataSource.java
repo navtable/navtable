@@ -1,47 +1,89 @@
 package es.icarto.gvsig.navtable.gvsig2;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.gvsig.fmap.dal.DataStoreNotification;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.Feature;
 import org.gvsig.fmap.dal.feature.FeatureAttributeDescriptor;
+import org.gvsig.fmap.dal.feature.FeatureSelection;
 import org.gvsig.fmap.dal.feature.FeatureSet;
 import org.gvsig.fmap.dal.feature.FeatureStore;
 import org.gvsig.fmap.dal.feature.FeatureType;
+import org.gvsig.fmap.geom.Geometry;
+import org.gvsig.fmap.mapcontext.layers.SelectionEvent;
+import org.gvsig.fmap.mapcontext.layers.SelectionListener;
+import org.gvsig.gui.beans.editabletextcomponent.IEditableText;
 import org.gvsig.tools.dispose.DisposableIterator;
 import org.gvsig.tools.dispose.DisposeUtils;
+import org.gvsig.tools.observer.Observable;
+import org.gvsig.tools.observer.Observer;
 
-public class SelectableDataSource {
+
+public class SelectableDataSource implements FBitSet, IEditableSource {
 	
 	private final FeatureStore fs;
 	private FeatureAttributeDescriptor[] attDesc;
+	private int geomIdx = -1;
 	
 	/**
 	 * pointers to the feature in the currentPos in the recordset
 	 */
-	private Feature currentFeat;
-	private long currentPos;
+	private Feature currentFeat = null;
+	private long currentPos = -1 ;
 
 
-	public SelectableDataSource(FeatureStore fs) {
+	public SelectableDataSource(FeatureStore fs) throws DataException {
 		this.fs = fs;
 		FeatureType defaultFeatureType;
-		try {
-			defaultFeatureType = fs.getFeatureSet().getDefaultFeatureType();
-			attDesc = defaultFeatureType.getAttributeDescriptors();
-		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		defaultFeatureType = fs.getFeatureSet().getDefaultFeatureType();
+		geomIdx = defaultFeatureType.getDefaultGeometryAttributeIndex();
+		if (geomIdx != -1) {
+			FeatureAttributeDescriptor[] foo = defaultFeatureType.getAttributeDescriptors();
+			attDesc = new FeatureAttributeDescriptor[foo.length - 1];
+			for (int i=0; i< foo.length; i++) {
+				if (i == geomIdx) {
+					continue;
+				} else if (i > geomIdx) {
+					attDesc[i-1] = foo[i];
+				} else {
+					attDesc[i] = foo[i];
+				}
+			}
+		} else {
+			attDesc = defaultFeatureType.getAttributeDescriptors();			
 		}
 	}
 	
 	public int getFieldCount() throws DataException {
 		return attDesc.length;
 	}
+	
+	public int getFieldIndexByName(String name) {
+		
+			for (FeatureAttributeDescriptor fad : attDesc) {
+				if (fad.getName().equals(name)) {
+					return fad.getIndex();
+				}
+			}
+	
+		return -1;
+	}
+	
+	
 
 	public Value getFieldValue(long position, int i) {
 		if (currentPos != position) {
 			setCurrentFeature(position);
 		}
-		return (Value) currentFeat.get(i);
+		if (i == geomIdx) {
+			throw new RuntimeException("Geometry field can not ge got with this method");
+		}
+		Object o = currentFeat.get(i);
+		return ValueFactory.createValue(o);
 	}
 	
 	private void setCurrentFeature(long pos) {
@@ -66,4 +108,171 @@ public class SelectableDataSource {
 		return attDesc[i].getType();
 	}
 
+	@Override
+	public String getName() {
+		return fs.getName();
+	}
+
+	public long getRowCount() throws DataException {
+		return fs.getFeatureCount();
+	}
+
+	public String getFieldName(int i) {
+		return attDesc[i].getName();
+	}
+
+	public FBitSet getSelection() {
+		return this;
+	}
+
+	@Override
+	public boolean get(int pos) {
+		try {
+			FeatureSelection featureSelection = fs.getFeatureSelection();
+			if (currentPos != pos) {
+				setCurrentFeature(pos);
+			}
+			return featureSelection.isSelected(currentFeat);
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public void set(int pos) {
+		try {
+			FeatureSelection featureSelection = fs.getFeatureSelection();
+			if (currentPos != pos) {
+				setCurrentFeature(pos);
+			}
+			featureSelection.select(currentFeat);
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void clear(int pos) {
+		try {
+			FeatureSelection featureSelection = fs.getFeatureSelection();
+			if (currentPos != pos) {
+				setCurrentFeature(pos);
+			}
+			featureSelection.deselect(currentFeat);
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void setSelection(FBitSet bitset) {
+		// Nothing to do here
+	}
+
+	public void clearSelection() {
+		try {
+			fs.getFeatureSelection().deselectAll();
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public boolean isEmpty() {
+		try {
+			return fs.getFeatureSelection().isEmpty();
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public int cardinality() {
+		try {
+			return (int) fs.getFeatureSelection().getSize();
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	@Override
+	public long nextSetBit(int i) {
+		FeatureSet set = null;
+		DisposableIterator it = null;
+		try {
+			FeatureSelection selection = fs.getFeatureSelection();
+			set = fs.getFeatureSet();
+			it = set.fastIterator(i);
+			int counter = i;
+			while (it.hasNext()) {
+				Feature f = (Feature) it.next();
+				if (selection.isSelected(f)) {
+					return counter;
+				}
+				counter++;
+			}
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			DisposeUtils.dispose(it);
+			DisposeUtils.dispose(set);
+		}
+		
+		return -1;
+	}
+
+	public void reload() throws DataException {
+		fs.refresh();
+	}
+
+	public String[] getFieldNames() {
+		String[] names = new String[attDesc.length];
+		for (int i=0; i<attDesc.length; i++) {
+			names[i] = attDesc[i].getName();
+		}
+		return names;
+	}
+
+	@Override
+	public long posOfFeature(Feature feat) {
+		FeatureSet set = null;
+		DisposableIterator it = null;
+		try {
+			set = fs.getFeatureSet();
+			it = set.fastIterator();
+			long counter = 0;
+			while (it.hasNext()) {
+				Feature f = (Feature) it.next();
+				if (f.equals(feat)) {
+					return counter;
+				}
+				counter++;
+			}
+		} catch (DataException e){
+			e.printStackTrace();
+		} finally {
+			DisposeUtils.dispose(it);
+			DisposeUtils.dispose(set);
+			
+		}
+		return -1;
+	}
+
+	public Geometry getGeometry(long pos) {
+		if (currentPos != pos) {
+			setCurrentFeature(pos);
+		}
+		
+		return currentFeat.getGeometry(geomIdx);
+	}
 }

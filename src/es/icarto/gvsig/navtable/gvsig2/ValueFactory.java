@@ -8,6 +8,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.gvsig.fmap.geom.Geometry;
+import org.gvsig.tools.dynobject.DynObject;
+
+import com.sun.xml.internal.messaging.saaj.soap.Envelope;
+
 
 
 /**
@@ -24,6 +29,41 @@ public class ValueFactory {
     final static int LONG = 3;
     final static int FLOAT = 5;
     final static int DOUBLE = 6;
+    
+    public static Value createValue(Object o) {
+    	Value value = createNullValue();
+    	
+    	if (o == null) {
+    		value = createNullValue();
+    	} else if (o instanceof Object[]) {
+    		throw new RuntimeException("Not supportet jet");
+    	} else if (o instanceof DynObject) {
+    		throw new RuntimeException("Not supportet jet");
+    	} else if (o instanceof Boolean) {
+    		value = new BooleanValue(o);
+    	} else if (o instanceof Byte) {
+    		value = new IntValue(o);
+    	} else if (o instanceof Date) {
+    		value = new DateValue(o);
+    	} else if (o instanceof Envelope) {
+    		throw new RuntimeException("Not supportet jet");
+    	} else if (o instanceof Geometry) {
+    		throw new RuntimeException("Not supportet jet");
+    	} else if (o instanceof Double) {
+    		value = new DoubleValue(o);
+    	} else if (o instanceof Float) {
+    		value = new FloatValue(o);
+    	} else if (o instanceof Integer) {
+    		value = new IntValue(o);
+    	} else if (o instanceof Long) {
+    		value = new LongValue(o);
+    	} else if (o instanceof String) {
+    		value = new StringValue(o);
+    	} 
+
+        
+    	return value;
+    }
     /**
      * Crea un objeto de tipo Value a partir de un int
      *
@@ -32,9 +72,7 @@ public class ValueFactory {
      * @return objeto Value con el valor que se pasa como parámetro
      */
     public static IntValue createValue(int n) {
-        IntValue ret = new IntValue();
-        ret.setValue(n);
-
+        IntValue ret = new IntValue(n);
         return ret;
     }
 
@@ -46,9 +84,7 @@ public class ValueFactory {
      * @return objeto Value con el valor que se pasa como parámetro
      */
     public static LongValue createValue(long l) {
-        LongValue ret = new LongValue();
-        ret.setValue(l);
-
+        LongValue ret = new LongValue(l);
         return ret;
     }
 
@@ -60,9 +96,7 @@ public class ValueFactory {
      * @return objeto Value con el valor que se pasa como parámetro
      */
     public static StringValue createValue(String s) {
-        StringValue ret = new StringValue();
-        ret.setValue(s);
-
+        StringValue ret = new StringValue(s);
         return ret;
     }
 
@@ -74,9 +108,7 @@ public class ValueFactory {
      * @return objeto Value con el valor que se pasa como parámetro
      */
     public static FloatValue createValue(float f) {
-        FloatValue ret = new FloatValue();
-        ret.setValue(f);
-
+        FloatValue ret = new FloatValue(f);
         return ret;
     }
 
@@ -88,9 +120,7 @@ public class ValueFactory {
      * @return objeto Value con el valor que se pasa como parámetro
      */
     public static DoubleValue createValue(double d) {
-        DoubleValue ret = new DoubleValue();
-        ret.setValue(d);
-
+        DoubleValue ret = new DoubleValue(d);
         return ret;
     }
 
@@ -102,9 +132,7 @@ public class ValueFactory {
      * @return objeto Value con el valor que se pasa como parámetro
      */
     public static DateValue createValue(Date d) {
-        DateValue ret = new DateValue();
-        ret.setValue(d);
-
+        DateValue ret = new DateValue(d);
         return ret;
     }
 
@@ -116,9 +144,7 @@ public class ValueFactory {
      * @return TimeValue
      */
     public static TimeValue createValue(Time t) {
-        TimeValue ret = new TimeValue();
-        ret.setValue(t);
-
+        TimeValue ret = new TimeValue(t);
         return ret;
     }
 
@@ -130,9 +156,7 @@ public class ValueFactory {
      * @return TimestampValue
      */
     public static TimestampValue createValue(Timestamp t) {
-        TimestampValue ret = new TimestampValue();
-        ret.setValue(t);
-
+        TimestampValue ret = new TimestampValue(t);
         return ret;
     }
 
@@ -144,9 +168,7 @@ public class ValueFactory {
      * @return objeto Value con el valor que se pasa como parámetro
      */
     public static BooleanValue createValue(boolean b) {
-        BooleanValue ret = new BooleanValue();
-        ret.setValue(b);
-
+        BooleanValue ret = new BooleanValue(b);
         return ret;
     }
 

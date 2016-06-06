@@ -21,5 +21,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.ui"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.geometry.api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.geometry.generalpath"/>
+	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/gvsig/org.gvsig.tools.swing.api/3.0.59/org.gvsig.tools.swing.api-3.0.59.jar"/>
+	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/gvsig/org.gvsig.projection.api/2.0.17/org.gvsig.projection.api-2.0.17.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

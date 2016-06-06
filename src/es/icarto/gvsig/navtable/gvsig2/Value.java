@@ -1,9 +1,17 @@
 package es.icarto.gvsig.navtable.gvsig2;
 
-import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
-
 public class Value {
 	
+	protected Object value;
+	
+	public Value() {
+		
+	}
+	
+	public Value(Object o) {
+		this.value = o;
+	}
+	 
 	public double doubleValue() {
 		return 0;
 	}
@@ -25,8 +33,8 @@ public class Value {
 		return 0;
 	}
 
-	public String getStringValue(ValueWriter valueFormatNT) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getStringValue(ValueWriter valueWriter) {
+		return value.toString();
 	}
+	
 }
