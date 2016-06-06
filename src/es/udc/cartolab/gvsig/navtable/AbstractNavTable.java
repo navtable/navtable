@@ -46,30 +46,26 @@ import javax.swing.RowSorter.SortKey;
 import net.miginfocom.swing.MigLayout;
 
 import org.apache.log4j.Logger;
-import org.gvsig.exceptions.BaseException;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiFrame.MDIFrame;
+import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.andami.ui.mdiManager.IWindowListener;
+import org.gvsig.andami.ui.mdiManager.WindowInfo;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.dal.feature.FeatureStoreNotification;
+import org.gvsig.fmap.geom.Geometry;
+import org.gvsig.fmap.geom.primitive.Envelope;
+import org.gvsig.fmap.mapcontext.layers.LayerEvent;
+import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
+import org.gvsig.fmap.mapcontext.layers.vectorial.VectorLayer;
+import org.gvsig.tools.exception.BaseException;
+import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
+import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
+import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 
-import com.hardcode.gdbms.driver.exceptions.InitializeDriverException;
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiFrame.MDIFrame;
-import com.iver.andami.ui.mdiManager.IWindow;
-import com.iver.andami.ui.mdiManager.IWindowListener;
-import com.iver.andami.ui.mdiManager.WindowInfo;
-import com.iver.cit.gvsig.FiltroExtension;
-import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
-import com.iver.cit.gvsig.fmap.core.IGeometry;
-import com.iver.cit.gvsig.fmap.edition.AfterFieldEditEvent;
-import com.iver.cit.gvsig.fmap.edition.EditionEvent;
-import com.iver.cit.gvsig.fmap.layers.FBitSet;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.fmap.layers.LayerEvent;
-import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
-import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
-import com.iver.utiles.extensionPoints.ExtensionPoint;
-import com.iver.utiles.extensionPoints.ExtensionPoints;
-import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
-
+import es.icarto.gvsig.navtable.gvsig2.FBitSet;
+import es.icarto.gvsig.navtable.gvsig2.FiltroExtension;
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.navtable.navigation.NavigationHandler;
 import es.udc.cartolab.gvsig.navtable.dataacces.IController;
 import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
@@ -188,7 +184,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		showEmptyLayerMessage();
 		return false;
 	    }
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getStackTrace());
 	    return false;
 	}
@@ -230,7 +226,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	try {
 	    layerController = new LayerController(this.layer);
 	    layerController.read(getPosition());
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getStackTrace(), e);
 	    return false;
 	}
@@ -305,7 +301,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	changedValues = bool;
     }
 
-    public abstract boolean saveRecord() throws StopWriterVisitorException;
+    public abstract boolean saveRecord() throws DataException;
 
     protected void enableSaveButton(boolean bool) {
 	if (!isChangedValues()) {
@@ -510,44 +506,36 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * 
      */
     public void zoom() {
-	Rectangle2D rectangle = null;
-	int pos = Long.valueOf(getPosition()).intValue();
-	if (layer instanceof AlphanumericData) {
-	    try {
-		IGeometry g;
-		ReadableVectorial source = (layer).getSource();
-		source.start();
-		g = source.getShape(pos);
-		source.stop();
+	
+	if (layer instanceof VectorLayer) {
+	    
+		Geometry geometry = getRecordset().getGeometry(getPosition());
 
-		if (g != null) {
+		if (geometry != null) {
 		    /*
 		     * fix to avoid zoom problems when layer and view
 		     * projections aren't the same.
 		     */
 		    if (layer.getCoordTrans() != null) {
-			g.reProject(layer.getCoordTrans());
+		    	geometry.reProject(layer.getCoordTrans());
 		    }
-		    rectangle = g.getBounds2D();
-		    if (rectangle.getWidth() < 200) {
-			rectangle.setFrameFromCenter(rectangle.getCenterX(),
-				rectangle.getCenterY(),
-				rectangle.getCenterX() + 100,
-				rectangle.getCenterY() + 100);
+		    Envelope envelope = geometry.getEnvelope();
+		    if (envelope.getLength(0) < 200) {
+//		    	rectangle.setFrameFromCenter(rectangle.getCenterX(),
+//						rectangle.getCenterY(),
+//						rectangle.getCenterX() + 100,
+//						rectangle.getCenterY() + 100);
+		    	
 		    }
-		    if (rectangle != null) {
-			layer.getMapContext().getViewPort()
-				.setExtent(rectangle);
+		    
+		    if (envelope != null) {
+			layer.getMapContext().getViewPort().setEnvelope(envelope);
 		    }
 		} else {
 		    JOptionPane.showMessageDialog(this, PluginServices.getText(
 			    this, "feature_has_no_geometry_to_zoom"));
 		}
-	    } catch (InitializeDriverException e) {
-		logger.error(e.getMessage(), e);
-	    } catch (ReadDriverException e) {
-		logger.error(e.getMessage(), e);
-	    }
+	   
 	}
     }
 
@@ -804,7 +792,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    if (answer == 0) {
 		try {
 		    deleteRecord();
-		} catch (StopWriterVisitorException ex) {
+		} catch (DataException ex) {
 		    ex.printStackTrace();
 		    String errorMessage = (ex.getCause() != null) ? ex
 			    .getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
@@ -846,7 +834,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 			this, saveErrorGenericMessageKey), "",
 			JOptionPane.ERROR_MESSAGE);
 	    }
-	} catch (StopWriterVisitorException ex) {
+	} catch (DataException ex) {
 	    logger.error(ex.getStackTrace(), ex);
 	    String errorMessage = (ex.getCause() != null) ? ex.getCause()
 		    .getMessage() : ex.getMessage(), auxMessage = errorMessage
@@ -870,7 +858,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	refreshGUI();
     }
 
-    public void deleteRecord() throws StopWriterVisitorException {
+    public void deleteRecord() throws DataException {
 	try {
 	    long position = getPosition();
 	    layerController.delete(position);
@@ -879,7 +867,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    if (layerController.getRowCount() <= 0) {
 		showEmptyLayerMessage();
 	    }
-	} catch (StopWriterVisitorException e) {
+	} catch (DataException e) {
 	    throw e;
 	} catch (BaseException e) {
 	    logger.error(e.getMessage(), e.getCause());
@@ -910,7 +898,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
      * 
      * @throws ReadDriverException
      */
-    public void reloadRecordset() throws ReadDriverException {
+    public void reloadRecordset() throws DataException {
 	getRecordset().reload();
     }
 
@@ -930,8 +918,8 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 
     public SelectableDataSource getRecordset() {
 	try {
-	    return layer.getSource().getRecordset();
-	} catch (ReadDriverException e) {
+		return new SelectableDataSource(layer.getFeatureStore());
+	} catch (DataException e) {
 	    logger.error(e.getStackTrace(), e);
 	    return null;
 	}
@@ -942,7 +930,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	try {
 	    layerController.read(getPosition());
 	    refreshGUI();
-	} catch (ReadDriverException rde) {
+	} catch (DataException rde) {
 	    logger.error(rde.getStackTrace(), rde);
 	    layerController.clearAll();
 	    refreshGUI();
@@ -1012,11 +1000,15 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	}
     }
 
-    public void editionEvent(EditionEvent e) {
-	if ((e instanceof AfterFieldEditEvent)
-		&& (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
-	    navigation.setSortKeys(null);
-	}
+    public void editionEvent(FeatureStoreNotification e) {
+//	if ((e instanceof AfterFieldEditEvent)
+//		&& (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
+//	    navigation.setSortKeys(null);
+//	}
     }
+
+	public FLyrVect getLayer() {
+		return layer;
+	}
 
 }

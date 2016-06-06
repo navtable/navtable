@@ -1,16 +1,16 @@
 package es.udc.cartolab.gvsig.navtable.format;
 
 
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import com.hardcode.gdbms.engine.values.DateValue;
-import com.hardcode.gdbms.engine.values.NullValue;
-import com.hardcode.gdbms.engine.values.Value;
+import es.icarto.gvsig.navtable.gvsig2.DateValue;
+import es.icarto.gvsig.navtable.gvsig2.NullValue;
+import es.icarto.gvsig.navtable.gvsig2.Value;
 
 /**
  * 

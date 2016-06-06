@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,12 +13,12 @@ import javax.swing.JRadioButton;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
-import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiManager.IWindow;
-import com.iver.andami.ui.mdiManager.IWindowListener;
-import com.iver.andami.ui.mdiManager.WindowInfo;
-import com.iver.cit.gvsig.FiltroExtension;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.andami.ui.mdiManager.IWindowListener;
+import org.gvsig.andami.ui.mdiManager.WindowInfo;
 
+import es.icarto.gvsig.navtable.gvsig2.FiltroExtension;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class StringFilterActionListener extends JPanel implements ActionListener, IWindow, IWindowListener {

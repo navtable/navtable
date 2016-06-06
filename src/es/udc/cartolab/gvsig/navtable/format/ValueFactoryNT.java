@@ -7,8 +7,8 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
-import com.hardcode.gdbms.engine.values.Value;
-import com.hardcode.gdbms.engine.values.ValueFactory;
+import es.icarto.gvsig.navtable.gvsig2.Value;
+import es.icarto.gvsig.navtable.gvsig2.ValueFactory;
 
 /**
  * ValueFactory to create values from its type, taking into account the format

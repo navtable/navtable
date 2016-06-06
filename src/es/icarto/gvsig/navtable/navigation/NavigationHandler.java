@@ -19,22 +19,24 @@ import javax.swing.RowSorter;
 import javax.swing.RowSorter.SortKey;
 
 import org.apache.log4j.Logger;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.fmap.dal.DataStoreNotification;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.mapcontext.layers.SelectionEvent;
+import org.gvsig.fmap.mapcontext.layers.SelectionListener;
+import org.gvsig.tools.observer.Observable;
+import org.gvsig.tools.observer.Observer;
+import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
+import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.andami.PluginServices;
-import com.iver.cit.gvsig.fmap.layers.FBitSet;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
-import com.iver.cit.gvsig.fmap.layers.SelectionEvent;
-import com.iver.cit.gvsig.fmap.layers.SelectionListener;
-import com.iver.utiles.extensionPoints.ExtensionPoints;
-import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
-
+import es.icarto.gvsig.navtable.gvsig2.FBitSet;
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 
-public class NavigationHandler implements ActionListener, SelectionListener {
+public class NavigationHandler implements ActionListener, Observer {
 
     private static final Logger logger = Logger
 	    .getLogger(NavigationHandler.class);
@@ -263,7 +265,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	    positionEventSource.fireBeforePositionChange(evt);
 	    currentPosition = newPosition;
 	    positionEventSource.fireOnPositionChange(evt);
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    e.printStackTrace();
 	}
     }
@@ -288,7 +290,7 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	    } else {
 		totalLabel.setText("/" + numberOfRowsInRecordset);
 	    }
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getStackTrace(), e);
 	}
 
@@ -321,7 +323,12 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	} else if (e.getSource() == onlySelectedCB) {
 	    if (alwaysSelectCB.isSelected()) {
 		alwaysSelectCB.setSelected(false);
-		nt.getRecordset().addSelectionListener(this);
+		try {
+			nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
+		} catch (DataException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	    }
 
 	    if (onlySelectedCB.isSelected()) {
@@ -337,10 +344,19 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	} else if (e.getSource() == alwaysSelectCB) {
 	    onlySelectedCB.setSelected(false);
 	    if (alwaysSelectCB.isSelected()) {
-		nt.getRecordset().removeSelectionListener(this);
-
+	    	try {
+				nt.getLayer().getFeatureStore().getFeatureSelection().deleteObserver(this);
+			} catch (DataException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	    } else {
-		nt.getRecordset().addSelectionListener(this);
+	    	try {
+				nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
+			} catch (DataException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	    }
 	    nt.refreshGUI();
 	} else if (e.getSource() == selectionB) {
@@ -381,23 +397,6 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 	}
 	bitset = nt.getRecordset().getSelection();
 	return bitset.get(pos);
-    }
-
-    @Override
-    public void selectionChanged(SelectionEvent e) {
-	/*
-	 * Variable isSomeNavTableForm open is used as workaround to control
-	 * null pointers exceptions when all forms using navtable are closed
-	 * but, for some strange reason, some of the listeners is still active.
-	 */
-	// if (!isSomeNavTableFormOpen()) {
-	// return;
-	// }
-
-	if (onlySelectedCB.isSelected() && !isRecordSelected()) {
-	    nt.first();
-	}
-	nt.refreshGUI();
     }
 
     public boolean isEmptyRegister() {
@@ -501,11 +500,21 @@ public class NavigationHandler implements ActionListener, SelectionListener {
     }
 
     public void setListeners() {
-	nt.getRecordset().addSelectionListener(this);
+    	try {
+			nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public void removeListeners() {
-	nt.getRecordset().removeSelectionListener(this);
+    	try {
+			nt.getLayer().getFeatureStore().getFeatureSelection().deleteObserver(this);
+		} catch (DataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     // Probably should be removed and use a factory instead
@@ -550,8 +559,22 @@ public class NavigationHandler implements ActionListener, SelectionListener {
 		newPosition = 0;
 	    }
 	    currentPosition = newPosition;
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    e.printStackTrace();
 	}
     }
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		if (arg1.equals(DataStoreNotification.SELECTION_CHANGE)) {
+			// TODO. Cuando en la misma acción del usuario se deselecciona
+			// un elemento y se selecciona otro, pinchando en otro elemento
+			// de la tabla por ejemplo se produce dos veces el evento
+			if (onlySelectedCB.isSelected() && !isRecordSelected()) {
+			    nt.first();
+			}
+			nt.refreshGUI();
+		}
+		
+	}
 }

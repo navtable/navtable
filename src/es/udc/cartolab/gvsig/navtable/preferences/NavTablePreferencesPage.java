@@ -8,14 +8,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
-
-import com.iver.andami.PluginServices;
-import com.iver.andami.preferences.AbstractPreferencePage;
-import com.iver.andami.preferences.StoreException;
-import com.iver.utiles.NotExistInXMLEntity;
-import com.iver.utiles.XMLEntity;
-import com.iver.utiles.extensionPoints.ExtensionPoint;
-import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.preferences.AbstractPreferencePage;
+import org.gvsig.andami.preferences.StoreException;
+import org.gvsig.utils.NotExistInXMLEntity;
+import org.gvsig.utils.XMLEntity;
+import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
+import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;

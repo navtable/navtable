@@ -6,7 +6,9 @@ import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
-import com.hardcode.gdbms.engine.values.ValueWriter;
+import es.icarto.gvsig.navtable.gvsig2.ValueWriter;
+
+
 
 /**
  * Class to manage how the strings are formatted to display them, taking into

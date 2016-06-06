@@ -13,11 +13,10 @@ import java.util.List;
 
 import javax.swing.JButton;
 
+import org.gvsig.andami.PluginServices;
+
 import net.miginfocom.swing.MigLayout;
 import sun.font.AttributeMap;
-
-import com.iver.andami.PluginServices;
-
 import es.icarto.gvsig.commons.gui.AbstractIWindow;
 import es.icarto.gvsig.commons.gui.OkCancelPanel;
 import es.icarto.gvsig.commons.gui.WidgetFactory;

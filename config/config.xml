@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <plugin-config>
-	<depends plugin-name="com.iver.cit.gvsig"/>
 	<depends plugin-name="org.gvsig.app.mainplugin"/>
 	<depends plugin-name="org.gvsig.app.document.table.app.mainplugin" />
 	<depends plugin-name="org.gvsig.editing.app.mainplugin"/>
@@ -9,13 +8,22 @@
 	<resourceBundle name="text"/>
 	<extensions>
 		<extension class-name="es.udc.cartolab.gvsig.navtable.NavTableExtension" description="NavTable" active="true">
-			<tool-bar name="NavTable">
-				<action-tool icon="images/table_refresh.png" tooltip="NavTable"
-					action-command="NavTable" position="1"/>
+		
+			<action 
+                name= "navtable"
+                label="navtable"
+                tooltip="Navtable"
+                action-command="NavTable" 
+                icon="navtable"
+                position="001009000000"
+                accelerator=""
+            />
+			<menu text="Capa/NavTable" name="navtable"/> 
+            
+			<tool-bar name="NavTable" position="133">
+				<action-tool name="navtable" />
 			</tool-bar>
-			<menu text="Capa/NavTable"
-				action-command="NavTable"
-				icon="images/table_refresh.png" position="1501"/> 
+				
 		</extension> 
 	</extensions>
 </plugin-config>

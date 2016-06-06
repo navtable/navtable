@@ -26,13 +26,22 @@ package es.udc.cartolab.gvsig.navtable.utils;
 
 import java.util.ArrayList;
 
-import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiManager.IWindow;
-import com.iver.cit.gvsig.fmap.layers.FLayer;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
-import com.iver.cit.gvsig.project.documents.view.toc.AbstractTocContextMenuAction;
-import com.iver.cit.gvsig.project.documents.view.toc.ITocItem;
+
+
+
+
+
+
+
+
+
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.app.project.documents.view.gui.IView;
+import org.gvsig.app.project.documents.view.toc.AbstractTocContextMenuAction;
+import org.gvsig.app.project.documents.view.toc.ITocItem;
+import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
@@ -41,7 +50,7 @@ public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
     @Override
     public void execute(ITocItem item, FLayer[] selectedItems) {
 	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
-	if(iWindow instanceof BaseView){
+	if(iWindow instanceof IView){
 	    for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
 		NavTable navtable = new NavTable(vectorialLyr);
 		if (navtable.init()) {
@@ -94,8 +103,8 @@ public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
 	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
 	ArrayList<FLyrVect> activeVectorialLayers = new ArrayList<FLyrVect>();
 
-	if (iWindow instanceof BaseView) {
-	    FLayer[] activeLayers = ((BaseView) iWindow).getMapControl()
+	if (iWindow instanceof IView) {
+	    FLayer[] activeLayers = ((IView) iWindow).getMapControl()
 		    .getMapContext().getLayers().getActives();
 	    for (FLayer lyr : activeLayers) {
 		if (lyr instanceof FLyrVect) {

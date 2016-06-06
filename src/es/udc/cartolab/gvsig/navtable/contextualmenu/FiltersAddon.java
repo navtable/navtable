@@ -10,13 +10,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
+import org.gvsig.andami.PluginServices;
 
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.andami.PluginServices;
-import com.iver.cit.gvsig.FiltroExtension;
-import com.iver.cit.gvsig.fmap.layers.FBitSet;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
-
+import es.icarto.gvsig.navtable.gvsig2.FBitSet;
+import es.icarto.gvsig.navtable.gvsig2.FiltroExtension;
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
@@ -268,13 +266,7 @@ public class FiltersAddon implements INavTableContextMenu {
     }
 
     private int getAttrTypeForValueSelected(int fieldIndex) {
-	int attrType = -1;
-	try {
-	    attrType = sds.getFieldType(fieldIndex);
-	} catch (ReadDriverException e1) {
-	    logger.error(e1.getMessage());
-	}
-	return attrType;
+	return sds.getFieldType(fieldIndex);
     }
 
     public boolean isVisible() {

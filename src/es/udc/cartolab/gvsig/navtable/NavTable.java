@@ -45,24 +45,25 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiManager.WindowInfo;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.geom.Geometry;
+import org.gvsig.fmap.geom.generalpath.util.Converter;
+import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
+import org.gvsig.fmap.mapcontext.layers.vectorial.VectorLayer;
+import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
+import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
+import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.values.Value;
-import com.iver.andami.PluginServices;
-import com.iver.andami.ui.mdiManager.WindowInfo;
-import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
-import com.iver.cit.gvsig.fmap.core.IGeometry;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.fmap.layers.ReadableVectorial;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
-import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
-import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
-import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
-import com.iver.utiles.extensionPoints.ExtensionPoint;
-import com.iver.utiles.extensionPoints.ExtensionPoints;
-import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
-import com.vividsolutions.jts.geom.Geometry;
 
+
+
+
+
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+
+import es.icarto.gvsig.navtable.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 import es.udc.cartolab.gvsig.navtable.listeners.MyMouseListener;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
@@ -259,71 +260,71 @@ public class NavTable extends AbstractNavTable {
 	File layerFile = null;
 	String filePath = null;
 	String alias = fieldName;
-	String pathToken = null;
-	File fileAlias = null;
-
-	// Added to tables without Layer support, but must be supported alias
-	// here also
-	if (layer == null) {
-	    pathToken = dataName.contains(".") ? Preferences.getAliasDir()
-		    + File.separator
-		    + dataName.substring(0, dataName.lastIndexOf("."))
-		    : Preferences.getAliasDir() + File.separator + dataName;
-	    fileAlias = new File(pathToken + ".alias");
-	} else {
-	    ReadableVectorial source = layer.getSource();
-
-	    if (source != null && source instanceof VectorialFileAdapter) {
-		layerFile = ((VectorialFileAdapter) source).getFile();
-		filePath = layerFile.getAbsolutePath();
-		pathToken = filePath.substring(0, filePath.lastIndexOf("."));
-		fileAlias = new File(pathToken + ".alias");
-
-		if (!fileAlias.exists()) {
-		    pathToken = Preferences.getAliasDir() + File.separator
-			    + layer.getName();
-		    fileAlias = new File(pathToken + ".alias");
-		}
-	    } else if (source instanceof VectorialDBAdapter) {
-		pathToken = Preferences.getAliasDir() + File.separator
-			+ layer.getName();
-		fileAlias = new File(pathToken + ".alias");
-	    } else {
-		return fieldName;
-	    }
-	}
-
-	if (!fileAlias.exists()) {
-	    return fieldName;
-	}
-
-	BufferedReader fileReader = null;
-	try {
-	    String line;
-	    fileReader = new BufferedReader(new FileReader(fileAlias));
-	    while ((line = fileReader.readLine()) != null) {
-		String tokens[] = line.split("=");
-		if (tokens.length == 2) {
-		    String attrName = tokens[0].toUpperCase();
-		    if (fieldName.toUpperCase().compareTo(attrName) == 0) {
-			alias = tokens[1];
-			break;
-		    }
-		}
-	    }
-	} catch (FileNotFoundException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (IOException e) {
-	    logger.error(e.getMessage(), e);
-	} finally {
-	    try {
-		if (fileReader != null) {
-		    fileReader.close();
-		}
-	    } catch (IOException e) {
-		logger.error(e.getStackTrace(), e);
-	    }
-	}
+//	String pathToken = null;
+//	File fileAlias = null;
+//
+//	// Added to tables without Layer support, but must be supported alias
+//	// here also
+//	if (layer == null) {
+//	    pathToken = dataName.contains(".") ? Preferences.getAliasDir()
+//		    + File.separator
+//		    + dataName.substring(0, dataName.lastIndexOf("."))
+//		    : Preferences.getAliasDir() + File.separator + dataName;
+//	    fileAlias = new File(pathToken + ".alias");
+//	} else {
+//	    ReadableVectorial source = layer.getSource();
+//
+//	    if (source != null && source instanceof VectorialFileAdapter) {
+//		layerFile = ((VectorialFileAdapter) source).getFile();
+//		filePath = layerFile.getAbsolutePath();
+//		pathToken = filePath.substring(0, filePath.lastIndexOf("."));
+//		fileAlias = new File(pathToken + ".alias");
+//
+//		if (!fileAlias.exists()) {
+//		    pathToken = Preferences.getAliasDir() + File.separator
+//			    + layer.getName();
+//		    fileAlias = new File(pathToken + ".alias");
+//		}
+//	    } else if (source instanceof VectorialDBAdapter) {
+//		pathToken = Preferences.getAliasDir() + File.separator
+//			+ layer.getName();
+//		fileAlias = new File(pathToken + ".alias");
+//	    } else {
+//		return fieldName;
+//	    }
+//	}
+//
+//	if (!fileAlias.exists()) {
+//	    return fieldName;
+//	}
+//
+//	BufferedReader fileReader = null;
+//	try {
+//	    String line;
+//	    fileReader = new BufferedReader(new FileReader(fileAlias));
+//	    while ((line = fileReader.readLine()) != null) {
+//		String tokens[] = line.split("=");
+//		if (tokens.length == 2) {
+//		    String attrName = tokens[0].toUpperCase();
+//		    if (fieldName.toUpperCase().compareTo(attrName) == 0) {
+//			alias = tokens[1];
+//			break;
+//		    }
+//		}
+//	    }
+//	} catch (FileNotFoundException e) {
+//	    logger.error(e.getMessage(), e);
+//	} catch (IOException e) {
+//	    logger.error(e.getMessage(), e);
+//	} finally {
+//	    try {
+//		if (fileReader != null) {
+//		    fileReader.close();
+//		}
+//	    } catch (IOException e) {
+//		logger.error(e.getStackTrace(), e);
+//	    }
+//	}
 	return alias;
     }
 
@@ -362,7 +363,7 @@ public class NavTable extends AbstractNavTable {
 		this.cellRenderer.addNoEditableRow(model.getRowCount() - 1);
 	    }
 
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
 	}
     }
@@ -394,40 +395,33 @@ public class NavTable extends AbstractNavTable {
 	    setFillingValues(true);
 	    DefaultTableModel model = (DefaultTableModel) table.getModel();
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
-		String textoValue = sds.getFieldValue(getPosition(), i)
-			.getStringValue(valueFormatNT);
+		String textoValue = sds.getFieldValue(getPosition(), i).getStringValue(valueFormatNT);
 		model.setValueAt(textoValue, i, 1);
 	    }
 
-	    if (layer != null && layer instanceof AlphanumericData) {
-		// Fill GEOM_LENGTH
-		String value = "0.0";
-		IGeometry g;
-		ReadableVectorial source = (layer).getSource();
-		source.start();
-		g = source.getShape(new Long(getPosition()).intValue());
-		source.stop();
-		if (g == null) {
+	    if (layer != null && layer instanceof VectorLayer) {
+	    Geometry geometry = sds.getGeometry(getPosition());
+	    if (geometry == null) {
 		    model.setValueAt("0", sds.getFieldCount(), 1);
 		    model.setValueAt("0", sds.getFieldCount() + 1, 1);
 		    return;
 		}
-		Geometry geom = g.toJTSGeometry();
+	    com.vividsolutions.jts.geom.Geometry jtsGeom = Converter.geometryToJts(geometry);
+		// Fill GEOM_LENGTH
+		String value = "0.0";
+		
+		
 		// TODO Format number (Set units in Preferences)
-		value = String.valueOf(Math.round(geom.getLength()));
+		value = String.valueOf(Math.round(jtsGeom.getLength()));
 		model.setValueAt(value, sds.getFieldCount(), 1);
 		// Fill GEOM_AREA
 		value = "0.0";
-		source.start();
-		g = source.getShape(new Long(getPosition()).intValue());
-		source.stop();
-		geom = g.toJTSGeometry();
 		// TODO Format number (Set units in Preferences)
-		value = String.valueOf(Math.round(geom.getArea()));
+		value = String.valueOf(Math.round(jtsGeom.getArea()));
 		model.setValueAt(value, sds.getFieldCount() + 1, 1);
 	    }
 
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
 	} finally {
 	    setFillingValues(false);
@@ -447,7 +441,7 @@ public class NavTable extends AbstractNavTable {
 		    changedValues.add(new Integer(i));
 		}
 	    }
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
 	}
 
@@ -505,17 +499,13 @@ public class NavTable extends AbstractNavTable {
 	    int j = 0;
 	    for (int i = 0; i < model.getRowCount(); i++) {
 		if (changedValues.contains(new Integer(i))) {
-		    try {
+		    
 			Object value = model.getValueAt(i, 1);
 			attValues[j] = value.toString();
 			if (getRecordset().getFieldType(i) == Types.DATE) {
 			    attValues[j] = attValues[j].replaceAll("-", "/");
 			}
-		    } catch (ReadDriverException e) {
-			logger.error(e.getMessage(), e);
-		    } finally {
-			j++;
-		    }
+		    
 		}
 	    }
 	}
@@ -523,7 +513,7 @@ public class NavTable extends AbstractNavTable {
     }
 
     @Override
-    public boolean saveRecord() throws StopWriterVisitorException {
+    public boolean saveRecord() throws DataException {
 	if (isSaveable()) {
 	    setSavingValues(true);
 	    int[] attIndexes = getIndexes();
@@ -541,7 +531,7 @@ public class NavTable extends AbstractNavTable {
 		}
 		setChangedValues(false);
 		return true;
-	    } catch (StopWriterVisitorException e) {
+	    } catch (DataException e) {
 		setSavingValues(false);
 		throw e;
 	    } finally {
@@ -583,7 +573,7 @@ public class NavTable extends AbstractNavTable {
     }
 
     @Override
-    public void reloadRecordset() throws ReadDriverException {
+    public void reloadRecordset() throws DataException {
 	super.reloadRecordset();
 	initWidgets();
     }

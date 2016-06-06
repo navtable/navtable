@@ -28,48 +28,19 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import org.apache.log4j.Logger;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.messages.NotificationManager;
+import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.app.project.documents.table.gui.FeatureTableDocumentPanel;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.mapcontext.exceptions.StartEditionLayerException;
+import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 
-import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.data.driver.DriverException;
-import com.hardcode.gdbms.engine.values.Value;
-import com.hardcode.gdbms.engine.values.ValueFactory;
-import com.iver.andami.PluginServices;
-import com.iver.andami.messages.NotificationManager;
-import com.iver.cit.gvsig.EditionUtilities;
-import com.iver.cit.gvsig.ProjectExtension;
-import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileReadException;
-import com.iver.cit.gvsig.exceptions.expansionfile.ExpansionFileWriteException;
-import com.iver.cit.gvsig.exceptions.layers.CancelEditingLayerException;
-import com.iver.cit.gvsig.exceptions.layers.StartEditionLayerException;
-import com.iver.cit.gvsig.exceptions.table.CancelEditingTableException;
-import com.iver.cit.gvsig.exceptions.validate.ValidateRowException;
-import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
-import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
-import com.iver.cit.gvsig.fmap.core.DefaultFeature;
-import com.iver.cit.gvsig.fmap.core.DefaultRow;
-import com.iver.cit.gvsig.fmap.core.FShape;
-import com.iver.cit.gvsig.fmap.core.IFeature;
-import com.iver.cit.gvsig.fmap.core.IGeometry;
-import com.iver.cit.gvsig.fmap.core.IRow;
-import com.iver.cit.gvsig.fmap.drivers.FieldDescription;
-import com.iver.cit.gvsig.fmap.drivers.ILayerDefinition;
-import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
-import com.iver.cit.gvsig.fmap.edition.EditionEvent;
-import com.iver.cit.gvsig.fmap.edition.EditionExceptionOld;
-import com.iver.cit.gvsig.fmap.edition.IEditableSource;
-import com.iver.cit.gvsig.fmap.edition.IRowEdited;
-import com.iver.cit.gvsig.fmap.edition.ISpatialWriter;
-import com.iver.cit.gvsig.fmap.edition.IWriteable;
-import com.iver.cit.gvsig.fmap.edition.IWriter;
-import com.iver.cit.gvsig.fmap.edition.VectorialEditableAdapter;
-import com.iver.cit.gvsig.fmap.edition.rules.IRule;
-import com.iver.cit.gvsig.fmap.edition.rules.RulePolygon;
-import com.iver.cit.gvsig.fmap.layers.FLayer;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.project.documents.table.ProjectTable;
-import com.iver.cit.gvsig.project.documents.table.gui.Table;
-
+import es.icarto.gvsig.navtable.gvsig2.IEditableSource;
+import es.icarto.gvsig.navtable.gvsig2.IGeometry;
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.navtable.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 /**
@@ -91,7 +62,7 @@ public class ToggleEditing {
     /**
      * @param layer - The vectorial layer to be edited.
      */
-    public boolean startEditing(FLayer layer) {
+    public boolean startEditing(FLayer layer) throws DataException{
 
 	if (layer instanceof FLyrVect) {
 	    layer.setActive(true);
@@ -112,7 +83,7 @@ public class ToggleEditing {
 		    IRule rulePol = new RulePolygon();
 		    vea.getRules().add(rulePol);
 		}
-	    } catch (ReadDriverException e) {
+	    } catch (DataException e) {
 		logger.error(e.getMessage(), e);
 		return false;
 	    }
@@ -125,7 +96,7 @@ public class ToggleEditing {
 		ProjectTable pt = pe.getProject().getTable(lv);
 		if (pt != null) {
 		    pt.setModel(vea);
-		    Table table = getModelTable(pt);
+		    FeatureTableDocumentPanel table = getModelTable(pt);
 		    if(table != null) {
 			table.setModel(pt);
 			vea.getCommandRecord().addCommandListener(table);
@@ -140,7 +111,7 @@ public class ToggleEditing {
 	try {
 	    source.startEdition(EditionEvent.ALPHANUMERIC);
 	    return true;
-	} catch (StartWriterVisitorException e) {
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
 	    return false;
 	}
@@ -153,8 +124,7 @@ public class ToggleEditing {
      *            - false if we want to save the layer, true if we don't.
      * @throws StopWriterVisitorException
      */
-    public boolean stopEditing(FLayer layer, boolean cancel)
-	    throws StopWriterVisitorException {
+    public boolean stopEditing(FLayer layer, boolean cancel) {
 
 	if (layer instanceof FLyrVect) {
 	    try {
@@ -163,10 +133,7 @@ public class ToggleEditing {
 		} else {
 		    saveLayer((FLyrVect) layer);
 		}
-	    } catch (DriverException e) {
-		logger.error(e.getMessage(), e);
-		return false;
-	    } catch (EditionExceptionOld e) {
+	    } catch (DataException e) {
 		logger.error(e.getMessage(), e);
 		return false;
 	    } finally {
@@ -210,8 +177,7 @@ public class ToggleEditing {
 	    if (writer == null) {
 		NotificationManager.addError(
 			"No existe driver de escritura para la tabla"
-				+ source.getRecordset().getName(),
-				new EditionExceptionOld());
+				+ source.getName(),new RuntimeException());
 		return false;
 	    } else {
 		ITableDefinition tableDef = source.getTableDefinition();
@@ -219,20 +185,13 @@ public class ToggleEditing {
 		source.stopEdition(writer, EditionEvent.ALPHANUMERIC);
 		return true;
 	    }
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
-	} catch (InitializeWriterException e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
-	} catch (StopWriterVisitorException e) {
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
 	    return false;
 	}
     }
 
-    private void saveLayer(FLyrVect layer) throws DriverException,
-	    EditionExceptionOld, StopWriterVisitorException {
+    private void saveLayer(FLyrVect layer) throws DataException {
 	layer.setProperty("stoppingEditing", new Boolean(true));
 	VectorialEditableAdapter vea = (VectorialEditableAdapter) layer
 		.getSource();
@@ -245,7 +204,7 @@ public class ToggleEditing {
 	vea.cleanSelectableDatasource();
 	try {
 	    layer.setRecordset(vea.getRecordset());
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
 	}
 	// The layer recordset must have the changes we made
@@ -262,11 +221,9 @@ public class ToggleEditing {
 	    writer.initialize(lyrDef);
 	    vea.stopEdition(writer, EditionEvent.GRAPHIC);
 	    layer.setProperty("stoppingEditing", new Boolean(false));
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
-	} catch (InitializeWriterException e) {
-	    logger.error(e.getMessage(), e);
-	}
+	} 
     }
 
     /**
@@ -287,7 +244,7 @@ public class ToggleEditing {
     public void modifyValue(FLyrVect layer, int rowPosition, int colPosition,
 	    String newValue) throws Exception {
 
-	IEditableSource source = (IEditableSource) layer.getSource();
+	IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
 	Value value = getNewAttribute(source, colPosition, newValue);
 	modifyValue(layer, rowPosition, colPosition, value);
     }
@@ -312,7 +269,7 @@ public class ToggleEditing {
     public void modifyValue(FLyrVect layer, int rowPosition, int colPosition,
 	    Value newValue) throws Exception {
 
-	IEditableSource source = (IEditableSource) layer.getSource();
+	IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
 	IRowEdited row = source.getRow(rowPosition);
 	Value[] attributes = row.getAttributes();
 	if (row.getLinkedRow() instanceof IFeature) {
@@ -362,7 +319,7 @@ public class ToggleEditing {
 	    String[] attValues) {
 
 	try {
-	    IEditableSource source = (IEditableSource) layer.getSource();
+	    IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
 
 	    IGeometry geometry = getTheGeom(source, rowPosition);
 	    Value[] values = getNewAttributes(source, rowPosition, attIndexes, attValues);
@@ -371,13 +328,7 @@ public class ToggleEditing {
 	    IRow newRow = new DefaultFeature(geometry, values, row.getID());
 	    source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
 		    EditionEvent.ALPHANUMERIC);
-	} catch (ExpansionFileWriteException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (ExpansionFileReadException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (ValidateRowException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
 	}
     }
@@ -402,11 +353,9 @@ public class ToggleEditing {
 
     public void deleteRow(FLyrVect layer, int position) {
 	try {
-	    IEditableSource source = (IEditableSource) layer.getSource();
+	    IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
 	    source.removeRow(position, "NAVTABLE DELETE", EditionEvent.ALPHANUMERIC);
-	} catch (ExpansionFileReadException e) {
-	    e.printStackTrace();
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    e.printStackTrace();
 	}
     }
@@ -475,14 +424,14 @@ public class ToggleEditing {
 	}
     }
 
-    private Table getModelTable(ProjectTable pt) {
+    private FeatureTableDocumentPanel getModelTable(ProjectTable pt) {
 	// TODO: see how drop this IWindow dependence, by getting the Table
 	// from internal info (layer, MapControl) instead of iterating
 	// through all windows
 	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
 		.getMDIManager().getAllWindows();
 	for (int i = 0; i < views.length; i++) {
-	    if (views[i] instanceof Table) {
+	    if (views[i] instanceof FeatureTableDocumentPanel) {
 		Table table = (Table) views[i];
 		ProjectTable model = table.getModel();
 		if (model.equals(pt)) {
@@ -493,16 +442,16 @@ public class ToggleEditing {
 	return null;
     }
 
-    private Table getTableFromLayer(FLayer layer) {
+    private FeatureTableDocumentPanel getTableFromLayer(FLayer layer) {
 	//TODO: see how drop this IWindow dependence
-	com.iver.andami.ui.mdiManager.IWindow[] views = null;
+	IWindow[] views = null;
 	try {
 	    views = PluginServices.getMDIManager().getAllWindows();
 	    for (int j = 0; j < views.length; j++) {
-		    if (views[j] instanceof Table) {
-			Table table = (Table) views[j];
-			if (table.getModel().getAssociatedTable() != null
-				&& table.getModel().getAssociatedTable().equals(layer)) {
+		    if (views[j] instanceof FeatureTableDocumentPanel) {
+		    	FeatureTableDocumentPanel table = (FeatureTableDocumentPanel) views[j];
+			if (table.getModel().getAssociatedLayer() != null
+				&& table.getModel().getAssociatedLayer().equals(layer)) {
 			    return table;
 			}
 		    }

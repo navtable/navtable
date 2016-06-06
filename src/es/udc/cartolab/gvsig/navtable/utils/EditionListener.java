@@ -18,21 +18,21 @@
 package es.udc.cartolab.gvsig.navtable.utils;
 
 import org.apache.log4j.Logger;
+import org.gvsig.editing.EditingNotificationManager;
+import org.gvsig.fmap.dal.DataStoreNotification;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.dal.feature.FeatureStore;
+import org.gvsig.fmap.dal.feature.FeatureStoreNotification;
+import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.gvsig.fmap.mapcontext.layers.LayerEvent;
+import org.gvsig.fmap.mapcontext.layers.LayerListener;
+import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
+import org.gvsig.fmap.mapcontrol.MapControlLocator;
+import org.gvsig.tools.observer.Observable;
+import org.gvsig.tools.observer.Observer;
 
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.cit.gvsig.fmap.core.IRow;
-import com.iver.cit.gvsig.fmap.edition.AfterFieldEditEvent;
-import com.iver.cit.gvsig.fmap.edition.AfterRowEditEvent;
-import com.iver.cit.gvsig.fmap.edition.BeforeFieldEditEvent;
-import com.iver.cit.gvsig.fmap.edition.BeforeRowEditEvent;
-import com.iver.cit.gvsig.fmap.edition.EditionEvent;
-import com.iver.cit.gvsig.fmap.edition.IEditableSource;
-import com.iver.cit.gvsig.fmap.edition.IEditionListener;
-import com.iver.cit.gvsig.fmap.layers.FLayer;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.fmap.layers.LayerEvent;
-import com.iver.cit.gvsig.fmap.layers.LayerListener;
-
+import es.icarto.gvsig.navtable.gvsig2.IEditableSource;
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 
 /**
@@ -43,17 +43,17 @@ import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
  * @author Javier Estévez
  * 
  */
-public class EditionListener implements LayerListener, IEditionListener {
+public class EditionListener implements LayerListener, Observer {
 
     private AbstractNavTable nt;
-    private IEditableSource source;
+	private FLyrVect layer;
     protected static Logger logger = Logger.getLogger("NavTable");
 
     public EditionListener(AbstractNavTable nt, FLyrVect layer) {
 	this.nt = nt;
+	this.layer = layer;
 	if (layer != null && layer.isEditing()) {
-	    source = (IEditableSource) (layer).getSource();
-	    source.addEditionListener(this);
+		layer.getFeatureStore().addObserver(this);
 	}
     }
 
@@ -62,72 +62,83 @@ public class EditionListener implements LayerListener, IEditionListener {
     }
 
     /**
-     * Launch after start/stop edition on the IEditableSource
-     */
-    public void processEvent(EditionEvent e) {
-    }
-
-    public void beforeRowEditEvent(IRow feat, BeforeRowEditEvent e) {
-    }
-
-    /**
-     * Launched after a record is updated, removed or inserted
-     */
-    public void afterRowEditEvent(IRow feat, AfterRowEditEvent e) {
-	if (!nt.isSavingValues() 
-		&& (nt.getPosition() == e.getNumRow())) {
-	    nt.fillValues();
-	}
-    }
-
-    public void beforeFieldEditEvent(BeforeFieldEditEvent e) {
-    }
-
-    /**
-     * Launched when the structure of the layer has changed
-     */
-    public void afterFieldEditEvent(AfterFieldEditEvent e) {
-	refresh();
-	nt.editionEvent(e);
-    }
-
-    public void visibilityChanged(LayerEvent e) {
-    }
-
-    public void activationChanged(LayerEvent e) {
-    }
-
-    public void nameChanged(LayerEvent e) {
-    }
-
-    /**
      * Launch after start/stop edition on the layer
      */
     public void editionChanged(LayerEvent e) {
 	FLayer layer = e.getSource();
 	if (layer instanceof FLyrVect) {
+		FeatureStore featureStore = ((FLyrVect) layer).getFeatureStore();
 	    if (layer.isEditing()) {
-		source = (IEditableSource) ((FLyrVect) layer).getSource();
-		source.addEditionListener(this);
-	    } else if (source != null) {
-		source.removeEditionListener(this);
-		source = null;
+			featureStore.addObserver(this);
+	    } else if (featureStore != null) {
+		featureStore.deleteObserver(this);
 	    }
 	    refresh();
 	}
 	nt.layerEvent(e);
     }
 
-    public void drawValueChanged(LayerEvent e) {
-    }
-
     private void refresh() {
 	try {
 	    nt.reloadRecordset();
-	} catch (ReadDriverException error) {
+	} catch (DataException error) {
 	    logger.error(error.getMessage(), error);
 	}
 	nt.refreshGUI();
     }
 
+	@Override
+	public void update(Observable observable, Object notification) {
+		if (notification instanceof FeatureStoreNotification) {
+			FeatureStoreNotification not = (FeatureStoreNotification) notification;
+			String type = not.getType();
+			// AfterRowEditEvent
+			if (FeatureStoreNotification.AFTER_UPDATE.equals(type) || FeatureStoreNotification.AFTER_DELETE.equals(type) || FeatureStoreNotification.AFTER_INSERT.equals(type)) {
+				if (!nt.isSavingValues()) {
+					long posOfFeature;
+					try {
+						posOfFeature = new SelectableDataSource(layer.getFeatureStore()).posOfFeature(not.getFeature());
+						if (nt.getPosition() == posOfFeature) {
+							nt.fillValues();
+						}
+					} catch (DataException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			} else {
+				// AfterFieldEditEvent
+				if (FeatureStoreNotification.AFTER_UPDATE_TYPE.equals(type)) {
+					refresh();
+					nt.editionEvent(not);
+				}
+			}
+		}
+
+	 }
+
+	@Override
+	public void visibilityChanged(LayerEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void activationChanged(LayerEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void nameChanged(LayerEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawValueChanged(LayerEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

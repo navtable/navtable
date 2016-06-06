@@ -12,8 +12,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-import com.iver.utiles.extensionPoints.ExtensionPoint;
-import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
+import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
+import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.NavTable;

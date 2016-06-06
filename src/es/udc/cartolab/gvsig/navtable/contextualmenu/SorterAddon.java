@@ -12,13 +12,12 @@ import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
 import org.apache.log4j.Logger;
-
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.andami.PluginServices;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.fmap.dal.exception.DataException;
 
 import es.icarto.gvsig.commons.gui.OkCancelPanel;
 import es.icarto.gvsig.commons.utils.Field;
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class SorterAddon implements INavTableContextMenu {
@@ -72,11 +71,7 @@ public class SorterAddon implements INavTableContextMenu {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 		String[] fieldNames = new String[0];
-		try {
-		    fieldNames = navtable.getRecordset().getFieldNames();
-		} catch (ReadDriverException e2) {
-		    logger.error(e2.getStackTrace(), e2);
-		}
+		fieldNames = navtable.getRecordset().getFieldNames();
 
 		List<Field> fields = new ArrayList<Field>();
 		for (String name : fieldNames) {
@@ -89,14 +84,8 @@ public class SorterAddon implements INavTableContextMenu {
 		    List<SortKey> sortKeys = new ArrayList<SortKey>();
 		    SelectableDataSource sds = navtable.getRecordset();
 		    for (Field field : sortedFields) {
-			try {
-			    int fieldIdx = sds.getFieldIndexByName(field
-				    .getKey());
-			    sortKeys.add(new SortKey(fieldIdx, field
-				    .getSortOrder()));
-			} catch (ReadDriverException e1) {
-			    logger.error(e1.getStackTrace(), e1);
-			}
+		    	int fieldIdx = sds.getFieldIndexByName(field.getKey());
+			    sortKeys.add(new SortKey(fieldIdx, field.getSortOrder()));
 		    }
 		    navtable.setSortKeys(sortKeys);
 		}

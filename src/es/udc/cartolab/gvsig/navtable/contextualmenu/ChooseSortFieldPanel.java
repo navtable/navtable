@@ -10,10 +10,9 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SortOrder;
 
+import org.gvsig.andami.PluginServices;
+
 import net.miginfocom.swing.MigLayout;
-
-import com.iver.andami.PluginServices;
-
 import es.icarto.gvsig.commons.gui.WidgetFactory;
 import es.icarto.gvsig.commons.utils.Field;
 

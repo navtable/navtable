@@ -2,24 +2,17 @@ package es.udc.cartolab.gvsig.navtable.dataacces;
 
 import java.util.HashMap;
 
-import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
-import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
+import org.gvsig.fmap.dal.exception.DataException;
 
 public interface IController extends Cloneable {
 
     public long create(HashMap<String, String> newValues) throws Exception;
     
-    public abstract void read(long position) throws ReadDriverException;
+    public abstract void read(long position) throws DataException;
 
-    public abstract void update(long position) throws ReadDriverException,
-	    StopWriterVisitorException;
+    public abstract void update(long position);
 
-    public abstract void delete(long position)
-	    throws StopWriterVisitorException, InitializeWriterException,
-	    StartWriterVisitorException, ReadDriverException;
+    public abstract void delete(long position) throws DataException;
 
     public abstract void clearAll();
 
@@ -47,6 +40,6 @@ public interface IController extends Cloneable {
 
     public abstract int getType(String fieldName);
 
-    public abstract long getRowCount() throws ReadDriverException;
+    public abstract long getRowCount() throws DataException;
 
 }

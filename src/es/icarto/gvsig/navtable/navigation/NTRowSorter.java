@@ -6,11 +6,15 @@ import javax.swing.DefaultRowSorter;
 
 import org.apache.log4j.Logger;
 
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.values.Value;
-import com.hardcode.gdbms.engine.values.ValueFactory;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 
+
+
+
+import org.gvsig.fmap.dal.exception.DataException;
+
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.navtable.gvsig2.Value;
+import es.icarto.gvsig.navtable.gvsig2.ValueFactory;
 import es.udc.cartolab.gvsig.navtable.utils.ValueComparator;
 
 public class NTRowSorter<M extends SelectableDataSource> extends
@@ -53,7 +57,7 @@ public class NTRowSorter<M extends SelectableDataSource> extends
 
 	    try {
 		return model.getFieldCount();
-	    } catch (ReadDriverException e) {
+	    } catch (DataException e) {
 		logger.error(e.getStackTrace(), e);
 	    }
 	    return 0;
@@ -63,7 +67,7 @@ public class NTRowSorter<M extends SelectableDataSource> extends
 	public int getRowCount() {
 	    try {
 		return (int) model.getRowCount();
-	    } catch (ReadDriverException e) {
+	    } catch (DataException e) {
 		logger.error(e.getStackTrace(), e);
 	    }
 	    return 0;
@@ -71,12 +75,7 @@ public class NTRowSorter<M extends SelectableDataSource> extends
 
 	@Override
 	public Object getValueAt(int row, int column) {
-	    try {
 		return model.getFieldValue(row, column);
-	    } catch (ReadDriverException e) {
-		logger.error(e.getStackTrace(), e);
-	    }
-	    return ValueFactory.createNullValue();
 	}
 
 	@Override

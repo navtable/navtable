@@ -5,16 +5,17 @@ import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 
-import com.hardcode.gdbms.engine.values.BinaryValue;
-import com.hardcode.gdbms.engine.values.BooleanValue;
-import com.hardcode.gdbms.engine.values.ComplexValue;
-import com.hardcode.gdbms.engine.values.DateValue;
-import com.hardcode.gdbms.engine.values.NullValue;
-import com.hardcode.gdbms.engine.values.NumericValue;
-import com.hardcode.gdbms.engine.values.StringValue;
-import com.hardcode.gdbms.engine.values.TimeValue;
-import com.hardcode.gdbms.engine.values.TimestampValue;
-import com.hardcode.gdbms.engine.values.Value;
+import es.icarto.gvsig.navtable.gvsig2.BinaryValue;
+import es.icarto.gvsig.navtable.gvsig2.BooleanValue;
+import es.icarto.gvsig.navtable.gvsig2.ComplexValue;
+import es.icarto.gvsig.navtable.gvsig2.DateValue;
+import es.icarto.gvsig.navtable.gvsig2.NullValue;
+import es.icarto.gvsig.navtable.gvsig2.NumericValue;
+import es.icarto.gvsig.navtable.gvsig2.StringValue;
+import es.icarto.gvsig.navtable.gvsig2.TimeValue;
+import es.icarto.gvsig.navtable.gvsig2.TimestampValue;
+import es.icarto.gvsig.navtable.gvsig2.Value;
+
 
 public class ValueComparator implements Comparator<Value> {
 

@@ -21,20 +21,11 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Set;
 
-import com.hardcode.gdbms.driver.exceptions.InitializeWriterException;
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.hardcode.gdbms.engine.values.Value;
-import com.iver.cit.gvsig.exceptions.visitors.StartWriterVisitorException;
-import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
-import com.iver.cit.gvsig.fmap.core.DefaultRow;
-import com.iver.cit.gvsig.fmap.core.IRow;
-import com.iver.cit.gvsig.fmap.drivers.ITableDefinition;
-import com.iver.cit.gvsig.fmap.edition.EditionEvent;
-import com.iver.cit.gvsig.fmap.edition.IEditableSource;
-import com.iver.cit.gvsig.fmap.edition.IWriteable;
-import com.iver.cit.gvsig.fmap.edition.IWriter;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
+import org.gvsig.app.project.documents.table.TableDocument;
+import org.gvsig.fmap.dal.exception.DataException;
 
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.navtable.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.ToggleEditing;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
@@ -51,13 +42,13 @@ public class TableController implements IController {
 
     public static int NO_ROW = -1;
 
-    private IEditableSource model;
+    private TableDocument model;
     private HashMap<String, Integer> indexes;
     private HashMap<String, Integer> types;
     private HashMap<String, String> values;
     private HashMap<String, String> valuesChanged;
 
-    public TableController(IEditableSource model) {
+    public TableController(TableDocument model) {
 	this.model = model;
 	this.indexes = new HashMap<String, Integer>();
 	this.types = new HashMap<String, Integer>();
@@ -67,13 +58,13 @@ public class TableController implements IController {
 
     public void initMetadata() {
 	try {
-	    SelectableDataSource sds = model.getRecordset();
+	    SelectableDataSource sds = new SelectableDataSource(model.getStore());
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
 		String name = sds.getFieldName(i);
 		indexes.put(name, i);
 		types.put(name, sds.getFieldType(i));
 	    }
-	} catch (ReadDriverException e) {
+	} catch (DataException e) {
 	    e.printStackTrace();
 	    clearAll();
 	}
@@ -115,8 +106,8 @@ public class TableController implements IController {
     }
 
     @Override
-    public void read(long position) throws ReadDriverException {
-	SelectableDataSource sds = model.getRecordset();
+    public void read(long position) throws DataException {
+	SelectableDataSource sds = new SelectableDataSource(model.getStore());
 	clearAll();
 	if (position != AbstractNavTable.EMPTY_REGISTER) {
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
@@ -132,7 +123,7 @@ public class TableController implements IController {
     }
 
     @Override
-    public void update(long position) throws ReadDriverException {
+    public void update(long position) {
 	ToggleEditing te = new ToggleEditing();
 	boolean wasEditing = model.isEditing();
 	if (!wasEditing) {
@@ -147,9 +138,7 @@ public class TableController implements IController {
     }
 
     @Override
-    public void delete(long position) throws StopWriterVisitorException,
-	    InitializeWriterException, StartWriterVisitorException,
-	    ReadDriverException {
+    public void delete(long position) {
 
 	model.startEdition(EditionEvent.ALPHANUMERIC);
 
@@ -161,7 +150,7 @@ public class TableController implements IController {
 
 	model.doRemoveRow((int) position, EditionEvent.ALPHANUMERIC);
 	model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
-	model.getRecordset().reload();
+	model.getStore().refresh();
 	clearAll();
     }
 
@@ -233,8 +222,8 @@ public class TableController implements IController {
     }
 
     @Override
-    public long getRowCount() throws ReadDriverException {
-	return model.getRowCount();
+    public long getRowCount() throws DataException {
+	return new SelectableDataSource(model.getStore()).getRowCount();
     }
 
     @Override

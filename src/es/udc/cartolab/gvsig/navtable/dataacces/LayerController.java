@@ -20,13 +20,12 @@ package es.udc.cartolab.gvsig.navtable.dataacces;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.cit.gvsig.exceptions.visitors.StopWriterVisitorException;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
-
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.navtable.gvsig2.ValueWriter;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.ToggleEditing;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
@@ -65,16 +64,15 @@ public class LayerController implements IController {
     }
 
     @Override
-    public void read(long position) throws ReadDriverException {
-	SelectableDataSource sds = layer.getSource().getRecordset();
+    public void read(long position) throws DataException {
+	SelectableDataSource sds = new SelectableDataSource(layer.getFeatureStore());
 	if(position != AbstractNavTable.EMPTY_REGISTER) {
+		ValueWriter vWriter = new ValueFormatNT();
 	    clearAll();
 	    for (int i = 0; i < sds.getFieldCount(); i++) {
 		String name = sds.getFieldName(i);
-		values.put(
-			name,
-			sds.getFieldValue(position, i).getStringValue(
-				new ValueFormatNT()));
+		String stringValue = sds.getFieldValue(position, i).getStringValue(vWriter);
+		values.put(name, stringValue);
 		indexes.put(name, i);
 		types.put(name, sds.getFieldType(i));
 	    }
@@ -82,34 +80,39 @@ public class LayerController implements IController {
     }
 
     @Deprecated
-    public void save(long position) throws ReadDriverException,
-	    StopWriterVisitorException {
+    public void save(long position) {
 	update(position);
     }
 
     @Override
-    public void update(long position) throws ReadDriverException,
-	    StopWriterVisitorException {
+    public void update(long position){
 	ToggleEditing te = new ToggleEditing();
+	
 	boolean wasEditing = layer.isEditing();
-	if (!wasEditing) {
-	    te.startEditing(layer);
+	try {
+		if (!wasEditing) {
+		    te.startEditing(layer);
+		}
+		te.modifyValues(layer, (int) position,
+				this.getIndexesOfValuesChanged(),
+				this.getValuesChanged().values().toArray(new String[0]));
+		if (!wasEditing) {
+		    te.stopEditing(layer, false);
+		}
+		this.read((int) position);
+	} catch (DataException e) {
+		if (!wasEditing) {
+		    te.stopEditing(layer, true);
+		}
 	}
-	te.modifyValues(layer, (int) position,
-		this.getIndexesOfValuesChanged(),
-		this.getValuesChanged().values().toArray(new String[0]));
-	if (!wasEditing) {
-	    te.stopEditing(layer, false);
-	}
-	this.read((int) position);
     }
 
     @Override
-    public void delete(long position) throws ReadDriverException,
-	    StopWriterVisitorException {
+    public void delete(long position) {
 	    if (position > AbstractNavTable.EMPTY_REGISTER) {
 		ToggleEditing te = new ToggleEditing();
 		boolean wasEditing = layer.isEditing();
+		try {
 		if (!wasEditing) {
 		    te.startEditing(layer);
 		}
@@ -117,7 +120,12 @@ public class LayerController implements IController {
 		if (!wasEditing) {
 		    te.stopEditing(layer, false);
 		}
-	    }
+	    } catch (DataException e) {
+			if (!wasEditing) {
+			    te.stopEditing(layer, true);
+			}
+		}
+    }
     }
 
     @Override
@@ -188,8 +196,8 @@ public class LayerController implements IController {
     }
 
     @Override
-    public long getRowCount() throws ReadDriverException {
-	return layer.getRecordset().getRowCount();
+    public long getRowCount() throws DataException {
+	return new SelectableDataSource(layer.getFeatureStore()).getRowCount();
     }
 
     @Override

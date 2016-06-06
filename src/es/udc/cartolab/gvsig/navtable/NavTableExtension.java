@@ -30,22 +30,30 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.hardcode.gdbms.driver.exceptions.ReadDriverException;
-import com.iver.andami.PluginServices;
-import com.iver.andami.plugins.Extension;
-import com.iver.andami.preferences.IPreference;
-import com.iver.andami.preferences.IPreferenceExtension;
-import com.iver.andami.ui.mdiManager.IWindow;
-import com.iver.cit.gvsig.About;
-import com.iver.cit.gvsig.fmap.edition.IEditableSource;
-import com.iver.cit.gvsig.fmap.layers.FLayer;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
-import com.iver.cit.gvsig.gui.panels.FPanelAbout;
-import com.iver.cit.gvsig.project.documents.table.gui.Table;
-import com.iver.cit.gvsig.project.documents.view.gui.BaseView;
-import com.iver.utiles.extensionPoints.ExtensionPoints;
-import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
+
+
+import org.gvsig.about.AboutManager;
+import org.gvsig.andami.IconThemeHelper;
+import org.gvsig.andami.Launcher;
+import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.PluginsLocator;
+import org.gvsig.andami.PluginsManager;
+import org.gvsig.andami.plugins.Extension;
+import org.gvsig.andami.preferences.IPreference;
+import org.gvsig.andami.preferences.IPreferenceExtension;
+import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.app.ApplicationLocator;
+import org.gvsig.app.ApplicationManager;
+import org.gvsig.app.project.documents.table.gui.FeatureTableDocumentPanel;
+import org.gvsig.app.project.documents.view.gui.IView;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
+import org.gvsig.fmap.mapcontext.layers.vectorial.VectorLayer;
+import org.gvsig.tools.observer.Observable;
+import org.gvsig.tools.observer.Observer;
+import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
+import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.FiltersAddon;
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
@@ -63,14 +71,12 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
     public void execute(String actionCommand) {
 	if (enableNavtable()) {
 	    openNavtable();
-	} else if (enableAlphanumericNavtable()) {
-	    openAlphanumericNavtable();
-	}
+	} 
     }
 
     private void openNavtable() {
 	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
-	if(iWindow instanceof BaseView){
+	if(iWindow instanceof IView){
 	    for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
 		NavTable navtable = new NavTable(vectorialLyr);
 		if (navtable.init()) {
@@ -78,7 +84,7 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
 		}
 	    }
 	} else if(isActiveWindowAttTableFromLayer()){
-	    AlphanumericData data = ((Table) iWindow).getModel().getAssociatedTable();
+	    VectorLayer data = ((FeatureTableDocumentPanel) iWindow).getModel().getAssociatedLayer();
 	    if(data instanceof FLyrVect){
 		NavTable nt = new NavTable((FLyrVect) data);
 		if(nt.init()){
@@ -88,26 +94,12 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
 	}
     }
 
-    private void openAlphanumericNavtable() {
-	Table table = (Table) PluginServices.getMDIManager().getActiveWindow();
-	IEditableSource model = table.getModel().getModelo();
-	AlphanumericNavTable viewer;
-	try {
-	    viewer = new AlphanumericNavTable(model, table.getModel().getName());
-	    if (viewer.init()) {
-		PluginServices.getMDIManager().addCentredWindow(viewer);
-	    }
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	}
-    }
-
-
     public void initialize() {
-	About about = (About) PluginServices.getExtension(About.class);
-	FPanelAbout panelAbout = about.getAboutPanel();
-	java.net.URL aboutURL = this.getClass().getResource("/about.htm");
-	panelAbout.addAboutUrl("NavTable", aboutURL);
+	ApplicationManager application = ApplicationLocator.getManager();
+	AboutManager about = application.getAbout();
+	about.addDeveloper("NavTable", getClass().getClassLoader().getResource("/about.htm"), 1);
+	
+    IconThemeHelper.registerIcon("action", "navtable", this);
 
 	// Entry at TOC contextual menu
 	ExtensionPoints extensionPoints = ExtensionPointsSingleton
@@ -127,7 +119,7 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
 	File configDir;
 	String configDirStr;
 	try {
-	    configDirStr = com.iver.andami.Launcher.getAppHomeDir()
+	    configDirStr = Launcher.getAppHomeDir()
 		    + "NavTable";
 	} catch (java.lang.NoSuchMethodError e) {
 	    configDirStr = System.getProperty("user.home") + File.separator
@@ -144,28 +136,19 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
     }
 
     public boolean isEnabled() {
-	return enableNavtable() || enableAlphanumericNavtable();
+    	return enableNavtable();
     }
 
     protected boolean enableNavtable() {
-	return !getActiveVectorialLayersOnTheActiveWindow().isEmpty() || isActiveWindowAttTableFromLayer();
-    }
-
-    protected boolean enableAlphanumericNavtable() {
-	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
-	if ((iWindow != null) && (iWindow.getClass() == Table.class)
-		&& !(isActiveWindowAttTableFromLayer())) {
-	    return true;
-	}
-	return false;
+    	return !getActiveVectorialLayersOnTheActiveWindow().isEmpty() || isActiveWindowAttTableFromLayer();
     }
 
     private boolean isActiveWindowAttTableFromLayer() {
 	IWindow w = PluginServices.getMDIManager().getActiveWindow();
-	if(!(w instanceof Table)){
+	if(!(w instanceof FeatureTableDocumentPanel)){
 	    return false;
 	}
-	return ((Table) w).getModel().getAssociatedTable() instanceof FLyrVect;
+	return ((FeatureTableDocumentPanel) w).getModel().getAssociatedLayer() instanceof FLyrVect;
     }
 
 
@@ -173,8 +156,8 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
 	IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
 	ArrayList<FLyrVect> activeVectorialLayers = new ArrayList<FLyrVect>();
 
-	if (iWindow instanceof BaseView) {
-	    FLayer[] activeLayers = ((BaseView) iWindow).getMapControl()
+	if (iWindow instanceof IView) {
+	    FLayer[] activeLayers = ((IView) iWindow).getMapControl()
 		    .getMapContext().getLayers().getActives();
 	    for (FLayer lyr : activeLayers) {
 		if (lyr instanceof FLyrVect) {
@@ -192,5 +175,4 @@ public class NavTableExtension extends Extension implements IPreferenceExtension
 	}
 	return preferencesPage;
     }
-
 }

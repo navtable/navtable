@@ -5,7 +5,7 @@
 	<property name="dist" location="dist" />
 	<property name="plugin" value="es.udc.cartolab.gvsig.navtable" />
 	<property name="extensionsDir" location="../_fwAndami/gvSIG/extensiones" />
-	<import file="../binaries/ant/utilities.xml" />
+	<!-- <import file="../binaries/ant/utilities.xml" /> -->
 
 	<target name="init">
 		<tstamp />
@@ -33,8 +33,10 @@
 
 	<target name="copy-data-files">
 		<copy todir="${dist}/images">
-			<fileset dir="images" includes="table_refresh.png" />
 			<fileset dir="images" includes="header_cartolab.png" />
+		</copy>
+		<copy todir="${dist}/images/action">
+			<fileset dir="images/action" includes="navtable.png" />
 		</copy>
 
 		<copy file="config/about.htm" todir="${dist}" />
@@ -44,13 +46,18 @@
 		</copy>
 		<copy file="package.info" todir="${dist}" />
 	</target>
-
+<!--
 	<target name="move-to-andami">
 		<move todir="${extensionsDir}/${plugin}/">
 			<fileset dir="${dist}" includes="**/**" />
 		</move>
 	</target>
-
+-->
+	<target name="move-to-andami">
+			<move todir="/home/fpuga/development/gvsig-desktop2.2.0-2312/org.gvsig.desktop-2.0.100/target/product/gvSIG/extensiones/es.icarto.gvsig.navtable">
+				<fileset dir="${dist}" includes="**/**" />
+			</move>
+		</target>
 	<target name="clean">
 		<delete dir="${dist}" />
 		<delete dir="${build}" />
