@@ -12,7 +12,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.app.mainplugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.mapcontext.api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.utils"/>
-	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/gvsig/org.gvsig.tools.lib/3.0.88/org.gvsig.tools.lib-3.0.88.jar"/>
+	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/gvsig/org.gvsig.tools.lib/3.0.88/org.gvsig.tools.lib-3.0.88.jar" sourcepath="/home/fpuga/.m2/repository/org/gvsig/org.gvsig.tools.lib/3.0.88/org.gvsig.tools.lib-3.0.88-sources.jar"/>
 	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/slf4j/slf4j-api/1.7.2/slf4j-api-1.7.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.control"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.app.document.table.app.mainplugin"/>
@@ -23,5 +23,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.gvsig.fmap.geometry.generalpath"/>
 	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/gvsig/org.gvsig.tools.swing.api/3.0.59/org.gvsig.tools.swing.api-3.0.59.jar"/>
 	<classpathentry kind="lib" path="/home/fpuga/.m2/repository/org/gvsig/org.gvsig.projection.api/2.0.17/org.gvsig.projection.api-2.0.17.jar"/>
+	<classpathentry kind="src" path="/org.gvsig.i18n"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,5 +1,6 @@
 package es.icarto.gvsig.navtable.gvsig2;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.mapcontext.layers.SelectionEvent;
 import org.gvsig.fmap.mapcontext.layers.SelectionListener;
 import org.gvsig.gui.beans.editabletextcomponent.IEditableText;
+import org.gvsig.tools.dataTypes.DataTypes;
 import org.gvsig.tools.dispose.DisposableIterator;
 import org.gvsig.tools.dispose.DisposeUtils;
 import org.gvsig.tools.observer.Observable;
@@ -105,7 +107,37 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 	}
 
 	public int getFieldType(int i) {
-		return attDesc[i].getType();
+		int gvsig2Type = attDesc[i].getType();
+		return type2gvsig1(gvsig2Type);
+	}
+
+	private int type2gvsig1(int gvsig2Type) {
+		switch (gvsig2Type) {
+		case DataTypes.BOOLEAN:
+			return Types.BOOLEAN;
+		case DataTypes.BYTE:
+			return Types.SMALLINT;
+		case DataTypes.INT:
+			return Types.INTEGER;
+		case DataTypes.LONG:
+			return Types.BIGINT;
+		case DataTypes.CHAR:
+			return Types.CHAR;
+		case DataTypes.FLOAT:
+			return Types.FLOAT;
+		case DataTypes.DOUBLE:
+			return Types.DOUBLE;
+		case DataTypes.STRING:
+			return Types.VARCHAR;
+		case DataTypes.DATE:
+			return Types.DATE;
+		case DataTypes.TIME:
+			return Types.TIME;
+		case DataTypes.TIMESTAMP:
+			return Types.TIMESTAMP;
+		default:
+			throw new RuntimeException("Not supported type");
+		}
 	}
 
 	@Override
