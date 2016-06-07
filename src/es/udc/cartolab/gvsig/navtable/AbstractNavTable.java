@@ -51,6 +51,7 @@ import org.gvsig.andami.ui.mdiFrame.MDIFrame;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
+import org.gvsig.app.extension.SelectByAttributesExtension;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.FeatureStoreNotification;
 import org.gvsig.fmap.geom.Geometry;
@@ -64,7 +65,7 @@ import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 
 import es.icarto.gvsig.navtable.gvsig2.FBitSet;
-import es.icarto.gvsig.navtable.gvsig2.FiltroExtension;
+import es.icarto.gvsig.navtable.gvsig2.SelectByAttributes;
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.navtable.navigation.NavigationHandler;
 import es.udc.cartolab.gvsig.navtable.dataacces.IController;
@@ -816,10 +817,9 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 
     private void filterButtonClicked() {
 	if (getRecordset().getSelection().isEmpty()) {
-	    FiltroExtension fe = new FiltroExtension();
-	    fe.initialize();
-	    fe.setDatasource(getRecordset(), dataName);
-	    fe.execute("FILTER_DATASOURCE");
+	    SelectByAttributes fe = new SelectByAttributes();
+	    fe.setDatasource(layer.getFeatureStore(), layer.getName());
+	    fe.execute();
 	} else {
 	    clearSelection();
 	}

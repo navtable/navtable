@@ -17,8 +17,9 @@ import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
+import org.gvsig.fmap.dal.exception.DataException;
 
-import es.icarto.gvsig.navtable.gvsig2.FiltroExtension;
+import es.icarto.gvsig.navtable.gvsig2.SelectByAttributes;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class StringFilterActionListener extends JPanel implements ActionListener, IWindow, IWindowListener {
@@ -26,7 +27,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 	NavTable navtable;
 	String st_expr;
 	String attrValue;
-	FiltroExtension filterExt;
+	SelectByAttributes filterExt;
 
 	JRadioButton rbContainsWith;
 	JRadioButton rbStartsWith;
@@ -42,7 +43,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 	public StringFilterActionListener(final NavTable navtable,
 			final String attrValue,
 			final String st_expr, 
-			final FiltroExtension filterExt) {
+			final SelectByAttributes filterExt) {
 
 		super();
 		
@@ -292,15 +293,20 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 			}
 
 			if (rbStartsWith.isSelected()) {
-				expr = st_expr + " like '" + aux + "%';";
+				expr = st_expr + " like '" + aux + "%'";
 			} else if (rbEndsWith.isSelected()) {
-				expr = st_expr + " like '%" + aux + "';";
+				expr = st_expr + " like '%" + aux + "'";
 			} else {
 				//rbContains.isSelected()
-				expr = st_expr + " like '%" + aux + "%';";
+				expr = st_expr + " like '%" + aux + "%'";
 			}
-			filterExt.newSet(expr);
-			navtable.setOnlySelected(true);
+			try {
+				filterExt.newSet(expr);
+				navtable.setOnlySelected(true);
+			} catch (DataException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

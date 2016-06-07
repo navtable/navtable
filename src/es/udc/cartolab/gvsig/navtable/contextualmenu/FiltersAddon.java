@@ -11,9 +11,10 @@ import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
 import org.gvsig.andami.PluginServices;
+import org.gvsig.fmap.dal.exception.DataException;
 
 import es.icarto.gvsig.navtable.gvsig2.FBitSet;
-import es.icarto.gvsig.navtable.gvsig2.FiltroExtension;
+import es.icarto.gvsig.navtable.gvsig2.SelectByAttributes;
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
@@ -62,11 +63,11 @@ public class FiltersAddon implements INavTableContextMenu {
 		rowSelected, 1);
 	final int attrType = getAttrTypeForValueSelected(rowSelected);
 
-	final FiltroExtension filterExt = new FiltroExtension();
-	filterExt.setDatasource(sds, "");
+	final SelectByAttributes filterExt = new SelectByAttributes();
+	filterExt.setDatasource(navtable.getLayer().getFeatureStore(), navtable.getLayer().getName());
 
-	final String st_expr = "select * from '" + sds.getName() + "' where "
-		+ attrName;
+	// final String st_expr = "select * from '" + sds.getName() + "' where " + attrName;
+	final String st_expr = attrName;
 
 	ArrayList<JMenuItem> menus = new ArrayList<JMenuItem>();
 
@@ -113,14 +114,13 @@ public class FiltersAddon implements INavTableContextMenu {
 	return menus;
     }
 
-    private JMenuItem getMenuItemForSetFilter(final FiltroExtension filterExt) {
+    private JMenuItem getMenuItemForSetFilter(final SelectByAttributes filterExt) {
 	JMenuItem tmpMenuItem = new JMenuItem(PluginServices.getText(this,
 		"filter_filter"), navtable.getIcon("/filter.png"));
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		filterExt.initialize();
-		filterExt.setDatasource(sds, dataName);
-		filterExt.execute("FILTER_DATASOURCE");
+		filterExt.setDatasource(navtable.getLayer().getFeatureStore(), navtable.getLayer().getName());
+		filterExt.execute();
 	    }
 	});
 	return tmpMenuItem;
@@ -129,7 +129,7 @@ public class FiltersAddon implements INavTableContextMenu {
 
 
     private ArrayList<JMenuItem> getMenuItemsForBoolean(
-	    final FiltroExtension filterExt, final String st_expr) {
+	    final SelectByAttributes filterExt, final String st_expr) {
 
 	ArrayList<JMenuItem> booleanMenu = new ArrayList<JMenuItem>();
 
@@ -137,7 +137,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		"filter_equals") + " = TRUE");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		String expr = st_expr + " = boolean('true');";
+		String expr = st_expr + " = true";
 		executeFilter(filterExt,expr);
 	    }
 	});
@@ -147,7 +147,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		"filter_equals") + " = FALSE");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		String expr = st_expr + " = boolean('false');";
+		String expr = st_expr + " = false";
 		executeFilter(filterExt,expr);
 	    }
 	});
@@ -157,7 +157,7 @@ public class FiltersAddon implements INavTableContextMenu {
     }
 
     private ArrayList<JMenuItem> getMenuItemsForNumeric(
-	    final FiltroExtension filterExt, final String st_expr,
+	    final SelectByAttributes filterExt, final String st_expr,
 	    final String attrValue, String attrValueAsNTFormat) {
 
 	ArrayList<JMenuItem> numericMenu = new ArrayList<JMenuItem>();
@@ -166,7 +166,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		"filter_numeric_equals") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		String expr = st_expr + " = " + attrValue + ";";
+		String expr = st_expr + " = " + attrValue;
 		executeFilter(filterExt,expr);
 	    }
 	});
@@ -179,7 +179,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		+ "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		String expr = st_expr + " != " + attrValue + ";";
+		String expr = st_expr + " != " + attrValue;
 		executeFilter(filterExt,expr);
 	    }
 	});
@@ -191,7 +191,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	    public void actionPerformed(ActionEvent evt) {
 		// TODO: Still not working. Remove option with
 		// numbers. Open a dialog to type the '%...%'?
-		String expr = st_expr + " < " + attrValue + ";";
+		String expr = st_expr + " < " + attrValue;
 		executeFilter(filterExt,expr);
 	    }
 	});
@@ -203,7 +203,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	    public void actionPerformed(ActionEvent evt) {
 		// TODO: Still not working. Remove option with
 		// numbers. Open a dialog to type the '%...%'?
-		String expr = st_expr + " > " + attrValue + ";";
+		String expr = st_expr + " > " + attrValue;
 		executeFilter(filterExt,expr);
 	    }
 	});
@@ -213,7 +213,7 @@ public class FiltersAddon implements INavTableContextMenu {
     }
 
     private ArrayList<JMenuItem> getMenuItemsForString(
-	    final FiltroExtension filterExt, final String st_expr,
+	    final SelectByAttributes filterExt, final String st_expr,
 	    final String attrValue) {
 
 	ArrayList<JMenuItem> stringMenu = new ArrayList<JMenuItem>();
@@ -222,7 +222,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		"filter_equals") + " '" + attrValue + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		String exp = st_expr + " = '" + attrValue + "';";
+		String exp = st_expr + " = '" + attrValue + "'";
 		executeFilter(filterExt, exp);
 	    }
 	});
@@ -232,7 +232,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		"filter_different") + " '" + attrValue + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		String exp = st_expr + " != '" + attrValue + "';";
+		String exp = st_expr + " != '" + attrValue + "'";
 		executeFilter(filterExt, exp);
 	    }
 	});
@@ -292,9 +292,14 @@ public class FiltersAddon implements INavTableContextMenu {
 	return true;
     }
 
-    public void executeFilter(final FiltroExtension filterExt,
+    public void executeFilter(final SelectByAttributes filterExt,
 	    final String st_expr){
-	filterExt.newSet(st_expr);
-	navtable.setOnlySelected(true);
+	try {
+		filterExt.newSet(st_expr);
+		navtable.setOnlySelected(true);
+	} catch (DataException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     }
 }
