@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.gvsig.fmap.dal.DataStoreNotification;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.dal.feature.EditableFeature;
 import org.gvsig.fmap.dal.feature.Feature;
 import org.gvsig.fmap.dal.feature.FeatureAttributeDescriptor;
 import org.gvsig.fmap.dal.feature.FeatureSelection;
@@ -40,8 +41,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 
 	public SelectableDataSource(FeatureStore fs) throws DataException {
 		this.fs = fs;
-		FeatureType defaultFeatureType;
-		defaultFeatureType = fs.getFeatureSet().getDefaultFeatureType();
+		FeatureType defaultFeatureType = fs.getFeatureSet().getDefaultFeatureType();
 		geomIdx = defaultFeatureType.getDefaultGeometryAttributeIndex();
 		if (geomIdx != -1) {
 			FeatureAttributeDescriptor[] foo = defaultFeatureType.getAttributeDescriptors();
@@ -106,6 +106,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 		}
 	}
 
+	@Override
 	public int getFieldType(int i) {
 		int gvsig2Type = attDesc[i].getType();
 		return type2gvsig1(gvsig2Type);
@@ -300,11 +301,48 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 		return -1;
 	}
 
+	@Override
 	public Geometry getGeometry(long pos) {
 		if (currentPos != pos) {
 			setCurrentFeature(pos);
 		}
-		
 		return currentFeat.getGeometry(geomIdx);
+	}
+
+	@Override
+	public boolean isWritable() {
+		return fs.allowWrite();
+	}
+
+	@Override
+	public DefaultFeature getRow(int pos) {
+		if (currentPos != pos) {
+			setCurrentFeature(pos);
+		}
+		
+		return new DefaultFeature(currentFeat);
+	}
+
+	@Override
+	public void modifyRow(int pos, DefaultFeature newRow) throws DataException {
+		if (currentPos != pos) {
+			setCurrentFeature(pos);
+		}
+		EditableFeature editable = currentFeat.getEditable();
+		for (int i=0; i<attDesc.length; i++) {
+			editable.set(i, newRow.getAttributes()[i].value);
+		}
+		if (geomIdx != -1) {
+			editable.setGeometry(geomIdx, newRow.getGeometry());
+		}
+		fs.update(editable);
+	}
+
+	@Override
+	public void removeRow(int pos) throws DataException {
+		if (currentPos != pos) {
+			setCurrentFeature(pos);
+		}
+		fs.delete(currentFeat);
 	}
 }
