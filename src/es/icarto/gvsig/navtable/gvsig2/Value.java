@@ -13,19 +13,23 @@ public class Value {
 	}
 	 
 	public double doubleValue() {
-		return 0;
+		Number n = (Number) value;
+		return n.doubleValue();
 	}
 	
 	public float floatValue() {
-		return 0;
+		Number n = (Number) value;
+		return n.floatValue();
 	}
 	
 	public int intValue() {
-		return 0;
+		Number n = (Number) value;
+		return n.intValue();
 	}
 	
 	public long longValue() {
-		return 0;
+		Number n = (Number) value;
+		return n.longValue();
 	}
 	
 	public int getType() {
@@ -34,6 +38,11 @@ public class Value {
 	}
 
 	public String getStringValue(ValueWriter valueWriter) {
+		return value.toString();
+	}
+	
+	@Override
+	public String toString() {
 		return value.toString();
 	}
 	

@@ -7,12 +7,7 @@ public class BooleanValue extends Value {
 		super(o);
 	}
 	public boolean getValue() {
-		return false;
-	}
-
-	public void setValue(boolean b) {
-		// TODO Auto-generated method stub
-		
+		return (boolean) value;
 	}
 	
 	public String getStringValue(ValueWriter valueWriter) {
