@@ -72,8 +72,8 @@ public class EditionListener implements LayerListener, Observer {
 			featureStore.addObserver(this);
 	    } else if (featureStore != null) {
 		featureStore.deleteObserver(this);
+		refresh();
 	    }
-	    refresh();
 	}
 	nt.layerEvent(e);
     }

@@ -26,19 +26,39 @@ package es.udc.cartolab.gvsig.navtable;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.messages.Messages;
 import org.gvsig.andami.messages.NotificationManager;
 import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.app.ApplicationLocator;
+import org.gvsig.app.project.documents.table.TableDocument;
 import org.gvsig.app.project.documents.table.gui.FeatureTableDocumentPanel;
+import org.gvsig.app.project.documents.view.gui.DefaultViewPanel;
+import org.gvsig.editing.CancelException;
+import org.gvsig.editing.EditingNotification;
+import org.gvsig.editing.EditingNotificationManager;
+import org.gvsig.editing.EditionLocator;
+import org.gvsig.editing.IEditionManager;
+import org.gvsig.editing.layers.VectorialLayerEdited;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.dal.exception.ReadException;
+import org.gvsig.fmap.dal.feature.FeatureStore;
+import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.mapcontext.exceptions.StartEditionLayerException;
 import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.gvsig.fmap.mapcontext.layers.FLayers;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
+import org.gvsig.fmap.mapcontrol.MapControlLocator;
 
+import es.icarto.gvsig.navtable.gvsig2.DefaultFeature;
 import es.icarto.gvsig.navtable.gvsig2.IEditableSource;
 import es.icarto.gvsig.navtable.gvsig2.IGeometry;
+import es.icarto.gvsig.navtable.gvsig2.IRowEdited;
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.navtable.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
@@ -63,58 +83,69 @@ public class ToggleEditing {
      * @param layer - The vectorial layer to be edited.
      */
     public boolean startEditing(FLayer layer) throws DataException{
+    	if (!(layer instanceof FLyrVect)) {
+    		return true;
+    	}
+    	FLyrVect lv = (FLyrVect) layer;
 
-	if (layer instanceof FLyrVect) {
-	    layer.setActive(true);
-
-	    FLyrVect lv = (FLyrVect) layer;
-
-	    try {
-		lv.setEditing(true);
-	    } catch (StartEditionLayerException e) {
-		logger.error(e.getMessage(), e);
-	    }
-	    VectorialEditableAdapter vea = (VectorialEditableAdapter) lv
-		    .getSource();
-
-	    vea.getRules().clear();
-	    try {
-		if (vea.getShapeType() == FShape.POLYGON) {
-		    IRule rulePol = new RulePolygon();
-		    vea.getRules().add(rulePol);
-		}
-	    } catch (DataException e) {
-		logger.error(e.getMessage(), e);
-		return false;
-	    }
-
-	    // If there's a table linked to this layer, its model is changed
-	    // to VectorialEditableAdapter.
-	    ProjectExtension pe = (ProjectExtension) PluginServices
-		    .getExtension(ProjectExtension.class);
-	    if (pe != null) {
-		ProjectTable pt = pe.getProject().getTable(lv);
-		if (pt != null) {
-		    pt.setModel(vea);
-		    FeatureTableDocumentPanel table = getModelTable(pt);
-		    if(table != null) {
-			table.setModel(pt);
-			vea.getCommandRecord().addCommandListener(table);
-		    }
-		}
-	    }
-	}
-	return true;
+    	if (!lv.getFeatureStore().getTransforms().isEmpty()) {
+    		String message = Messages.get("_Cannot_start_edition_in_transformed_layer") + ": '" + lv.getName() + "'";
+			throw new RuntimeException(message);
+    	}
+    	if (!lv.isWritable()) {
+    		String message = PluginServices.getText(this, "this_layer_is_not_self_editable");
+    		throw new RuntimeException(message);
+    	}
+    	
+    	IEditionManager editionManager = EditionLocator.getEditionManager();
+    	// mapControl.setRefentEnabled(true);
+    	List snaplist = layer.getMapContext().getLayersToSnap();
+        if (!snaplist.contains(lv)) {
+        	snaplist.add(lv);
+        }
+        try {
+            editionManager.editLayer(lv, getViewFromLayer(layer));
+        } catch ( CancelException e) {
+        	// Do nothing
+        	return false;
+        } catch (DataException e) {
+            logger.info("Error while starting edition: " + e.getMessage(), e);
+            ApplicationLocator.getManager().message(Messages.get("_Unable_to_start_edition_in_layer") + ": " + lv.getName(), JOptionPane.ERROR_MESSAGE);
+        }
+        return true;
     }
 
     public boolean startEditing(IEditableSource source) {
-	try {
-	    source.startEdition(EditionEvent.ALPHANUMERIC);
-	    return true;
-	} catch (DataException e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
-	}
+    	if (!source.isWritable()) {
+    		NotificationManager.addError(
+    				"La capa no es editable: " + source.getName(),new RuntimeException());
+    			return false;
+    	}
+    	
+    	try {
+    		FeatureTableDocumentPanel table = (FeatureTableDocumentPanel) v;
+            TableDocument doc = (TableDocument) table.getDocument();
+            EditingNotificationManager editingNotification = MapControlLocator.getEditingNotificationManager();
+            EditingNotification notification = editingNotification.notifyObservers(
+                    this,
+                    EditingNotification.BEFORE_ENTER_EDITING_STORE,
+                    doc,
+                    doc.getStore());
+            if( notification.isCanceled() ) {
+                return false;
+            }
+            doc.getStore().edit(FeatureStore.MODE_FULLEDIT);
+            ApplicationLocator.getManager().refreshMenusAndToolBars();
+            editingNotification.notifyObservers(
+                    this,
+                    EditingNotification.AFTER_ENTER_EDITING_STORE,
+                    doc,
+                    doc.getStore());
+        } catch (DataException e) {
+            logger.warn("Problems starting table editing.",e);
+            return false;
+        }
+    	return true;
     }
 
     /**
@@ -137,13 +168,7 @@ public class ToggleEditing {
 		logger.error(e.getMessage(), e);
 		return false;
 	    } finally {
-		try {
-		    layer.setActive(true);
-		    layer.setEditing(false);
-		} catch (StartEditionLayerException e) {
-		    logger.error(e.getMessage(), e);
-		    return false;
-		}
+	    	layer.setActive(true);
 	    }
 	    return true;
 	}
@@ -151,79 +176,78 @@ public class ToggleEditing {
     }
 
     private void cancelEdition(FLayer layer) {
-	layer.setProperty("stoppingEditing", new Boolean(true));
-	VectorialEditableAdapter vea = (VectorialEditableAdapter)
-		((FLyrVect) layer).getSource();
-	try {
-	    vea.cancelEdition(EditionEvent.GRAPHIC);
-	} catch (CancelEditingLayerException e) {
-	    logger.error(e.getMessage(), e);
-	}
-	Table table = getTableFromLayer(layer);
-	if(table != null){
-	    try {
-		table.cancelEditing();
-	    } catch (CancelEditingTableException e) {
-		logger.error(e.getMessage(), e);
-	    }
-	}
-	layer.setProperty("stoppingEditing", new Boolean(false));
+    	IEditionManager edMan = EditionLocator.getEditionManager();
+    	VectorialLayerEdited lyrEd = (VectorialLayerEdited) edMan.getLayerEdited(layer);
+    	try {
+            lyrEd.clearSelection();
+            try {
+                edMan.stopEditLayer(null, (FLyrVect) layer, IEditionManager.CANCEL_EDITING);
+            } catch (CancelException ex) {
+            	logger.error("Layer save canceled", ex);
+            } catch (Exception ex) {
+                logger.error("While stopping layer editing.", ex);
+            }
+            
+    	}catch (ReadException e1) {
+            NotificationManager.showMessageError(e1.getMessage(), e1);
+        } catch (DataException e) {
+            NotificationManager.showMessageError(e.getMessage(), e);
+        }
     }
 
     public boolean stopEditing(IEditableSource source) {
-	try {
-	    IWriteable w = (IWriteable) source;
-	    IWriter writer = w.getWriter();
-	    if (writer == null) {
-		NotificationManager.addError(
-			"No existe driver de escritura para la tabla"
-				+ source.getName(),new RuntimeException());
-		return false;
-	    } else {
-		ITableDefinition tableDef = source.getTableDefinition();
-		writer.initialize(tableDef);
-		source.stopEdition(writer, EditionEvent.ALPHANUMERIC);
-		return true;
-	    }
-	} catch (DataException e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
-	}
+    	if (!source.isWritable()) {
+    		NotificationManager.addError(
+    				"La capa no es editable: " + source.getName(),new RuntimeException());
+    			return false;
+    	}
+    	FeatureTableDocumentPanel table = (FeatureTableDocumentPanel) v;
+    	TableDocument doc = (TableDocument) table.getDocument();
+    	EditingNotificationManager editingNotification = MapControlLocator.getEditingNotificationManager();
+        EditingNotification notification = editingNotification.notifyObservers(
+                this,
+                EditingNotification.BEFORE_ENTER_EDITING_STORE,
+                doc,
+                doc.getStore());
+        if( notification.isCanceled() ) {
+            return false;
+        }
+        table.getModel().getStore().finishEditing();
+        ApplicationLocator.getManager().refreshMenusAndToolBars();
+        editingNotification.notifyObservers(
+                this,
+                EditingNotification.AFTER_ENTER_EDITING_STORE,
+                doc,
+                doc.getStore());
+    	return true;
     }
 
-    private void saveLayer(FLyrVect layer) throws DataException {
-	layer.setProperty("stoppingEditing", new Boolean(true));
-	VectorialEditableAdapter vea = (VectorialEditableAdapter) layer
-		.getSource();
-
-	ISpatialWriter writer = (ISpatialWriter) vea.getWriter();
-	Table table = getTableFromLayer(layer);
-	if(table != null){
-	    table.stopEditingCell();
-	}
-	vea.cleanSelectableDatasource();
-	try {
-	    layer.setRecordset(vea.getRecordset());
-	} catch (DataException e) {
-	    logger.error(e.getMessage(), e);
-	}
-	// The layer recordset must have the changes we made
-	ILayerDefinition lyrDef;
-	try {
-	    lyrDef = EditionUtilities.createLayerDefinition(layer);
-	    String aux = "FIELDS:";
-	    FieldDescription[] flds = lyrDef.getFieldsDesc();
-	    for (int i = 0; i < flds.length; i++) {
-		aux = aux + ", " + flds[i].getFieldAlias();
-	    }
-
-	    lyrDef.setShapeType(layer.getShapeType());
-	    writer.initialize(lyrDef);
-	    vea.stopEdition(writer, EditionEvent.GRAPHIC);
-	    layer.setProperty("stoppingEditing", new Boolean(false));
-	} catch (DataException e) {
-	    logger.error(e.getMessage(), e);
-	} 
+    private boolean saveLayer(FLyrVect layer) throws DataException {
+    	IEditionManager edMan = EditionLocator.getEditionManager();
+    	VectorialLayerEdited lyrEd = (VectorialLayerEdited) edMan.getLayerEdited(layer);
+    	boolean isStop = false;
+    	try {
+            lyrEd.clearSelection();
+            if ( !layer.isWritable() ) {
+            	throw new RuntimeException("Layer is not writeble");
+            }
+            try {
+                edMan.stopEditLayer(null, layer, IEditionManager.ACCEPT_EDITING);
+                isStop = true;
+            } catch (CancelException ex) {
+            	logger.error("Layer save canceled", ex);
+                isStop = false;
+            } catch (Exception ex) {
+                logger.error("While stopping layer editing.", ex);
+                isStop = false;
+            }
+            
+    	}catch (ReadException e1) {
+            NotificationManager.showMessageError(e1.getMessage(), e1);
+        } catch (DataException e) {
+            NotificationManager.showMessageError(e.getMessage(), e);
+        }
+    	return isStop;
     }
 
     /**
@@ -272,16 +296,10 @@ public class ToggleEditing {
 	IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
 	IRowEdited row = source.getRow(rowPosition);
 	Value[] attributes = row.getAttributes();
-	if (row.getLinkedRow() instanceof IFeature) {
-	    attributes[colPosition] = newValue;
-	    IGeometry geometry = getTheGeom(source, rowPosition);
-	    IRow newRow = new DefaultFeature(geometry, attributes,
-		    row.getID());
-	    source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
-		    EditionEvent.ALPHANUMERIC);
-	} else {
-	    logger.error("Row has no geometry");
-	}
+    attributes[colPosition] = newValue;
+    Geometry geometry = row.getGeometry();
+    DefaultFeature newRow = new DefaultFeature(geometry, attributes);
+    source.modifyRow(rowPosition, newRow);
     }
 
     public void modifyValue(IEditableSource source, int rowPosition, int colPosition,
@@ -290,9 +308,8 @@ public class ToggleEditing {
 	IRowEdited row = source.getRow(rowPosition);
 	Value[] attributes = row.getAttributes();
 	attributes[colPosition] = getNewAttribute(source, colPosition, newValue);
-	IRow newRow = new DefaultRow(attributes);
-	source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
-		EditionEvent.ALPHANUMERIC);
+	DefaultFeature newRow = new DefaultFeature(null, attributes);
+	source.modifyRow(rowPosition, newRow);
     }
 
     /**
@@ -321,13 +338,10 @@ public class ToggleEditing {
 	try {
 	    IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
 
-	    IGeometry geometry = getTheGeom(source, rowPosition);
+	    Geometry geometry = getTheGeom(source, rowPosition);
 	    Value[] values = getNewAttributes(source, rowPosition, attIndexes, attValues);
-
-	    IRowEdited row = source.getRow(rowPosition);
-	    IRow newRow = new DefaultFeature(geometry, values, row.getID());
-	    source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
-		    EditionEvent.ALPHANUMERIC);
+	    DefaultFeature newRow = new DefaultFeature(geometry, values);
+	    source.modifyRow(rowPosition, newRow);
 	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
 	}
@@ -339,22 +353,17 @@ public class ToggleEditing {
 	    Value[] attributes = getNewAttributes(
 		    source, rowPosition, attIndexes, attValues);
 
-	    IRow newRow = new DefaultRow(attributes);
-	    source.modifyRow(rowPosition, newRow, "NAVTABLE MODIFY",
-		    EditionEvent.ALPHANUMERIC);
-	} catch (ExpansionFileReadException e) {
+	    DefaultFeature newRow = new DefaultFeature(null, attributes);
+	    source.modifyRow(rowPosition, newRow);
+	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	} catch (ValidateRowException e) {
-	    logger.error(e.getMessage(), e);
-	}
+	} 
     }
 
     public void deleteRow(FLyrVect layer, int position) {
 	try {
 	    IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
-	    source.removeRow(position, "NAVTABLE DELETE", EditionEvent.ALPHANUMERIC);
+	    source.removeRow(position);
 	} catch (DataException e) {
 	    e.printStackTrace();
 	}
@@ -366,28 +375,24 @@ public class ToggleEditing {
 	    String[] attValues) {
 
 	int type;
-	try {
-	    FieldDescription[] fieldDesc = source.getTableDefinition().getFieldsDesc();
-	    Value[] attributes = source.getRow(rowPosition).getAttributes();
-	    for (int i = 0; i < attIndexes.length; i++) {
-		String att = attValues[i];
-		int idx = attIndexes[i];
-		if (att == null || att.length() == 0) {
-		    attributes[idx] = ValueFactoryNT.createNullValue();
-		} else {
-		    type = fieldDesc[idx].getFieldType();
-		    try {
-			attributes[idx] = ValueFactoryNT.createValueByType(att, type);
-		    } catch (ParseException e) {
-		        logger.warn(e.getStackTrace(), e);
-		    }
-		}
+	
+    Value[] attributes = source.getRow(rowPosition).getAttributes();
+    for (int i = 0; i < attIndexes.length; i++) {
+	String att = attValues[i];
+	int idx = attIndexes[i];
+	if (att == null || att.length() == 0) {
+	    attributes[idx] = ValueFactoryNT.createNullValue();
+	} else {
+	    type = source.getFieldType(idx);
+	    try {
+		attributes[idx] = ValueFactoryNT.createValueByType(att, type);
+	    } catch (ParseException e) {
+	        logger.warn(e.getStackTrace(), e);
 	    }
-	    return attributes;
-	} catch (ReadDriverException e) {
-	    logger.error(e.getMessage(), e);
-	    return null;
 	}
+    }
+    return attributes;
+	
     }
 
     private Value getNewAttribute(IEditableSource source, int colPosition, String newValue) {
@@ -395,9 +400,7 @@ public class ToggleEditing {
 	    newValue = "";
 	}
 	try {
-	    ITableDefinition tableDef = source.getTableDefinition();
-	    FieldDescription[] fieldDesc = tableDef.getFieldsDesc();
-	    int type = fieldDesc[colPosition].getFieldType();
+	    int type = source.getFieldType(colPosition);
 	    Value val;
 	    if (newValue.length() == 0) {
 		val = ValueFactoryNT.createNullValue();
@@ -405,23 +408,14 @@ public class ToggleEditing {
 		val = ValueFactoryNT.createValueByType(newValue, type);
 	    }
 	    return val;
-	} catch (ReadDriverException e) {
-	    logger.error(e.getStackTrace(), e);
-	    return null;
 	} catch (ParseException e) {
 	    logger.warn(e.getStackTrace(), e);
 	    return null;
 	}
     }
 
-    private IGeometry getTheGeom(IEditableSource source, int rowPosition) {
-	try {
-	    IRowEdited row = source.getRow(rowPosition);
-	    return ((DefaultFeature) row.getLinkedRow()).getGeometry();
-	} catch (Exception e) {
-	    logger.error(e.getMessage(), e);
-	    return null;
-	}
+    private Geometry getTheGeom(IEditableSource source, int rowPosition) {
+		return source.getGeometry(rowPosition);
     }
 
     private FeatureTableDocumentPanel getModelTable(ProjectTable pt) {
@@ -444,19 +438,28 @@ public class ToggleEditing {
 
     private FeatureTableDocumentPanel getTableFromLayer(FLayer layer) {
 	//TODO: see how drop this IWindow dependence
-	IWindow[] views = null;
-	try {
-	    views = PluginServices.getMDIManager().getAllWindows();
-	    for (int j = 0; j < views.length; j++) {
-		    if (views[j] instanceof FeatureTableDocumentPanel) {
-		    	FeatureTableDocumentPanel table = (FeatureTableDocumentPanel) views[j];
-			if (table.getModel().getAssociatedLayer() != null
-				&& table.getModel().getAssociatedLayer().equals(layer)) {
-			    return table;
-			}
-		    }
+	IWindow[] views = PluginServices.getMDIManager().getAllWindows();
+    for (int j = 0; j < views.length; j++) {
+	    if (views[j] instanceof FeatureTableDocumentPanel) {
+	    	FeatureTableDocumentPanel table = (FeatureTableDocumentPanel) views[j];
+		if (table.getModel().getAssociatedLayer() != null
+			&& table.getModel().getAssociatedLayer().equals(layer)) {
+		    return table;
+		}
 	    }
-	} catch (NullPointerException e) {}
+    }
+    return null;
+    }
+    
+    private DefaultViewPanel getViewFromLayer(FLayer layer) {
+    	//TODO: see how drop this IWindow dependence
+    	IWindow[] views = PluginServices.getMDIManager().getAllWindows();
+        for (int j = 0; j < views.length; j++) {
+    	    if (views[j] instanceof DefaultViewPanel) {
+    	    	DefaultViewPanel view = (DefaultViewPanel) views[j];
+    	    	return view;
+    	    }
+        }
 	
 	return null;
     }
