@@ -3,7 +3,8 @@ package es.udc.cartolab.gvsig.navtable.utils;
 import java.text.Collator;
 import java.util.Comparator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.BinaryValue;
 import es.icarto.gvsig.navtable.gvsig2.BooleanValue;
@@ -19,9 +20,10 @@ import es.icarto.gvsig.navtable.gvsig2.Value;
 
 public class ValueComparator implements Comparator<Value> {
 
-    private static final Logger logger = Logger
-	    .getLogger(ValueComparator.class);
-
+    
+	private static final Logger logger = LoggerFactory
+			.getLogger(ValueComparator.class);
+	
     @Override
     /**
      * Prerequisite: o1 and o2 are instances of the same class

@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.gvsig.app.project.documents.table.TableDocument;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.navtable.gvsig2.Value;
@@ -40,6 +42,10 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
  */
 public class TableController implements IController {
 
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(TableController.class);
+	
     public static int NO_ROW = -1;
 
     private TableDocument model;
@@ -65,7 +71,7 @@ public class TableController implements IController {
 		types.put(name, sds.getFieldType(i));
 	    }
 	} catch (DataException e) {
-	    e.printStackTrace();
+		logger.error(e.getMessage(), e);
 	    clearAll();
 	}
     }

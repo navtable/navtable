@@ -22,6 +22,8 @@ import java.util.Set;
 
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
@@ -39,6 +41,9 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
  */
 public class LayerController implements IController {
 
+	private static final Logger logger = LoggerFactory
+			.getLogger(LayerController.class);
+	
     private FLyrVect layer;
     private HashMap<String, Integer> indexes;
     private HashMap<String, Integer> types;
@@ -101,6 +106,7 @@ public class LayerController implements IController {
 		}
 		this.read((int) position);
 	} catch (DataException e) {
+		logger.error(e.getMessage(), e);
 		if (!wasEditing) {
 		    te.stopEditing(layer, true);
 		}

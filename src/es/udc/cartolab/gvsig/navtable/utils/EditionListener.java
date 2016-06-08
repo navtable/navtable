@@ -17,7 +17,7 @@
 
 package es.udc.cartolab.gvsig.navtable.utils;
 
-import org.apache.log4j.Logger;
+
 import org.gvsig.editing.EditingNotificationManager;
 import org.gvsig.fmap.dal.DataStoreNotification;
 import org.gvsig.fmap.dal.exception.DataException;
@@ -30,6 +30,8 @@ import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 import org.gvsig.fmap.mapcontrol.MapControlLocator;
 import org.gvsig.tools.observer.Observable;
 import org.gvsig.tools.observer.Observer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.IEditableSource;
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
@@ -45,9 +47,11 @@ import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
  */
 public class EditionListener implements LayerListener, Observer {
 
+	private static final Logger logger = LoggerFactory
+			.getLogger(EditionListener.class);
+	
     private AbstractNavTable nt;
 	private FLyrVect layer;
-    protected static Logger logger = Logger.getLogger("NavTable");
 
     public EditionListener(AbstractNavTable nt, FLyrVect layer) {
 	this.nt = nt;
@@ -102,8 +106,7 @@ public class EditionListener implements LayerListener, Observer {
 							nt.fillValues();
 						}
 					} catch (DataException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(e.getMessage(), e);
 					}
 					
 				}

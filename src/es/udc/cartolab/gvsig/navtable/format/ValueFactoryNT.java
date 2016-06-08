@@ -7,6 +7,9 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import es.icarto.gvsig.navtable.gvsig2.Value;
 import es.icarto.gvsig.navtable.gvsig2.ValueFactory;
 
@@ -16,6 +19,10 @@ import es.icarto.gvsig.navtable.gvsig2.ValueFactory;
  */
 public class ValueFactoryNT extends ValueFactory {
 
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(ValueFactoryNT.class);
+	
     public static Value createValueByType(String text, int type)
 	    throws ParseException {
 
@@ -121,8 +128,9 @@ public class ValueFactoryNT extends ValueFactory {
 		    return ValueFactory.createValue(doubleValue);
 		}
 	    } catch (ParseException e) {
+	    	logger.error(e.getMessage(), e);
 	    } catch (Exception e) {
-		e.printStackTrace();
+	    	logger.error(e.getMessage(), e);
 	    }
 
 	default:

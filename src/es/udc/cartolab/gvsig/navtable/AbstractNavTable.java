@@ -45,7 +45,6 @@ import javax.swing.RowSorter.SortKey;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.apache.log4j.Logger;
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiFrame.MDIFrame;
 import org.gvsig.andami.ui.mdiManager.IWindow;
@@ -63,6 +62,8 @@ import org.gvsig.tools.exception.BaseException;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.FBitSet;
 import es.icarto.gvsig.navtable.gvsig2.SelectByAttributes;
@@ -87,8 +88,8 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 public abstract class AbstractNavTable extends JPanel implements IWindow,
 	ActionListener, IWindowListener, PositionListener {
 
-    private static final Logger logger = Logger
-	    .getLogger(AbstractNavTable.class);
+private static final Logger logger = LoggerFactory
+		.getLogger(AbstractNavTable.class);
 
     public static final int EMPTY_REGISTER = -1;
     protected static final int BUTTON_REMOVE = 0;
@@ -186,7 +187,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		return false;
 	    }
 	} catch (DataException e) {
-	    logger.error(e.getStackTrace());
+	    logger.error(e.getMessage(), e);
 	    return false;
 	}
 
@@ -228,7 +229,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    layerController = new LayerController(this.layer);
 	    layerController.read(getPosition());
 	} catch (DataException e) {
-	    logger.error(e.getStackTrace(), e);
+	    logger.error(e.getMessage(), e);
 	    return false;
 	}
 	return true;
@@ -794,7 +795,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 		try {
 		    deleteRecord();
 		} catch (DataException ex) {
-		    ex.printStackTrace();
+		    logger.error(ex.getMessage(), ex);
 		    String errorMessage = (ex.getCause() != null) ? ex
 			    .getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
 			    .replace("ERROR: ", "").replace(" ", "_")
@@ -835,7 +836,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 			JOptionPane.ERROR_MESSAGE);
 	    }
 	} catch (DataException ex) {
-	    logger.error(ex.getStackTrace(), ex);
+	    logger.error(ex.getMessage(), ex);
 	    String errorMessage = (ex.getCause() != null) ? ex.getCause()
 		    .getMessage() : ex.getMessage(), auxMessage = errorMessage
 		    .replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = PluginServices
@@ -869,8 +870,6 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    }
 	} catch (DataException e) {
 	    throw e;
-	} catch (BaseException e) {
-	    logger.error(e.getMessage(), e.getCause());
 	}
     }
 
@@ -920,7 +919,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	try {
 		return new SelectableDataSource(layer.getFeatureStore());
 	} catch (DataException e) {
-	    logger.error(e.getStackTrace(), e);
+	    logger.error(e.getMessage(), e);
 	    return null;
 	}
     }
@@ -931,7 +930,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
 	    layerController.read(getPosition());
 	    refreshGUI();
 	} catch (DataException rde) {
-	    logger.error(rde.getStackTrace(), rde);
+	    logger.error(rde.getMessage(), e);
 	    layerController.clearAll();
 	    refreshGUI();
 	}

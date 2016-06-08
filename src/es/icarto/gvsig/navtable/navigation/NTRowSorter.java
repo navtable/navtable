@@ -4,13 +4,13 @@ import java.util.Comparator;
 
 import javax.swing.DefaultRowSorter;
 
-import org.apache.log4j.Logger;
-
 
 
 
 
 import org.gvsig.fmap.dal.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.navtable.gvsig2.Value;
@@ -19,8 +19,10 @@ import es.udc.cartolab.gvsig.navtable.utils.ValueComparator;
 
 public class NTRowSorter<M extends SelectableDataSource> extends
 	DefaultRowSorter<M, Integer> {
-
-    private static final Logger logger = Logger.getLogger(NTRowSorter.class);
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(NTRowSorter.class);
+	
     private final M model;
     private final ValueComparator comparator;
 
@@ -58,7 +60,7 @@ public class NTRowSorter<M extends SelectableDataSource> extends
 	    try {
 		return model.getFieldCount();
 	    } catch (DataException e) {
-		logger.error(e.getStackTrace(), e);
+		logger.error(e.getMessage(), e);
 	    }
 	    return 0;
 	}
@@ -68,7 +70,7 @@ public class NTRowSorter<M extends SelectableDataSource> extends
 	    try {
 		return (int) model.getRowCount();
 	    } catch (DataException e) {
-		logger.error(e.getStackTrace(), e);
+		logger.error(e.getMessage(), e);
 	    }
 	    return 0;
 	}

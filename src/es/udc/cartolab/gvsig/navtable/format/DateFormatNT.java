@@ -6,7 +6,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.DateValue;
 import es.icarto.gvsig.navtable.gvsig2.NullValue;
@@ -20,9 +21,10 @@ import es.icarto.gvsig.navtable.gvsig2.Value;
  */
 public class DateFormatNT {
 
-    
-    private static final Logger logger = Logger.getLogger(DateFormatNT.class);
-    
+
+private static final Logger logger = LoggerFactory
+		.getLogger(DateFormatNT.class);
+
     private static SimpleDateFormat dateFormat;
 
     public static String convertDateValueToString(Value date) {
@@ -45,7 +47,7 @@ public class DateFormatNT {
 	    try {
 		return ValueFactoryNT.createValue(formatter.parse(date));
 	    } catch (ParseException e) {
-		e.printStackTrace();
+		logger.error(e.getMessage(), e);
 		return ValueFactoryNT.createNullValue();
 	    }
 	}
@@ -60,7 +62,7 @@ public class DateFormatNT {
 	try {
 	    date = formatter.parse(strDate);
 	} catch (ParseException e) {
-	    logger.error(e.getStackTrace(), e);
+		logger.error(e.getMessage(), e);
 	}
 	return date;
     }

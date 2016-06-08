@@ -7,7 +7,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.preferences.AbstractPreferencePage;
 import org.gvsig.andami.preferences.StoreException;
@@ -15,6 +14,8 @@ import org.gvsig.utils.NotExistInXMLEntity;
 import org.gvsig.utils.XMLEntity;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
@@ -26,7 +27,9 @@ import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
  */
 public class NavTablePreferencesPage extends AbstractPreferencePage {
 
-    protected static Logger logger = Logger.getLogger("NavTable");
+    
+	private static final Logger logger = LoggerFactory
+			.getLogger(NavTablePreferencesPage.class);
 
     private String id;
     private String title;

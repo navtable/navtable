@@ -18,7 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.RowSorter;
 import javax.swing.RowSorter.SortKey;
 
-import org.apache.log4j.Logger;
 import org.gvsig.andami.PluginServices;
 import org.gvsig.fmap.dal.DataStoreNotification;
 import org.gvsig.fmap.dal.exception.DataException;
@@ -28,6 +27,8 @@ import org.gvsig.tools.observer.Observable;
 import org.gvsig.tools.observer.Observer;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.FBitSet;
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
@@ -38,9 +39,9 @@ import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 
 public class NavigationHandler implements ActionListener, Observer {
 
-    private static final Logger logger = Logger
-	    .getLogger(NavigationHandler.class);
-
+private static final Logger logger = LoggerFactory
+		.getLogger(NavigationHandler.class);
+    
     private final PositionEventSource positionEventSource = new PositionEventSource();
 
     private JButton firstB = null;
@@ -266,7 +267,7 @@ public class NavigationHandler implements ActionListener, Observer {
 	    currentPosition = newPosition;
 	    positionEventSource.fireOnPositionChange(evt);
 	} catch (DataException e) {
-	    e.printStackTrace();
+		logger.error(e.getMessage(), e);
 	}
     }
 
@@ -291,7 +292,7 @@ public class NavigationHandler implements ActionListener, Observer {
 		totalLabel.setText("/" + numberOfRowsInRecordset);
 	    }
 	} catch (DataException e) {
-	    logger.error(e.getStackTrace(), e);
+		logger.error(e.getMessage(), e);
 	}
 
     }
@@ -326,8 +327,7 @@ public class NavigationHandler implements ActionListener, Observer {
 		try {
 			nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
 		} catch (DataException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(e1.getMessage(), e);
 		}
 	    }
 
@@ -347,15 +347,13 @@ public class NavigationHandler implements ActionListener, Observer {
 	    	try {
 				nt.getLayer().getFeatureStore().getFeatureSelection().deleteObserver(this);
 			} catch (DataException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				logger.error(e1.getMessage(), e);
 			}
 	    } else {
 	    	try {
 				nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
 			} catch (DataException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				logger.error(e1.getMessage(), e1);
 			}
 	    }
 	    nt.refreshGUI();
@@ -469,7 +467,7 @@ public class NavigationHandler implements ActionListener, Observer {
 		 * the gui is refreshed, but getPosition returns a removed
 		 * position
 		 */
-		logger.error(e.getStackTrace(), e);
+	    	logger.error(e.getMessage(), e);
 		int p = sorter.convertRowIndexToView((int) getPosition() - 1);
 		posTF.setText(String.valueOf(p + 1));
 	    }
@@ -503,8 +501,7 @@ public class NavigationHandler implements ActionListener, Observer {
     	try {
 			nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
     }
 
@@ -512,8 +509,7 @@ public class NavigationHandler implements ActionListener, Observer {
     	try {
 			nt.getLayer().getFeatureStore().getFeatureSelection().deleteObserver(this);
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
     }
 
@@ -560,7 +556,7 @@ public class NavigationHandler implements ActionListener, Observer {
 	    }
 	    currentPosition = newPosition;
 	} catch (DataException e) {
-	    e.printStackTrace();
+		logger.error(e.getMessage(), e);
 	}
     }
 

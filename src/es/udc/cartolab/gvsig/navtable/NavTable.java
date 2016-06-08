@@ -44,7 +44,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import org.apache.log4j.Logger;
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
 import org.gvsig.fmap.dal.exception.DataException;
@@ -61,8 +60,10 @@ import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 
 
 
-import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.navtable.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 import es.udc.cartolab.gvsig.navtable.listeners.MyMouseListener;
@@ -92,9 +93,9 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  * @author Francisco Puga
  */
 public class NavTable extends AbstractNavTable {
-
-    private static final Logger logger = Logger.getLogger(NavTable.class);
-
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(NavTable.class);
     private static final long serialVersionUID = 1L;
 
     private boolean isFillingValues = false;
@@ -217,7 +218,7 @@ public class NavTable extends AbstractNavTable {
 	try {
 	    te.modifyValue(layer, row, col, newValue);
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    logger.error(e.getMessage(), e);
 	}
     }
 

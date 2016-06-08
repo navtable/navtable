@@ -30,7 +30,6 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.messages.Messages;
 import org.gvsig.andami.messages.NotificationManager;
@@ -54,6 +53,8 @@ import org.gvsig.fmap.mapcontext.layers.FLayer;
 import org.gvsig.fmap.mapcontext.layers.FLayers;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 import org.gvsig.fmap.mapcontrol.MapControlLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.DefaultFeature;
 import es.icarto.gvsig.navtable.gvsig2.IEditableSource;
@@ -76,9 +77,10 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
  */
 
 public class ToggleEditing {
-
-    protected static Logger logger = Logger.getLogger("ToggleEditing");
-
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(ToggleEditing.class);
+	
     /**
      * @param layer - The vectorial layer to be edited.
      */
@@ -365,7 +367,7 @@ public class ToggleEditing {
 	    IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
 	    source.removeRow(position);
 	} catch (DataException e) {
-	    e.printStackTrace();
+		logger.error(e.getMessage(), e);
 	}
     }
 
@@ -387,7 +389,7 @@ public class ToggleEditing {
 	    try {
 		attributes[idx] = ValueFactoryNT.createValueByType(att, type);
 	    } catch (ParseException e) {
-	        logger.warn(e.getStackTrace(), e);
+	    	logger.warn(e.getMessage(), e);
 	    }
 	}
     }
@@ -409,7 +411,7 @@ public class ToggleEditing {
 	    }
 	    return val;
 	} catch (ParseException e) {
-	    logger.warn(e.getStackTrace(), e);
+		logger.warn(e.getMessage(), e);
 	    return null;
 	}
     }

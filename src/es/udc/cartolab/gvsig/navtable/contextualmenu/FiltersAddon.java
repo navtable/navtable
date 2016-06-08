@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JTable;
 
-import org.apache.log4j.Logger;
 import org.gvsig.andami.PluginServices;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.FBitSet;
 import es.icarto.gvsig.navtable.gvsig2.SelectByAttributes;
@@ -26,8 +27,9 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
  */
 public class FiltersAddon implements INavTableContextMenu {
 
-    protected static Logger logger = Logger.getLogger("NavTable");
-
+private static final Logger logger = LoggerFactory
+		.getLogger(FiltersAddon.class);
+	
     private NavTable navtable;
     private SelectableDataSource sds;
     private JTable table;
@@ -90,7 +92,7 @@ public class FiltersAddon implements INavTableContextMenu {
 	    try {
 		attrValueWithgvSIGFormat = ValueFactoryNT.createValueByType(attrValue, attrType).toString();
 	    } catch (ParseException e) {
-		logger.error(e.getStackTrace(), e);
+	    	logger.error(e.getMessage(), e);
 	    }
 	    menus = getMenuItemsForNumeric(filterExt, st_expr,
 		    attrValueWithgvSIGFormat, attrValue);
@@ -298,8 +300,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		filterExt.newSet(st_expr);
 		navtable.setOnlySelected(true);
 	} catch (DataException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		logger.error(e.getMessage(), e);
 	}
     }
 }

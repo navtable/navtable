@@ -28,10 +28,6 @@ package es.udc.cartolab.gvsig.navtable;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-
-
-
 import org.gvsig.about.AboutManager;
 import org.gvsig.andami.IconThemeHelper;
 import org.gvsig.andami.Launcher;
@@ -54,6 +50,8 @@ import org.gvsig.tools.observer.Observable;
 import org.gvsig.tools.observer.Observer;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.udc.cartolab.gvsig.navtable.contextualmenu.FiltersAddon;
 import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
@@ -64,8 +62,9 @@ import es.udc.cartolab.gvsig.navtable.utils.NavTableTocMenuEntry;
 
 public class NavTableExtension extends Extension implements IPreferenceExtension {
 
+private static final Logger logger = LoggerFactory
+		.getLogger(NavTableExtension.class);
     private IPreference[] preferencesPage;
-    protected static Logger logger = Logger.getLogger("NavTable");
 
 
     public void execute(String actionCommand) {

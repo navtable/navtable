@@ -18,11 +18,16 @@ import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.navtable.gvsig2.SelectByAttributes;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class StringFilterActionListener extends JPanel implements ActionListener, IWindow, IWindowListener {
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(StringFilterActionListener.class);
 
 	NavTable navtable;
 	String st_expr;
@@ -304,8 +309,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 				filterExt.newSet(expr);
 				navtable.setOnlySelected(true);
 			} catch (DataException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 	}
