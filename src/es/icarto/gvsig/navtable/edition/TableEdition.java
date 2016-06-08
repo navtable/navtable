@@ -14,10 +14,10 @@ import org.gvsig.fmap.mapcontrol.MapControlLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.DefaultFeature;
-import es.icarto.gvsig.navtable.gvsig2.IEditableSource;
-import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
-import es.icarto.gvsig.navtable.gvsig2.Value;
+import es.icarto.gvsig.commons.gvsig2.DefaultFeature;
+import es.icarto.gvsig.commons.gvsig2.IEditableSource;
+import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 public class TableEdition {

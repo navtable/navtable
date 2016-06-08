@@ -9,9 +9,9 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.DateValue;
-import es.icarto.gvsig.navtable.gvsig2.NullValue;
-import es.icarto.gvsig.navtable.gvsig2.Value;
+import es.icarto.gvsig.commons.gvsig2.DateValue;
+import es.icarto.gvsig.commons.gvsig2.NullValue;
+import es.icarto.gvsig.commons.gvsig2.Value;
 
 /**
  * 

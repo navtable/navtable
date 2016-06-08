@@ -21,7 +21,7 @@ import org.gvsig.fmap.dal.exception.DataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.SelectByAttributes;
+import es.icarto.gvsig.commons.gvsig2.SelectByAttributes;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class StringFilterActionListener extends JPanel implements ActionListener, IWindow, IWindowListener {

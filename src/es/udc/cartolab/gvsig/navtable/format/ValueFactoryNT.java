@@ -10,8 +10,8 @@ import java.text.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.Value;
-import es.icarto.gvsig.navtable.gvsig2.ValueFactory;
+import es.icarto.gvsig.commons.gvsig2.Value;
+import es.icarto.gvsig.commons.gvsig2.ValueFactory;
 
 /**
  * ValueFactory to create values from its type, taking into account the format

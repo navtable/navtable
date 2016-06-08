@@ -63,8 +63,8 @@ import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
-import es.icarto.gvsig.navtable.gvsig2.Value;
+import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 import es.udc.cartolab.gvsig.navtable.listeners.MyMouseListener;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;

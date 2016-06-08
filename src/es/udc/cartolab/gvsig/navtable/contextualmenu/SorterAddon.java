@@ -12,9 +12,10 @@ import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
 import org.gvsig.andami.PluginServices;
+
 import es.icarto.gvsig.commons.gui.OkCancelPanel;
+import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.commons.utils.Field;
-import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class SorterAddon implements INavTableContextMenu {

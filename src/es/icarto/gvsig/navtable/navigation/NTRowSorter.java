@@ -8,13 +8,14 @@ import javax.swing.DefaultRowSorter;
 
 
 
+
 import org.gvsig.fmap.dal.exception.DataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
-import es.icarto.gvsig.navtable.gvsig2.Value;
-import es.icarto.gvsig.navtable.gvsig2.ValueFactory;
+import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.gvsig2.Value;
+import es.icarto.gvsig.commons.gvsig2.ValueFactory;
 import es.udc.cartolab.gvsig.navtable.utils.ValueComparator;
 
 public class NTRowSorter<M extends SelectableDataSource> extends

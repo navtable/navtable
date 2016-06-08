@@ -33,8 +33,8 @@ import org.gvsig.tools.observer.Observer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.IEditableSource;
-import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.gvsig2.IEditableSource;
+import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 
 /**

@@ -6,8 +6,7 @@ import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
-import es.icarto.gvsig.navtable.gvsig2.ValueWriter;
-
+import es.icarto.gvsig.commons.gvsig2.ValueWriter;
 
 
 /**

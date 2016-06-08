@@ -30,8 +30,8 @@ import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.FBitSet;
-import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.gvsig2.FBitSet;
+import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;

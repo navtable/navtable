@@ -14,9 +14,9 @@ import org.gvsig.fmap.dal.exception.DataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.navtable.gvsig2.FBitSet;
-import es.icarto.gvsig.navtable.gvsig2.SelectByAttributes;
-import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.gvsig2.FBitSet;
+import es.icarto.gvsig.commons.gvsig2.SelectByAttributes;
+import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
