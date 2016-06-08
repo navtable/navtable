@@ -11,7 +11,6 @@ public interface IEditableSource {
 	public Geometry getGeometry(long pos);
 	public int getFieldType(int i);
 	public boolean isWritable();
-//	public DefaultFeature getRow(int rowPosition);
 	public void modifyRow(int rowPosition, DefaultFeature newRow) throws DataException;
 	public DefaultFeature getRow(int pos);
 	public void removeRow(int position) throws DataException;

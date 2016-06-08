@@ -24,10 +24,14 @@ import org.gvsig.tools.dispose.DisposableIterator;
 import org.gvsig.tools.dispose.DisposeUtils;
 import org.gvsig.tools.observer.Observable;
 import org.gvsig.tools.observer.Observer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SelectableDataSource implements FBitSet, IEditableSource {
-	
+
+	private static final Logger logger = LoggerFactory
+		.getLogger(SelectableDataSource.class);	
 	private final FeatureStore fs;
 	private FeatureAttributeDescriptor[] attDesc;
 	private int geomIdx = -1;
@@ -98,8 +102,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 			currentFeat = f.getCopy();
 			currentPos = pos;
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			DisposeUtils.dispose(fastIterator);
 			DisposeUtils.dispose(featSet);
@@ -167,8 +170,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 			}
 			return featureSelection.isSelected(currentFeat);
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return false;
 	}
@@ -182,8 +184,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 			}
 			featureSelection.select(currentFeat);
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -196,8 +197,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 			}
 			featureSelection.deselect(currentFeat);
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -209,8 +209,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 		try {
 			fs.getFeatureSelection().deselectAll();
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		
 	}
@@ -220,8 +219,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 		try {
 			return fs.getFeatureSelection().isEmpty();
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return false;
 	}
@@ -231,8 +229,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 		try {
 			return (int) fs.getFeatureSelection().getSize();
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return 0;
 	}
@@ -254,8 +251,7 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 				counter++;
 			}
 		} catch (DataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			DisposeUtils.dispose(it);
 			DisposeUtils.dispose(set);
