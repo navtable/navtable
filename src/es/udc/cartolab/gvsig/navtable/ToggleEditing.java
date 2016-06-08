@@ -117,39 +117,6 @@ public class ToggleEditing {
         return true;
     }
 
-    public boolean startEditing(IEditableSource source) {
-    	if (!source.isWritable()) {
-    		NotificationManager.addError(
-    				"La capa no es editable: " + source.getName(),new RuntimeException());
-    			return false;
-    	}
-    	
-    	try {
-    		FeatureTableDocumentPanel table = (FeatureTableDocumentPanel) v;
-            TableDocument doc = (TableDocument) table.getDocument();
-            EditingNotificationManager editingNotification = MapControlLocator.getEditingNotificationManager();
-            EditingNotification notification = editingNotification.notifyObservers(
-                    this,
-                    EditingNotification.BEFORE_ENTER_EDITING_STORE,
-                    doc,
-                    doc.getStore());
-            if( notification.isCanceled() ) {
-                return false;
-            }
-            doc.getStore().edit(FeatureStore.MODE_FULLEDIT);
-            ApplicationLocator.getManager().refreshMenusAndToolBars();
-            editingNotification.notifyObservers(
-                    this,
-                    EditingNotification.AFTER_ENTER_EDITING_STORE,
-                    doc,
-                    doc.getStore());
-        } catch (DataException e) {
-            logger.warn("Problems starting table editing.",e);
-            return false;
-        }
-    	return true;
-    }
-
     /**
      * @param layer
      *            - The layer wich edition will be stoped.
@@ -195,33 +162,6 @@ public class ToggleEditing {
         } catch (DataException e) {
             NotificationManager.showMessageError(e.getMessage(), e);
         }
-    }
-
-    public boolean stopEditing(IEditableSource source) {
-    	if (!source.isWritable()) {
-    		NotificationManager.addError(
-    				"La capa no es editable: " + source.getName(),new RuntimeException());
-    			return false;
-    	}
-    	FeatureTableDocumentPanel table = (FeatureTableDocumentPanel) v;
-    	TableDocument doc = (TableDocument) table.getDocument();
-    	EditingNotificationManager editingNotification = MapControlLocator.getEditingNotificationManager();
-        EditingNotification notification = editingNotification.notifyObservers(
-                this,
-                EditingNotification.BEFORE_ENTER_EDITING_STORE,
-                doc,
-                doc.getStore());
-        if( notification.isCanceled() ) {
-            return false;
-        }
-        table.getModel().getStore().finishEditing();
-        ApplicationLocator.getManager().refreshMenusAndToolBars();
-        editingNotification.notifyObservers(
-                this,
-                EditingNotification.AFTER_ENTER_EDITING_STORE,
-                doc,
-                doc.getStore());
-    	return true;
     }
 
     private boolean saveLayer(FLyrVect layer) throws DataException {
@@ -340,7 +280,7 @@ public class ToggleEditing {
 	try {
 	    IEditableSource source = (IEditableSource) new SelectableDataSource(layer.getFeatureStore());
 
-	    Geometry geometry = getTheGeom(source, rowPosition);
+	    Geometry geometry = source.getGeometry(rowPosition);
 	    Value[] values = getNewAttributes(source, rowPosition, attIndexes, attValues);
 	    DefaultFeature newRow = new DefaultFeature(geometry, values);
 	    source.modifyRow(rowPosition, newRow);
@@ -349,18 +289,7 @@ public class ToggleEditing {
 	}
     }
 
-    public void modifyValues(IEditableSource source, int rowPosition,
-	    int[] attIndexes, String[] attValues) {
-	try {
-	    Value[] attributes = getNewAttributes(
-		    source, rowPosition, attIndexes, attValues);
 
-	    DefaultFeature newRow = new DefaultFeature(null, attributes);
-	    source.modifyRow(rowPosition, newRow);
-	} catch (DataException e) {
-	    logger.error(e.getMessage(), e);
-	} 
-    }
 
     public void deleteRow(FLyrVect layer, int position) {
 	try {
@@ -415,43 +344,6 @@ public class ToggleEditing {
 	    return null;
 	}
     }
-
-    private Geometry getTheGeom(IEditableSource source, int rowPosition) {
-		return source.getGeometry(rowPosition);
-    }
-
-    private FeatureTableDocumentPanel getModelTable(ProjectTable pt) {
-	// TODO: see how drop this IWindow dependence, by getting the Table
-	// from internal info (layer, MapControl) instead of iterating
-	// through all windows
-	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
-		.getMDIManager().getAllWindows();
-	for (int i = 0; i < views.length; i++) {
-	    if (views[i] instanceof FeatureTableDocumentPanel) {
-		Table table = (Table) views[i];
-		ProjectTable model = table.getModel();
-		if (model.equals(pt)) {
-		    return table;
-		}
-	    }
-	}
-	return null;
-    }
-
-    private FeatureTableDocumentPanel getTableFromLayer(FLayer layer) {
-	//TODO: see how drop this IWindow dependence
-	IWindow[] views = PluginServices.getMDIManager().getAllWindows();
-    for (int j = 0; j < views.length; j++) {
-	    if (views[j] instanceof FeatureTableDocumentPanel) {
-	    	FeatureTableDocumentPanel table = (FeatureTableDocumentPanel) views[j];
-		if (table.getModel().getAssociatedLayer() != null
-			&& table.getModel().getAssociatedLayer().equals(layer)) {
-		    return table;
-		}
-	    }
-    }
-    return null;
-    }
     
     private DefaultViewPanel getViewFromLayer(FLayer layer) {
     	//TODO: see how drop this IWindow dependence
@@ -465,5 +357,4 @@ public class ToggleEditing {
 	
 	return null;
     }
-
 }

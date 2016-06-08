@@ -10,7 +10,7 @@ public interface IController extends Cloneable {
     
     public abstract void read(long position) throws DataException;
 
-    public abstract void update(long position);
+    public abstract void update(long position) throws DataException;
 
     public abstract void delete(long position) throws DataException;
 

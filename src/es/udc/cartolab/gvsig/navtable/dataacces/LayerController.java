@@ -85,7 +85,7 @@ public class LayerController implements IController {
     }
 
     @Override
-    public void update(long position){
+    public void update(long position) throws DataException{
 	ToggleEditing te = new ToggleEditing();
 	
 	boolean wasEditing = layer.isEditing();
@@ -105,6 +105,7 @@ public class LayerController implements IController {
 		if (!wasEditing) {
 		    te.stopEditing(layer, true);
 		}
+		throw e;
 	}
     }
 

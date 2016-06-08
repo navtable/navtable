@@ -23,9 +23,11 @@ import java.util.Set;
 
 import org.gvsig.app.project.documents.table.TableDocument;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.dal.feature.EditableFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.icarto.gvsig.navtable.edition.TableEdition;
 import es.icarto.gvsig.navtable.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.navtable.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
@@ -76,39 +78,33 @@ public class TableController implements IController {
 	}
     }
 
-    public long create(HashMap<String, String> newValues) throws Exception {
+    public long create(HashMap<String, String> newValues) throws DataException, ParseException {
+    	if (!model.getStore().allowWrite()) {
+    		throw new RuntimeException("Write is not allowed in this table");
+    	}
 
 	initMetadata();
-	Value[] vals = createValuesFromHashMap(newValues);
-
-	ToggleEditing te = new ToggleEditing();
-	if (!model.isEditing()) {
+	
+	TableEdition te = new TableEdition();
+	if (!model.getStore().isEditing()) {
 	    te.startEditing(model);
 	}
-	long newPosition = NO_ROW;
-	if (model instanceof IWriteable) {
-	    IRow row = new DefaultRow(vals);
-	    newPosition = model.doAddRow(row, EditionEvent.ALPHANUMERIC);
-	}
-	te.stopEditing(model);
+	EditableFeature feature = createFeatureFromHashMap(newValues);
+	model.getStore().insert(feature);
+	te.stopEditing(model, false);
+	long newPosition = model.getStore().getFeatureCount() - 1;
 	read(newPosition);
 	return newPosition;
     }
 
-    private Value[] createValuesFromHashMap(HashMap<String, String> newValues) {
-	Value[] vals = new Value[indexes.size()];
-	for (int i = 0; i < indexes.size(); i++) {
-	    vals[i] = ValueFactoryNT.createNullValue();
-	}
-	for (String key : newValues.keySet()) {
-	    try {
-		vals[getIndex(key)] = ValueFactoryNT.createValueByType(
-			newValues.get(key), types.get(key));
-	    } catch (ParseException e) {
-		vals[getIndex(key)] = ValueFactoryNT.createNullValue();
-	    }
-	}
-	return vals;
+    private EditableFeature createFeatureFromHashMap(HashMap<String, String> newValues) throws DataException, ParseException {
+    	EditableFeature f = model.getStore().createNewFeature();
+		for (String key : newValues.keySet()) {
+	    	int index = getIndex(key);
+	    	Object value = ValueFactoryNT.createValueByType(newValues.get(key), types.get(key)).getObjectValue();
+	    	f.set(index, value);
+		}
+		return f;
     }
 
     @Override
@@ -129,35 +125,34 @@ public class TableController implements IController {
     }
 
     @Override
-    public void update(long position) {
-	ToggleEditing te = new ToggleEditing();
-	boolean wasEditing = model.isEditing();
+    public void update(long position) throws DataException {
+    	TableEdition te = new TableEdition();
+	boolean wasEditing = model.getStore().isEditing();
 	if (!wasEditing) {
 	    te.startEditing(model);
 	}
+	
 	te.modifyValues(model, (int) position, getIndexesOfValuesChanged(),
 		getValuesChanged().values().toArray(new String[0]));
 	if (!wasEditing) {
-	    te.stopEditing(model);
+	    te.stopEditing(model, false);
 	}
 	read((int) position);
     }
 
     @Override
     public void delete(long position) {
-
-	model.startEdition(EditionEvent.ALPHANUMERIC);
-
-	IWriteable w = (IWriteable) model;
-	IWriter writer = w.getWriter();
-
-	ITableDefinition tableDef = model.getTableDefinition();
-	writer.initialize(tableDef);
-
-	model.doRemoveRow((int) position, EditionEvent.ALPHANUMERIC);
-	model.stopEdition(writer, EditionEvent.ALPHANUMERIC);
-	model.getStore().refresh();
-	clearAll();
+    	TableEdition te = new TableEdition();
+    	te.startEditing(model);
+    	SelectableDataSource sds;
+		try {
+			sds = new SelectableDataSource(model.getStore());
+			sds.removeRow(position);
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+		}
+    	te.stopEditing(model, false);
+    	clearAll();
     }
 
     @Override
