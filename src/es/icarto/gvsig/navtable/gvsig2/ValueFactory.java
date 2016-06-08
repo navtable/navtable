@@ -10,19 +10,22 @@ import java.util.Date;
 
 import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.tools.dynobject.DynObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.xml.internal.messaging.saaj.soap.Envelope;
-
 
 
 /**
  * Factoría abstracta de objetos value que dado un tipo básico, devuelve el
  * wrapper apropiado
- *
- * @author $author$
- * @version $Revision$
  */
 public class ValueFactory {
+	
+	
+	private static final Logger logger = LoggerFactory
+			.getLogger(ValueFactory.class);
+	
     final static int BYTE = 0;
     final static int SHORT = 1;
     final static int INTEGER = 2;
@@ -392,8 +395,7 @@ public class ValueFactory {
                 try {
 					return createValue(DateFormat.getInstance().parse(text));
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
             
         }

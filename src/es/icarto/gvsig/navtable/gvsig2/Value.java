@@ -33,8 +33,7 @@ public class Value {
 	}
 	
 	public int getType() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new RuntimeException("Not implemented");
 	}
 
 	public String getStringValue(ValueWriter valueWriter) {
