@@ -373,61 +373,6 @@ public class ValueFactory {
 }
 
     /**
-     * DOCUMENT ME!
-     *
-     * @param text DOCUMENT ME!
-     * @param className DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     *
-     * @throws SemanticException DOCUMENT ME!
-     *
-     * @deprecated Use createValueWithType(String, int) instead
-     */
-    public static Value createValue(String text, String className)
-         {
-        if (className.equals("com.hardcode.gdbms.engine.values.BooleanValue")) {
-            return createValue(Boolean.getBoolean(text));
-        }
-
-        if (className.equals("com.hardcode.gdbms.engine.values.DateValue")) {
-            
-                try {
-					return createValue(DateFormat.getInstance().parse(text));
-				} catch (ParseException e) {
-					logger.error(e.getMessage(), e);
-				}
-            
-        }
-
-        if (className.equals("com.hardcode.gdbms.engine.values.DoubleValue")) {
-            return createValue(Double.parseDouble(text));
-        }
-
-        if (className.equals("com.hardcode.gdbms.engine.values.FloatValue")) {
-            return createValue(Float.parseFloat(text));
-        }
-
-        if (className.equals("com.hardcode.gdbms.engine.values.IntValue")) {
-            return createValue(Integer.parseInt(text));
-        }
-
-        if (className.equals("com.hardcode.gdbms.engine.values.LongValue")) {
-            return createValue(Long.parseLong(text));
-        }
-
-        if (className.equals("com.hardcode.gdbms.engine.values.StringValue")) {
-            return createValue(text);
-        }
-        return new NullValue();
-
-        // default:
-//        throw new SemanticException(
-//            "Unexpected className in createValue (GDBMS) text: " + text +
-//            "-> className: " + className);
-    }
-
-    /**
      * Creates a new null Value
      *
      * @return NullValue
