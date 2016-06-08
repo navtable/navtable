@@ -33,13 +33,11 @@ private static final Logger logger = LoggerFactory
     private NavTable navtable;
     private SelectableDataSource sds;
     private JTable table;
-    private String dataName;
 
     private boolean userVisibility = true;
 
     public void setNavtableInstance(NavTable navtable) {
 	this.navtable = navtable;
-	this.dataName = navtable.getDataName();
 	this.sds = navtable.getRecordset();
 	this.table = navtable.getTable();
     }
@@ -272,9 +270,6 @@ private static final Logger logger = LoggerFactory
     }
 
     private boolean isSelectedRowAreaOrLength() {
-	if (navtable.isAlphanumericNT()) {
-	    return false;
-	}
 	if (table.getSelectedRow() >= (table.getRowCount() - 2)) {
 	    return true;
 	} else {

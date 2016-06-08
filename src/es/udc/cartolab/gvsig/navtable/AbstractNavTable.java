@@ -113,7 +113,6 @@ private static final Logger logger = LoggerFactory
     private NavigationHandler navigation;
 
     protected FLyrVect layer = null;
-    protected String dataName = "";
 
     protected boolean changedValues = false;
 
@@ -139,44 +138,13 @@ private static final Logger logger = LoggerFactory
     private JPanel optionsPanel;
 
     protected boolean openEmptyLayers = false;
-    protected boolean isAlphanumericNT = false;
 
     protected WindowInfo windowInfo = null;
 
     public AbstractNavTable(FLyrVect layer) {
 	super();
 	this.layer = layer;
-	this.dataName = layer.getName();
 	navigation = new NavigationHandler(this);
-    }
-
-    // [nachouve] Check this method because
-    // When the table is on edition a weird identify
-    // is shown the title window instead of the layer name.
-    // Maybe can be set as deprecated and be replaced by:
-    // {@link AbstractNavTable(SelectableDataSource, String)}
-    // with a properly name as string parameter.
-    @Deprecated
-    public AbstractNavTable(SelectableDataSource recordset) {
-	this(recordset, recordset.getName());
-    }
-
-    /**
-     * Constructor of the class. This constructor is used by
-     * AlphanumericNavTable
-     */
-    @Deprecated
-    public AbstractNavTable(SelectableDataSource recordset, String tableName) {
-	this(tableName);
-    }
-
-    public AbstractNavTable(String tableName) {
-	super();
-	this.dataName = tableName;
-    }
-
-    public boolean isAlphanumericNT() {
-	return this.isAlphanumericNT;
     }
 
     public boolean init() {
@@ -242,25 +210,19 @@ private static final Logger logger = LoggerFactory
 
     public void reinit() {
 	resetListeners();
-	// setOpenNavTableForm(true);
     }
 
     protected void setLayerListeners() {
-	if (layer != null) {
-	    // TODO. Alphanumeric navtable adds the listener to the model
-	    listener = new EditionListener(this, layer);
+    	listener = new EditionListener(this, layer);
 	    layer.addLayerListener(listener);
-	}
-	navigation.setListeners();
-	addPositionListener(this);
+	    navigation.setListeners();
+	    addPositionListener(this);
     }
 
     protected void removeLayerListeners() {
-	if (layer != null) {
 	    layer.removeLayerListener(listener);
-	}
-	navigation.removeListeners();
-	removePositionListener(this);
+	    navigation.removeListeners();
+	    removePositionListener(this);
     }
 
     public void showEmptyLayerMessage() {
@@ -582,7 +544,7 @@ private static final Logger logger = LoggerFactory
 	    windowInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
 		    | WindowInfo.PALETTE | WindowInfo.RESIZABLE);
 
-	    windowInfo.setTitle("NavTable: " + dataName);
+	    windowInfo.setTitle("NavTable: " + layer.getName());
 	    Dimension dim = getPreferredSize();
 	    // To calculate the maximum size of a form we take the size of the
 	    // main frame minus a "magic number" for the menus, toolbar, state
@@ -887,10 +849,6 @@ private static final Logger logger = LoggerFactory
      */
     public void reloadRecordset() throws DataException {
 	getRecordset().reload();
-    }
-
-    public String getDataName() {
-	return this.dataName;
     }
 
     public void addPositionListener(PositionListener l) {

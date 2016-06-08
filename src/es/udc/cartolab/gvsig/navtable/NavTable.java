@@ -117,11 +117,6 @@ public class NavTable extends AbstractNavTable {
 	super(layer);
     }
 
-    @Deprecated
-    public NavTable(SelectableDataSource recordset, String tableName) {
-	super(recordset, tableName);
-    }
-
     public boolean isFillingValues() {
 	return isFillingValues;
     }
