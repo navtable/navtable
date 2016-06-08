@@ -7,7 +7,7 @@ public class BooleanValue extends Value {
 		super(o);
 	}
 	public boolean getValue() {
-		return (boolean) value;
+		return (Boolean) value;
 	}
 	
 	public String getStringValue(ValueWriter valueWriter) {
