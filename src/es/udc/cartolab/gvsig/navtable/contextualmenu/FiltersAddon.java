@@ -191,8 +191,6 @@ private static final Logger logger = LoggerFactory
 		"filter_numeric_less") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		// TODO: Still not working. Remove option with
-		// numbers. Open a dialog to type the '%...%'?
 		String expr = st_expr + " < " + attrValue;
 		executeFilter(filterExt,expr);
 	    }
@@ -203,8 +201,6 @@ private static final Logger logger = LoggerFactory
 		"filter_numeric_greater") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
-		// TODO: Still not working. Remove option with
-		// numbers. Open a dialog to type the '%...%'?
 		String expr = st_expr + " > " + attrValue;
 		executeFilter(filterExt,expr);
 	    }

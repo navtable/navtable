@@ -123,25 +123,17 @@ public class EditionListener implements LayerListener, Observer {
 
 	@Override
 	public void visibilityChanged(LayerEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void activationChanged(LayerEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void nameChanged(LayerEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void drawValueChanged(LayerEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 }

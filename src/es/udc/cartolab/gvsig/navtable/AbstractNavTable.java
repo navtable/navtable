@@ -715,7 +715,6 @@ private static final Logger logger = LoggerFactory
 	}
     }
 
-    // TODO. Visibility changed after the refactor to implement the sorter
     public int getNumberOfRowsSelected() {
 	FBitSet bitset = getRecordset().getSelection();
 	return bitset.cardinality();
@@ -939,9 +938,6 @@ private static final Logger logger = LoggerFactory
     @Override
     public void beforePositionChange(PositionEvent e) {
 	showWarning();
-	// TODO. If showWarning returns false, the record was not correctly
-	// saved so we should not move to the next position. Or if is a movement
-	// for other reason like click onlySelected, the click should be avoided
     }
 
     public void next() {
@@ -960,7 +956,6 @@ private static final Logger logger = LoggerFactory
 	navigation.first();
     }
 
-    // TODO. Visibility changed after the refactor to implement the sorter
     public void firstSelected() {
 	navigation.firstSelected();
     }

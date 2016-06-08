@@ -408,16 +408,14 @@ public class NavTable extends AbstractNavTable {
 		    return;
 		}
 	    com.vividsolutions.jts.geom.Geometry jtsGeom = Converter.geometryToJts(geometry);
-		// Fill GEOM_LENGTH
+
+	    // Fill GEOM_LENGTH
 		String value = "0.0";
-		
-		
-		// TODO Format number (Set units in Preferences)
 		value = String.valueOf(Math.round(jtsGeom.getLength()));
 		model.setValueAt(value, sds.getFieldCount(), 1);
+		
 		// Fill GEOM_AREA
 		value = "0.0";
-		// TODO Format number (Set units in Preferences)
 		value = String.valueOf(Math.round(jtsGeom.getArea()));
 		model.setValueAt(value, sds.getFieldCount() + 1, 1);
 	    }
