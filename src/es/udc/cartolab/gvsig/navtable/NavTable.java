@@ -211,17 +211,6 @@ public class NavTable extends AbstractNavTable {
 	return layer.isEditing();
     }
 
-    @Deprecated
-    // deprecated by fpuga, 28/02/2014
-    protected void updateValue(int row, int col, String newValue) {
-	ToggleEditing te = new ToggleEditing();
-	try {
-	    te.modifyValue(layer, row, col, newValue);
-	} catch (Exception e) {
-	    logger.error(e.getMessage(), e);
-	}
-    }
-
     @Override
     protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
 	/*

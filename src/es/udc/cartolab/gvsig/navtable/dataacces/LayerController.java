@@ -84,11 +84,6 @@ public class LayerController implements IController {
 	}
     }
 
-    @Deprecated
-    public void save(long position) {
-	update(position);
-    }
-
     @Override
     public void update(long position){
 	ToggleEditing te = new ToggleEditing();

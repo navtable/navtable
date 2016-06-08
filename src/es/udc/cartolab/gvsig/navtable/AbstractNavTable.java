@@ -568,17 +568,6 @@ private static final Logger logger = LoggerFactory
 	getRecordset().setSelection(bitset);
     }
 
-    @Deprecated
-    public void selectFeature(long feature) {
-	FBitSet bitset = null;
-	int pos = Long.valueOf(feature).intValue();
-	bitset = getRecordset().getSelection();
-	if (!bitset.get(pos)) {
-	    bitset.set(pos);
-	}
-	getRecordset().setSelection(bitset);
-    }
-
     /**
      * Removes all selections of the layer.
      * 
