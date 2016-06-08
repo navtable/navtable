@@ -505,7 +505,7 @@ public class NavTable extends AbstractNavTable {
 			if (getRecordset().getFieldType(i) == Types.DATE) {
 			    attValues[j] = attValues[j].replaceAll("-", "/");
 			}
-		    
+		    j++;
 		}
 	    }
 	}
