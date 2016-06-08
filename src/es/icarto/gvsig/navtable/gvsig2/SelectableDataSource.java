@@ -335,10 +335,17 @@ public class SelectableDataSource implements FBitSet, IEditableSource {
 	}
 
 	@Override
-	public void removeRow(int pos) throws DataException {
+	public void removeRow(long position) throws DataException {
+		if (currentPos != position) {
+			setCurrentFeature(position);
+		}
+		fs.delete(currentFeat);
+	}
+
+	public Feature getFeature(long pos) {
 		if (currentPos != pos) {
 			setCurrentFeature(pos);
 		}
-		fs.delete(currentFeat);
+		return currentFeat;
 	}
 }
