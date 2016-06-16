@@ -87,7 +87,6 @@ public class EditionListener implements LayerListener, IEditionListener {
      * Launched when the structure of the layer has changed
      */
     public void afterFieldEditEvent(AfterFieldEditEvent e) {
-	refresh();
 	nt.editionEvent(e);
     }
 
@@ -113,21 +112,10 @@ public class EditionListener implements LayerListener, IEditionListener {
 		source.removeEditionListener(this);
 		source = null;
 	    }
-	    refresh();
 	}
 	nt.layerEvent(e);
     }
 
     public void drawValueChanged(LayerEvent e) {
     }
-
-    private void refresh() {
-	try {
-	    nt.reloadRecordset();
-	} catch (ReadDriverException error) {
-	    logger.error(error.getMessage(), error);
-	}
-	nt.refreshGUI();
-    }
-
 }

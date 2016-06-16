@@ -1008,6 +1008,7 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     public void layerEvent(LayerEvent e) {
 	if ((e.getEventType() == LayerEvent.EDITION_CHANGED)
 		&& !layer.isEditing()) {
+	    refresh();
 	    navigation.modelChanged();
 	}
     }
@@ -1015,8 +1016,18 @@ public abstract class AbstractNavTable extends JPanel implements IWindow,
     public void editionEvent(EditionEvent e) {
 	if ((e instanceof AfterFieldEditEvent)
 		&& (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
+	    refresh();
 	    navigation.setSortKeys(null);
 	}
+    }
+    
+    private void refresh() {
+	try {
+	    reloadRecordset();
+	} catch (ReadDriverException error) {
+	    logger.error(error.getMessage(), error);
+	}
+	refreshGUI();
     }
 
 }
