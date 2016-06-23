@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.commons.gvsig2.DefaultFeature;
 import es.icarto.gvsig.commons.gvsig2.IEditableSource;
-import es.icarto.gvsig.commons.gvsig2.IGeometry;
 import es.icarto.gvsig.commons.gvsig2.IRowEdited;
 import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.commons.gvsig2.Value;

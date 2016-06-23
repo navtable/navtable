@@ -25,7 +25,6 @@ import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
 import es.icarto.gvsig.commons.gvsig2.ValueWriter;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
@@ -65,7 +64,7 @@ public class LayerController implements IController {
      * of the geometry
      */
     public long create(HashMap<String, String> newValues) throws Exception {
-	throw new NotImplementedException();
+	throw new RuntimeException("Not implemented jet");
     }
 
     @Override

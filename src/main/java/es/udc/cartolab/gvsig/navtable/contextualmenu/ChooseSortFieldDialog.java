@@ -9,14 +9,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 
 import org.gvsig.andami.PluginServices;
 
 import net.miginfocom.swing.MigLayout;
-import sun.font.AttributeMap;
 import es.icarto.gvsig.commons.gui.AbstractIWindow;
 import es.icarto.gvsig.commons.gui.OkCancelPanel;
 import es.icarto.gvsig.commons.gui.WidgetFactory;
@@ -73,10 +74,11 @@ ActionListener {
 	addAnother.setBorderPainted(false);
 	addAnother.setOpaque(false);
 	Font font = new Font("Arial", Font.BOLD | Font.ITALIC, 11);
-	addAnother.setFont(font);
 	addAnother.setForeground(new Color(0, 60, 140));
-	AttributeMap attributes = (AttributeMap) font.getAttributes();
+	Map<TextAttribute, Object>  attributes = new HashMap<TextAttribute, Object>();
 	attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+	Font newFont = font.deriveFont(attributes);
+	addAnother.setFont(newFont);
 	return addAnother;
     }
 

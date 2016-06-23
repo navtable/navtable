@@ -27,11 +27,7 @@ package es.udc.cartolab.gvsig.navtable;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Types;
 import java.util.Vector;
 
@@ -49,17 +45,13 @@ import org.gvsig.andami.ui.mdiManager.WindowInfo;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.geom.generalpath.util.Converter;
+import org.gvsig.fmap.geom.operation.GeometryOperationException;
+import org.gvsig.fmap.geom.operation.GeometryOperationNotSupportedException;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 import org.gvsig.fmap.mapcontext.layers.vectorial.VectorLayer;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
-
-
-
-
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -391,21 +383,25 @@ public class NavTable extends AbstractNavTable {
 		    model.setValueAt("0", sds.getFieldCount() + 1, 1);
 		    return;
 		}
-	    com.vividsolutions.jts.geom.Geometry jtsGeom = Converter.geometryToJts(geometry);
+//	    com.vividsolutions.jts.geom.Geometry jtsGeom = Converter.geometryToJts(geometry);
 
 	    // Fill GEOM_LENGTH
 		String value = "0.0";
-		value = String.valueOf(Math.round(jtsGeom.getLength()));
+		value = String.valueOf(Math.round(geometry.perimeter()));
 		model.setValueAt(value, sds.getFieldCount(), 1);
 		
 		// Fill GEOM_AREA
 		value = "0.0";
-		value = String.valueOf(Math.round(jtsGeom.getArea()));
+		value = String.valueOf(Math.round(geometry.area()));
 		model.setValueAt(value, sds.getFieldCount() + 1, 1);
 	    }
 
 	} catch (DataException e) {
 	    logger.error(e.getMessage(), e);
+	} catch (GeometryOperationNotSupportedException e) {
+		logger.error(e.getMessage(), e);
+	} catch (GeometryOperationException e) {
+		logger.error(e.getMessage(), e);
 	} finally {
 	    setFillingValues(false);
 	}

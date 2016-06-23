@@ -338,9 +338,9 @@ private static final Logger logger = LoggerFactory
     public abstract JPanel getCenterPanel();
 
     public ImageIcon getIcon(String iconName) {
-	java.net.URL imgURL = getClass().getResource(iconName);
+	java.net.URL imgURL = getClass().getResource("/images/" + iconName);
 	if (imgURL == null) {
-	    imgURL = AbstractNavTable.class.getResource(iconName);
+	    imgURL = AbstractNavTable.class.getResource("/images/" + iconName);
 	}
 
 	ImageIcon icon = new ImageIcon(imgURL);
