@@ -7,20 +7,19 @@
 	<libraries library-dir="lib"/>
 	<resourceBundle name="text"/>
 	<extensions>
-		<extension class-name="es.udc.cartolab.gvsig.navtable.NavTableExtension" description="NavTable" active="true">
+		<extension class-name="es.udc.cartolab.gvsig.navtable.NavTableExtension" active="true">
 		
 			<action 
                 name= "navtable"
-                label="navtable"
-                tooltip="Navtable"
-                action-command="NavTable" 
-                icon="navtable"
-                position="001009000000"
+                label="es.udc.cartolab.gvsig.navtable.NavTableExtension.label"
+                tooltip="es.udc.cartolab.gvsig.navtable.NavTableExtension.tooltip"
+                action-command="" 
+                icon="es.udc.cartolab.gvsig.navtable.NavTableExtension"
                 accelerator=""
             />
-			<menu text="Capa/NavTable" name="navtable"/> 
+			<menu text="Layer/NavTable" name="navtable"/> 
             
-			<tool-bar name="NavTable" position="133">
+			<tool-bar name="view_actions">
 				<action-tool name="navtable" />
 			</tool-bar>
 				

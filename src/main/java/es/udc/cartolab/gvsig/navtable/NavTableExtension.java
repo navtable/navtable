@@ -97,8 +97,8 @@ private static final Logger logger = LoggerFactory
 	ApplicationManager application = ApplicationLocator.getManager();
 	AboutManager about = application.getAbout();
 	about.addDeveloper("NavTable", getClass().getClassLoader().getResource("/about.htm"), 1);
-	
-    IconThemeHelper.registerIcon("action", "navtable", this);
+	String id = this.getClass().getName();
+    IconThemeHelper.registerIcon("action", id, this);
 
 	// Entry at TOC contextual menu
 	ExtensionPoints extensionPoints = ExtensionPointsSingleton
