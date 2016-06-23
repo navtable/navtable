@@ -18,6 +18,23 @@
 		<dependencies>
 
 
+		<dependency>
+			<groupId>org.gvsig</groupId>
+			<artifactId>org.gvsig.andami</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>es.icarto</groupId>
+			<artifactId>es.icarto.gvsig.commons</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.gvsig</groupId>
+			<artifactId>org.gvsig.app.mainplugin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.gvsig</groupId>
+			<artifactId>org.gvsig.editing.app.mainplugin</artifactId>
+		</dependency>
 		</dependencies>
 
 
