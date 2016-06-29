@@ -1,9 +1,10 @@
 package es.udc.cartolab.gvsig.testutils;
 
-import com.iver.cit.gvsig.fmap.MapContext;
-import com.iver.cit.gvsig.fmap.MapControl;
-import com.iver.cit.gvsig.fmap.ViewPort;
-import com.iver.cit.gvsig.fmap.layers.FLayer;
+import org.gvsig.fmap.mapcontext.MapContext;
+import org.gvsig.fmap.mapcontext.ViewPort;
+import org.gvsig.fmap.mapcontext.layers.FLayer;
+import org.gvsig.fmap.mapcontrol.MapControl;
+
 
 @SuppressWarnings("serial")
 public class MapControlStub extends MapControl {

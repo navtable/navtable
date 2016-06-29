@@ -2,11 +2,7 @@ package es.udc.cartolab.gvsig.testutils;
 
 import java.util.Collections;
 
-import com.iver.cit.gvsig.fmap.core.IFeature;
-import com.iver.cit.gvsig.fmap.drivers.FeatureCollectionMemoryDriver;
-import com.iver.cit.gvsig.fmap.drivers.LayerDefinition;
-import com.iver.cit.gvsig.fmap.layers.FLyrVect;
-import com.iver.cit.gvsig.fmap.layers.VectorialDefaultAdapter;
+import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 
 import es.icarto.gvsig.commons.datasources.FieldDescriptionFactory;
 
