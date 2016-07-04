@@ -7,11 +7,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 
 import org.gvsig.andami.PluginServices;
+import org.gvsig.fmap.dal.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.icarto.gvsig.commons.gui.OkCancelPanel;
 import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
@@ -20,6 +24,8 @@ import es.udc.cartolab.gvsig.navtable.NavTable;
 
 public class SorterAddon implements INavTableContextMenu {
 	
+	
+	private static final Logger logger = LoggerFactory.getLogger(SorterAddon.class);
 	
     private NavTable navtable;
     private JTable table;
@@ -35,6 +41,23 @@ public class SorterAddon implements INavTableContextMenu {
     public String getDescription() {
 	return "sorter_addon_description";
     }
+    
+    private final boolean notSortBigLayers() {
+    	long rows;
+    	boolean nosort = false;
+		try {
+			rows = navtable.getRecordset().getRowCount();
+			if (rows > 500) {
+	    		JOptionPane.showMessageDialog(navtable, "Esta característica es experimental y no se puede aplicar a capas con más de 500 registros");
+	    		nosort = true;
+	    	}
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+			JOptionPane.showMessageDialog(navtable, "Esta característica es experimental y no se puede aplicar a capas con más de 500 registros");
+			nosort = true;
+		}
+    	return nosort;
+	}
 
     @Override
     public JMenuItem[] getMenuItems() {
@@ -44,6 +67,9 @@ public class SorterAddon implements INavTableContextMenu {
 	asc.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
+	    	if ( notSortBigLayers() ) {
+	    		return;
+	    	}
 		SortKey sortKey = new SortKey(rowSelected, SortOrder.ASCENDING);
 		navtable.setSortKeys(Arrays.asList(sortKey));
 	    }
@@ -55,6 +81,9 @@ public class SorterAddon implements INavTableContextMenu {
 	desc.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
+	    	if ( notSortBigLayers() ) {
+	    		return;
+	    	}
 		SortKey sortKey = new SortKey(rowSelected, SortOrder.DESCENDING);
 		navtable.setSortKeys(Arrays.asList(sortKey));
 	    }
@@ -67,6 +96,9 @@ public class SorterAddon implements INavTableContextMenu {
 	advanced.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
+	    	if ( notSortBigLayers() ) {
+	    		return;
+	    	}
 		String[] fieldNames = new String[0];
 		fieldNames = navtable.getRecordset().getFieldNames();
 
