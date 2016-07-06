@@ -115,17 +115,8 @@ private static final Logger logger = LoggerFactory
 		sorterAddon.getName(), sorterAddon);
 
 	// Creating config Dir
-	File configDir;
-	String configDirStr;
-	try {
-	    configDirStr = Launcher.getAppHomeDir()
-		    + "NavTable";
-	} catch (java.lang.NoSuchMethodError e) {
-	    configDirStr = System.getProperty("user.home") + File.separator
-		    + "gvSIG" + File.separator + "navTable";
-
-	}
-	configDir = new File(configDirStr);
+    String configDirStr = Launcher.getAppHomeDir() + File.separator + "NavTable";
+	File configDir = new File(configDirStr);
 	Preferences p = new Preferences(configDir);
     }
     
