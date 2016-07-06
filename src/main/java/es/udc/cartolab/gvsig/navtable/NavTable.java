@@ -122,7 +122,6 @@ public class NavTable extends AbstractNavTable {
      * It creates a panel with a table that shows the data linked to a feature
      * of the layer. Each row is a attribute-value pair.
      * 
-     * @return the panel.
      */
     @Override
     public JPanel getCenterPanel() {
@@ -382,17 +381,16 @@ public class NavTable extends AbstractNavTable {
 		    model.setValueAt("0", sds.getFieldCount() + 1, 1);
 		    return;
 		}
-//	    com.vividsolutions.jts.geom.Geometry jtsGeom = Converter.geometryToJts(geometry);
 
 	    // Fill GEOM_LENGTH
-		String value = "0.0";
-		value = String.valueOf(Math.round(geometry.perimeter()));
-		model.setValueAt(value, sds.getFieldCount(), 1);
+		String length = "0.0";
+		length = String.valueOf(Math.round(geometry.perimeter()));
+		model.setValueAt(length, sds.getFieldCount(), 1);
 		
 		// Fill GEOM_AREA
-		value = "0.0";
-		value = String.valueOf(Math.round(geometry.area()));
-		model.setValueAt(value, sds.getFieldCount() + 1, 1);
+		String area = "0.0";
+		area = String.valueOf(Math.round(geometry.area()));
+		model.setValueAt(area, sds.getFieldCount() + 1, 1);
 	    }
 
 	} catch (DataException e) {

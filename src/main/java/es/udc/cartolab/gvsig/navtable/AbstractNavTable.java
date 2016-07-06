@@ -118,12 +118,8 @@ private static final Logger logger = LoggerFactory
 
     protected boolean changedValues = false;
 
-    // NORTH
     protected JCheckBox fixScaleCB = null;
     protected JCheckBox alwaysZoomCB = null;
-
-    // SOUTH
-    // actions buttons
     protected JButton filterB = null;
     protected JButton copyPreviousB = null;
     protected JButton copySelectedB = null;
@@ -131,8 +127,6 @@ private static final Logger logger = LoggerFactory
     protected JButton saveB = null;
     protected JButton removeB = null;
     protected JButton undoB = null;
-
-    // private boolean isSomeNavTableFormOpen = false;
 
     protected EditionListener listener;
 
@@ -171,7 +165,6 @@ private static final Logger logger = LoggerFactory
 	refreshGUI();
 	super.repaint();
 	super.setVisible(true);
-	// setOpenNavTableForm(true);
 	setFocusCycleRoot(true);
 
 	setLayerListeners();
@@ -698,14 +691,6 @@ private static final Logger logger = LoggerFactory
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-	/*
-	 * Variable isSomeNavTableForm open is used as workaround to control
-	 * null pointers exceptions when all forms using navtable are closed
-	 * but, for some strange reason, some of the listeners is still active.
-	 */
-	// if (!isSomeNavTableFormOpen()) {
-	// return;
-	// }
 
 	if (getRecordset() == null) {
 	    // If there is an error on the recordset of the layer
@@ -818,16 +803,7 @@ private static final Logger logger = LoggerFactory
     public void windowClosed() {
 	showWarning();
 	removeLayerListeners();
-	// setOpenNavTableForm(false);
     }
-
-    // private boolean isSomeNavTableFormOpen() {
-    // return isSomeNavTableFormOpen;
-    // }
-    //
-    // protected void setOpenNavTableForm(boolean b) {
-    // isSomeNavTableFormOpen = b;
-    // }
 
     @Override
     public void windowActivated() {
