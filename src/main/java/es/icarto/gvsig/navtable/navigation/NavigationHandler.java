@@ -1,5 +1,6 @@
 package es.icarto.gvsig.navtable.navigation;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
 import static es.udc.cartolab.gvsig.navtable.AbstractNavTable.EMPTY_REGISTER;
 
 import java.awt.Color;
@@ -518,7 +519,7 @@ private static final Logger logger = LoggerFactory
     private JButton getNavTableButton(JButton button, String iconName,
 	    String toolTipName) {
 	JButton but = new JButton(nt.getIcon(iconName));
-	but.setToolTipText(PluginServices.getText(this, toolTipName));
+	but.setToolTipText(_(toolTipName));
 	but.addActionListener(this);
 	return but;
     }
@@ -526,7 +527,7 @@ private static final Logger logger = LoggerFactory
     // Probably should be removed and use a factory instead
     // is duplicated with NavigationHandler
     private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
-	cb = new JCheckBox(PluginServices.getText(this, toolTipName));
+	cb = new JCheckBox(_(toolTipName));
 	cb.addActionListener(this);
 	return cb;
     }

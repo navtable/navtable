@@ -1,5 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.preferences;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -31,8 +33,6 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
 	private static final Logger logger = LoggerFactory
 			.getLogger(NavTablePreferencesPage.class);
 
-    private String id;
-    private String title;
     private HashMap<INavTableContextMenu, JCheckBox> contextMenuMap = new HashMap<INavTableContextMenu, JCheckBox>();
 
     ExtensionPoint extensionPoint;
@@ -40,11 +40,9 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
 
     public NavTablePreferencesPage() {
 	super();
-	id = this.getClass().getName();
-	title = PluginServices.getText(this, "navtable_preferences_title");
+	
 
-	JLabel addonsVisibility = new JLabel(PluginServices.getText(this,
-	"contextMenuAddonsEnabled"));
+	JLabel addonsVisibility = new JLabel(_("contextMenuAddonsEnabled"));
 	addComponent(addonsVisibility);
 
 	extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
@@ -53,8 +51,7 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
 	for (Object contextMenuAddon : extensionPoint.values()) {
 	    try {
 		INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
-		JCheckBox chb = new JCheckBox(PluginServices.getText(this,
-			c.getDescription()));
+		JCheckBox chb = new JCheckBox(_(c.getDescription()));
 		contextMenuMap.put(c, chb);
 		addComponent(chb);
 	    } catch (ClassCastException cce) {
@@ -64,11 +61,11 @@ public class NavTablePreferencesPage extends AbstractPreferencePage {
     }
 
     public String getID() {
-	return id;
+	return this.getClass().getName();
     }
 
     public String getTitle() {
-	return title;
+	return _("navtable");
     }
 
     public JPanel getPanel() {

@@ -1,5 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -35,8 +37,8 @@ ActionListener {
 	super(new MigLayout("insets 10, wrap 1"));
 	okPanel = WidgetFactory.okCancelPanel(this, this, this);
 
-	final JButton addAnother = linkButton(PluginServices.getPluginServices(
-		this).getText("sort_add_another"));
+	final JButton addAnother = linkButton(_("sort_add_another"));
+	
 	addAnother.addActionListener(new ActionListener() {
 
 	    @Override

@@ -24,6 +24,8 @@
  */
 package es.udc.cartolab.gvsig.navtable;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -228,8 +230,7 @@ private static final Logger logger = LoggerFactory
     public void showEmptyLayerMessage() {
 
 	if ((!openEmptyLayers)) {
-	    JOptionPane.showMessageDialog(this,
-		    PluginServices.getText(this, "emptyLayer"));
+	    JOptionPane.showMessageDialog(this,_("emptyLayer"));
 	}
     }
 
@@ -352,7 +353,7 @@ private static final Logger logger = LoggerFactory
     private JButton getNavTableButton(JButton button, String iconName,
 	    String toolTipName) {
 	JButton but = new JButton(getIcon(iconName));
-	but.setToolTipText(PluginServices.getText(this, toolTipName));
+	but.setToolTipText(_(toolTipName));
 	but.addActionListener(this);
 	return but;
     }
@@ -360,7 +361,7 @@ private static final Logger logger = LoggerFactory
     // Probably should be removed and use a factory instead
     // is duplicated with NavigationHandler
     private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
-	cb = new JCheckBox(PluginServices.getText(this, toolTipName));
+	cb = new JCheckBox(_(toolTipName));
 	cb.addActionListener(this);
 	return cb;
     }
@@ -438,12 +439,8 @@ private static final Logger logger = LoggerFactory
 	}
 	if (isChangedValues()) {
 	    boolean save = false;
-	    Object[] options = {
-		    PluginServices.getText(this, "saveButtonTooltip"),
-		    PluginServices.getText(this, "ignoreButton") };
-	    int response = JOptionPane.showOptionDialog(this,
-		    PluginServices.getText(this, "unsavedDataMessage"),
-		    PluginServices.getText(this, "unsavedDataTitle"),
+	    Object[] options = {_("saveButtonTooltip"), _("ignoreButton") };
+	    int response = JOptionPane.showOptionDialog(this, _("unsavedDataMessage"), _("unsavedDataTitle"),
 		    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 		    null, // do not use a custom Icon
 		    options, // the titles of buttons
@@ -496,8 +493,7 @@ private static final Logger logger = LoggerFactory
 			layer.getMapContext().getViewPort().setEnvelope(envelope);
 		    }
 		} else {
-		    JOptionPane.showMessageDialog(this, PluginServices.getText(
-			    this, "feature_has_no_geometry_to_zoom"));
+		    JOptionPane.showMessageDialog(this, _("feature_has_no_geometry_to_zoom"));
 		}
 	   
 	}
@@ -632,13 +628,11 @@ private static final Logger logger = LoggerFactory
 	if (getRecordset().getSelection().isEmpty()) {
 	    ImageIcon imagenFilter = getIcon("/filter.png");
 	    filterB.setIcon(imagenFilter);
-	    filterB.setToolTipText(PluginServices
-		    .getText(this, "filterTooltip"));
+	    filterB.setToolTipText(_("filterTooltip"));
 	} else {
 	    ImageIcon imagenRemoveFilter = getIcon("/nofilter.png");
 	    filterB.setIcon(imagenRemoveFilter);
-	    filterB.setToolTipText(PluginServices.getText(this,
-		    "noFilterTooltip"));
+	    filterB.setToolTipText(_("noFilterTooltip"));
 	}
     }
 
@@ -684,8 +678,8 @@ private static final Logger logger = LoggerFactory
 	if (getNumberOfRowsSelected() != 1) {
 	    // show error
 	    JOptionPane.showMessageDialog(null,
-		    PluginServices.getText(this, "justOneRecordMessage"),
-		    PluginServices.getText(this, "justOneRecordTitle"),
+		    _("justOneRecordMessage"),
+		    _("justOneRecordTitle"),
 		    JOptionPane.WARNING_MESSAGE);
 	    return false;
 	} else {
@@ -739,7 +733,7 @@ private static final Logger logger = LoggerFactory
 	    tryToSave();
 	} else if (e.getSource() == removeB) {
 	    int answer = JOptionPane.showConfirmDialog(null,
-		    PluginServices.getText(null, deleteMessageKey), null,
+		    _(deleteMessageKey), null,
 		    JOptionPane.YES_NO_OPTION);
 	    if (answer == 0) {
 		try {
@@ -749,15 +743,14 @@ private static final Logger logger = LoggerFactory
 		    String errorMessage = (ex.getCause() != null) ? ex
 			    .getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
 			    .replace("ERROR: ", "").replace(" ", "_")
-			    .replace("\n", ""), auxMessageIntl = PluginServices
-			    .getText(this, auxMessage);
+			    .replace("\n", ""), auxMessageIntl = _(auxMessage);
 		    if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
 			errorMessage = auxMessageIntl;
 		    }
 		    JOptionPane.showMessageDialog(
 			    (Component) PluginServices.getMainFrame(),
 			    errorMessage,
-			    PluginServices.getText(this, saveErrorTitleKey),
+			    _(saveErrorTitleKey),
 			    JOptionPane.ERROR_MESSAGE);
 		}
 	    }
@@ -781,22 +774,20 @@ private static final Logger logger = LoggerFactory
 	    if (saveRecord()) {
 		refreshGUI();
 	    } else {
-		JOptionPane.showMessageDialog(this, PluginServices.getText(
-			this, saveErrorGenericMessageKey), "",
+		JOptionPane.showMessageDialog(this, _(saveErrorGenericMessageKey), "",
 			JOptionPane.ERROR_MESSAGE);
 	    }
 	} catch (DataException ex) {
 	    logger.error(ex.getMessage(), ex);
 	    String errorMessage = (ex.getCause() != null) ? ex.getCause()
 		    .getMessage() : ex.getMessage(), auxMessage = errorMessage
-		    .replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = PluginServices
-		    .getText(this, auxMessage);
+		    .replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = _(auxMessage);
 	    if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
 		errorMessage = auxMessageIntl;
 	    }
 	    JOptionPane.showMessageDialog(
 		    (Component) PluginServices.getMainFrame(), errorMessage,
-		    PluginServices.getText(this, saveErrorTitleKey),
+		    _(saveErrorTitleKey),
 		    JOptionPane.ERROR_MESSAGE);
 	    return false;
 	}

@@ -24,6 +24,8 @@
  */
 package es.udc.cartolab.gvsig.navtable;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -137,14 +139,12 @@ public class NavTable extends AbstractNavTable {
 
 	this.cellRenderer = new AttribTableCellRenderer();
 
-	model.addColumn(PluginServices.getText(this, "headerTableAttribute"));
-	model.addColumn(PluginServices.getText(this, "headerTableValue"));
+	model.addColumn(_("headerTableAttribute"));
+		model.addColumn(_("headerTableValue"));
 
-	TableColumn attribColumn = table.getColumn(PluginServices.getText(this,
-		"headerTableAttribute"));
+	TableColumn attribColumn = table.getColumn(_("headerTableAttribute"));
 	attribColumn.setCellRenderer(this.cellRenderer);
-	attribColumn = table.getColumn(PluginServices.getText(this,
-		"headerTableValue"));
+	attribColumn = table.getColumn(_("headerTableValue"));
 	attribColumn.setCellRenderer(this.cellRenderer);
 
 	myTableModelListener = new MyTableModelListener();
@@ -323,13 +323,13 @@ public class NavTable extends AbstractNavTable {
 	    if (layer != null) {
 		// Geom_LENGTH
 		aux = new Vector<String>(2);
-		aux.add(PluginServices.getText(this, "Geom_LENGTH"));
+		aux.add(_("Geom_LENGTH"));
 		aux.add("0.0");
 		model.addRow(aux);
 
 		// Geom_AREA
 		aux = new Vector<String>(2);
-		aux.add(PluginServices.getText(this, "Geom_AREA"));
+		aux.add(_("Geom_AREA"));
 		aux.add("0.0");
 		model.addRow(aux);
 
@@ -446,9 +446,7 @@ public class NavTable extends AbstractNavTable {
 	if (layer.isWritable()) {
 	    return true;
 	} else {
-	    JOptionPane.showMessageDialog(this, String.format(
-		    PluginServices.getText(this, "non_editable"),
-		    layer.getName()));
+	    JOptionPane.showMessageDialog(this, _("non_editable", layer.getName()));
 	    return false;
 	}
     }

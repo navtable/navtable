@@ -24,6 +24,8 @@
  */
 package es.udc.cartolab.gvsig.navtable;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -90,11 +92,11 @@ public class ToggleEditing {
     	FLyrVect lv = (FLyrVect) layer;
 
     	if (!lv.getFeatureStore().getTransforms().isEmpty()) {
-    		String message = Messages.get("_Cannot_start_edition_in_transformed_layer") + ": '" + lv.getName() + "'";
+    		String message = _("_Cannot_start_edition_in_transformed_layer") + ": '" + lv.getName() + "'";
 			throw new RuntimeException(message);
     	}
     	if (!lv.isWritable()) {
-    		String message = PluginServices.getText(this, "this_layer_is_not_self_editable");
+    		String message = _("this_layer_is_not_self_editable");
     		throw new RuntimeException(message);
     	}
     	
@@ -110,8 +112,8 @@ public class ToggleEditing {
         	// Do nothing
         	return false;
         } catch (DataException e) {
-            logger.info("Error while starting edition: " + e.getMessage(), e);
-            ApplicationLocator.getManager().message(Messages.get("_Unable_to_start_edition_in_layer") + ": " + lv.getName(), JOptionPane.ERROR_MESSAGE);
+            logger.info(e.getMessage(), e);
+            ApplicationLocator.getManager().message(_("_Unable_to_start_edition_in_layer") + ": " + lv.getName(), JOptionPane.ERROR_MESSAGE);
         }
         return true;
     }

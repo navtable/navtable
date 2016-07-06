@@ -1,5 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Types;
@@ -115,8 +117,7 @@ private static final Logger logger = LoggerFactory
     }
 
     private JMenuItem getMenuItemForSetFilter(final SelectByAttributes filterExt) {
-	JMenuItem tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_filter"), navtable.getIcon("/filter.png"));
+	JMenuItem tmpMenuItem = new JMenuItem(_("filter_filter"), navtable.getIcon("/filter.png"));
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		filterExt.setDatasource(navtable.getLayer().getFeatureStore(), navtable.getLayer().getName());
@@ -133,8 +134,7 @@ private static final Logger logger = LoggerFactory
 
 	ArrayList<JMenuItem> booleanMenu = new ArrayList<JMenuItem>();
 
-	JMenuItem tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_equals") + " = TRUE");
+	JMenuItem tmpMenuItem = new JMenuItem(_("filter_equals") + " = TRUE");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = true";
@@ -143,8 +143,7 @@ private static final Logger logger = LoggerFactory
 	});
 	booleanMenu.add(tmpMenuItem);
 
-	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_equals") + " = FALSE");
+	tmpMenuItem = new JMenuItem(_("filter_equals") + " = FALSE");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = false";
@@ -162,8 +161,7 @@ private static final Logger logger = LoggerFactory
 
 	ArrayList<JMenuItem> numericMenu = new ArrayList<JMenuItem>();
 
-	JMenuItem tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_numeric_equals") + " \t'" + attrValueAsNTFormat + "'");
+	JMenuItem tmpMenuItem = new JMenuItem(_("filter_numeric_equals") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " = " + attrValue;
@@ -172,8 +170,7 @@ private static final Logger logger = LoggerFactory
 	});
 	numericMenu.add(tmpMenuItem);
 
-	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_numeric_different")
+	tmpMenuItem = new JMenuItem(_("filter_numeric_different")
 		+ " \t'"
 		+ attrValueAsNTFormat
 		+ "'");
@@ -185,8 +182,7 @@ private static final Logger logger = LoggerFactory
 	});
 	numericMenu.add(tmpMenuItem);
 
-	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_numeric_less") + " \t'" + attrValueAsNTFormat + "'");
+	tmpMenuItem = new JMenuItem(_("filter_numeric_less") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " < " + attrValue;
@@ -195,8 +191,7 @@ private static final Logger logger = LoggerFactory
 	});
 	numericMenu.add(tmpMenuItem);
 
-	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_numeric_greater") + " \t'" + attrValueAsNTFormat + "'");
+	tmpMenuItem = new JMenuItem(_("filter_numeric_greater") + " \t'" + attrValueAsNTFormat + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String expr = st_expr + " > " + attrValue;
@@ -214,8 +209,7 @@ private static final Logger logger = LoggerFactory
 
 	ArrayList<JMenuItem> stringMenu = new ArrayList<JMenuItem>();
 
-	JMenuItem tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_equals") + " '" + attrValue + "'");
+	JMenuItem tmpMenuItem = new JMenuItem(_("filter_equals") + " '" + attrValue + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String exp = st_expr + " = '" + attrValue + "'";
@@ -224,8 +218,7 @@ private static final Logger logger = LoggerFactory
 	});
 	stringMenu.add(tmpMenuItem);
 
-	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_different") + " '" + attrValue + "'");
+	tmpMenuItem = new JMenuItem(_("filter_different") + " '" + attrValue + "'");
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		String exp = st_expr + " != '" + attrValue + "'";
@@ -234,8 +227,7 @@ private static final Logger logger = LoggerFactory
 	});
 	stringMenu.add(tmpMenuItem);
 
-	tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_contains"));
+	tmpMenuItem = new JMenuItem(_("filter_contains"));
 	tmpMenuItem.addActionListener(new StringFilterActionListener(navtable,
 		attrValue,
 		st_expr,
@@ -246,8 +238,7 @@ private static final Logger logger = LoggerFactory
     }
 
     private JMenuItem getMenuItemForUnsetFilter() {
-	JMenuItem tmpMenuItem = new JMenuItem(PluginServices.getText(this,
-		"filter_remove_filter"), navtable.getIcon("/nofilter.png"));
+	JMenuItem tmpMenuItem = new JMenuItem(_("filter_remove_filter"), navtable.getIcon("/nofilter.png"));
 	tmpMenuItem.addActionListener(new ActionListener() {
 	    public void actionPerformed(ActionEvent evt) {
 		navtable.clearSelection();

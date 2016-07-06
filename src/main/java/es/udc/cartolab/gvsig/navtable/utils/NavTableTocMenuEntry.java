@@ -24,7 +24,10 @@
  */
 package es.udc.cartolab.gvsig.navtable.utils;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.util.ArrayList;
+
 
 
 
@@ -61,7 +64,7 @@ public class NavTableTocMenuEntry extends AbstractTocContextMenuAction {
     }
 
     public String getText() {
-	return PluginServices.getText(this, "open_navigation_table");
+	return _("navtable");
     }
 
     @Override

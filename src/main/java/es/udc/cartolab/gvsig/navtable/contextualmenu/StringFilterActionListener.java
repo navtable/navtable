@@ -1,5 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,8 +66,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 
 		windowInfo = this.getWindowInfo();
 		
-		add(new JLabel(PluginServices.getText(this,
-		"nt_filter_write_string")));
+		add(new JLabel(_("nt_filter_write_string")));
 		final JTextField tf = new JTextField(16);
 		tf.setText(attrValue);
 		tf.setSelectionStart(0);
@@ -81,13 +82,10 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		
 		JPanel rbPanel = new JPanel(new GridLayout(3, 1));
 				
-		rbContainsWith = new JRadioButton(PluginServices.getText(this,
-		"filter_contains"));
+		rbContainsWith = new JRadioButton(_("filter_contains"));
 		rbContainsWith.setSelected(true);
-		rbStartsWith = new JRadioButton(PluginServices.getText(this,
-		"filter_startswith"));
-		rbEndsWith = new JRadioButton(PluginServices.getText(this,
-		"filter_endswith"));
+		rbStartsWith = new JRadioButton(_("filter_startswith"));
+		rbEndsWith = new JRadioButton(_("filter_endswith"));
 
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(rbContainsWith);
@@ -100,17 +98,15 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		
 		JPanel cbPanel = new JPanel(new GridLayout(2, 1));
 
-		cbIgnoreCase = new JCheckBox(PluginServices.getText(this,
-		"filter_ignorecase"));
-		cbIgnoreAcutes = new JCheckBox(PluginServices.getText(this,
-		"filter_ignoreacutesvowels"));
+		cbIgnoreCase = new JCheckBox(_("filter_ignorecase"));
+		cbIgnoreAcutes = new JCheckBox(_("filter_ignoreacutesvowels"));
 
 		cbPanel.add(cbIgnoreCase);
 		cbPanel.add(cbIgnoreAcutes);
 		add(cbPanel);
 
 		JPanel btnPanel = new JPanel();
-		JButton okBtn = new JButton(PluginServices.getText(this,"ok"));
+		JButton okBtn = new JButton(_("ok"));
 		okBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String attr = tf.getText();
@@ -120,7 +116,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		});
 		btnPanel.add(okBtn);
 		
-		JButton cancelBtn = new JButton(PluginServices.getText(this,"cancel"));
+		JButton cancelBtn = new JButton(_("cancel"));
 		cancelBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PluginServices.getMDIManager().closeWindow(StringFilterActionListener.this);
@@ -322,8 +318,7 @@ public class StringFilterActionListener extends JPanel implements ActionListener
 		if (windowInfo ==null){
 			windowInfo = new WindowInfo(WindowInfo.MODALDIALOG
 				| WindowInfo.PALETTE);
-			windowInfo.setTitle(PluginServices.getText(this,
-				"filter_contains_window_title"));
+			windowInfo.setTitle(_("filter_contains_window_title"));
 			windowInfo.setWidth(220);
 			windowInfo.setHeight(150);
 		}

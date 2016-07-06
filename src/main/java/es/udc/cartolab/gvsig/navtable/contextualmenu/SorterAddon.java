@@ -1,5 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -48,12 +50,12 @@ public class SorterAddon implements INavTableContextMenu {
 		try {
 			rows = navtable.getRecordset().getRowCount();
 			if (rows > 500) {
-	    		JOptionPane.showMessageDialog(navtable, "Esta característica es experimental y no se puede aplicar a capas con más de 500 registros");
+	    		JOptionPane.showMessageDialog(navtable, _("sorter_addon_experimental"));
 	    		nosort = true;
 	    	}
 		} catch (DataException e) {
 			logger.error(e.getMessage(), e);
-			JOptionPane.showMessageDialog(navtable, "Esta característica es experimental y no se puede aplicar a capas con más de 500 registros");
+			JOptionPane.showMessageDialog(navtable,_("sorter_addon_experimental"));
 			nosort = true;
 		}
     	return nosort;
@@ -63,7 +65,7 @@ public class SorterAddon implements INavTableContextMenu {
     public JMenuItem[] getMenuItems() {
 	final int rowSelected = table.getSelectedRow();
 	JMenuItem[] menu = new JMenuItem[4];
-	JMenuItem asc = new JMenuItem(PluginServices.getText(this, "sort_asc"));
+	JMenuItem asc = new JMenuItem(_("sort_asc"));
 	asc.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
@@ -76,8 +78,7 @@ public class SorterAddon implements INavTableContextMenu {
 	});
 	menu[0] = asc;
 
-	JMenuItem desc = new JMenuItem(
-		PluginServices.getText(this, "sort_desc"));
+	JMenuItem desc = new JMenuItem(_("sort_desc"));
 	desc.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
@@ -90,8 +91,7 @@ public class SorterAddon implements INavTableContextMenu {
 	});
 	menu[1] = desc;
 
-	JMenuItem advanced = new JMenuItem(PluginServices.getText(this,
-		"sort_advanced"));
+	JMenuItem advanced = new JMenuItem(_("sort_advanced"));
 	menu[2] = advanced;
 	advanced.addActionListener(new ActionListener() {
 	    @Override
@@ -121,8 +121,7 @@ public class SorterAddon implements INavTableContextMenu {
 	    }
 	});
 
-	JMenuItem defaultSort = new JMenuItem(PluginServices.getText(this,
-		"sort_default"));
+	JMenuItem defaultSort = new JMenuItem(_("sort_default"));
 	defaultSort.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {

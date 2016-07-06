@@ -1,5 +1,7 @@
 package es.udc.cartolab.gvsig.navtable.contextualmenu;
 
+import static es.icarto.gvsig.commons.i18n.I18n._;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -27,11 +29,9 @@ public class ChooseSortFieldPanel extends JPanel {
 
     public ChooseSortFieldPanel(int priority, List<Field> fields) {
 	super(new MigLayout("insets 10", "[90!][][]"));
-	String jLabelText = PluginServices.getPluginServices(this).getText(
-		"sort_then_by");
+	String jLabelText = _("sort_then_by");
 	if (priority == 0) {
-	    jLabelText = PluginServices.getPluginServices(this).getText(
-		    "sort_by");
+	    jLabelText = _("sort_by");
 	}
 	add(new JLabel(jLabelText), "cell 0 0 1 2");
 	Collections.sort(fields);
@@ -45,11 +45,9 @@ public class ChooseSortFieldPanel extends JPanel {
 	add(jComboBox, "cell 1 0 1 2");
 	buttonGroup = new ButtonGroup();
 
-	JRadioButton asc = new JRadioButton(PluginServices.getPluginServices(
-		this).getText("sort_asc"));
+	JRadioButton asc = new JRadioButton(_("sort_asc"));
 	asc.setActionCommand(SortOrder.ASCENDING.toString());
-	JRadioButton desc = new JRadioButton(PluginServices.getPluginServices(
-		this).getText("sort_desc"));
+	JRadioButton desc = new JRadioButton(_("sort_desc"));
 	desc.setActionCommand(SortOrder.DESCENDING.toString());
 	buttonGroup.add(asc);
 	buttonGroup.add(desc);
