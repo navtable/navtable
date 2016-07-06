@@ -40,8 +40,14 @@ import org.gvsig.andami.preferences.IPreferenceExtension;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.app.ApplicationLocator;
 import org.gvsig.app.ApplicationManager;
+import org.gvsig.app.project.ProjectManager;
 import org.gvsig.app.project.documents.table.gui.FeatureTableDocumentPanel;
+import org.gvsig.app.project.documents.table.gui.toc.ShowAttributesTableTocMenuEntry;
+import org.gvsig.app.project.documents.view.ViewManager;
 import org.gvsig.app.project.documents.view.gui.IView;
+import org.gvsig.app.project.documents.view.toc.AbstractTocContextMenuAction;
+import org.gvsig.editing.project.documents.view.toc.actions.StartEditingTocMenuEntry;
+import org.gvsig.editing.project.documents.view.toc.actions.StopEditingTocMenuEntry;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.mapcontext.layers.FLayer;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
@@ -58,7 +64,6 @@ import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
 import es.udc.cartolab.gvsig.navtable.contextualmenu.SorterAddon;
 import es.udc.cartolab.gvsig.navtable.preferences.NavTablePreferencesPage;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
-import es.udc.cartolab.gvsig.navtable.utils.NavTableTocMenuEntry;
 
 public class NavTableExtension extends Extension implements IPreferenceExtension {
 
@@ -68,9 +73,7 @@ private static final Logger logger = LoggerFactory
 
 
     public void execute(String actionCommand) {
-	if (enableNavtable()) {
-	    openNavtable();
-	} 
+    	openNavtable();
     }
 
     private void openNavtable() {
@@ -99,13 +102,10 @@ private static final Logger logger = LoggerFactory
 	about.addDeveloper("NavTable", getClass().getClassLoader().getResource("/about.htm"), 1);
 	String id = this.getClass().getName();
     IconThemeHelper.registerIcon("action", id, this);
-
+    initTOCMenuEntry();
 	// Entry at TOC contextual menu
 	ExtensionPoints extensionPoints = ExtensionPointsSingleton
 		.getInstance();
-	extensionPoints.add("View_TocActions", "NavTable",
-		new NavTableTocMenuEntry());
-
 	// Add NavTable "official" context menu addons to the extension point
 	INavTableContextMenu filtersAddon = new FiltersAddon();
 	extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU,
@@ -127,6 +127,15 @@ private static final Logger logger = LoggerFactory
 	}
 	configDir = new File(configDirStr);
 	Preferences p = new Preferences(configDir);
+    }
+    
+    private void initTOCMenuEntry() {
+        	ProjectManager projectManager = ApplicationLocator.getProjectManager();
+        	ViewManager viewManager = (ViewManager) projectManager.getDocumentManager(ViewManager.TYPENAME);
+        	AbstractTocContextMenuAction tableMenuEntry = new ShowAttributesTableTocMenuEntry();
+        	String group = tableMenuEntry.getGroup();
+        	int groupOrder = tableMenuEntry.getGroupOrder();
+        	viewManager.addTOCContextAction("navtable", group, groupOrder, 1000);
     }
 
 

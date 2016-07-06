@@ -11,13 +11,13 @@
 		
 			<action 
                 name= "navtable"
-                label="es.udc.cartolab.gvsig.navtable.NavTableExtension.label"
-                tooltip="es.udc.cartolab.gvsig.navtable.NavTableExtension.tooltip"
+                label="navtable"
+                tooltip="navtable"
                 action-command="" 
                 icon="es.udc.cartolab.gvsig.navtable.NavTableExtension"
                 accelerator=""
             />
-			<menu text="Layer/NavTable" name="navtable"/> 
+			<menu text="Layer/navtable" name="navtable"/> 
             
 			<tool-bar name="view_actions">
 				<action-tool name="navtable" />
