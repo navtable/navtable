@@ -1,20 +1,18 @@
 package es.udc.cartolab.gvsig.navtable.dataacces;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.gvsig.fmap.dal.exception.DataException;
 
 public interface IController extends Cloneable {
 
-    public long create(HashMap<String, String> newValues) throws Exception;
+    public long create(Map<String, String> newValues) throws Exception;
     
     public abstract void read(long position) throws DataException;
 
     public abstract void update(long position) throws DataException;
 
     public abstract void delete(long position) throws DataException;
-
-    public abstract void clearAll();
 
     public abstract int getIndex(String fieldName);
 
@@ -24,11 +22,11 @@ public interface IController extends Cloneable {
 
     public abstract String getValueInLayer(String fieldName);
 
-    public abstract HashMap<String, String> getValues();
+    public abstract Map<String, String> getValues();
 
-    public abstract HashMap<String, String> getValuesOriginal();
+    public abstract Map<String, String> getValuesOriginal();
 
-    public abstract HashMap<String, String> getValuesChanged();
+    public abstract Map<String, String> getValuesChanged();
 
     /**
      * Make sure the value set is a formatted value, as the ones from layer. See

@@ -33,7 +33,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.List;
 
@@ -52,7 +51,6 @@ import org.gvsig.andami.ui.mdiFrame.MDIFrame;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
-import org.gvsig.app.extension.SelectByAttributesExtension;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.FeatureStoreNotification;
 import org.gvsig.fmap.geom.Geometry;
@@ -60,7 +58,6 @@ import org.gvsig.fmap.geom.primitive.Envelope;
 import org.gvsig.fmap.mapcontext.layers.LayerEvent;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 import org.gvsig.fmap.mapcontext.layers.vectorial.VectorLayer;
-import org.gvsig.tools.exception.BaseException;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
@@ -80,840 +77,838 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 /**
  * <img src="images/NavTableWindow.png">
- * 
+ *
  * If there is an image on
  * 'gvSIG/extensiones/es.udc.cartolab.gvsig.navtable/images/navtable_header.png'
  * it will be loaded on the NorthPanel.
- * 
+ *
  */
 
+@SuppressWarnings("serial")
 public abstract class AbstractNavTable extends JPanel implements IWindow,
-	ActionListener, IWindowListener, PositionListener {
+ActionListener, IWindowListener, PositionListener {
 
-private static final Logger logger = LoggerFactory
-		.getLogger(AbstractNavTable.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(AbstractNavTable.class);
 
-    public static final int EMPTY_REGISTER = -1;
-    protected static final int BUTTON_REMOVE = 0;
-    protected static final int BUTTON_SAVE = 1;
-    protected static final int BUTTON_SELECTION = 2;
-    protected static final int BUTTON_ZOOM = 3;
-    protected static final int BUTTON_COPY_PREVIOUS = 4;
-    protected static final int BUTTON_COPY_SELECTED = 5;
-    private static final long serialVersionUID = 1L;
-    protected String deleteMessageKey = "confirm_delete_register";
-    protected String saveErrorTitleKey = "save_layer_error";
-    protected String saveErrorGenericMessageKey = "errorSavingData";
-    public static final String NAVTABLE_ACTIONS_TOOLBAR = "navtable_extension_point_actions_toolbar";
-    public static final String NAVTABLE_CONTEXT_MENU = "navtable_extension_point_context_menu";
+	public static final long EMPTY_REGISTER = -1;
+	protected static final int BUTTON_REMOVE = 0;
+	protected static final int BUTTON_SAVE = 1;
+	protected static final int BUTTON_SELECTION = 2;
+	protected static final int BUTTON_ZOOM = 3;
+	protected static final int BUTTON_COPY_PREVIOUS = 4;
+	protected static final int BUTTON_COPY_SELECTED = 5;
+	protected String deleteMessageKey = "confirm_delete_register";
+	protected String saveErrorTitleKey = "save_layer_error";
+	protected String saveErrorGenericMessageKey = "errorSavingData";
+	public static final String NAVTABLE_ACTIONS_TOOLBAR = "navtable_extension_point_actions_toolbar";
+	public static final String NAVTABLE_CONTEXT_MENU = "navtable_extension_point_context_menu";
 
-    protected JPanel northPanel = null;
-    protected JPanel centerPanel = null;
-    protected JPanel southPanel = null;
+	protected JPanel northPanel = null;
+	protected JPanel centerPanel = null;
+	protected JPanel southPanel = null;
 
-    protected IController layerController;
-    private NavigationHandler navigation;
+	protected IController layerController;
+	private NavigationHandler navigation;
 
-    protected FLyrVect layer = null;
+	protected FLyrVect layer = null;
 
-    protected boolean changedValues = false;
+	protected boolean changedValues = false;
 
-    protected JCheckBox fixScaleCB = null;
-    protected JCheckBox alwaysZoomCB = null;
-    protected JButton filterB = null;
-    protected JButton copyPreviousB = null;
-    protected JButton copySelectedB = null;
-    protected JButton zoomB = null;
-    protected JButton saveB = null;
-    protected JButton removeB = null;
-    protected JButton undoB = null;
+	protected JCheckBox fixScaleCB = null;
+	protected JCheckBox alwaysZoomCB = null;
+	protected JButton filterB = null;
+	protected JButton copyPreviousB = null;
+	protected JButton copySelectedB = null;
+	protected JButton zoomB = null;
+	protected JButton saveB = null;
+	protected JButton removeB = null;
+	protected JButton undoB = null;
 
-    protected EditionListener listener;
+	protected EditionListener listener;
 
-    private JPanel actionsToolBar;
-    private JPanel optionsPanel;
+	private JPanel actionsToolBar;
+	private JPanel optionsPanel;
 
-    protected boolean openEmptyLayers = false;
+	protected boolean openEmptyLayers = false;
 
-    protected WindowInfo windowInfo = null;
+	protected WindowInfo windowInfo = null;
 
-    public AbstractNavTable(FLyrVect layer) {
-	super();
-	this.layer = layer;
-	navigation = new NavigationHandler(this);
-    }
-
-    public boolean init() {
-
-	try {
-	    if ((!openEmptyLayers) && (getRecordset().getRowCount() <= 0)) {
-		showEmptyLayerMessage();
-		return false;
-	    }
-	} catch (DataException e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
+	public AbstractNavTable(FLyrVect layer) {
+		super();
+		this.layer = layer;
+		navigation = new NavigationHandler(this);
 	}
 
-	if (!initController()) {
-	    return false;
-	}
+	public boolean init() {
 
-	initGUI();
-	initWidgets();
-
-	refreshGUI();
-	super.repaint();
-	super.setVisible(true);
-	setFocusCycleRoot(true);
-
-	setLayerListeners();
-	return true;
-    }
-
-    /**
-     * In NavTable it will get the attribute names from the layer and set it on
-     * the left column of the table. On AbstractForm it will initialize the
-     * widget vector from the Abeille file
-     */
-    protected abstract void initWidgets();
-
-    protected void initGUI() {
-	MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]",
-		"[][grow][]");
-	this.setLayout(thisLayout);
-	this.add(getNorthPanel(), "shrink, wrap, align center");
-	this.add(getCenterPanel(), "shrink, growx, growy, wrap");
-	this.add(getSouthPanel(), "shrink, align center");
-    }
-
-    protected boolean initController() {
-	try {
-	    layerController = new LayerController(this.layer);
-	    layerController.read(getPosition());
-	} catch (DataException e) {
-	    logger.error(e.getMessage(), e);
-	    return false;
-	}
-	return true;
-    }
-
-    public void resetListeners() {
-	removeLayerListeners();
-	setLayerListeners();
-    }
-
-    public void reinit() {
-	resetListeners();
-    }
-
-    protected void setLayerListeners() {
-    	listener = new EditionListener(this, layer);
-	    layer.addLayerListener(listener);
-	    navigation.setListeners();
-	    addPositionListener(this);
-    }
-
-    protected void removeLayerListeners() {
-	    layer.removeLayerListener(listener);
-	    navigation.removeListeners();
-	    removePositionListener(this);
-    }
-
-    public void showEmptyLayerMessage() {
-
-	if ((!openEmptyLayers)) {
-	    JOptionPane.showMessageDialog(this,_("emptyLayer"));
-	}
-    }
-
-    /**
-     * It shows the values of a data row in the main panel.
-     */
-    public abstract void fillValues();
-
-    /**
-     * It fills NavTable with empty values. Used when "Selected" option is set
-     * on, but there are any selection registers.
-     * 
-     */
-    public abstract void fillEmptyValues();
-
-    /**
-     * It selects a specific row into the table.
-     */
-    public abstract void selectRow(int row);
-
-    /**
-     * @return true is some value has changed, false otherwise
-     */
-    protected boolean isChangedValues() {
-	return changedValues;
-    }
-
-    /**
-     * Set true or false the boolean variable changedValues
-     */
-    protected void setChangedValues(boolean bool) {
-	undoB.setEnabled(bool);
-	changedValues = bool;
-    }
-
-    public abstract boolean saveRecord() throws DataException;
-
-    protected void enableSaveButton(boolean bool) {
-	if (!isChangedValues()) {
-	    saveB.setEnabled(false);
-	} else {
-	    saveB.setEnabled(bool);
-	}
-    }
-
-    public void setOnlySelected(boolean bool) {
-	navigation.setOnlySelected(bool);
-    }
-
-    public boolean isOnlySelected() {
-	return navigation.isOnlySelected();
-    }
-
-    private void initNorthPanelButtons() {
-	// alwaysSelectCB and onlySelectedCB are init in SelectionHandler
-	alwaysZoomCB = getNavTableCheckBox(alwaysZoomCB, "alwaysZoomCheckBox");
-	fixScaleCB = getNavTableCheckBox(fixScaleCB, "fixedScaleCheckBox");
-    }
-
-    private JPanel getOptionsPanel() {
-	if (optionsPanel == null) {
-	    optionsPanel = new JPanel(new FlowLayout());
-	    optionsPanel.add(navigation.getOptionsPanel());
-	    optionsPanel.add(alwaysZoomCB);
-	    optionsPanel.add(fixScaleCB);
-	}
-	return optionsPanel;
-    }
-
-    /**
-     * Gets the file of the image header for the upper panel. Subclasses can
-     * override this method to get their custom image header.
-     * 
-     * @return the File of the image.
-     */
-    protected File getHeaderFile() {
-	File folder = PluginServices.getPluginServices(this)
-		.getPluginDirectory();
-	File header = new File(folder.getAbsolutePath() + File.separator
-		+ "images" + File.separator + "navtable_header.png");
-
-	if (!header.exists()) {
-	    header = new File(Preferences.getConfigDir()
-		    + "/navtable_header.png");
-	}
-	return header;
-    }
-
-    protected JPanel getNorthPanel() {
-	if (northPanel == null) {
-	    initNorthPanelButtons();
-	    northPanel = new JPanel(new BorderLayout());
-	    File iconFile = getHeaderFile();
-	    if (iconFile != null && iconFile.exists()) {
-		northPanel.setBackground(Color.WHITE);
-		ImageIcon logo = new ImageIcon(iconFile.getAbsolutePath());
-		JLabel icon = new JLabel();
-		icon.setIcon(logo);
-		northPanel.add(icon, BorderLayout.WEST);
-	    }
-	    northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
-	}
-	return northPanel;
-    }
-
-    public abstract JPanel getCenterPanel();
-
-    public ImageIcon getIcon(String iconName) {
-	java.net.URL imgURL = getClass().getResource("/images/" + iconName);
-	if (imgURL == null) {
-	    imgURL = AbstractNavTable.class.getResource("/images/" + iconName);
-	}
-
-	ImageIcon icon = new ImageIcon(imgURL);
-	return icon;
-    }
-
-    // Probably should be removed and use a factory instead
-    // is duplicated with NavigationHandler
-    private JButton getNavTableButton(JButton button, String iconName,
-	    String toolTipName) {
-	JButton but = new JButton(getIcon(iconName));
-	but.setToolTipText(_(toolTipName));
-	but.addActionListener(this);
-	return but;
-    }
-
-    // Probably should be removed and use a factory instead
-    // is duplicated with NavigationHandler
-    private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
-	cb = new JCheckBox(_(toolTipName));
-	cb.addActionListener(this);
-	return cb;
-    }
-
-    public JPanel getActionsToolBar() {
-	if (actionsToolBar == null) {
-	    actionsToolBar = new JPanel(new FlowLayout());
-	    registerNavTableButtonsOnActionToolBarExtensionPoint();
-	    ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton
-		    .getInstance().get(NAVTABLE_ACTIONS_TOOLBAR);
-	    for (Object button : actionToolBarEP.values()) {
-		actionsToolBar.add((JButton) button);
-	    }
-	}
-	return actionsToolBar;
-    }
-
-    protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
-	ExtensionPoints extensionPoints = ExtensionPointsSingleton
-		.getInstance();
-
-	filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-enable-filter",
-		filterB);
-
-	copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png",
-		"copySelectedButtonTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-selected",
-		copySelectedB);
-
-	copyPreviousB = getNavTableButton(copyPreviousB, "/copy.png",
-		"copyPreviousButtonTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-previous",
-		copyPreviousB);
-
-	zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-zoom", zoomB);
-
-	// TODO. This is a hack. It's more logic that navigation registers the
-	// bt
-	// itself. But as NavTable overrides this methods, and cleans the list
-	// it can not be done
-	navigation.registerNavTableButtonsOnActionToolBarExtensionPoint();
-
-	saveB = getNavTableButton(saveB, "/save.png", "saveButtonTooltip");
-	saveB.setEnabled(false);
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-save", saveB);
-
-	removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-remove", removeB);
-
-	undoB = getNavTableButton(undoB, "/edit-undo.png",
-		"clearChangesButtonTooltip");
-	undoB.setEnabled(false);
-	extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes",
-		undoB);
-    }
-
-    protected JPanel getSouthPanel() {
-	if (southPanel == null) {
-	    southPanel = new JPanel(new BorderLayout());
-	    southPanel.add(navigation.getToolBar(), BorderLayout.SOUTH);
-	    southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
-	}
-	return southPanel;
-    }
-
-    /**
-     * Shows a warning to the user if there's unsaved data.
-     * 
-     */
-    protected boolean showWarning() {
-	if (getPosition() == EMPTY_REGISTER) {
-	    return true;
-	}
-	if (isChangedValues()) {
-	    boolean save = false;
-	    Object[] options = {_("saveButtonTooltip"), _("ignoreButton") };
-	    int response = JOptionPane.showOptionDialog(this, _("unsavedDataMessage"), _("unsavedDataTitle"),
-		    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-		    null, // do not use a custom Icon
-		    options, // the titles of buttons
-		    options[0]); // default button title
-	    if (response == JOptionPane.YES_OPTION) {
-		save = true;
-	    } else {
-		save = false;
-		setChangedValues(false);
-		// The values will be restored as they are
-		// when filling again the table/form,
-		// so it's not need to revert the changes done.
-	    }
-	    if (save) {
-		return tryToSave();
-	    }
-	}
-	return true;
-    }
-
-    /**
-     * Zooms to the current feature. The feature will fill the visualization
-     * area.
-     * 
-     */
-    public void zoom() {
-	
-	if (layer instanceof VectorLayer) {
-	    
-		Geometry geometry = getRecordset().getGeometry(getPosition());
-
-		if (geometry != null) {
-		    /*
-		     * fix to avoid zoom problems when layer and view
-		     * projections aren't the same.
-		     */
-		    if (layer.getCoordTrans() != null) {
-		    	geometry.reProject(layer.getCoordTrans());
-		    }
-		    Envelope envelope = geometry.getEnvelope();
-		    if (envelope.getLength(0) < 200) {
-//		    	rectangle.setFrameFromCenter(rectangle.getCenterX(),
-//						rectangle.getCenterY(),
-//						rectangle.getCenterX() + 100,
-//						rectangle.getCenterY() + 100);
-		    	
-		    }
-		    
-		    if (envelope != null) {
-			layer.getMapContext().getViewPort().setEnvelope(envelope);
-		    }
-		} else {
-		    JOptionPane.showMessageDialog(this, _("feature_has_no_geometry_to_zoom"));
+		try {
+			if ((!openEmptyLayers) && (getRecordset().getRowCount() <= 0)) {
+				showEmptyLayerMessage();
+				return false;
+			}
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+			return false;
 		}
-	   
-	}
-    }
 
-    /**
-     * It forces the application to use the current scale when navigating
-     * between features. It also centers the visualization to the feature when
-     * navigating.
-     * 
-     */
-    private void fixScale() {
-	long scale = layer.getMapContext().getScaleView();
-	zoom();
-	layer.getMapContext().setScaleView(scale);
-    }
+		if (!initController()) {
+			return false;
+		}
 
-    public void selectCurrentFeature() {
-	FBitSet bitset = null;
-	int pos = Long.valueOf(getPosition()).intValue();
-	bitset = getRecordset().getSelection();
-	if (!bitset.get(pos)) {
-	    bitset.set(pos);
-	} else {
-	    bitset.clear(pos);
-	    if (isOnlySelected()) {
-		lastSelected();
-	    }
-	}
-	getRecordset().setSelection(bitset);
-    }
+		initGUI();
+		initWidgets();
 
-    /**
-     * Removes all selections of the layer.
-     * 
-     */
-    public void clearSelection() {
-	getRecordset().clearSelection();
-    }
+		refreshGUI();
+		super.repaint();
+		super.setVisible(true);
+		setFocusCycleRoot(true);
 
-    @Override
-    public WindowInfo getWindowInfo() {
-	if (windowInfo == null) {
-	    windowInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
-		    | WindowInfo.PALETTE | WindowInfo.RESIZABLE);
-
-	    windowInfo.setTitle("NavTable: " + layer.getName());
-	    Dimension dim = getPreferredSize();
-	    // To calculate the maximum size of a form we take the size of the
-	    // main frame minus a "magic number" for the menus, toolbar, state
-	    // bar
-	    // Take into account that in edition mode there is less available
-	    // space
-	    MDIFrame a = (MDIFrame) PluginServices.getMainFrame();
-	    final int MENU_TOOL_STATE_BAR = 205;
-	    int maxHeight = a.getHeight() - MENU_TOOL_STATE_BAR;
-	    int maxWidth = a.getWidth() - 15;
-
-	    int width, heigth = 0;
-	    if (dim.getHeight() > maxHeight) {
-		heigth = maxHeight;
-	    } else {
-		heigth = new Double(dim.getHeight()).intValue();
-	    }
-	    if (dim.getWidth() > maxWidth) {
-		width = maxWidth;
-	    } else {
-		width = new Double(dim.getWidth()).intValue();
-	    }
-
-	    // getPreferredSize doesn't take into account the borders and other
-	    // stuff
-	    // introduced by Andami, neither scroll bars so we must increase the
-	    // "preferred"
-	    // dimensions
-	    windowInfo.setWidth(width + 25);
-	    windowInfo.setHeight(heigth + 15);
-	}
-	return windowInfo;
-    }
-
-    /**
-     * Repaints the window.
-     * 
-     */
-    public void refreshGUI() {
-	boolean navEnabled = false;
-	if (getRecordset() == null) {
-	    return;
+		setLayerListeners();
+		return true;
 	}
 
-	if (navigation.isEmptyRegister()) {
-	    navEnabled = false;
-	    fillEmptyValues();
-	} else {
-	    navEnabled = true;
-	    fillValues();
+	/**
+	 * In NavTable it will get the attribute names from the layer and set it on
+	 * the left column of the table. On AbstractForm it will initialize the
+	 * widget vector from the Abeille file
+	 */
+	protected abstract void initWidgets();
+
+	protected void initGUI() {
+		MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]",
+				"[][grow][]");
+		this.setLayout(thisLayout);
+		this.add(getNorthPanel(), "shrink, wrap, align center");
+		this.add(getCenterPanel(), "shrink, growx, growy, wrap");
+		this.add(getSouthPanel(), "shrink, align center");
 	}
 
-	// north panel buttons
-	alwaysZoomCB.setEnabled(navEnabled);
+	protected boolean initController() {
+		try {
+			layerController = new LayerController(this.layer);
+			layerController.read(getPosition());
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+			return false;
+		}
+		return true;
+	}
 
-	fixScaleCB.setEnabled(navEnabled);
+	public void resetListeners() {
+		removeLayerListeners();
+		setLayerListeners();
+	}
 
-	if (isSomeRowToWorkOn()) {
-	    if (alwaysZoomCB.isSelected()) {
-		zoomB.setEnabled(false);
+	public void reinit() {
+		resetListeners();
+	}
+
+	protected void setLayerListeners() {
+		listener = new EditionListener(this, layer);
+		layer.addLayerListener(listener);
+		navigation.setListeners();
+		addPositionListener(this);
+	}
+
+	protected void removeLayerListeners() {
+		layer.removeLayerListener(listener);
+		navigation.removeListeners();
+		removePositionListener(this);
+	}
+
+	public void showEmptyLayerMessage() {
+
+		if ((!openEmptyLayers)) {
+			JOptionPane.showMessageDialog(this, _("emptyLayer"));
+		}
+	}
+
+	/**
+	 * It shows the values of a data row in the main panel.
+	 */
+	public abstract void fillValues();
+
+	/**
+	 * It fills NavTable with empty values. Used when "Selected" option is set
+	 * on, but there are any selection registers.
+	 *
+	 */
+	public abstract void fillEmptyValues();
+
+	/**
+	 * It selects a specific row into the table.
+	 */
+	public abstract void selectRow(int row);
+
+	/**
+	 * @return true is some value has changed, false otherwise
+	 */
+	protected boolean isChangedValues() {
+		return changedValues;
+	}
+
+	/**
+	 * Set true or false the boolean variable changedValues
+	 */
+	protected void setChangedValues(boolean bool) {
+		undoB.setEnabled(bool);
+		changedValues = bool;
+	}
+
+	public abstract boolean saveRecord() throws DataException;
+
+	protected void enableSaveButton(boolean bool) {
+		if (!isChangedValues()) {
+			saveB.setEnabled(false);
+		} else {
+			saveB.setEnabled(bool);
+		}
+	}
+
+	public void setOnlySelected(boolean bool) {
+		navigation.setOnlySelected(bool);
+	}
+
+	public boolean isOnlySelected() {
+		return navigation.isOnlySelected();
+	}
+
+	private void initNorthPanelButtons() {
+		// alwaysSelectCB and onlySelectedCB are init in SelectionHandler
+		alwaysZoomCB = getNavTableCheckBox(alwaysZoomCB, "alwaysZoomCheckBox");
+		fixScaleCB = getNavTableCheckBox(fixScaleCB, "fixedScaleCheckBox");
+	}
+
+	private JPanel getOptionsPanel() {
+		if (optionsPanel == null) {
+			optionsPanel = new JPanel(new FlowLayout());
+			optionsPanel.add(navigation.getOptionsPanel());
+			optionsPanel.add(alwaysZoomCB);
+			optionsPanel.add(fixScaleCB);
+		}
+		return optionsPanel;
+	}
+
+	/**
+	 * Gets the file of the image header for the upper panel. Subclasses can
+	 * override this method to get their custom image header.
+	 *
+	 * @return the File of the image.
+	 */
+	protected File getHeaderFile() {
+		File folder = PluginServices.getPluginServices(this)
+				.getPluginDirectory();
+		File header = new File(folder.getAbsolutePath() + File.separator
+				+ "images" + File.separator + "navtable_header.png");
+
+		if (!header.exists()) {
+			header = new File(Preferences.getConfigDir()
+					+ "/navtable_header.png");
+		}
+		return header;
+	}
+
+	protected JPanel getNorthPanel() {
+		if (northPanel == null) {
+			initNorthPanelButtons();
+			northPanel = new JPanel(new BorderLayout());
+			File iconFile = getHeaderFile();
+			if (iconFile != null && iconFile.exists()) {
+				northPanel.setBackground(Color.WHITE);
+				ImageIcon logo = new ImageIcon(iconFile.getAbsolutePath());
+				JLabel icon = new JLabel();
+				icon.setIcon(logo);
+				northPanel.add(icon, BorderLayout.WEST);
+			}
+			northPanel.add(getOptionsPanel(), BorderLayout.SOUTH);
+		}
+		return northPanel;
+	}
+
+	public abstract JPanel getCenterPanel();
+
+	public ImageIcon getIcon(String iconName) {
+		java.net.URL imgURL = getClass().getResource("/images/" + iconName);
+		if (imgURL == null) {
+			imgURL = AbstractNavTable.class.getResource("/images/" + iconName);
+		}
+
+		ImageIcon icon = new ImageIcon(imgURL);
+		return icon;
+	}
+
+	// Probably should be removed and use a factory instead
+	// is duplicated with NavigationHandler
+	private JButton getNavTableButton(JButton button, String iconName,
+			String toolTipName) {
+		JButton but = new JButton(getIcon(iconName));
+		but.setToolTipText(_(toolTipName));
+		but.addActionListener(this);
+		return but;
+	}
+
+	// Probably should be removed and use a factory instead
+	// is duplicated with NavigationHandler
+	private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
+		cb = new JCheckBox(_(toolTipName));
+		cb.addActionListener(this);
+		return cb;
+	}
+
+	public JPanel getActionsToolBar() {
+		if (actionsToolBar == null) {
+			actionsToolBar = new JPanel(new FlowLayout());
+			registerNavTableButtonsOnActionToolBarExtensionPoint();
+			ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton
+					.getInstance().get(NAVTABLE_ACTIONS_TOOLBAR);
+			for (Object button : actionToolBarEP.values()) {
+				actionsToolBar.add((JButton) button);
+			}
+		}
+		return actionsToolBar;
+	}
+
+	protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
+		ExtensionPoints extensionPoints = ExtensionPointsSingleton
+				.getInstance();
+
+		filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-enable-filter",
+				filterB);
+
+		copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png",
+				"copySelectedButtonTooltip");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-selected",
+				copySelectedB);
+
+		copyPreviousB = getNavTableButton(copyPreviousB, "/copy.png",
+				"copyPreviousButtonTooltip");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-previous",
+				copyPreviousB);
+
+		zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-zoom", zoomB);
+
+		// TODO. This is a hack. It's more logic that navigation registers the
+		// bt
+		// itself. But as NavTable overrides this methods, and cleans the list
+		// it can not be done
+		navigation.registerNavTableButtonsOnActionToolBarExtensionPoint();
+
+		saveB = getNavTableButton(saveB, "/save.png", "saveButtonTooltip");
+		saveB.setEnabled(false);
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-save", saveB);
+
+		removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-remove", removeB);
+
+		undoB = getNavTableButton(undoB, "/edit-undo.png",
+				"clearChangesButtonTooltip");
+		undoB.setEnabled(false);
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes",
+				undoB);
+	}
+
+	protected JPanel getSouthPanel() {
+		if (southPanel == null) {
+			southPanel = new JPanel(new BorderLayout());
+			southPanel.add(navigation.getToolBar(), BorderLayout.SOUTH);
+			southPanel.add(getActionsToolBar(), BorderLayout.NORTH);
+		}
+		return southPanel;
+	}
+
+	/**
+	 * Shows a warning to the user if there's unsaved data.
+	 *
+	 */
+	protected boolean showWarning() {
+		if (getPosition() == EMPTY_REGISTER) {
+			return true;
+		}
+		if (isChangedValues()) {
+			boolean save = false;
+			Object[] options = { _("saveButtonTooltip"), _("ignoreButton") };
+			int response = JOptionPane.showOptionDialog(this,
+					_("unsavedDataMessage"), _("unsavedDataTitle"),
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, // do not use a custom Icon
+					options, // the titles of buttons
+					options[0]); // default button title
+			if (response == JOptionPane.YES_OPTION) {
+				save = true;
+			} else {
+				save = false;
+				setChangedValues(false);
+				// The values will be restored as they are
+				// when filling again the table/form,
+				// so it's not need to revert the changes done.
+			}
+			if (save) {
+				return tryToSave();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Zooms to the current feature. The feature will fill the visualization
+	 * area.
+	 *
+	 */
+	public void zoom() {
+
+		if (layer instanceof VectorLayer) {
+
+			Geometry geometry = getRecordset().getGeometry(getPosition());
+
+			if (geometry != null) {
+				/*
+				 * fix to avoid zoom problems when layer and view projections
+				 * aren't the same.
+				 */
+				if (layer.getCoordTrans() != null) {
+					geometry.reProject(layer.getCoordTrans());
+				}
+				Envelope envelope = geometry.getEnvelope();
+				if (envelope.getLength(0) < 200) {
+					// rectangle.setFrameFromCenter(rectangle.getCenterX(),
+					// rectangle.getCenterY(),
+					// rectangle.getCenterX() + 100,
+					// rectangle.getCenterY() + 100);
+
+				}
+
+				if (envelope != null) {
+					layer.getMapContext().getViewPort().setEnvelope(envelope);
+				}
+			} else {
+				JOptionPane.showMessageDialog(this,
+						_("feature_has_no_geometry_to_zoom"));
+			}
+
+		}
+	}
+
+	/**
+	 * It forces the application to use the current scale when navigating
+	 * between features. It also centers the visualization to the feature when
+	 * navigating.
+	 *
+	 */
+	private void fixScale() {
+		long scale = layer.getMapContext().getScaleView();
 		zoom();
-	    } else {
-		zoomB.setEnabled(true);
-	    }
-
-	    if (fixScaleCB.isSelected()) {
-		fixScale();
-	    }
-	} else {
-	    fillEmptyValues();
+		layer.getMapContext().setScaleView(scale);
 	}
 
-	// south panel option buttons
-	enableCopySelectedButton(navEnabled);
-	enableCopyPreviousButton(navEnabled);
-	zoomB.setEnabled(navEnabled);
-
-	setIconForFiltering();
-	enableSaveButton(navEnabled);
-	removeB.setEnabled(navEnabled);
-	navigation.refreshGUI(navEnabled);
-    }
-
-    private void setIconForFiltering() {
-	if (getRecordset().getSelection().isEmpty()) {
-	    ImageIcon imagenFilter = getIcon("/filter.png");
-	    filterB.setIcon(imagenFilter);
-	    filterB.setToolTipText(_("filterTooltip"));
-	} else {
-	    ImageIcon imagenRemoveFilter = getIcon("/nofilter.png");
-	    filterB.setIcon(imagenRemoveFilter);
-	    filterB.setToolTipText(_("noFilterTooltip"));
+	public void selectCurrentFeature() {
+		FBitSet bitset = null;
+		int pos = Long.valueOf(getPosition()).intValue();
+		bitset = getRecordset().getSelection();
+		if (!bitset.get(pos)) {
+			bitset.set(pos);
+		} else {
+			bitset.clear(pos);
+			if (isOnlySelected()) {
+				lastSelected();
+			}
+		}
+		getRecordset().setSelection(bitset);
 	}
-    }
 
-    private void enableCopyPreviousButton(boolean navEnabled) {
-	if (getPosition() == 0 || !navEnabled) {
-	    copyPreviousB.setEnabled(false);
-	} else {
-	    copyPreviousB.setEnabled(true);
+	/**
+	 * Removes all selections of the layer.
+	 *
+	 */
+	public void clearSelection() {
+		getRecordset().clearSelection();
 	}
-    }
 
-    private void enableCopySelectedButton(boolean navEnabled) {
-	if (getNumberOfRowsSelected() == 0 || !navEnabled) {
-	    copySelectedB.setEnabled(false);
-	} else {
-	    copySelectedB.setEnabled(true);
+	@Override
+	public WindowInfo getWindowInfo() {
+		if (windowInfo == null) {
+			windowInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
+					| WindowInfo.PALETTE | WindowInfo.RESIZABLE);
+
+			windowInfo.setTitle("NavTable: " + layer.getName());
+			Dimension dim = getPreferredSize();
+			// To calculate the maximum size of a form we take the size of the
+			// main frame minus a "magic number" for the menus, toolbar, state
+			// bar
+			// Take into account that in edition mode there is less available
+			// space
+			MDIFrame a = (MDIFrame) PluginServices.getMainFrame();
+			final int MENU_TOOL_STATE_BAR = 205;
+			int maxHeight = a.getHeight() - MENU_TOOL_STATE_BAR;
+			int maxWidth = a.getWidth() - 15;
+
+			int width, heigth = 0;
+			if (dim.getHeight() > maxHeight) {
+				heigth = maxHeight;
+			} else {
+				heigth = new Double(dim.getHeight()).intValue();
+			}
+			if (dim.getWidth() > maxWidth) {
+				width = maxWidth;
+			} else {
+				width = new Double(dim.getWidth()).intValue();
+			}
+
+			// getPreferredSize doesn't take into account the borders and other
+			// stuff
+			// introduced by Andami, neither scroll bars so we must increase the
+			// "preferred"
+			// dimensions
+			windowInfo.setWidth(width + 25);
+			windowInfo.setHeight(heigth + 15);
+		}
+		return windowInfo;
 	}
-    }
 
-    private boolean isSomeRowToWorkOn() {
-	if (isOnlySelected() && getNumberOfRowsSelected() == 0) {
-	    return false;
-	} else {
-	    return true;
+	/**
+	 * Repaints the window.
+	 *
+	 */
+	public void refreshGUI() {
+		boolean navEnabled = false;
+		if (getRecordset() == null) {
+			return;
+		}
+
+		if (navigation.isEmptyRegister()) {
+			navEnabled = false;
+			fillEmptyValues();
+		} else {
+			navEnabled = true;
+			fillValues();
+		}
+
+		// north panel buttons
+		alwaysZoomCB.setEnabled(navEnabled);
+
+		fixScaleCB.setEnabled(navEnabled);
+
+		if (isSomeRowToWorkOn()) {
+			if (alwaysZoomCB.isSelected()) {
+				zoomB.setEnabled(false);
+				zoom();
+			} else {
+				zoomB.setEnabled(true);
+			}
+
+			if (fixScaleCB.isSelected()) {
+				fixScale();
+			}
+		} else {
+			fillEmptyValues();
+		}
+
+		// south panel option buttons
+		enableCopySelectedButton(navEnabled);
+		enableCopyPreviousButton(navEnabled);
+		zoomB.setEnabled(navEnabled);
+
+		setIconForFiltering();
+		enableSaveButton(navEnabled);
+		removeB.setEnabled(navEnabled);
+		navigation.refreshGUI(navEnabled);
 	}
-    }
 
-    public int getNumberOfRowsSelected() {
-	FBitSet bitset = getRecordset().getSelection();
-	return bitset.cardinality();
-    }
-
-    public void copyPrevious() {
-	long current = navigation.getPosition();
-	navigation.setPosition(navigation.getPreviousPositionInModel(), false);
-	fillValues();
-	navigation.setPosition(current, false);
-	setChangedValues(true);
-	enableSaveButton(true);
-    }
-
-    public boolean copySelected() {
-	if (getNumberOfRowsSelected() != 1) {
-	    // show error
-	    JOptionPane.showMessageDialog(null,
-		    _("justOneRecordMessage"),
-		    _("justOneRecordTitle"),
-		    JOptionPane.WARNING_MESSAGE);
-	    return false;
-	} else {
-	    long current = getPosition();
-	    FBitSet selection = getRecordset().getSelection();
-	    long selectedRow = selection.nextSetBit(0);
-	    navigation.setPosition(selectedRow, false);
-	    fillValues();
-	    navigation.setPosition(current, false);
-	    return true;
+	private void setIconForFiltering() {
+		if (getRecordset().getSelection().isEmpty()) {
+			ImageIcon imagenFilter = getIcon("/filter.png");
+			filterB.setIcon(imagenFilter);
+			filterB.setToolTipText(_("filterTooltip"));
+		} else {
+			ImageIcon imagenRemoveFilter = getIcon("/nofilter.png");
+			filterB.setIcon(imagenRemoveFilter);
+			filterB.setToolTipText(_("noFilterTooltip"));
+		}
 	}
-    }
 
-    /**
-     * Handles the user actions.
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-	if (getRecordset() == null) {
-	    // If there is an error on the recordset of the layer
-	    // do nothing.
-	    return;
+	private void enableCopyPreviousButton(boolean navEnabled) {
+		if (getPosition() == 0 || !navEnabled) {
+			copyPreviousB.setEnabled(false);
+		} else {
+			copyPreviousB.setEnabled(true);
+		}
 	}
-	if (e.getSource() == alwaysZoomCB) {
-	    fixScaleCB.setSelected(false);
-	    refreshGUI();
-	} else if (e.getSource() == fixScaleCB) {
-	    alwaysZoomCB.setSelected(false);
-	    refreshGUI();
-	} else if (e.getSource() == filterB) {
-	    filterButtonClicked();
-	} else if (e.getSource() == copySelectedB) {
-	    if (copySelected()) {
+
+	private void enableCopySelectedButton(boolean navEnabled) {
+		if (getNumberOfRowsSelected() == 0 || !navEnabled) {
+			copySelectedB.setEnabled(false);
+		} else {
+			copySelectedB.setEnabled(true);
+		}
+	}
+
+	private boolean isSomeRowToWorkOn() {
+		if (isOnlySelected() && getNumberOfRowsSelected() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public int getNumberOfRowsSelected() {
+		FBitSet bitset = getRecordset().getSelection();
+		return bitset.cardinality();
+	}
+
+	public void copyPrevious() {
+		long current = navigation.getPosition();
+		navigation.setPosition(navigation.getPreviousPositionInModel(), false);
+		fillValues();
+		navigation.setPosition(current, false);
 		setChangedValues(true);
 		enableSaveButton(true);
-	    }
-	} else if (e.getSource() == copyPreviousB) {
-	    copyPrevious();
-	} else if (e.getSource() == zoomB) {
-	    zoom();
-	} else if (e.getSource() == saveB) {
-	    tryToSave();
-	} else if (e.getSource() == removeB) {
-	    int answer = JOptionPane.showConfirmDialog(null,
-		    _(deleteMessageKey), null,
-		    JOptionPane.YES_NO_OPTION);
-	    if (answer == 0) {
-		try {
-		    deleteRecord();
-		} catch (DataException ex) {
-		    logger.error(ex.getMessage(), ex);
-		    String errorMessage = (ex.getCause() != null) ? ex
-			    .getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
-			    .replace("ERROR: ", "").replace(" ", "_")
-			    .replace("\n", ""), auxMessageIntl = _(auxMessage);
-		    if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-			errorMessage = auxMessageIntl;
-		    }
-		    JOptionPane.showMessageDialog(
-			    (Component) PluginServices.getMainFrame(),
-			    errorMessage,
-			    _(saveErrorTitleKey),
-			    JOptionPane.ERROR_MESSAGE);
+	}
+
+	public boolean copySelected() {
+		if (getNumberOfRowsSelected() != 1) {
+			// show error
+			JOptionPane.showMessageDialog(null, _("justOneRecordMessage"),
+					_("justOneRecordTitle"), JOptionPane.WARNING_MESSAGE);
+			return false;
+		} else {
+			long current = getPosition();
+			FBitSet selection = getRecordset().getSelection();
+			long selectedRow = selection.nextSetBit(0);
+			navigation.setPosition(selectedRow, false);
+			fillValues();
+			navigation.setPosition(current, false);
+			return true;
 		}
-	    }
-	} else if (e.getSource() == undoB) {
-	    undoAction();
 	}
-    }
 
-    private void filterButtonClicked() {
-	if (getRecordset().getSelection().isEmpty()) {
-	    SelectByAttributes fe = new SelectByAttributes();
-	    fe.setDatasource(layer.getFeatureStore(), layer.getName());
-	    fe.execute();
-	} else {
-	    clearSelection();
+	/**
+	 * Handles the user actions.
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+		if (getRecordset() == null) {
+			// If there is an error on the recordset of the layer
+			// do nothing.
+			return;
+		}
+		if (e.getSource() == alwaysZoomCB) {
+			fixScaleCB.setSelected(false);
+			refreshGUI();
+		} else if (e.getSource() == fixScaleCB) {
+			alwaysZoomCB.setSelected(false);
+			refreshGUI();
+		} else if (e.getSource() == filterB) {
+			filterButtonClicked();
+		} else if (e.getSource() == copySelectedB) {
+			if (copySelected()) {
+				setChangedValues(true);
+				enableSaveButton(true);
+			}
+		} else if (e.getSource() == copyPreviousB) {
+			copyPrevious();
+		} else if (e.getSource() == zoomB) {
+			zoom();
+		} else if (e.getSource() == saveB) {
+			tryToSave();
+		} else if (e.getSource() == removeB) {
+			int answer = JOptionPane.showConfirmDialog(null,
+					_(deleteMessageKey), null, JOptionPane.YES_NO_OPTION);
+			if (answer == 0) {
+				try {
+					deleteRecord();
+				} catch (DataException ex) {
+					logger.error(ex.getMessage(), ex);
+					String errorMessage = (ex.getCause() != null) ? ex
+							.getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
+							.replace("ERROR: ", "").replace(" ", "_")
+							.replace("\n", ""), auxMessageIntl = _(auxMessage);
+							if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+								errorMessage = auxMessageIntl;
+							}
+							JOptionPane.showMessageDialog(
+									(Component) PluginServices.getMainFrame(),
+									errorMessage, _(saveErrorTitleKey),
+									JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		} else if (e.getSource() == undoB) {
+			undoAction();
+		}
 	}
-    }
 
-    private boolean tryToSave() {
-	try {
-	    if (saveRecord()) {
+	private void filterButtonClicked() {
+		if (getRecordset().getSelection().isEmpty()) {
+			SelectByAttributes fe = new SelectByAttributes();
+			fe.setDatasource(layer.getFeatureStore(), layer.getName());
+			fe.execute();
+		} else {
+			clearSelection();
+		}
+	}
+
+	private boolean tryToSave() {
+		try {
+			if (saveRecord()) {
+				refreshGUI();
+			} else {
+				JOptionPane.showMessageDialog(this,
+						_(saveErrorGenericMessageKey), "",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		} catch (DataException ex) {
+			logger.error(ex.getMessage(), ex);
+			String errorMessage = (ex.getCause() != null) ? ex.getCause()
+					.getMessage() : ex.getMessage(), auxMessage = errorMessage
+					.replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = _(auxMessage);
+					if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+						errorMessage = auxMessageIntl;
+					}
+					JOptionPane.showMessageDialog(
+							(Component) PluginServices.getMainFrame(), errorMessage,
+							_(saveErrorTitleKey), JOptionPane.ERROR_MESSAGE);
+					return false;
+		}
+		return true;
+	}
+
+	protected void undoAction() {
+		fillValues();
+		setChangedValues(false);
 		refreshGUI();
-	    } else {
-		JOptionPane.showMessageDialog(this, _(saveErrorGenericMessageKey), "",
-			JOptionPane.ERROR_MESSAGE);
-	    }
-	} catch (DataException ex) {
-	    logger.error(ex.getMessage(), ex);
-	    String errorMessage = (ex.getCause() != null) ? ex.getCause()
-		    .getMessage() : ex.getMessage(), auxMessage = errorMessage
-		    .replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = _(auxMessage);
-	    if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-		errorMessage = auxMessageIntl;
-	    }
-	    JOptionPane.showMessageDialog(
-		    (Component) PluginServices.getMainFrame(), errorMessage,
-		    _(saveErrorTitleKey),
-		    JOptionPane.ERROR_MESSAGE);
-	    return false;
 	}
-	return true;
-    }
 
-    protected void undoAction() {
-	fillValues();
-	setChangedValues(false);
-	refreshGUI();
-    }
-
-    public void deleteRecord() throws DataException {
-	try {
-	    long position = getPosition();
-	    layerController.delete(position);
-	    // keep the current position within boundaries
-	    setPosition(position);
-	    if (layerController.getRowCount() <= 0) {
-		showEmptyLayerMessage();
-	    }
-	} catch (DataException e) {
-	    throw e;
+	public void deleteRecord() throws DataException {
+		try {
+			long position = getPosition();
+			layerController.delete(position);
+			// keep the current position within boundaries
+			setPosition(position);
+			if (layerController.getRowCount() <= 0) {
+				showEmptyLayerMessage();
+			}
+		} catch (DataException e) {
+			throw e;
+		}
 	}
-    }
 
-    @Override
-    public void windowClosed() {
-	showWarning();
-	removeLayerListeners();
-    }
-
-    @Override
-    public void windowActivated() {
-    }
-
-    /**
-     * Reloads recordset from layer, if possible.
-     * 
-     * @throws ReadDriverException
-     */
-    public void reloadRecordset() throws DataException {
-	getRecordset().reload();
-    }
-
-    public void addPositionListener(PositionListener l) {
-	navigation.addEventListener(l);
-    }
-
-    public void removePositionListener(PositionListener l) {
-	navigation.removeEventListener(l);
-    }
-
-    public abstract boolean isSavingValues();
-
-    public SelectableDataSource getRecordset() {
-	try {
-		return new SelectableDataSource(layer.getFeatureStore());
-	} catch (DataException e) {
-	    logger.error(e.getMessage(), e);
-	    return null;
+	@Override
+	public void windowClosed() {
+		showWarning();
+		removeLayerListeners();
 	}
-    }
 
-    @Override
-    public void onPositionChange(PositionEvent e) {
-	try {
-	    layerController.read(getPosition());
-	    refreshGUI();
-	} catch (DataException rde) {
-	    logger.error(rde.getMessage(), e);
-	    layerController.clearAll();
-	    refreshGUI();
+	@Override
+	public void windowActivated() {
 	}
-    }
 
-    @Override
-    public void beforePositionChange(PositionEvent e) {
-	showWarning();
-    }
-
-    public void next() {
-	navigation.next();
-    }
-
-    public void last() {
-	navigation.last();
-    }
-
-    private void lastSelected() {
-	navigation.lastSelected();
-    }
-
-    public void first() {
-	navigation.first();
-    }
-
-    public void firstSelected() {
-	navigation.firstSelected();
-    }
-
-    public void before() {
-	navigation.goToPreviousInView();
-    }
-
-    public void setPosition(long newPosition) {
-	navigation.setPosition(newPosition);
-    }
-
-    public long getPosition() {
-	return navigation.getPosition();
-    }
-
-    public void setSortKeys(List<? extends SortKey> keys) {
-	navigation.setSortKeys(keys);
-    }
-
-    public List<? extends SortKey> getSortKeys() {
-	return navigation.getSortKeys();
-    }
-
-    /**
-     * Only process stop edition events. And when this occurs all the sort is
-     * recalculated. In case that recalculate the full sorting has bad
-     * performance we should process FIELD_EDITION, ROW_EDITION EditionEvents,
-     * and reorder only the affected rows, or test the performance of not create
-     * a new instance of the sorter.
-     */
-    public void layerEvent(LayerEvent e) {
-	if ((e.getEventType() == LayerEvent.EDITION_CHANGED)
-		&& !layer.isEditing()) {
-	    navigation.modelChanged();
+	/**
+	 * Reloads recordset from layer, if possible.
+	 *
+	 * @throws ReadDriverException
+	 */
+	public void reloadRecordset() throws DataException {
+		getRecordset().reload();
 	}
-    }
 
-    public void editionEvent(FeatureStoreNotification e) {
-//	if ((e instanceof AfterFieldEditEvent)
-//		&& (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
-//	    navigation.setSortKeys(null);
-//	}
-    }
+	public void addPositionListener(PositionListener l) {
+		navigation.addEventListener(l);
+	}
+
+	public void removePositionListener(PositionListener l) {
+		navigation.removeEventListener(l);
+	}
+
+	public abstract boolean isSavingValues();
+
+	public SelectableDataSource getRecordset() {
+		try {
+			return new SelectableDataSource(layer.getFeatureStore());
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+			return null;
+		}
+	}
+
+	@Override
+	public void onPositionChange(PositionEvent e) {
+		try {
+			layerController.read(getPosition());
+			refreshGUI();
+		} catch (DataException rde) {
+			logger.error(rde.getMessage(), e);
+			layerController = new LayerController(layer);
+			refreshGUI();
+		}
+	}
+
+	@Override
+	public void beforePositionChange(PositionEvent e) {
+		showWarning();
+	}
+
+	public void next() {
+		navigation.next();
+	}
+
+	public void last() {
+		navigation.last();
+	}
+
+	private void lastSelected() {
+		navigation.lastSelected();
+	}
+
+	public void first() {
+		navigation.first();
+	}
+
+	public void firstSelected() {
+		navigation.firstSelected();
+	}
+
+	public void before() {
+		navigation.goToPreviousInView();
+	}
+
+	public void setPosition(long newPosition) {
+		navigation.setPosition(newPosition);
+	}
+
+	public long getPosition() {
+		return navigation.getPosition();
+	}
+
+	public void setSortKeys(List<? extends SortKey> keys) {
+		navigation.setSortKeys(keys);
+	}
+
+	public List<? extends SortKey> getSortKeys() {
+		return navigation.getSortKeys();
+	}
+
+	/**
+	 * Only process stop edition events. And when this occurs all the sort is
+	 * recalculated. In case that recalculate the full sorting has bad
+	 * performance we should process FIELD_EDITION, ROW_EDITION EditionEvents,
+	 * and reorder only the affected rows, or test the performance of not create
+	 * a new instance of the sorter.
+	 */
+	public void layerEvent(LayerEvent e) {
+		if ((e.getEventType() == LayerEvent.EDITION_CHANGED)
+				&& !layer.isEditing()) {
+			navigation.modelChanged();
+		}
+	}
+
+	public void editionEvent(FeatureStoreNotification e) {
+		// if ((e instanceof AfterFieldEditEvent)
+		// && (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
+		// navigation.setSortKeys(null);
+		// }
+	}
 
 	public FLyrVect getLayer() {
 		return layer;
