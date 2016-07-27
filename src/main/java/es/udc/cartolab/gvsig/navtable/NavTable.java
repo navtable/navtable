@@ -41,7 +41,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import org.gvsig.andami.ui.mdiManager.WindowInfo;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.geom.operation.GeometryOperationException;
@@ -105,6 +104,7 @@ public class NavTable extends AbstractNavTable {
 
 	public NavTable(FLyrVect layer) {
 		super(layer);
+		setTitle("NavTable: " + layer.getName());
 	}
 
 	public boolean isFillingValues() {
@@ -200,15 +200,15 @@ public class NavTable extends AbstractNavTable {
 		 * expected for navtable extension. It only will add the regular buttons
 		 * navtable has, not all included in the extensionpoint (as the default
 		 * behaviour is).
-		 * 
+		 *
 		 * Probably we need to get rid of extensionpoints mechanism as -roughly-
 		 * it is a global variable mechanism, which is not what we need. For
 		 * action buttons, it'll be desirable a mechanism that:
-		 * 
+		 *
 		 * 1) allow adding buttons for custom forms build on abstractnavtable.
 		 * 2) don't share those buttons between all children of
 		 * abstractnavtable, unless requested otherwise.
-		 * 
+		 *
 		 * Check decorator pattern, as it seems to fit well here.
 		 */
 		ExtensionPoints extensionPoints = ExtensionPointsSingleton
@@ -452,11 +452,6 @@ public class NavTable extends AbstractNavTable {
 		this.table.getModel().removeTableModelListener(myTableModelListener);
 		this.table.removeKeyListener(myKeyListener);
 		super.windowClosed();
-	}
-
-	@Override
-	public Object getWindowProfile() {
-		return WindowInfo.PROPERTIES_PROFILE;
 	}
 
 	@Override

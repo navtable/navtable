@@ -29,7 +29,6 @@ import static es.icarto.gvsig.commons.i18n.I18n._;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,10 +46,7 @@ import javax.swing.RowSorter.SortKey;
 import net.miginfocom.swing.MigLayout;
 
 import org.gvsig.andami.PluginServices;
-import org.gvsig.andami.ui.mdiFrame.MDIFrame;
-import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
-import org.gvsig.andami.ui.mdiManager.WindowInfo;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.FeatureStoreNotification;
 import org.gvsig.fmap.geom.Geometry;
@@ -85,8 +81,8 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  */
 
 @SuppressWarnings("serial")
-public abstract class AbstractNavTable extends JPanel implements IWindow,
-ActionListener, IWindowListener, PositionListener {
+public abstract class AbstractNavTable extends NTIWindow implements
+		ActionListener, IWindowListener, PositionListener {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractNavTable.class);
@@ -132,8 +128,6 @@ ActionListener, IWindowListener, PositionListener {
 
 	protected boolean openEmptyLayers = false;
 
-	protected WindowInfo windowInfo = null;
-
 	public AbstractNavTable(FLyrVect layer) {
 		super();
 		this.layer = layer;
@@ -142,13 +136,8 @@ ActionListener, IWindowListener, PositionListener {
 
 	public boolean init() {
 
-		try {
-			if ((!openEmptyLayers) && (getRecordset().getRowCount() <= 0)) {
-				showEmptyLayerMessage();
-				return false;
-			}
-		} catch (DataException e) {
-			logger.error(e.getMessage(), e);
+		if ((!openEmptyLayers) && (getFeatureCount() <= 0)) {
+			showEmptyLayerMessage();
 			return false;
 		}
 
@@ -168,20 +157,13 @@ ActionListener, IWindowListener, PositionListener {
 		return true;
 	}
 
-	/**
-	 * In NavTable it will get the attribute names from the layer and set it on
-	 * the left column of the table. On AbstractForm it will initialize the
-	 * widget vector from the Abeille file
-	 */
-	protected abstract void initWidgets();
-
-	protected void initGUI() {
-		MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]",
-				"[][grow][]");
-		this.setLayout(thisLayout);
-		this.add(getNorthPanel(), "shrink, wrap, align center");
-		this.add(getCenterPanel(), "shrink, growx, growy, wrap");
-		this.add(getSouthPanel(), "shrink, align center");
+	private long getFeatureCount() {
+		try {
+			return layer.getFeatureStore().getFeatureCount();
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return 0;
 	}
 
 	protected boolean initController() {
@@ -193,6 +175,84 @@ ActionListener, IWindowListener, PositionListener {
 			return false;
 		}
 		return true;
+	}
+
+	protected void initGUI() {
+		MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]",
+				"[][grow][]");
+		this.setLayout(thisLayout);
+		this.add(getNorthPanel(), "shrink, wrap, align center");
+		this.add(getCenterPanel(), "shrink, growx, growy, wrap");
+		this.add(getSouthPanel(), "shrink, align center");
+	}
+
+	/**
+	 * In NavTable it will get the attribute names from the layer and set it on
+	 * the left column of the table. On AbstractForm it will initialize the
+	 * widget vector from the Abeille file
+	 */
+	protected abstract void initWidgets();
+
+	public void refreshGUI() {
+		boolean navEnabled = false;
+
+		if (navigation.isEmptyRegister()) {
+			navEnabled = false;
+			fillEmptyValues();
+		} else {
+			navEnabled = true;
+			fillValues();
+		}
+
+		// north panel buttons
+		alwaysZoomCB.setEnabled(navEnabled);
+
+		fixScaleCB.setEnabled(navEnabled);
+
+		if (isSomeRowToWorkOn()) {
+			if (alwaysZoomCB.isSelected()) {
+				zoomB.setEnabled(false);
+				zoom();
+			} else {
+				zoomB.setEnabled(true);
+			}
+
+			if (fixScaleCB.isSelected()) {
+				fixScale();
+			}
+		} else {
+			fillEmptyValues();
+		}
+
+		// south panel option buttons
+		enableCopySelectedButton(navEnabled);
+		enableCopyPreviousButton(navEnabled);
+		zoomB.setEnabled(navEnabled);
+
+		setIconForFiltering();
+		enableSaveButton(navEnabled);
+		removeB.setEnabled(navEnabled);
+		navigation.refreshGUI(navEnabled);
+	}
+
+	/**
+	 * It fills NavTable with empty values. Used when "Selected" option is set
+	 * on, but there are any selection registers.
+	 *
+	 */
+	public abstract void fillEmptyValues();
+
+	/**
+	 * It shows the values of a data row in the main panel.
+	 */
+	public abstract void fillValues();
+
+	private boolean isSomeRowToWorkOn() {
+		if (isOnlySelected() && getNumberOfRowsSelected() == 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public void resetListeners() {
@@ -223,18 +283,6 @@ ActionListener, IWindowListener, PositionListener {
 			JOptionPane.showMessageDialog(this, _("emptyLayer"));
 		}
 	}
-
-	/**
-	 * It shows the values of a data row in the main panel.
-	 */
-	public abstract void fillValues();
-
-	/**
-	 * It fills NavTable with empty values. Used when "Selected" option is set
-	 * on, but there are any selection registers.
-	 *
-	 */
-	public abstract void fillEmptyValues();
 
 	/**
 	 * It selects a specific row into the table.
@@ -526,96 +574,6 @@ ActionListener, IWindowListener, PositionListener {
 		getRecordset().clearSelection();
 	}
 
-	@Override
-	public WindowInfo getWindowInfo() {
-		if (windowInfo == null) {
-			windowInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
-					| WindowInfo.PALETTE | WindowInfo.RESIZABLE);
-
-			windowInfo.setTitle("NavTable: " + layer.getName());
-			Dimension dim = getPreferredSize();
-			// To calculate the maximum size of a form we take the size of the
-			// main frame minus a "magic number" for the menus, toolbar, state
-			// bar
-			// Take into account that in edition mode there is less available
-			// space
-			MDIFrame a = (MDIFrame) PluginServices.getMainFrame();
-			final int MENU_TOOL_STATE_BAR = 205;
-			int maxHeight = a.getHeight() - MENU_TOOL_STATE_BAR;
-			int maxWidth = a.getWidth() - 15;
-
-			int width, heigth = 0;
-			if (dim.getHeight() > maxHeight) {
-				heigth = maxHeight;
-			} else {
-				heigth = new Double(dim.getHeight()).intValue();
-			}
-			if (dim.getWidth() > maxWidth) {
-				width = maxWidth;
-			} else {
-				width = new Double(dim.getWidth()).intValue();
-			}
-
-			// getPreferredSize doesn't take into account the borders and other
-			// stuff
-			// introduced by Andami, neither scroll bars so we must increase the
-			// "preferred"
-			// dimensions
-			windowInfo.setWidth(width + 25);
-			windowInfo.setHeight(heigth + 15);
-		}
-		return windowInfo;
-	}
-
-	/**
-	 * Repaints the window.
-	 *
-	 */
-	public void refreshGUI() {
-		boolean navEnabled = false;
-		if (getRecordset() == null) {
-			return;
-		}
-
-		if (navigation.isEmptyRegister()) {
-			navEnabled = false;
-			fillEmptyValues();
-		} else {
-			navEnabled = true;
-			fillValues();
-		}
-
-		// north panel buttons
-		alwaysZoomCB.setEnabled(navEnabled);
-
-		fixScaleCB.setEnabled(navEnabled);
-
-		if (isSomeRowToWorkOn()) {
-			if (alwaysZoomCB.isSelected()) {
-				zoomB.setEnabled(false);
-				zoom();
-			} else {
-				zoomB.setEnabled(true);
-			}
-
-			if (fixScaleCB.isSelected()) {
-				fixScale();
-			}
-		} else {
-			fillEmptyValues();
-		}
-
-		// south panel option buttons
-		enableCopySelectedButton(navEnabled);
-		enableCopyPreviousButton(navEnabled);
-		zoomB.setEnabled(navEnabled);
-
-		setIconForFiltering();
-		enableSaveButton(navEnabled);
-		removeB.setEnabled(navEnabled);
-		navigation.refreshGUI(navEnabled);
-	}
-
 	private void setIconForFiltering() {
 		if (getRecordset().getSelection().isEmpty()) {
 			ImageIcon imagenFilter = getIcon("/filter.png");
@@ -641,14 +599,6 @@ ActionListener, IWindowListener, PositionListener {
 			copySelectedB.setEnabled(false);
 		} else {
 			copySelectedB.setEnabled(true);
-		}
-	}
-
-	private boolean isSomeRowToWorkOn() {
-		if (isOnlySelected() && getNumberOfRowsSelected() == 0) {
-			return false;
-		} else {
-			return true;
 		}
 	}
 
