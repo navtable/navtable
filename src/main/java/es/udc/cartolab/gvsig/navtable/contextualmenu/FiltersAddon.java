@@ -4,7 +4,6 @@ import static es.icarto.gvsig.commons.i18n.I18n._;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.swing.JMenuItem;
@@ -89,7 +88,8 @@ public class FiltersAddon implements INavTableContextMenu {
 			try {
 				attrValueWithgvSIGFormat = ValueFactoryNT.createValueByType2(
 						attrValue, attrType).toString();
-			} catch (ParseException e) {
+			} catch (Exception e) {
+
 				logger.error(e.getMessage(), e);
 			}
 			menus = getMenuItemsForNumeric(filterExt, st_expr,

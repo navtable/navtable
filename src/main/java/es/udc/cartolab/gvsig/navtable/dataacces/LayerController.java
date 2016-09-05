@@ -90,7 +90,7 @@ public class LayerController implements IController {
 	 * the field with "geom" identifier will contain the WKT representation
 	 * of the geometry
 	 */
-	public long create(Map<String, String> newValues) throws Exception {
+	public void create(Map<String, String> newValues) throws Exception {
 		throw new RuntimeException("Not implemented jet");
 	}
 
@@ -200,7 +200,7 @@ public class LayerController implements IController {
 	}
 
 	@Override
-	public LayerController clone() {
+	public IController clone() {
 		return new LayerController(layer);
 	}
 
@@ -210,5 +210,44 @@ public class LayerController implements IController {
 	@Override
 	public List<String> getFieldNames() {
 		return fieldNames;
+	}
+
+	@Override
+	public void delete(Feature feat) {
+		FeatureStore store = layer.getFeatureStore();
+		boolean wasEditing = store.isEditing();
+		LayerEdition te = new LayerEdition();
+		if (!wasEditing) {
+			te.startEditing(layer);
+		}
+		try {
+			store.delete(feat);
+			if (!wasEditing) {
+				te.stopEditing(layer, false);
+			}
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+			if (!wasEditing) {
+				te.stopEditing(layer, true);
+			}
+		}
+
+	}
+
+	@Override
+	public Feature newEmptyRecord() {
+		FeatureStore store = layer.getFeatureStore();
+		try {
+			return store.createNewFeature();
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isEditing() {
+		FeatureStore store = layer.getFeatureStore();
+		return store.isEditing();
 	}
 }

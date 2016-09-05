@@ -17,7 +17,6 @@
 
 package es.udc.cartolab.gvsig.navtable.dataacces;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -91,9 +90,7 @@ public class TableController implements IController {
 	}
 
 	@Override
-	public long create(Map<String, String> newValues) throws DataException,
-			ParseException {
-
+	public void create(Map<String, String> newValues) throws Exception {
 		TableEdition te = new TableEdition();
 		if (!model.getStore().isEditing()) {
 			te.startEditing(model);
@@ -101,18 +98,15 @@ public class TableController implements IController {
 		EditableFeature feature = createFeatureFromHashMap(newValues);
 		model.getStore().insert(feature);
 		te.stopEditing(model, false);
-		long newPosition = model.getStore().getFeatureCount() - 1;
-		read(feature);
-		return newPosition;
 	}
 
 	private EditableFeature createFeatureFromHashMap(
-			Map<String, String> newValues) throws DataException, ParseException {
+			Map<String, String> newValues) throws Exception {
 		EditableFeature f = model.getStore().createNewFeature();
 		for (String key : newValues.keySet()) {
 			int index = getIndex(key);
-			Object value = ValueFactoryNT.createValueByType(newValues.get(key),
-					types.get(key)).getObjectValue();
+			Object value = ValueFactoryNT.createValueByType2(
+					newValues.get(key), types.get(key)).getObjectValue();
 			f.set(index, value);
 		}
 		return f;
@@ -139,13 +133,11 @@ public class TableController implements IController {
 				te.startEditing(model);
 			}
 
-			Feature f = te.modifyValues(model, feat,
-					getIndexesOfValuesChanged(), getValuesChanged().values()
-							.toArray(new String[0]));
+			te.modifyValues(model, feat, getIndexesOfValuesChanged(),
+					getValuesChanged().values().toArray(new String[0]));
 			if (!wasEditing) {
 				te.stopEditing(model, false);
 			}
-			read(f);
 		} catch (DataException e) {
 			logger.error(e.getMessage(), e);
 			if (!wasEditing) {
@@ -220,7 +212,7 @@ public class TableController implements IController {
 	}
 
 	@Override
-	public TableController clone() {
+	public IController clone() {
 		return new TableController(model);
 	}
 
@@ -233,4 +225,44 @@ public class TableController implements IController {
 	public Geometry getGeom() {
 		throw new RuntimeException("Not geom for alfa tables");
 	}
+
+	@Override
+	public void delete(Feature feat) {
+		FeatureStore store = model.getStore();
+		boolean wasEditing = store.isEditing();
+		TableEdition te = new TableEdition();
+		if (!wasEditing) {
+			te.startEditing(model);
+		}
+		try {
+			store.delete(feat);
+			if (!wasEditing) {
+				te.stopEditing(model, false);
+			}
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+			if (!wasEditing) {
+				te.stopEditing(model, true);
+			}
+		}
+
+	}
+
+	@Override
+	public Feature newEmptyRecord() {
+		FeatureStore store = model.getStore();
+		try {
+			return store.createNewFeature();
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isEditing() {
+		FeatureStore store = model.getStore();
+		return store.isEditing();
+	}
+
 }

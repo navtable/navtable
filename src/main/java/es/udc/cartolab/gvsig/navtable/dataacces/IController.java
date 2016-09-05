@@ -7,9 +7,9 @@ import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.Feature;
 import org.gvsig.fmap.geom.Geometry;
 
-public interface IController extends Cloneable {
+public interface IController {
 
-	public long create(Map<String, String> newValues) throws Exception;
+	public void create(Map<String, String> newValues) throws Exception;
 
 	public void read(Feature feat);
 
@@ -38,5 +38,13 @@ public interface IController extends Cloneable {
 	public Geometry getGeom();
 
 	public void update(Feature feat) throws DataException;
+
+	public void delete(Feature feat);
+
+	public Feature newEmptyRecord();
+
+	public IController clone();
+
+	public boolean isEditing();
 
 }
