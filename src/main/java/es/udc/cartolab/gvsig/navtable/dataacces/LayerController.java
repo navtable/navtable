@@ -17,29 +17,30 @@
 
 package es.udc.cartolab.gvsig.navtable.dataacces;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.gvsig.fmap.dal.DataTypes;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.dal.feature.Feature;
+import org.gvsig.fmap.dal.feature.FeatureAttributeDescriptor;
+import org.gvsig.fmap.dal.feature.FeatureStore;
+import org.gvsig.fmap.dal.feature.FeatureType;
+import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.gvsig2.Value;
+import es.icarto.gvsig.commons.gvsig2.ValueFactory;
 import es.icarto.gvsig.commons.gvsig2.ValueWriter;
-import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
-import es.udc.cartolab.gvsig.navtable.ToggleEditing;
+import es.icarto.gvsig.navtable.edition.LayerEdition;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 
-/**
- * Class to manage CRUD (Create, Read, Update, Delete) operations on a Layer.
- *
- * @author Andrés Maneiro <amaneiro@icarto.es>
- * @author Francisco Puga <fpuga@cartolab.es>
- *
- */
 public class LayerController implements IController {
 
 	private static final Logger logger = LoggerFactory
@@ -48,24 +49,35 @@ public class LayerController implements IController {
 	private final FLyrVect layer;
 	private final Map<String, Integer> indexes;
 	private final Map<String, Integer> types;
+	private final List<String> fieldNames;
 	private final Map<String, String> values = new HashMap<String, String>();
+	private Geometry geom;
 	private final Map<String, String> valuesChanged = new HashMap<String, String>();
 
 	public LayerController(FLyrVect layer) {
 		this.layer = layer;
 		try {
-			SelectableDataSource sds = new SelectableDataSource(
-					layer.getFeatureStore());
-			int fieldCount = sds.getFieldCount();
+			FeatureStore store = layer.getFeatureStore();
+			FeatureType featType = store.getDefaultFeatureType();
+			int fieldCount = featType.size() - 1; // Geometry is ignored
 			Map<String, Integer> idx = new HashMap<String, Integer>(fieldCount);
 			Map<String, Integer> type = new HashMap<String, Integer>(fieldCount);
+			List<String> fNames = new ArrayList<String>(fieldCount);
 			for (int i = 0; i < fieldCount; i++) {
-				String name = sds.getFieldName(i);
+				FeatureAttributeDescriptor attDesc = featType
+						.getAttributeDescriptor(i);
+				int attType = attDesc.getDataType().getType();
+				if (attType == DataTypes.GEOMETRY) {
+					continue;
+				}
+				String name = attDesc.getName();
 				idx.put(name, i);
-				type.put(name, sds.getFieldType(i));
+				type.put(name, attType);
+				fNames.add(name);
 			}
 			this.indexes = Collections.unmodifiableMap(idx);
 			this.types = Collections.unmodifiableMap(type);
+			this.fieldNames = Collections.unmodifiableList(fNames);
 		} catch (DataException e) {
 			logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
@@ -83,63 +95,38 @@ public class LayerController implements IController {
 	}
 
 	@Override
-	public void read(long position) throws DataException {
-		SelectableDataSource sds = new SelectableDataSource(
-				layer.getFeatureStore());
-		if (position != AbstractNavTable.EMPTY_REGISTER) {
-			ValueWriter vWriter = new ValueFormatNT();
-			for (int i = 0; i < sds.getFieldCount(); i++) {
-				String name = sds.getFieldName(i);
-				String stringValue = sds.getFieldValue(position, i)
-						.getStringValue(vWriter);
-				values.put(name, stringValue);
-			}
+	public void read(Feature feat) {
+		values.clear();
+		valuesChanged.clear();
+		ValueWriter vWriter = new ValueFormatNT();
+		for (String name : indexes.keySet()) {
+			Object o = feat.get(name);
+			Value value = ValueFactory.createValue(o);
+			values.put(name, value.getStringValue(vWriter));
 		}
+		geom = feat.getDefaultGeometry();
 	}
 
 	@Override
-	public void update(long position) throws DataException {
-		ToggleEditing te = new ToggleEditing();
+	public void update(Feature feat) throws DataException {
+		LayerEdition te = new LayerEdition();
 
 		boolean wasEditing = layer.isEditing();
 		try {
 			if (!wasEditing) {
 				te.startEditing(layer);
 			}
-			te.modifyValues(layer, (int) position,
-					this.getIndexesOfValuesChanged(), this.getValuesChanged()
-					.values().toArray(new String[0]));
+			te.modifyValues(layer, feat, this.getIndexesOfValuesChanged(), this
+					.getValuesChanged().values().toArray(new String[0]));
 			if (!wasEditing) {
 				te.stopEditing(layer, false);
 			}
-			this.read((int) position);
 		} catch (DataException e) {
 			logger.error(e.getMessage(), e);
 			if (!wasEditing) {
 				te.stopEditing(layer, true);
 			}
 			throw e;
-		}
-	}
-
-	@Override
-	public void delete(long position) {
-		if (position > AbstractNavTable.EMPTY_REGISTER) {
-			ToggleEditing te = new ToggleEditing();
-			boolean wasEditing = layer.isEditing();
-			try {
-				if (!wasEditing) {
-					te.startEditing(layer);
-				}
-				te.deleteRow(layer, (int) position);
-				if (!wasEditing) {
-					te.stopEditing(layer, false);
-				}
-			} catch (DataException e) {
-				if (!wasEditing) {
-					te.stopEditing(layer, true);
-				}
-			}
 		}
 	}
 
@@ -166,6 +153,11 @@ public class LayerController implements IController {
 			return valuesChanged.get(fieldName);
 		}
 		return values.get(fieldName);
+	}
+
+	@Override
+	public Geometry getGeom() {
+		return geom;
 	}
 
 	@Override
@@ -204,11 +196,19 @@ public class LayerController implements IController {
 
 	@Override
 	public long getRowCount() throws DataException {
-		return new SelectableDataSource(layer.getFeatureStore()).getRowCount();
+		return layer.getFeatureStore().getFeatureCount();
 	}
 
 	@Override
 	public LayerController clone() {
 		return new LayerController(layer);
+	}
+
+	/**
+	 * Returns an ordered list with the field names in the layer
+	 */
+	@Override
+	public List<String> getFieldNames() {
+		return fieldNames;
 	}
 }

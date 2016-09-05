@@ -33,7 +33,9 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -41,28 +43,33 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.RowSorter.SortKey;
 
 import net.miginfocom.swing.MigLayout;
 
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
 import org.gvsig.fmap.dal.exception.DataException;
-import org.gvsig.fmap.dal.feature.FeatureStoreNotification;
+import org.gvsig.fmap.dal.feature.Feature;
+import org.gvsig.fmap.dal.feature.FeatureAttributeDescriptor;
+import org.gvsig.fmap.dal.feature.FeatureSelection;
+import org.gvsig.fmap.dal.feature.FeatureStore;
+import org.gvsig.fmap.dal.feature.FeatureType;
 import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.geom.primitive.Envelope;
-import org.gvsig.fmap.mapcontext.layers.LayerEvent;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 import org.gvsig.fmap.mapcontext.layers.vectorial.VectorLayer;
+import org.gvsig.tools.dataTypes.DataTypes;
+import org.gvsig.tools.dispose.DisposableIterator;
+import org.gvsig.tools.dispose.DisposeUtils;
+import org.gvsig.tools.exception.BaseException;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.commons.gvsig2.FBitSet;
-import es.icarto.gvsig.commons.gvsig2.SelectByAttributes;
-import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.utils.Field;
+import es.icarto.gvsig.navtable.actions.FilterButton;
 import es.icarto.gvsig.navtable.navigation.NavigationHandler;
 import es.udc.cartolab.gvsig.navtable.dataacces.IController;
 import es.udc.cartolab.gvsig.navtable.dataacces.LayerController;
@@ -87,7 +94,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractNavTable.class);
 
-	public static final long EMPTY_REGISTER = -1;
+	public static final long EMPTY_REGISTER = Long.MIN_VALUE;
 	protected static final int BUTTON_REMOVE = 0;
 	protected static final int BUTTON_SAVE = 1;
 	protected static final int BUTTON_SELECTION = 2;
@@ -105,7 +112,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	protected JPanel southPanel = null;
 
 	protected IController layerController;
-	private NavigationHandler navigation;
+	protected NavigationHandler navigation;
 
 	protected FLyrVect layer = null;
 
@@ -113,13 +120,14 @@ public abstract class AbstractNavTable extends NTIWindow implements
 
 	protected JCheckBox fixScaleCB = null;
 	protected JCheckBox alwaysZoomCB = null;
-	protected JButton filterB = null;
+
 	protected JButton copyPreviousB = null;
 	protected JButton copySelectedB = null;
 	protected JButton zoomB = null;
 	protected JButton saveB = null;
 	protected JButton removeB = null;
 	protected JButton undoB = null;
+	private final FilterButton filterAction;
 
 	protected EditionListener listener;
 
@@ -128,15 +136,18 @@ public abstract class AbstractNavTable extends NTIWindow implements
 
 	protected boolean openEmptyLayers = false;
 
+	private boolean isSavingValues = false;
+
 	public AbstractNavTable(FLyrVect layer) {
 		super();
 		this.layer = layer;
 		navigation = new NavigationHandler(this);
+		filterAction = new FilterButton(layer);
 	}
 
 	public boolean init() {
 
-		if ((!openEmptyLayers) && (getFeatureCount() <= 0)) {
+		if ((!openEmptyLayers) && (navigation.getLastPos() < 0)) {
 			showEmptyLayerMessage();
 			return false;
 		}
@@ -157,23 +168,9 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		return true;
 	}
 
-	private long getFeatureCount() {
-		try {
-			return layer.getFeatureStore().getFeatureCount();
-		} catch (DataException e) {
-			logger.error(e.getMessage(), e);
-		}
-		return 0;
-	}
-
-	protected boolean initController() {
-		try {
-			layerController = new LayerController(this.layer);
-			layerController.read(getPosition());
-		} catch (DataException e) {
-			logger.error(e.getMessage(), e);
-			return false;
-		}
+	private boolean initController() {
+		layerController = new LayerController(this.layer);
+		layerController.read(navigation.getFeature());
 		return true;
 	}
 
@@ -229,7 +226,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		enableCopyPreviousButton(navEnabled);
 		zoomB.setEnabled(navEnabled);
 
-		setIconForFiltering();
+		filterAction.refreshGUI();
 		enableSaveButton(navEnabled);
 		removeB.setEnabled(navEnabled);
 		navigation.refreshGUI(navEnabled);
@@ -265,7 +262,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	}
 
 	protected void setLayerListeners() {
-		listener = new EditionListener(this, layer);
+		listener = new EditionListener(this);
 		layer.addLayerListener(listener);
 		navigation.setListeners();
 		addPositionListener(this);
@@ -410,6 +407,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 			registerNavTableButtonsOnActionToolBarExtensionPoint();
 			ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton
 					.getInstance().get(NAVTABLE_ACTIONS_TOOLBAR);
+			actionsToolBar.add(filterAction.filterB);
 			for (Object button : actionToolBarEP.values()) {
 				actionsToolBar.add((JButton) button);
 			}
@@ -420,10 +418,6 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
 		ExtensionPoints extensionPoints = ExtensionPointsSingleton
 				.getInstance();
-
-		filterB = getNavTableButton(filterB, "/filter.png", "filterTooltip");
-		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-enable-filter",
-				filterB);
 
 		copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png",
 				"copySelectedButtonTooltip");
@@ -509,7 +503,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 
 		if (layer instanceof VectorLayer) {
 
-			Geometry geometry = getRecordset().getGeometry(getPosition());
+			Geometry geometry = navigation.getFeature().getDefaultGeometry();
 
 			if (geometry != null) {
 				/*
@@ -552,18 +546,21 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	}
 
 	public void selectCurrentFeature() {
-		FBitSet bitset = null;
-		int pos = Long.valueOf(getPosition()).intValue();
-		bitset = getRecordset().getSelection();
-		if (!bitset.get(pos)) {
-			bitset.set(pos);
-		} else {
-			bitset.clear(pos);
-			if (isOnlySelected()) {
-				lastSelected();
+		FeatureStore store = layer.getFeatureStore();
+		try {
+			FeatureSelection selection = store.getFeatureSelection();
+			if (selection.isSelected(navigation.getFeature())) {
+				// Antes si se deseleccionaba una feature se iba a la anterior
+				// seleccionada. Ahora se delega en el comportamiento de
+				// NavigationHandler que cuando hay una actualización de la
+				// selección y onlySelected está seleccionado va al primero
+				selection.deselect(navigation.getFeature());
+			} else {
+				selection.select(navigation.getFeature());
 			}
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
 		}
-		getRecordset().setSelection(bitset);
 	}
 
 	/**
@@ -571,18 +568,13 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	 *
 	 */
 	public void clearSelection() {
-		getRecordset().clearSelection();
-	}
 
-	private void setIconForFiltering() {
-		if (getRecordset().getSelection().isEmpty()) {
-			ImageIcon imagenFilter = getIcon("/filter.png");
-			filterB.setIcon(imagenFilter);
-			filterB.setToolTipText(_("filterTooltip"));
-		} else {
-			ImageIcon imagenRemoveFilter = getIcon("/nofilter.png");
-			filterB.setIcon(imagenRemoveFilter);
-			filterB.setToolTipText(_("noFilterTooltip"));
+		try {
+			FeatureStore store = layer.getFeatureStore();
+			FeatureSelection selection = store.getFeatureSelection();
+			selection.deselectAll();
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -602,18 +594,21 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		}
 	}
 
-	public int getNumberOfRowsSelected() {
-		FBitSet bitset = getRecordset().getSelection();
-		return bitset.cardinality();
+	public long getNumberOfRowsSelected() {
+		try {
+
+			FeatureStore store = layer.getFeatureStore();
+			FeatureSelection selection = store.getFeatureSelection();
+			return selection.getSize();
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return 0;
 	}
 
 	public void copyPrevious() {
-		long current = navigation.getPosition();
-		navigation.setPosition(navigation.getPreviousPositionInModel(), false);
-		fillValues();
-		navigation.setPosition(current, false);
-		setChangedValues(true);
-		enableSaveButton(true);
+		Feature f = navigation.getFeature(getPosition() - 1);
+		copyFrom(f);
 	}
 
 	public boolean copySelected() {
@@ -622,15 +617,36 @@ public abstract class AbstractNavTable extends NTIWindow implements
 			JOptionPane.showMessageDialog(null, _("justOneRecordMessage"),
 					_("justOneRecordTitle"), JOptionPane.WARNING_MESSAGE);
 			return false;
-		} else {
-			long current = getPosition();
-			FBitSet selection = getRecordset().getSelection();
-			long selectedRow = selection.nextSetBit(0);
-			navigation.setPosition(selectedRow, false);
-			fillValues();
-			navigation.setPosition(current, false);
-			return true;
 		}
+
+		DisposableIterator it = null;
+
+		try {
+			FeatureSelection sel = layer.getFeatureStore()
+					.getFeatureSelection();
+			it = sel.fastIterator();
+			Feature feat = (Feature) it.next();
+			copyFrom(feat);
+			return true;
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+		} finally {
+			DisposeUtils.disposeQuietly(it);
+		}
+		return false;
+	}
+
+	private void copyFrom(Feature feat) {
+		layerController.read(feat);
+		fillValues();
+		Map<String, String> newValues = new HashMap<String, String>();
+		newValues.putAll(layerController.getValuesOriginal());
+		layerController.read(navigation.getFeature());
+		for (String attName : newValues.keySet()) {
+			layerController.setValue(attName, newValues.get(attName));
+		}
+		setChangedValues(true);
+		enableSaveButton(true);
 	}
 
 	/**
@@ -639,19 +655,12 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		if (getRecordset() == null) {
-			// If there is an error on the recordset of the layer
-			// do nothing.
-			return;
-		}
 		if (e.getSource() == alwaysZoomCB) {
 			fixScaleCB.setSelected(false);
 			refreshGUI();
 		} else if (e.getSource() == fixScaleCB) {
 			alwaysZoomCB.setSelected(false);
 			refreshGUI();
-		} else if (e.getSource() == filterB) {
-			filterButtonClicked();
 		} else if (e.getSource() == copySelectedB) {
 			if (copySelected()) {
 				setChangedValues(true);
@@ -669,7 +678,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 			if (answer == 0) {
 				try {
 					deleteRecord();
-				} catch (DataException ex) {
+				} catch (BaseException ex) {
 					logger.error(ex.getMessage(), ex);
 					String errorMessage = (ex.getCause() != null) ? ex
 							.getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
@@ -686,16 +695,6 @@ public abstract class AbstractNavTable extends NTIWindow implements
 			}
 		} else if (e.getSource() == undoB) {
 			undoAction();
-		}
-	}
-
-	private void filterButtonClicked() {
-		if (getRecordset().getSelection().isEmpty()) {
-			SelectByAttributes fe = new SelectByAttributes();
-			fe.setDatasource(layer.getFeatureStore(), layer.getName());
-			fe.execute();
-		} else {
-			clearSelection();
 		}
 	}
 
@@ -730,17 +729,17 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		refreshGUI();
 	}
 
-	public void deleteRecord() throws DataException {
+	public void deleteRecord() throws BaseException {
+		setSavingValues(true);
 		try {
-			long position = getPosition();
-			layerController.delete(position);
-			// keep the current position within boundaries
-			setPosition(position);
-			if (layerController.getRowCount() <= 0) {
+			navigation.deleteFeature();
+			if (navigation.getLastPos() < 0) {
 				showEmptyLayerMessage();
 			}
-		} catch (DataException e) {
+		} catch (BaseException e) {
 			throw e;
+		} finally {
+			setSavingValues(false);
 		}
 	}
 
@@ -748,19 +747,15 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	public void windowClosed() {
 		showWarning();
 		removeLayerListeners();
+		navigation.removeListeners();
 	}
 
 	@Override
 	public void windowActivated() {
 	}
 
-	/**
-	 * Reloads recordset from layer, if possible.
-	 *
-	 * @throws ReadDriverException
-	 */
 	public void reloadRecordset() throws DataException {
-		getRecordset().reload();
+		layer.getFeatureStore().refresh();
 	}
 
 	public void addPositionListener(PositionListener l) {
@@ -771,27 +766,10 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		navigation.removeEventListener(l);
 	}
 
-	public abstract boolean isSavingValues();
-
-	public SelectableDataSource getRecordset() {
-		try {
-			return new SelectableDataSource(layer.getFeatureStore());
-		} catch (DataException e) {
-			logger.error(e.getMessage(), e);
-			return null;
-		}
-	}
-
 	@Override
 	public void onPositionChange(PositionEvent e) {
-		try {
-			layerController.read(getPosition());
-			refreshGUI();
-		} catch (DataException rde) {
-			logger.error(rde.getMessage(), e);
-			layerController = new LayerController(layer);
-			refreshGUI();
-		}
+		layerController.read(navigation.getFeature());
+		refreshGUI();
 	}
 
 	@Override
@@ -799,29 +777,29 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		showWarning();
 	}
 
-	public void next() {
-		navigation.next();
-	}
+	// public void next() {
+	// navigation.next();
+	// }
 
-	public void last() {
-		navigation.last();
-	}
+	// public void last() {
+	// navigation.last();
+	// }
 
-	private void lastSelected() {
-		navigation.lastSelected();
-	}
+	// private void lastSelected() {
+	// navigation.lastSelected();
+	// }
 
-	public void first() {
-		navigation.first();
-	}
+	// public void first() {
+	// navigation.first();
+	// }
 
-	public void firstSelected() {
-		navigation.firstSelected();
-	}
+	// public void firstSelected() {
+	// navigation.firstSelected();
+	// }
 
-	public void before() {
-		navigation.goToPreviousInView();
-	}
+	// public void before() {
+	// navigation.goToPreviousInView();
+	// }
 
 	public void setPosition(long newPosition) {
 		navigation.setPosition(newPosition);
@@ -831,37 +809,47 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		return navigation.getPosition();
 	}
 
-	public void setSortKeys(List<? extends SortKey> keys) {
-		navigation.setSortKeys(keys);
+	public void setSortKeys(List<Field> sortFields) {
+		navigation.setSortKeys(sortFields);
 	}
 
-	public List<? extends SortKey> getSortKeys() {
-		return navigation.getSortKeys();
+	public void editionStarted() {
 	}
 
-	/**
-	 * Only process stop edition events. And when this occurs all the sort is
-	 * recalculated. In case that recalculate the full sorting has bad
-	 * performance we should process FIELD_EDITION, ROW_EDITION EditionEvents,
-	 * and reorder only the affected rows, or test the performance of not create
-	 * a new instance of the sorter.
-	 */
-	public void layerEvent(LayerEvent e) {
-		if ((e.getEventType() == LayerEvent.EDITION_CHANGED)
-				&& !layer.isEditing()) {
-			navigation.modelChanged();
+	public void editionFinished() {
+		try {
+			reloadRecordset();
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
 		}
-	}
-
-	public void editionEvent(FeatureStoreNotification e) {
-		// if ((e instanceof AfterFieldEditEvent)
-		// && (e.getChangeType() == EditionEvent.CHANGE_TYPE_DELETE)) {
-		// navigation.setSortKeys(null);
-		// }
+		navigation.modelChanged();
+		layerController.read(navigation.getFeature());
+		refreshGUI();
 	}
 
 	public FLyrVect getLayer() {
 		return layer;
+	}
+
+	public int getFieldType(String fieldName) {
+		try {
+			FeatureType type = layer.getFeatureStore().getDefaultFeatureType();
+			FeatureAttributeDescriptor attDesc = type
+					.getAttributeDescriptor(fieldName);
+			return attDesc.getType();
+			// layerController.getType(fieldName);
+		} catch (DataException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return DataTypes.INVALID;
+	}
+
+	protected void setSavingValues(boolean bool) {
+		isSavingValues = bool;
+	}
+
+	public boolean isSavingValues() {
+		return isSavingValues;
 	}
 
 }

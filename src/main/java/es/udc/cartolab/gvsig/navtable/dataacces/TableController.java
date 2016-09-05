@@ -18,20 +18,28 @@
 package es.udc.cartolab.gvsig.navtable.dataacces;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.gvsig.app.project.documents.table.TableDocument;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.EditableFeature;
+import org.gvsig.fmap.dal.feature.Feature;
+import org.gvsig.fmap.dal.feature.FeatureAttributeDescriptor;
+import org.gvsig.fmap.dal.feature.FeatureStore;
+import org.gvsig.fmap.dal.feature.FeatureType;
+import org.gvsig.fmap.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.gvsig2.Value;
+import es.icarto.gvsig.commons.gvsig2.ValueFactory;
+import es.icarto.gvsig.commons.gvsig2.ValueWriter;
 import es.icarto.gvsig.navtable.edition.TableEdition;
-import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 
@@ -52,25 +60,30 @@ public class TableController implements IController {
 	private final TableDocument model;
 	private final Map<String, Integer> indexes;
 	private final Map<String, Integer> types;
+	private final List<String> fieldNames;
 	private Map<String, String> values = new HashMap<String, String>();
 	private Map<String, String> valuesChanged = new HashMap<String, String>();
 
 	public TableController(TableDocument model) {
 		this.model = model;
-
 		try {
-			SelectableDataSource sds = new SelectableDataSource(
-					model.getStore());
-			int fieldCount = sds.getFieldCount();
+			FeatureStore store = model.getFeatureStore();
+			FeatureType featType = store.getDefaultFeatureType();
+			int fieldCount = featType.size();
 			Map<String, Integer> idx = new HashMap<String, Integer>(fieldCount);
 			Map<String, Integer> type = new HashMap<String, Integer>(fieldCount);
+			List<String> fNames = new ArrayList<String>(fieldCount);
 			for (int i = 0; i < fieldCount; i++) {
-				String name = sds.getFieldName(i);
+				FeatureAttributeDescriptor attDesc = featType
+						.getAttributeDescriptor(i);
+				String name = attDesc.getName();
 				idx.put(name, i);
-				type.put(name, sds.getFieldType(i));
+				type.put(name, attDesc.getType());
+				fNames.add(name);
 			}
 			this.indexes = Collections.unmodifiableMap(idx);
 			this.types = Collections.unmodifiableMap(type);
+			this.fieldNames = Collections.unmodifiableList(fNames);
 		} catch (DataException e) {
 			logger.error(e.getMessage(), e);
 			throw new RuntimeException(e);
@@ -80,9 +93,6 @@ public class TableController implements IController {
 	@Override
 	public long create(Map<String, String> newValues) throws DataException,
 			ParseException {
-		if (!model.getStore().allowWrite()) {
-			throw new RuntimeException("Write is not allowed in this table");
-		}
 
 		TableEdition te = new TableEdition();
 		if (!model.getStore().isEditing()) {
@@ -92,7 +102,7 @@ public class TableController implements IController {
 		model.getStore().insert(feature);
 		te.stopEditing(model, false);
 		long newPosition = model.getStore().getFeatureCount() - 1;
-		read(newPosition);
+		read(feature);
 		return newPosition;
 	}
 
@@ -109,47 +119,40 @@ public class TableController implements IController {
 	}
 
 	@Override
-	public void read(long position) throws DataException {
-		SelectableDataSource sds = new SelectableDataSource(model.getStore());
-		if (position != AbstractNavTable.EMPTY_REGISTER) {
-			for (int i = 0; i < sds.getFieldCount(); i++) {
-				String name = sds.getFieldName(i);
-				values.put(
-						name,
-						sds.getFieldValue(position, i).getStringValue(
-								new ValueFormatNT()));
-			}
+	public void read(Feature feat) {
+		values.clear();
+		valuesChanged.clear();
+		ValueWriter vWriter = new ValueFormatNT();
+		for (String name : indexes.keySet()) {
+			Object o = feat.get(name);
+			Value value = ValueFactory.createValue(o);
+			values.put(name, value.getStringValue(vWriter));
 		}
 	}
 
 	@Override
-	public void update(long position) throws DataException {
+	public void update(Feature feat) throws DataException {
 		TableEdition te = new TableEdition();
 		boolean wasEditing = model.getStore().isEditing();
-		if (!wasEditing) {
-			te.startEditing(model);
-		}
-
-		te.modifyValues(model, (int) position, getIndexesOfValuesChanged(),
-				getValuesChanged().values().toArray(new String[0]));
-		if (!wasEditing) {
-			te.stopEditing(model, false);
-		}
-		read((int) position);
-	}
-
-	@Override
-	public void delete(long position) {
-		TableEdition te = new TableEdition();
-		te.startEditing(model);
-		SelectableDataSource sds;
 		try {
-			sds = new SelectableDataSource(model.getStore());
-			sds.removeRow(position);
+			if (!wasEditing) {
+				te.startEditing(model);
+			}
+
+			Feature f = te.modifyValues(model, feat,
+					getIndexesOfValuesChanged(), getValuesChanged().values()
+							.toArray(new String[0]));
+			if (!wasEditing) {
+				te.stopEditing(model, false);
+			}
+			read(f);
 		} catch (DataException e) {
 			logger.error(e.getMessage(), e);
+			if (!wasEditing) {
+				te.stopEditing(model, true);
+			}
+			throw e;
 		}
-		te.stopEditing(model, false);
 	}
 
 	@Override
@@ -213,11 +216,21 @@ public class TableController implements IController {
 
 	@Override
 	public long getRowCount() throws DataException {
-		return new SelectableDataSource(model.getStore()).getRowCount();
+		return model.getStore().getFeatureCount();
 	}
 
 	@Override
 	public TableController clone() {
 		return new TableController(model);
+	}
+
+	@Override
+	public List<String> getFieldNames() {
+		return fieldNames;
+	}
+
+	@Override
+	public Geometry getGeom() {
+		throw new RuntimeException("Not geom for alfa tables");
 	}
 }

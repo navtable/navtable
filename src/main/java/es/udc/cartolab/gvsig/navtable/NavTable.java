@@ -30,6 +30,7 @@ import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.sql.Types;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -40,21 +41,19 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.geom.operation.GeometryOperationException;
 import org.gvsig.fmap.geom.operation.GeometryOperationNotSupportedException;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
-import org.gvsig.fmap.mapcontext.layers.vectorial.VectorLayer;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoint;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
 import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
-import es.icarto.gvsig.commons.gvsig2.Value;
 import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 import es.udc.cartolab.gvsig.navtable.listeners.MyMouseListener;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
@@ -88,7 +87,6 @@ public class NavTable extends AbstractNavTable {
 	private static final long serialVersionUID = 1L;
 
 	private boolean isFillingValues = false;
-	private boolean isSavingValues = false;
 
 	protected JTable table = null;
 	private AttribTableCellRenderer cellRenderer = null;
@@ -161,16 +159,16 @@ public class NavTable extends AbstractNavTable {
 		public void keyReleased(KeyEvent e) {
 			// TODO If control + cursor ---> Inicio / Fin
 			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				next();
+				navigation.next();
 			}
 			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				before();
+				navigation.previous();
 			}
 			if (e.getKeyCode() == KeyEvent.VK_HOME) {
-				first();
+				navigation.first();
 			}
 			if (e.getKeyCode() == KeyEvent.VK_END) {
-				last();
+				navigation.last();
 			}
 		}
 
@@ -183,7 +181,22 @@ public class NavTable extends AbstractNavTable {
 		@Override
 		public void tableChanged(TableModelEvent e) {
 			if (e.getType() == TableModelEvent.UPDATE && !isFillingValues()) {
-				setChangedValues();
+				TableModel model = table.getModel();
+
+				for (int i = e.getFirstRow(); i <= e.getLastRow(); i++) {
+					String fieldName = model.getValueAt(i, 0).toString();
+					String tableValue = model.getValueAt(i, 1).toString();
+					String valueInLayer = layerController
+							.getValueInLayer(fieldName);
+					if (!tableValue.equals(valueInLayer)) {
+						int fieldType = layerController.getType(fieldName);
+						if (fieldType == Types.DATE) {
+							tableValue = tableValue.replaceAll("-", "/");
+						}
+						layerController.setValue(fieldName, tableValue);
+						setChangedValues(true);
+					}
+				}
 				enableSaveButton(isChangedValues());
 			}
 		}
@@ -225,26 +238,19 @@ public class NavTable extends AbstractNavTable {
 	@Override
 	protected void initWidgets() {
 		NavTableAlias alias = new NavTableAlias(layer.getFeatureStore());
-		try {
-			DefaultTableModel model = (DefaultTableModel) table.getModel();
-			model.setRowCount(0);
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.setRowCount(0);
 
-			SelectableDataSource sds = getRecordset();
-			for (int i = 0; i < sds.getFieldCount(); i++) {
-				String attName = sds.getFieldName(i);
-				initAttribute(model, alias.getAlias(attName), " ");
-			}
-			initAttribute(model, _("Geom_LENGTH"), "0.0");
-			initAttribute(model, _("Geom_AREA"), "0.0");
-
-			this.cellRenderer.emptyNoEditableRows();
-
-			this.cellRenderer.addNoEditableRow(model.getRowCount() - 2);
-			this.cellRenderer.addNoEditableRow(model.getRowCount() - 1);
-
-		} catch (DataException e) {
-			logger.error(e.getMessage(), e);
+		for (String attName : layerController.getFieldNames()) {
+			initAttribute(model, alias.getAlias(attName), "");
 		}
+		initAttribute(model, _("Geom_LENGTH"), "0.0");
+		initAttribute(model, _("Geom_AREA"), "0.0");
+
+		this.cellRenderer.emptyNoEditableRows();
+
+		this.cellRenderer.addNoEditableRow(model.getRowCount() - 2);
+		this.cellRenderer.addNoEditableRow(model.getRowCount() - 1);
 	}
 
 	private void initAttribute(DefaultTableModel model, String att, String value) {
@@ -265,83 +271,33 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	@Override
-	public boolean isSavingValues() {
-		return isSavingValues;
-	}
-
-	public void setSavingValues(boolean bool) {
-		isSavingValues = bool;
-	}
-
-	@Override
 	public void fillValues() {
-		SelectableDataSource sds;
 		try {
-			sds = getRecordset();
 			setFillingValues(true);
 			DefaultTableModel model = (DefaultTableModel) table.getModel();
-			for (int i = 0; i < sds.getFieldCount(); i++) {
-				String textoValue = sds.getFieldValue(getPosition(), i)
-						.getStringValue(valueFormatNT);
-				model.setValueAt(textoValue, i, 1);
+			List<String> fieldNames = layerController.getFieldNames();
+			for (int i = 0; i < fieldNames.size(); i++) {
+				String v = layerController.getValueInLayer(fieldNames.get(i));
+				model.setValueAt(v, i, 1);
 			}
 
-			if (layer != null && layer instanceof VectorLayer) {
-				Geometry geometry = sds.getGeometry(getPosition());
-				if (geometry == null) {
-					model.setValueAt("0", sds.getFieldCount(), 1);
-					model.setValueAt("0", sds.getFieldCount() + 1, 1);
-					return;
-				}
+			Geometry geometry = layerController.getGeom();
 
-				// Fill GEOM_LENGTH
-				String length = "0.0";
+			String length = "0.0";
+			String area = "0.0";
+			if (geometry != null) {
 				length = String.valueOf(Math.round(geometry.perimeter()));
-				model.setValueAt(length, sds.getFieldCount(), 1);
-
-				// Fill GEOM_AREA
-				String area = "0.0";
 				area = String.valueOf(Math.round(geometry.area()));
-				model.setValueAt(area, sds.getFieldCount() + 1, 1);
 			}
+			model.setValueAt(length, fieldNames.size(), 1);
+			model.setValueAt(area, fieldNames.size() + 1, 1);
 
-		} catch (DataException e) {
-			logger.error(e.getMessage(), e);
 		} catch (GeometryOperationNotSupportedException e) {
 			logger.error(e.getMessage(), e);
 		} catch (GeometryOperationException e) {
 			logger.error(e.getMessage(), e);
 		} finally {
 			setFillingValues(false);
-		}
-	}
-
-	protected Vector<Integer> getChangedValues() {
-		Vector<Integer> changedValues = new Vector<Integer>();
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		try {
-			SelectableDataSource sds = getRecordset();
-			for (int i = 0; i < sds.getFieldCount(); i++) {
-				String tableValue = model.getValueAt(i, 1).toString();
-				Value value = sds.getFieldValue(getPosition(), i);
-				String layerValue = value.getStringValue(valueFormatNT);
-				if (tableValue.compareTo(layerValue) != 0) {
-					changedValues.add(new Integer(i));
-				}
-			}
-		} catch (DataException e) {
-			logger.error(e.getMessage(), e);
-		}
-
-		return changedValues;
-	}
-
-	protected void setChangedValues() {
-		Vector<Integer> changedValues = getChangedValues();
-		if (changedValues.size() > 0) {
-			setChangedValues(true);
-		} else {
-			setChangedValues(false);
 		}
 	}
 
@@ -362,64 +318,15 @@ public class NavTable extends AbstractNavTable {
 		}
 	}
 
-	protected int[] getIndexes() {
-		Vector<Integer> changedValues = getChangedValues();
-		int[] attIndexes = new int[changedValues.size()];
-		if (isChangedValues()) {
-			DefaultTableModel model = (DefaultTableModel) table.getModel();
-			int j = 0;
-			for (int i = 0; i < model.getRowCount(); i++) {
-				if (changedValues.contains(new Integer(i))) {
-					attIndexes[j] = i;
-					j++;
-				}
-			}
-		}
-		return attIndexes;
-	}
-
-	protected String[] getValues() {
-		Vector<Integer> changedValues = getChangedValues();
-		String[] attValues = new String[changedValues.size()];
-		if (isChangedValues()) {
-			DefaultTableModel model = (DefaultTableModel) table.getModel();
-			int j = 0;
-			for (int i = 0; i < model.getRowCount(); i++) {
-				if (changedValues.contains(new Integer(i))) {
-
-					Object value = model.getValueAt(i, 1);
-					attValues[j] = value.toString();
-					if (getRecordset().getFieldType(i) == Types.DATE) {
-						attValues[j] = attValues[j].replaceAll("-", "/");
-					}
-					j++;
-				}
-			}
-		}
-		return attValues;
-	}
-
 	@Override
 	public boolean saveRecord() throws DataException {
 		if (isSaveable()) {
-			setSavingValues(true);
-			int[] attIndexes = getIndexes();
-			String[] attValues = getValues();
-			int currentPos = Long.valueOf(getPosition()).intValue();
 			try {
-				ToggleEditing te = new ToggleEditing();
-				boolean wasEditing = layer.isEditing();
-				if (!wasEditing) {
-					te.startEditing(layer);
-				}
-				te.modifyValues(layer, currentPos, attIndexes, attValues);
-				if (!wasEditing) {
-					te.stopEditing(layer, false);
-				}
+				setSavingValues(true);
+				layerController.update(navigation.getFeature());
 				setChangedValues(false);
 				return true;
 			} catch (DataException e) {
-				setSavingValues(false);
 				throw e;
 			} finally {
 				setSavingValues(false);

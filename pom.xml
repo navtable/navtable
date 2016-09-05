@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.gvsig</groupId>
 		<artifactId>org.gvsig.desktop.plugin</artifactId>
-		<version>2.0.100</version>
+		<version>2.0.150</version>
 	</parent>
 
 	<dependencies>
@@ -36,15 +36,40 @@
 			<groupId>org.gvsig</groupId>
 			<artifactId>org.gvsig.app.mainplugin</artifactId>
 		</dependency>
+
+						  		<dependency>
+			<groupId>org.gvsig</groupId>
+			<artifactId>org.gvsig.vectorediting.app.mainplugin</artifactId>
+						<version>1.0.47</version>
+			</dependency>
+
+
+				  		<dependency>
+			<groupId>org.gvsig</groupId>
+			<artifactId>org.gvsig.vectorediting.lib.api</artifactId>
+						<version>1.0.47</version>
+			</dependency>
+			
+
+
+			  		<dependency>
+			<groupId>org.gvsig</groupId>
+			<artifactId>org.gvsig.vectorediting.lib.impl</artifactId>
+						<version>1.0.47</version>
+			</dependency>
+			
+
+		<!--
 		<dependency>
 			<groupId>org.gvsig</groupId>
 			<artifactId>org.gvsig.editing.app.mainplugin</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.gvsig</groupId>
 			<artifactId>org.gvsig.fmap.geometry.generalpath</artifactId>
 		</dependency>
-		
+-->
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>

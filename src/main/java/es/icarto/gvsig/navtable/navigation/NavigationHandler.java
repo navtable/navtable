@@ -8,6 +8,7 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -16,14 +17,19 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.RowSorter;
-import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 
-import org.gvsig.andami.PluginServices;
+import org.gvsig.fmap.dal.DALLocator;
+import org.gvsig.fmap.dal.DataManager;
 import org.gvsig.fmap.dal.DataStoreNotification;
 import org.gvsig.fmap.dal.exception.DataException;
-import org.gvsig.fmap.mapcontext.layers.SelectionEvent;
-import org.gvsig.fmap.mapcontext.layers.SelectionListener;
+import org.gvsig.fmap.dal.feature.Feature;
+import org.gvsig.fmap.dal.feature.FeatureQuery;
+import org.gvsig.fmap.dal.feature.FeatureQueryOrder;
+import org.gvsig.fmap.dal.feature.FeatureSelection;
+import org.gvsig.fmap.dal.feature.FeatureStore;
+import org.gvsig.fmap.dal.feature.paging.FeaturePagingHelper;
+import org.gvsig.tools.exception.BaseException;
 import org.gvsig.tools.observer.Observable;
 import org.gvsig.tools.observer.Observer;
 import org.gvsig.utils.extensionPointsOld.ExtensionPoints;
@@ -31,535 +37,570 @@ import org.gvsig.utils.extensionPointsOld.ExtensionPointsSingleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import es.icarto.gvsig.commons.gvsig2.FBitSet;
-import es.icarto.gvsig.commons.gvsig2.SelectableDataSource;
+import es.icarto.gvsig.commons.utils.Field;
 import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
+import es.udc.cartolab.gvsig.navtable.dataacces.EmptyFeature;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionEventSource;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 
 public class NavigationHandler implements ActionListener, Observer {
 
-private static final Logger logger = LoggerFactory
-		.getLogger(NavigationHandler.class);
-    
-    private final PositionEventSource positionEventSource = new PositionEventSource();
+	private static final Logger logger = LoggerFactory
+			.getLogger(NavigationHandler.class);
 
-    private JButton firstB = null;
-    private JButton beforeB = null;
-    private JTextField posTF = null;
-    private JLabel totalLabel = null;
-    private JButton nextB = null;
-    private JButton lastB = null;
-    private JPanel navToolBar;
+	private final PositionEventSource positionEventSource = new PositionEventSource();
 
-    // Selection widgets
-    private JCheckBox onlySelectedCB = null;
-    private JCheckBox alwaysSelectCB = null;
-    private JButton selectionB = null;
-    private JPanel optionsPanel;
+	private JButton firstB = null;
+	private JButton beforeB = null;
+	private JTextField posTF = null;
+	private JLabel totalLabel = null;
+	private JButton nextB = null;
+	private JButton lastB = null;
+	private JPanel navToolBar;
 
-    private long currentPosition = 0;
+	// Selection widgets
+	private JCheckBox onlySelectedCB = null;
+	private JCheckBox alwaysSelectCB = null;
+	private JButton selectionB = null;
+	private JPanel optionsPanel;
 
-    private final AbstractNavTable nt;
+	private long currentPosition;
+	private Feature currentFeature;
 
-    private RowSorter<? extends SelectableDataSource> sorter;
+	private final AbstractNavTable nt;
 
-    public NavigationHandler(AbstractNavTable nt) {
-	this.nt = nt;
-	initWidgets();
-	sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
-    }
+	private FeaturePagingHelper set;
 
-    public JPanel getToolBar() {
-	return navToolBar;
-    }
+	private long lastPos;
 
-    private void initWidgets() {
-	initNavigationWidgets();
-	initSelectionWidgets();
-    }
-
-    private void initNavigationWidgets() {
-	registerNavTableButtonsOnNavigationToolBarExtensionPoint();
-	navToolBar = new JPanel(new FlowLayout());
-	navToolBar.add(firstB);
-	navToolBar.add(beforeB);
-	navToolBar.add(posTF);
-	navToolBar.add(totalLabel);
-	navToolBar.add(nextB);
-	navToolBar.add(lastB);
-    }
-
-    private void initSelectionWidgets() {
-	onlySelectedCB = getNavTableCheckBox(onlySelectedCB, "selectedCheckBox");
-	alwaysSelectCB = getNavTableCheckBox(alwaysSelectCB, "selectCheckBox");
-	optionsPanel = new JPanel(new FlowLayout());
-	optionsPanel.add(onlySelectedCB);
-	optionsPanel.add(alwaysSelectCB);
-    }
-
-    private void registerNavTableButtonsOnNavigationToolBarExtensionPoint() {
-	firstB = getNavTableButton(firstB, "/go-first.png",
-		"goFirstButtonTooltip");
-	beforeB = getNavTableButton(beforeB, "/go-previous.png",
-		"goPreviousButtonTooltip");
-	posTF = new JTextField(5);
-	posTF.addActionListener(this);
-	totalLabel = new JLabel();
-	nextB = getNavTableButton(nextB, "/go-next.png", "goNextButtonTooltip");
-	lastB = getNavTableButton(lastB, "/go-last.png", "goLastButtonTooltip");
-    }
-
-    public void next() {
-	if (isOnlySelected()) {
-	    nextSelected();
-	} else {
-	    // setPosition(getPosition() + 1);
-	    int viewPos = sorter.convertRowIndexToView((int) getPosition());
-	    int viewLastPos = sorter.getViewRowCount() - 1;
-	    if (viewPos < viewLastPos) {
-		int modelNextPos = sorter.convertRowIndexToModel(viewPos + 1);
-		setPosition(modelNextPos);
-	    }
-	}
-    }
-
-    // int pos = bitset.nextSetBit((int) getPosition() + 1);
-    // if (pos != EMPTY_REGISTER) {
-    // setPosition(pos);
-    // }
-    /**
-     * This implementation should be tested with spare selections on big files
-     * to check if has an acceptable performance
-     */
-    private void nextSelected() {
-	FBitSet bitset = nt.getRecordset().getSelection();
-	int viewPos = sorter.convertRowIndexToView((int) getPosition());
-	for (int i = viewPos + 1; i < sorter.getViewRowCount(); i++) {
-	    int modelPos = sorter.convertRowIndexToModel(i);
-	    if (bitset.get(modelPos)) {
-		setPosition(modelPos);
-		return;
-	    }
-	}
-    }
-
-    public void last() {
-	if (isOnlySelected()) {
-	    lastSelected();
-	} else {
-	    // setPosition(getRecordset().getRowCount() - 1);
-	    int viewLastPos = sorter.getViewRowCount() - 1;
-	    int modelLastPos = sorter.convertRowIndexToModel(viewLastPos);
-	    setPosition(modelLastPos);
-	}
-    }
-
-    // int pos = bitset.length();
-    // if (pos != 0) {
-    // setPosition(pos - 1);
-    // }
-    public void lastSelected() {
-	FBitSet bitset = nt.getRecordset().getSelection();
-	int viewLastPos = sorter.getViewRowCount() - 1;
-	for (int i = viewLastPos; i >= 0; i--) {
-	    int modelPos = sorter.convertRowIndexToModel(i);
-	    if (bitset.get(modelPos)) {
-		setPosition(modelPos);
-		return;
-	    }
-	}
-    }
-
-    public void first() {
-	if (isOnlySelected()) {
-	    firstSelected();
-	} else {
-	    // setPosition(0);
-	    int viewFirstPos = 0;
-	    int modelFirstPos = sorter.convertRowIndexToModel(viewFirstPos);
-	    setPosition(modelFirstPos);
-	}
-    }
-
-    public void firstSelected() {
-	FBitSet bitset = nt.getRecordset().getSelection();
-	int viewFirstPos = 0;
-	for (int i = viewFirstPos; i < sorter.getViewRowCount(); i++) {
-	    int modelPos = sorter.convertRowIndexToModel(i);
-	    if (bitset.get(modelPos)) {
-		setPosition(modelPos);
-		return;
-	    }
-	}
-    }
-
-    // returns the index of the record in the datasource that matches the
-    // previous (getPosition() - 1) record in the view
-    // if the view position is the first (0) it returns -1
-    public int getPreviousPositionInModel() {
-	int viewPos = sorter.convertRowIndexToView((int) getPosition());
-	if (viewPos == 0) {
-	    return -1;
-	}
-	int modelPrevPos = sorter.convertRowIndexToModel(viewPos - 1);
-	return modelPrevPos;
-    }
-
-    public void goToPreviousInView() {
-	if (isOnlySelected()) {
-	    goToPreviousSelectedInView();
-	} else {
-	    int modelPrevPos = getPreviousPositionInModel();
-	    if (modelPrevPos > -1) {
-		setPosition(modelPrevPos);
-	    }
-	}
-    }
-
-    private int getPreviusPositionSelectedInModel() {
-	FBitSet bitset = nt.getRecordset().getSelection();
-	int viewPos = sorter.convertRowIndexToView((int) getPosition());
-	for (int i = viewPos - 1; i >= 0; i--) {
-	    int modelPos = sorter.convertRowIndexToModel(i);
-	    if (bitset.get(modelPos)) {
-		return modelPos;
-	    }
+	public NavigationHandler(AbstractNavTable nt) {
+		this.nt = nt;
+		initWidgets();
+		initSet();
+		initPosition();
 	}
 
-	return -1;
-    }
-
-    // int pos = (int) (getPosition() - 1);
-    // for (; pos >= 0 && !bitset.get(pos); pos--) {
-    // ;
-    // }
-    // if (pos != EMPTY_REGISTER) {
-    // setPosition(pos);
-    // }
-    private void goToPreviousSelectedInView() {
-	int modelPos = getPreviusPositionSelectedInModel();
-	if (modelPos != -1) {
-	    setPosition(modelPos);
-	}
-    }
-
-    /**
-     * {@link #init()} method must be called before this
-     * 
-     * @param newPosition
-     *            zero-based index on recordset
-     */
-    public void setPosition(long newPosition) {
-	if (!isValidPosition(newPosition)) {
-	    return;
-	}
-	try {
-	    if (newPosition >= nt.getRecordset().getRowCount()) {
-		newPosition = nt.getRecordset().getRowCount() - 1;
-	    } else if (newPosition < EMPTY_REGISTER) {
-		newPosition = 0;
-	    }
-
-	    PositionEvent evt = new PositionEvent(this, currentPosition,
-		    newPosition);
-	    positionEventSource.fireBeforePositionChange(evt);
-	    currentPosition = newPosition;
-	    positionEventSource.fireOnPositionChange(evt);
-	} catch (DataException e) {
-		logger.error(e.getMessage(), e);
-	}
-    }
-
-    public long getPosition() {
-	return currentPosition;
-    }
-
-    private boolean isValidPosition(long pos) {
-	if (isOnlySelected()) {
-	    return isRecordSelected(pos);
-	}
-	return true;
-    }
-
-    private void setTotalLabelText() {
-	try {
-	    long numberOfRowsInRecordset = nt.getRecordset().getRowCount();
-	    if (isOnlySelected()) {
-		totalLabel.setText("/" + "(" + nt.getNumberOfRowsSelected()
-			+ ") " + numberOfRowsInRecordset);
-	    } else {
-		totalLabel.setText("/" + numberOfRowsInRecordset);
-	    }
-	} catch (DataException e) {
-		logger.error(e.getMessage(), e);
+	private void initWidgets() {
+		initNavigationWidgets();
+		initSelectionWidgets();
 	}
 
-    }
-
-    private void posTFChanged() {
-	String pos = posTF.getText();
-	try {
-	    long userViewPos = Long.parseLong(pos) - 1;
-	    int modelPos = sorter.convertRowIndexToModel((int) userViewPos);
-	    setPosition(modelPos);
-	} catch (NumberFormatException e) {
-	    logger.error(e.getMessage(), e);
-	    refreshGUI(firstB.isEnabled());
-	}
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-	if (e.getSource() == nextB) {
-	    next();
-	} else if (e.getSource() == lastB) {
-	    last();
-	} else if (e.getSource() == firstB) {
-	    first();
-	} else if (e.getSource() == beforeB) {
-	    goToPreviousInView();
-	} else if (e.getSource() == posTF) {
-	    posTFChanged();
-	} else if (e.getSource() == onlySelectedCB) {
-	    if (alwaysSelectCB.isSelected()) {
-		alwaysSelectCB.setSelected(false);
+	private void initSet() {
+		FeatureStore store = nt.getLayer().getFeatureStore();
+		DataManager manager = DALLocator.getDataManager();
 		try {
-			nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
+			set = manager.createFeaturePagingHelper(store, 1000);
+			lastPos = store.getFeatureCount() - 1;
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void initPosition() {
+		try {
+			if (lastPos == -1) {
+				currentPosition = EMPTY_REGISTER;
+				FeatureStore store = nt.getLayer().getFeatureStore();
+				currentFeature = new EmptyFeature(store.createNewFeature());
+
+			} else {
+				currentPosition = 0;
+				currentFeature = set.getFeatureAt(currentPosition);
+			}
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	public JPanel getToolBar() {
+		return navToolBar;
+	}
+
+	private void initNavigationWidgets() {
+		registerNavTableButtonsOnNavigationToolBarExtensionPoint();
+		navToolBar = new JPanel(new FlowLayout());
+		navToolBar.add(firstB);
+		navToolBar.add(beforeB);
+		navToolBar.add(posTF);
+		navToolBar.add(totalLabel);
+		navToolBar.add(nextB);
+		navToolBar.add(lastB);
+	}
+
+	private void initSelectionWidgets() {
+		onlySelectedCB = getNavTableCheckBox(onlySelectedCB, "selectedCheckBox");
+		alwaysSelectCB = getNavTableCheckBox(alwaysSelectCB, "selectCheckBox");
+		optionsPanel = new JPanel(new FlowLayout());
+		optionsPanel.add(onlySelectedCB);
+		optionsPanel.add(alwaysSelectCB);
+	}
+
+	private void registerNavTableButtonsOnNavigationToolBarExtensionPoint() {
+		firstB = getNavTableButton(firstB, "/go-first.png",
+				"goFirstButtonTooltip");
+		beforeB = getNavTableButton(beforeB, "/go-previous.png",
+				"goPreviousButtonTooltip");
+		posTF = new JTextField(5);
+		posTF.addActionListener(this);
+		totalLabel = new JLabel();
+		nextB = getNavTableButton(nextB, "/go-next.png", "goNextButtonTooltip");
+		lastB = getNavTableButton(lastB, "/go-last.png", "goLastButtonTooltip");
+	}
+
+	public void next() {
+		if (isOnlySelected()) {
+			nextSelected();
+		} else {
+			setPosition(getPosition() + 1);
+		}
+	}
+
+	public void last() {
+		if (isOnlySelected()) {
+			lastSelected();
+		} else {
+			setPosition(lastPos);
+		}
+	}
+
+	public void first() {
+		if (isOnlySelected()) {
+			firstSelected();
+		} else {
+			setPosition(0);
+		}
+	}
+
+	public void previous() {
+		if (isOnlySelected()) {
+			previousSelected();
+		} else {
+			setPosition(getPosition() - 1);
+		}
+	}
+
+	private void firstSelected() {
+		long nextPosition = getPosition();
+		try {
+			FeatureStore store = nt.getLayer().getFeatureStore();
+			FeatureSelection selection = store.getFeatureSelection();
+			for (long i = 0; i < lastPos; i++) {
+				Feature f = set.getFeatureAt(i);
+				if (selection.isSelected(f)) {
+					nextPosition = i;
+					break;
+				}
+			}
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+		}
+		setPosition(nextPosition);
+	}
+
+	private void nextSelected() {
+		long nextPosition = getPosition();
+		try {
+			FeatureStore store = nt.getLayer().getFeatureStore();
+			FeatureSelection selection = store.getFeatureSelection();
+			for (long i = getPosition() + 1; i <= lastPos; i++) {
+				Feature f = set.getFeatureAt(i);
+				if (selection.isSelected(f)) {
+					nextPosition = i;
+					break;
+				}
+			}
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+		}
+
+		setPosition(nextPosition);
+	}
+
+	private void lastSelected() {
+		long nextPosition = getPosition();
+		try {
+			FeatureStore store = nt.getLayer().getFeatureStore();
+			FeatureSelection selection = store.getFeatureSelection();
+			for (long i = lastPos; i > getPosition(); i--) {
+				Feature f = set.getFeatureAt(i);
+				if (selection.isSelected(f)) {
+					nextPosition = i;
+					break;
+				}
+			}
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+		}
+
+		setPosition(nextPosition);
+	}
+
+	private void previousSelected() {
+		long nextPosition = getPosition();
+		try {
+			FeatureStore store = nt.getLayer().getFeatureStore();
+			FeatureSelection selection = store.getFeatureSelection();
+			for (long i = getPosition() - 1; i >= 0; i--) {
+				Feature f = set.getFeatureAt(i);
+				if (selection.isSelected(f)) {
+					nextPosition = i;
+					break;
+				}
+			}
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+		}
+
+		setPosition(nextPosition);
+	}
+
+	/**
+	 * @param newPosition
+	 *            zero-based index on recordset
+	 */
+	public void setPosition(long newPosition) {
+
+		newPosition = fixInvalidPosition(newPosition);
+
+		PositionEvent evt = new PositionEvent(this, currentPosition,
+				newPosition);
+		positionEventSource.fireBeforePositionChange(evt);
+		currentPosition = newPosition;
+		if (currentPosition == EMPTY_REGISTER) {
+			currentFeature = new EmptyFeature(currentFeature);
+		} else {
+			try {
+				currentFeature = set.getFeatureAt(currentPosition);
+			} catch (BaseException e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+		positionEventSource.fireOnPositionChange(evt);
+	}
+
+	private long fixInvalidPosition(long pos) {
+		if (lastPos < 0) {
+			return EMPTY_REGISTER;
+		}
+
+		if (pos == EMPTY_REGISTER) {
+			return EMPTY_REGISTER;
+		}
+
+		if (pos >= lastPos) {
+			pos = lastPos;
+		}
+
+		if (pos < 0) {
+			pos = 0;
+		}
+
+		if (isOnlySelected()) {
+			if (!isRecordSelected(pos)) {
+				// TODO. Puede que hubiera que calcular la previousSelected y
+				// devolver ese valor
+				return EMPTY_REGISTER;
+			}
+		}
+		return pos;
+	}
+
+	public long getPosition() {
+		return currentPosition;
+	}
+
+	public Feature getFeature() {
+		return currentFeature;
+	}
+
+	public Feature getFeature(long l) {
+		try {
+			return set.getFeatureAt(l);
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return new EmptyFeature(currentFeature);
+	}
+
+	private void setTotalLabelText() {
+
+		long numberOfRowsInRecordset = lastPos + 1;
+		if (isOnlySelected()) {
+			totalLabel.setText("/" + "(" + nt.getNumberOfRowsSelected() + ") "
+					+ numberOfRowsInRecordset);
+		} else {
+			totalLabel.setText("/" + numberOfRowsInRecordset);
+		}
+
+	}
+
+	private void posTFChanged() {
+		String pos = posTF.getText();
+		try {
+			long userViewPos = Long.parseLong(pos) - 1;
+			setPosition(userViewPos);
+		} catch (NumberFormatException e) {
+			logger.error(e.getMessage(), e);
+			refreshGUI(firstB.isEnabled());
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == nextB) {
+			next();
+		} else if (e.getSource() == lastB) {
+			last();
+		} else if (e.getSource() == firstB) {
+			first();
+		} else if (e.getSource() == beforeB) {
+			previous();
+		} else if (e.getSource() == posTF) {
+			posTFChanged();
+		} else if (e.getSource() == onlySelectedCB) {
+			if (alwaysSelectCB.isSelected()) {
+				alwaysSelectCB.setSelected(false);
+				addThisAsSelectionObserver();
+			}
+
+			if (onlySelectedCB.isSelected()) {
+				if (!isEmptyRegister()) {
+					viewOnlySelected();
+				}
+			} else {
+				if (isEmptyRegister()) {
+					setPosition(0);
+				}
+			}
+			nt.refreshGUI();
+
+		} else if (e.getSource() == alwaysSelectCB) {
+			onlySelectedCB.setSelected(false);
+			if (alwaysSelectCB.isSelected()) {
+				deleteThisAsSelectionObserver();
+
+			} else {
+				addThisAsSelectionObserver();
+			}
+			nt.refreshGUI();
+		} else if (e.getSource() == selectionB) {
+			nt.selectCurrentFeature();
+			nt.refreshGUI();
+		}
+	}
+
+	private void deleteThisAsSelectionObserver() {
+		try {
+			nt.getLayer().getFeatureStore().getFeatureSelection()
+					.deleteObserver(this);
 		} catch (DataException e1) {
-			logger.error(e1.getMessage(), e);
+			logger.error(e1.getMessage(), e1);
 		}
-	    }
+	}
 
-	    if (onlySelectedCB.isSelected()) {
-		if (!isEmptyRegister()) {
-		    viewOnlySelected();
+	private void addThisAsSelectionObserver() {
+		try {
+			nt.getLayer().getFeatureStore().getFeatureSelection()
+					.addObserver(this);
+		} catch (DataException e1) {
+			logger.error(e1.getMessage(), e1);
 		}
-	    } else {
+	}
+
+	/**
+	 * Forces the application to navigate only between selected features.
+	 */
+	private void viewOnlySelected() {
+		if (nt.getNumberOfRowsSelected() == 0) {
+			setPosition(EMPTY_REGISTER);
+		}
+		if (!isRecordSelected()) {
+			firstSelected();
+		} else {
+			refreshGUI(onlySelectedCB.isEnabled());
+		}
+	}
+
+	private boolean isRecordSelected() {
+		try {
+			FeatureStore store = nt.getLayer().getFeatureStore();
+			FeatureSelection selection = store.getFeatureSelection();
+			return selection.isSelected(currentFeature);
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return false;
+	}
+
+	private boolean isRecordSelected(long position) {
+		try {
+			FeatureStore store = nt.getLayer().getFeatureStore();
+			FeatureSelection selection = store.getFeatureSelection();
+			Feature f = set.getFeatureAt(position);
+			return selection.isSelected(f);
+		} catch (BaseException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return false;
+	}
+
+	public boolean isEmptyRegister() {
+		return getPosition() == EMPTY_REGISTER;
+	}
+
+	public void addEventListener(PositionListener l) {
+		positionEventSource.addEventListener(l);
+	}
+
+	public void removeEventListener(PositionListener l) {
+		positionEventSource.removeEventListener(l);
+	}
+
+	public Component getOptionsPanel() {
+		return optionsPanel;
+	}
+
+	public void setOnlySelected(boolean bool) {
+		if (bool != onlySelectedCB.isSelected()) {
+			onlySelectedCB.doClick();
+		}
+	}
+
+	public boolean isOnlySelected() {
+		return onlySelectedCB.isSelected();
+	}
+
+	public void refreshGUI(boolean navEnabled) {
+		refreshGUISelection(navEnabled);
+		refreshGUINavigation(navEnabled);
+	}
+
+	private void refreshGUISelection(boolean navEnabled) {
+		if (alwaysSelectCB.isSelected()) {
+			nt.clearSelection();
+			nt.selectCurrentFeature();
+		}
+
+		if (isRecordSelected()) {
+			ImageIcon imagenUnselect = nt.getIcon("/Unselect.png");
+			selectionB.setIcon(imagenUnselect);
+		} else {
+			ImageIcon imagenSelect = nt.getIcon("/Select.png");
+			selectionB.setIcon(imagenSelect);
+		}
+		selectionB.setEnabled(navEnabled);
+		alwaysSelectCB.setEnabled(navEnabled);
+	}
+
+	private void refreshGUINavigation(boolean navEnabled) {
+		firstB.setEnabled(navEnabled);
+		beforeB.setEnabled(navEnabled);
+		nextB.setEnabled(navEnabled);
+		lastB.setEnabled(navEnabled);
 		if (isEmptyRegister()) {
-		    setPosition(0);
+			posTF.setText("");
+		} else {
+			// user will set a 1-based index to navigate through layer,
+			// so we need to adapt it to currentPosition (a zero-based
+			// index)
+			try {
+				posTF.setText(String.valueOf(getPosition() + 1));
+
+			} catch (IndexOutOfBoundsException e) {
+				/*
+				 * fpuga. 10/12/2014. Workaround When the user delete the last
+				 * record the editionChanged in EditionListener is called, and
+				 * the gui is refreshed, but getPosition returns a removed
+				 * position
+				 */
+				logger.error(e.getMessage(), e);
+				posTF.setText(String.valueOf(getPosition() - 1));
+			}
 		}
-	    }
-	    nt.refreshGUI();
-	} else if (e.getSource() == alwaysSelectCB) {
-	    onlySelectedCB.setSelected(false);
-	    if (alwaysSelectCB.isSelected()) {
-	    	try {
-				nt.getLayer().getFeatureStore().getFeatureSelection().deleteObserver(this);
-			} catch (DataException e1) {
-				logger.error(e1.getMessage(), e);
-			}
-	    } else {
-	    	try {
-				nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
-			} catch (DataException e1) {
-				logger.error(e1.getMessage(), e1);
-			}
-	    }
-	    nt.refreshGUI();
-	} else if (e.getSource() == selectionB) {
-	    nt.selectCurrentFeature();
-	    nt.refreshGUI();
-	}
-    }
-
-    /**
-     * Forces the application to navigate only between selected features.
-     */
-    private void viewOnlySelected() {
-	if (nt.getNumberOfRowsSelected() == 0) {
-	    setPosition(EMPTY_REGISTER);
-	}
-	if (!isRecordSelected()) {
-	    nt.firstSelected();
-	} else {
-	    refreshGUI(onlySelectedCB.isEnabled());
-	}
-    }
-
-    /**
-     * @return true if the current row is selected, false if not.
-     */
-    private boolean isRecordSelected() {
-	return isRecordSelected(getPosition());
-    }
-
-    private boolean isRecordSelected(long position) {
-	FBitSet bitset = null;
-	if (position == EMPTY_REGISTER) {
-	    return false;
-	}
-	int pos = Long.valueOf(position).intValue();
-	if (nt.getRecordset() == null) {
-	    return false;
-	}
-	bitset = nt.getRecordset().getSelection();
-	return bitset.get(pos);
-    }
-
-    public boolean isEmptyRegister() {
-	return getPosition() == EMPTY_REGISTER;
-    }
-
-    public void addEventListener(PositionListener l) {
-	positionEventSource.addEventListener(l);
-    }
-
-    public void removeEventListener(PositionListener l) {
-	positionEventSource.removeEventListener(l);
-    }
-
-    public Component getOptionsPanel() {
-	return optionsPanel;
-    }
-
-    public void setOnlySelected(boolean bool) {
-	if (bool != onlySelectedCB.isSelected()) {
-	    onlySelectedCB.doClick();
-	}
-    }
-
-    public boolean isOnlySelected() {
-	return onlySelectedCB.isSelected();
-    }
-
-    public void refreshGUI(boolean navEnabled) {
-	refreshGUISelection(navEnabled);
-	refreshGUINavigation(navEnabled);
-    }
-
-    private void refreshGUISelection(boolean navEnabled) {
-	if (alwaysSelectCB.isSelected()) {
-	    nt.clearSelection();
-	    nt.selectCurrentFeature();
+		setTotalLabelText();
+		if (isRecordSelected()) {
+			posTF.setBackground(Color.YELLOW);
+		} else {
+			posTF.setBackground(Color.WHITE);
+		}
 	}
 
-	if (isRecordSelected()) {
-	    ImageIcon imagenUnselect = nt.getIcon("/Unselect.png");
-	    selectionB.setIcon(imagenUnselect);
-	} else {
-	    ImageIcon imagenSelect = nt.getIcon("/Select.png");
-	    selectionB.setIcon(imagenSelect);
-	}
-	selectionB.setEnabled(navEnabled);
-	alwaysSelectCB.setEnabled(navEnabled);
-    }
+	public void setSortKeys(List<Field> sortFields) {
+		if (sortFields == null) {
+			sortFields = new ArrayList<Field>();
+		}
 
-    private void refreshGUINavigation(boolean navEnabled) {
-	firstB.setEnabled(navEnabled);
-	beforeB.setEnabled(navEnabled);
-	nextB.setEnabled(navEnabled);
-	lastB.setEnabled(navEnabled);
-	if (isEmptyRegister()) {
-	    posTF.setText("");
-	} else {
-	    // user will set a 1-based index to navigate through layer,
-	    // so we need to adapt it to currentPosition (a zero-based
-	    // index)
-	    try {
-		int p = sorter.convertRowIndexToView((int) getPosition());
-		posTF.setText(String.valueOf(p + 1));
+		DataManager manager = DALLocator.getDataManager();
+		FeatureStore store = nt.getLayer().getFeatureStore();
+		FeatureQuery query = store.createFeatureQuery();
+		FeatureQueryOrder order = new FeatureQueryOrder();
 
-	    } catch (IndexOutOfBoundsException e) {
-		/*
-		 * fpuga. 10/12/2014. Workaround When the user delete the last
-		 * record the editionChanged in EditionListener is called, and
-		 * the gui is refreshed, but getPosition returns a removed
-		 * position
-		 */
-	    	logger.error(e.getMessage(), e);
-		int p = sorter.convertRowIndexToView((int) getPosition() - 1);
-		posTF.setText(String.valueOf(p + 1));
-	    }
-	}
-	setTotalLabelText();
-	if (isRecordSelected()) {
-	    posTF.setBackground(Color.YELLOW);
-	} else {
-	    posTF.setBackground(Color.WHITE);
-	}
-    }
-
-    public void setSortKeys(List<? extends SortKey> keys) {
-	sorter.setSortKeys(keys);
-	refreshGUI(firstB.isEnabled());
-    }
-
-    public List<? extends SortKey> getSortKeys() {
-	return sorter.getSortKeys();
-    }
-
-    public void modelChanged() {
-	List<? extends SortKey> sortKeys = sorter.getSortKeys();
-	sorter = new NTRowSorter<SelectableDataSource>(nt.getRecordset());
-	sorter.setSortKeys(sortKeys);
-
-	refreshGUI(firstB.isEnabled());
-    }
-
-    public void setListeners() {
-    	try {
-			nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
-		} catch (DataException e) {
+		for (Field k : sortFields) {
+			boolean asc = k.getSortOrder() == SortOrder.ASCENDING ? true
+					: false;
+			order.add(k.getKey(), asc);
+		}
+		query.setOrder(order);
+		try {
+			set = manager.createFeaturePagingHelper(store, query, 1000);
+		} catch (BaseException e) {
 			logger.error(e.getMessage(), e);
 		}
-    }
 
-    public void removeListeners() {
-    	try {
-			nt.getLayer().getFeatureStore().getFeatureSelection().deleteObserver(this);
-		} catch (DataException e) {
+		refreshGUI(firstB.isEnabled());
+
+	}
+
+	public void modelChanged() {
+		removeListeners();
+		FeatureQuery query = set.getFeatureQuery();
+		FeatureStore store = nt.getLayer().getFeatureStore();
+		DataManager manager = DALLocator.getDataManager();
+		try {
+			set = manager.createFeaturePagingHelper(store, query, 1000);
+			currentFeature = set.getFeatureAt(currentPosition);
+		} catch (BaseException e) {
 			logger.error(e.getMessage(), e);
 		}
-    }
-
-    // Probably should be removed and use a factory instead
-    // is duplicated with NavigationHandler
-    private JButton getNavTableButton(JButton button, String iconName,
-	    String toolTipName) {
-	JButton but = new JButton(nt.getIcon(iconName));
-	but.setToolTipText(_(toolTipName));
-	but.addActionListener(this);
-	return but;
-    }
-
-    // Probably should be removed and use a factory instead
-    // is duplicated with NavigationHandler
-    private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
-	cb = new JCheckBox(_(toolTipName));
-	cb.addActionListener(this);
-	return cb;
-    }
-
-    public void registerNavTableButtonsOnActionToolBarExtensionPoint() {
-	ExtensionPoints extensionPoints = ExtensionPointsSingleton
-		.getInstance();
-	selectionB = getNavTableButton(selectionB, "/Select.png",
-		"selectionButtonTooltip");
-	extensionPoints.add(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR,
-		"button-selection", selectionB);
-    }
-
-    @Deprecated
-    /** fpuga. 19/11/2014. Don't use this method. It's created as a workaround to
-     *  make copyPrevious and copySelected work 
-     */
-    public void setPosition(long newPosition, boolean b) {
-	if (!isValidPosition(newPosition)) {
-	    return;
+		setListeners();
 	}
-	try {
-	    if (newPosition >= nt.getRecordset().getRowCount()) {
-		newPosition = nt.getRecordset().getRowCount() - 1;
-	    } else if (newPosition < EMPTY_REGISTER) {
-		newPosition = 0;
-	    }
-	    currentPosition = newPosition;
-	} catch (DataException e) {
-		logger.error(e.getMessage(), e);
+
+	public void setListeners() {
+		addThisAsSelectionObserver();
 	}
-    }
+
+	public void removeListeners() {
+		deleteThisAsSelectionObserver();
+	}
+
+	// Probably should be removed and use a factory instead
+	// is duplicated with NavigationHandler
+	private JButton getNavTableButton(JButton button, String iconName,
+			String toolTipName) {
+		JButton but = new JButton(nt.getIcon(iconName));
+		but.setToolTipText(_(toolTipName));
+		but.addActionListener(this);
+		return but;
+	}
+
+	// Probably should be removed and use a factory instead
+	// is duplicated with NavigationHandler
+	private JCheckBox getNavTableCheckBox(JCheckBox cb, String toolTipName) {
+		cb = new JCheckBox(_(toolTipName));
+		cb.addActionListener(this);
+		return cb;
+	}
+
+	public void registerNavTableButtonsOnActionToolBarExtensionPoint() {
+		ExtensionPoints extensionPoints = ExtensionPointsSingleton
+				.getInstance();
+		selectionB = getNavTableButton(selectionB, "/Select.png",
+				"selectionButtonTooltip");
+		extensionPoints.add(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR,
+				"button-selection", selectionB);
+	}
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
@@ -568,10 +609,45 @@ private static final Logger logger = LoggerFactory
 			// un elemento y se selecciona otro, pinchando en otro elemento
 			// de la tabla por ejemplo se produce dos veces el evento
 			if (onlySelectedCB.isSelected() && !isRecordSelected()) {
-			    nt.first();
+				first();
 			}
+
 			nt.refreshGUI();
+			// nt.enableCopySelectedButton(navEnabled);
+			// filterAction.refreshGUI();
+			// if (isRecordSelected()) {
+			// ImageIcon imagenUnselect = nt.getIcon("/Unselect.png");
+			// selectionB.setIcon(imagenUnselect);
+			// } else {
+			// ImageIcon imagenSelect = nt.getIcon("/Select.png");
+			// selectionB.setIcon(imagenSelect);
+			// }
+			// refreshGUINavigation(navEnabled);
+
 		}
-		
+
 	}
+
+	public void deleteFeature() throws BaseException {
+		// borra del featurestore, se producen las notificaciones
+		// luego recarga el set de forma interna
+		// El delete igual tenía que ir en otro sitio. Y ver si se arranca con
+		// notificaciones y demás
+		FeatureStore store = nt.getLayer().getFeatureStore();
+		boolean editing = store.isEditing();
+		if (!editing) {
+			store.edit();
+		}
+		set.delete(currentFeature);
+		if (!editing) {
+			store.finishEditing();
+		}
+		lastPos = set.getTotalSize() - 1;
+		setPosition(currentPosition);
+	}
+
+	public long getLastPos() {
+		return lastPos;
+	}
+
 }
