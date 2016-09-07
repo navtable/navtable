@@ -24,6 +24,7 @@ import org.gvsig.fmap.dal.DataManager;
 import org.gvsig.fmap.dal.DataStoreNotification;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.Feature;
+import org.gvsig.fmap.dal.feature.FeatureAttributeDescriptor;
 import org.gvsig.fmap.dal.feature.FeatureQuery;
 import org.gvsig.fmap.dal.feature.FeatureQueryOrder;
 import org.gvsig.fmap.dal.feature.FeatureSelection;
@@ -76,42 +77,48 @@ public class NavigationHandler implements ActionListener, Observer {
 
 	public NavigationHandler(AbstractNavTable nt) {
 		this.nt = nt;
-		initWidgets();
-		initSet();
-		initPosition();
-	}
-
-	private void initWidgets() {
 		initNavigationWidgets();
 		initSelectionWidgets();
 	}
 
-	private void initSet() {
+	public void setSortKeys(List<Field> sortFields) {
 		FeatureStore store = nt.getLayer().getFeatureStore();
+
 		DataManager manager = DALLocator.getDataManager();
 		try {
-			set = manager.createFeaturePagingHelper(store, 1000);
+
+			if (sortFields == null) {
+				sortFields = new ArrayList<Field>();
+				FeatureAttributeDescriptor[] primaryKey = store
+						.getDefaultFeatureType().getPrimaryKey();
+				for (FeatureAttributeDescriptor k : primaryKey) {
+					Field field = new Field(k.getName());
+					field.setSortOrder(SortOrder.ASCENDING);
+					sortFields.add(field);
+				}
+			}
+
+			FeatureQuery query = createQuery(store, sortFields);
+
 			lastPos = store.getFeatureCount() - 1;
+			set = manager.createFeaturePagingHelper(store, query, 1000);
 		} catch (BaseException e) {
 			logger.error(e.getMessage(), e);
-			throw new RuntimeException(e);
 		}
+		setPosition(0);
 	}
 
-	private void initPosition() {
-		try {
-			if (lastPos == -1) {
-				currentPosition = EMPTY_REGISTER;
-				FeatureStore store = nt.getLayer().getFeatureStore();
-				currentFeature = new EmptyFeature(store.createNewFeature());
+	private FeatureQuery createQuery(FeatureStore store, List<Field> sortFields) {
+		FeatureQuery query = store.createFeatureQuery();
+		FeatureQueryOrder order = new FeatureQueryOrder();
 
-			} else {
-				currentPosition = 0;
-				currentFeature = set.getFeatureAt(currentPosition);
-			}
-		} catch (BaseException e) {
-			logger.error(e.getMessage(), e);
+		for (Field k : sortFields) {
+			boolean asc = k.getSortOrder() == SortOrder.ASCENDING ? true
+					: false;
+			order.add(k.getKey(), asc);
 		}
+		query.setOrder(order);
+		return query;
 	}
 
 	public JPanel getToolBar() {
@@ -394,7 +401,7 @@ public class NavigationHandler implements ActionListener, Observer {
 	private void deleteThisAsSelectionObserver() {
 		try {
 			nt.getLayer().getFeatureStore().getFeatureSelection()
-					.deleteObserver(this);
+			.deleteObserver(this);
 		} catch (DataException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
@@ -403,7 +410,7 @@ public class NavigationHandler implements ActionListener, Observer {
 	private void addThisAsSelectionObserver() {
 		try {
 			nt.getLayer().getFeatureStore().getFeatureSelection()
-					.addObserver(this);
+			.addObserver(this);
 		} catch (DataException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
@@ -527,40 +534,11 @@ public class NavigationHandler implements ActionListener, Observer {
 		}
 	}
 
-	public void setSortKeys(List<Field> sortFields) {
-		if (sortFields == null) {
-			sortFields = new ArrayList<Field>();
-		}
-
-		DataManager manager = DALLocator.getDataManager();
-		FeatureStore store = nt.getLayer().getFeatureStore();
-		FeatureQuery query = store.createFeatureQuery();
-		FeatureQueryOrder order = new FeatureQueryOrder();
-
-		for (Field k : sortFields) {
-			boolean asc = k.getSortOrder() == SortOrder.ASCENDING ? true
-					: false;
-			order.add(k.getKey(), asc);
-		}
-		query.setOrder(order);
-		try {
-			set = manager.createFeaturePagingHelper(store, query, 1000);
-		} catch (BaseException e) {
-			logger.error(e.getMessage(), e);
-		}
-
-		refreshGUI(firstB.isEnabled());
-
-	}
-
 	public void modelChanged() {
 		removeListeners();
-		FeatureQuery query = set.getFeatureQuery();
-		FeatureStore store = nt.getLayer().getFeatureStore();
-		DataManager manager = DALLocator.getDataManager();
 		try {
-			set = manager.createFeaturePagingHelper(store, query, 1000);
-			currentFeature = set.getFeatureAt(currentPosition);
+			set.reload();
+			setPosition(currentPosition);
 		} catch (BaseException e) {
 			logger.error(e.getMessage(), e);
 		}

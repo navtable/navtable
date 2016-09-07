@@ -116,8 +116,10 @@ public class LayerController implements IController {
 			if (!wasEditing) {
 				te.startEditing(layer);
 			}
-			te.modifyValues(layer, feat, this.getIndexesOfValuesChanged(), this
-					.getValuesChanged().values().toArray(new String[0]));
+			Feature f = te.modifyValues(layer, feat,
+					this.getIndexesOfValuesChanged(), this.getValuesChanged()
+							.values().toArray(new String[0]));
+			read(f);
 			if (!wasEditing) {
 				te.stopEditing(layer, false);
 			}
@@ -186,7 +188,9 @@ public class LayerController implements IController {
 
 	@Override
 	public void setValue(String fieldName, String value) {
-		valuesChanged.put(fieldName, value);
+		if (!values.get(fieldName).equals(value)) {
+			valuesChanged.put(fieldName, value);
+		}
 	}
 
 	@Override

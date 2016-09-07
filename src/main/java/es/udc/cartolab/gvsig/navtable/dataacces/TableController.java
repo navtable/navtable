@@ -198,7 +198,9 @@ public class TableController implements IController {
 
 	@Override
 	public void setValue(String fieldName, String value) {
-		valuesChanged.put(fieldName, value);
+		if (!values.get(fieldName).equals(value)) {
+			valuesChanged.put(fieldName, value);
+		}
 	}
 
 	@Override

@@ -89,7 +89,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 @SuppressWarnings("serial")
 public abstract class AbstractNavTable extends NTIWindow implements
-		ActionListener, IWindowListener, PositionListener {
+ActionListener, IWindowListener, PositionListener {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractNavTable.class);
@@ -141,8 +141,9 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	public AbstractNavTable(FLyrVect layer) {
 		super();
 		this.layer = layer;
-		navigation = new NavigationHandler(this);
 		filterAction = new FilterButton(layer);
+		layerController = new LayerController(this.layer);
+		navigation = new NavigationHandler(this);
 	}
 
 	public boolean init() {
@@ -152,25 +153,14 @@ public abstract class AbstractNavTable extends NTIWindow implements
 			return false;
 		}
 
-		if (!initController()) {
-			return false;
-		}
-
 		initGUI();
 		initWidgets();
-
-		refreshGUI();
+		setLayerListeners();
+		navigation.setSortKeys(null);
 		super.repaint();
 		super.setVisible(true);
 		setFocusCycleRoot(true);
 
-		setLayerListeners();
-		return true;
-	}
-
-	private boolean initController() {
-		layerController = new LayerController(this.layer);
-		layerController.read(navigation.getFeature());
 		return true;
 	}
 
@@ -462,39 +452,6 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	}
 
 	/**
-	 * Shows a warning to the user if there's unsaved data.
-	 *
-	 */
-	protected boolean showWarning() {
-		if (getPosition() == EMPTY_REGISTER) {
-			return true;
-		}
-		if (isChangedValues()) {
-			boolean save = false;
-			Object[] options = { _("saveButtonTooltip"), _("ignoreButton") };
-			int response = JOptionPane.showOptionDialog(this,
-					_("unsavedDataMessage"), _("unsavedDataTitle"),
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, // do not use a custom Icon
-					options, // the titles of buttons
-					options[0]); // default button title
-			if (response == JOptionPane.YES_OPTION) {
-				save = true;
-			} else {
-				save = false;
-				setChangedValues(false);
-				// The values will be restored as they are
-				// when filling again the table/form,
-				// so it's not need to revert the changes done.
-			}
-			if (save) {
-				return tryToSave();
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * Zooms to the current feature. The feature will fill the visualization
 	 * area.
 	 *
@@ -684,13 +641,13 @@ public abstract class AbstractNavTable extends NTIWindow implements
 							.getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
 							.replace("ERROR: ", "").replace(" ", "_")
 							.replace("\n", ""), auxMessageIntl = _(auxMessage);
-							if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-								errorMessage = auxMessageIntl;
-							}
-							JOptionPane.showMessageDialog(
-									(Component) PluginServices.getMainFrame(),
-									errorMessage, _(saveErrorTitleKey),
-									JOptionPane.ERROR_MESSAGE);
+					if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+						errorMessage = auxMessageIntl;
+					}
+					JOptionPane.showMessageDialog(
+							(Component) PluginServices.getMainFrame(),
+							errorMessage, _(saveErrorTitleKey),
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		} else if (e.getSource() == undoB) {
@@ -712,13 +669,13 @@ public abstract class AbstractNavTable extends NTIWindow implements
 			String errorMessage = (ex.getCause() != null) ? ex.getCause()
 					.getMessage() : ex.getMessage(), auxMessage = errorMessage
 					.replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = _(auxMessage);
-					if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-						errorMessage = auxMessageIntl;
-					}
-					JOptionPane.showMessageDialog(
-							(Component) PluginServices.getMainFrame(), errorMessage,
-							_(saveErrorTitleKey), JOptionPane.ERROR_MESSAGE);
-					return false;
+			if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+				errorMessage = auxMessageIntl;
+			}
+			JOptionPane.showMessageDialog(
+					(Component) PluginServices.getMainFrame(), errorMessage,
+					_(saveErrorTitleKey), JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
 		return true;
 	}
@@ -774,32 +731,42 @@ public abstract class AbstractNavTable extends NTIWindow implements
 
 	@Override
 	public void beforePositionChange(PositionEvent e) {
-		showWarning();
+		if (!isSavingValues()) {
+			showWarning();
+		}
 	}
 
-	// public void next() {
-	// navigation.next();
-	// }
-
-	// public void last() {
-	// navigation.last();
-	// }
-
-	// private void lastSelected() {
-	// navigation.lastSelected();
-	// }
-
-	// public void first() {
-	// navigation.first();
-	// }
-
-	// public void firstSelected() {
-	// navigation.firstSelected();
-	// }
-
-	// public void before() {
-	// navigation.goToPreviousInView();
-	// }
+	/**
+	 * Shows a warning to the user if there's unsaved data.
+	 */
+	protected boolean showWarning() {
+		if (getPosition() == EMPTY_REGISTER) {
+			return true;
+		}
+		if (isChangedValues()) {
+			boolean save = false;
+			Object[] options = { _("saveButtonTooltip"), _("ignoreButton") };
+			int response = JOptionPane.showOptionDialog(this,
+					_("unsavedDataMessage"), _("unsavedDataTitle"),
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, // do not use a custom Icon
+					options, // the titles of buttons
+					options[0]); // default button title
+			if (response == JOptionPane.YES_OPTION) {
+				save = true;
+			} else {
+				save = false;
+				setChangedValues(false);
+				// The values will be restored as they are
+				// when filling again the table/form,
+				// so it's not need to revert the changes done.
+			}
+			if (save) {
+				return tryToSave();
+			}
+		}
+		return true;
+	}
 
 	public void setPosition(long newPosition) {
 		navigation.setPosition(newPosition);
@@ -823,8 +790,6 @@ public abstract class AbstractNavTable extends NTIWindow implements
 			logger.error(e.getMessage(), e);
 		}
 		navigation.modelChanged();
-		layerController.read(navigation.getFeature());
-		refreshGUI();
 	}
 
 	public FLyrVect getLayer() {
