@@ -47,7 +47,9 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiFrame.MainFrame;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
+import org.gvsig.app.ApplicationLocator;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.Feature;
 import org.gvsig.fmap.dal.feature.FeatureAttributeDescriptor;
@@ -89,7 +91,7 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
 
 @SuppressWarnings("serial")
 public abstract class AbstractNavTable extends NTIWindow implements
-ActionListener, IWindowListener, PositionListener {
+		ActionListener, IWindowListener, PositionListener {
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractNavTable.class);
@@ -267,7 +269,10 @@ ActionListener, IWindowListener, PositionListener {
 	public void showEmptyLayerMessage() {
 
 		if ((!openEmptyLayers)) {
-			JOptionPane.showMessageDialog(this, _("emptyLayer"));
+
+			MainFrame frame = ApplicationLocator.getManager().getMainFrame();
+			JOptionPane.showMessageDialog((Component) frame, _("emptyLayer"),
+					"", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -641,13 +646,13 @@ ActionListener, IWindowListener, PositionListener {
 							.getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
 							.replace("ERROR: ", "").replace(" ", "_")
 							.replace("\n", ""), auxMessageIntl = _(auxMessage);
-					if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-						errorMessage = auxMessageIntl;
-					}
-					JOptionPane.showMessageDialog(
-							(Component) PluginServices.getMainFrame(),
-							errorMessage, _(saveErrorTitleKey),
-							JOptionPane.ERROR_MESSAGE);
+							if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+								errorMessage = auxMessageIntl;
+							}
+							JOptionPane.showMessageDialog(
+									(Component) PluginServices.getMainFrame(),
+									errorMessage, _(saveErrorTitleKey),
+									JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		} else if (e.getSource() == undoB) {
@@ -669,13 +674,13 @@ ActionListener, IWindowListener, PositionListener {
 			String errorMessage = (ex.getCause() != null) ? ex.getCause()
 					.getMessage() : ex.getMessage(), auxMessage = errorMessage
 					.replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = _(auxMessage);
-			if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-				errorMessage = auxMessageIntl;
-			}
-			JOptionPane.showMessageDialog(
-					(Component) PluginServices.getMainFrame(), errorMessage,
-					_(saveErrorTitleKey), JOptionPane.ERROR_MESSAGE);
-			return false;
+					if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+						errorMessage = auxMessageIntl;
+					}
+					JOptionPane.showMessageDialog(
+							(Component) PluginServices.getMainFrame(), errorMessage,
+							_(saveErrorTitleKey), JOptionPane.ERROR_MESSAGE);
+					return false;
 		}
 		return true;
 	}

@@ -16,13 +16,34 @@ import org.gvsig.timesupport.Instant;
 import org.gvsig.timesupport.Interval;
 import org.gvsig.tools.dynobject.DynObject;
 import org.gvsig.tools.evaluator.EvaluatorData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import es.icarto.gvsig.navtable.navigation.NavigationHandler;
 
 public class EmptyFeature implements Feature {
+	private static final Logger logger = LoggerFactory
+			.getLogger(NavigationHandler.class);
 
 	private final FeatureType type;
 
-	public EmptyFeature(Feature feature) {
-		this.type = feature.getType().getCopy();
+	public EmptyFeature(FeatureStore store) {
+		EditableFeature feat = null;
+		try {
+			feat = store.createNewFeature();
+		} catch (DataException e) {
+
+			logger.error(e.getMessage(), e);
+		}
+		if (feat != null) {
+			type = feat.getType().getCopy();
+		} else {
+			type = null;
+		}
+	}
+
+	private EmptyFeature(FeatureType type) {
+		this.type = type.getCopy();
 	}
 
 	@Override
@@ -37,7 +58,7 @@ public class EmptyFeature implements Feature {
 
 	@Override
 	public Feature getCopy() {
-		return new EmptyFeature(this);
+		return new EmptyFeature(type);
 	}
 
 	@Override

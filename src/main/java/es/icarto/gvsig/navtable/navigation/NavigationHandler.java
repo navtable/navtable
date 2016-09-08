@@ -79,6 +79,12 @@ public class NavigationHandler implements ActionListener, Observer {
 		this.nt = nt;
 		initNavigationWidgets();
 		initSelectionWidgets();
+		FeatureStore store = nt.getLayer().getFeatureStore();
+		try {
+			lastPos = store.getFeatureCount() - 1;
+		} catch (DataException e) {
+			lastPos = -1;
+		}
 	}
 
 	public void setSortKeys(List<Field> sortFields) {
@@ -276,7 +282,8 @@ public class NavigationHandler implements ActionListener, Observer {
 		positionEventSource.fireBeforePositionChange(evt);
 		currentPosition = newPosition;
 		if (currentPosition == EMPTY_REGISTER) {
-			currentFeature = new EmptyFeature(currentFeature);
+			FeatureStore store = nt.getLayer().getFeatureStore();
+			currentFeature = new EmptyFeature(store);
 		} else {
 			try {
 				currentFeature = set.getFeatureAt(currentPosition);
@@ -328,7 +335,8 @@ public class NavigationHandler implements ActionListener, Observer {
 		} catch (BaseException e) {
 			logger.error(e.getMessage(), e);
 		}
-		return new EmptyFeature(currentFeature);
+		FeatureStore store = nt.getLayer().getFeatureStore();
+		return new EmptyFeature(store);
 	}
 
 	private void setTotalLabelText() {
@@ -401,7 +409,7 @@ public class NavigationHandler implements ActionListener, Observer {
 	private void deleteThisAsSelectionObserver() {
 		try {
 			nt.getLayer().getFeatureStore().getFeatureSelection()
-			.deleteObserver(this);
+					.deleteObserver(this);
 		} catch (DataException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
@@ -410,7 +418,7 @@ public class NavigationHandler implements ActionListener, Observer {
 	private void addThisAsSelectionObserver() {
 		try {
 			nt.getLayer().getFeatureStore().getFeatureSelection()
-			.addObserver(this);
+					.addObserver(this);
 		} catch (DataException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
@@ -538,6 +546,7 @@ public class NavigationHandler implements ActionListener, Observer {
 		removeListeners();
 		try {
 			set.reload();
+			lastPos = set.getTotalSize() - 1;
 			setPosition(currentPosition);
 		} catch (BaseException e) {
 			logger.error(e.getMessage(), e);
