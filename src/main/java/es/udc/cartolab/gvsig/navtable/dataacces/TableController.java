@@ -198,7 +198,8 @@ public class TableController implements IController {
 
 	@Override
 	public void setValue(String fieldName, String value) {
-		if (!values.get(fieldName).equals(value)) {
+		String oldValue = values.get(fieldName);
+		if ((oldValue == null) || (!oldValue.equals(value))) {
 			valuesChanged.put(fieldName, value);
 		}
 	}
@@ -252,6 +253,8 @@ public class TableController implements IController {
 
 	@Override
 	public Feature newEmptyRecord() {
+		values.clear();
+		valuesChanged.clear();
 		FeatureStore store = model.getStore();
 		try {
 			return store.createNewFeature();
