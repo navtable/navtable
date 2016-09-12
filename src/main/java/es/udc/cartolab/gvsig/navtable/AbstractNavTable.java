@@ -58,8 +58,8 @@ import org.gvsig.fmap.dal.feature.FeatureStore;
 import org.gvsig.fmap.dal.feature.FeatureType;
 import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.geom.primitive.Envelope;
+import org.gvsig.fmap.mapcontext.MapContext;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
-import org.gvsig.fmap.mapcontext.layers.vectorial.VectorLayer;
 import org.gvsig.tools.dataTypes.DataTypes;
 import org.gvsig.tools.dispose.DisposableIterator;
 import org.gvsig.tools.dispose.DisposeUtils;
@@ -462,36 +462,36 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	 *
 	 */
 	public void zoom() {
+		Geometry geometry = navigation.getFeature().getDefaultGeometry();
 
-		if (layer instanceof VectorLayer) {
-
-			Geometry geometry = navigation.getFeature().getDefaultGeometry();
-
-			if (geometry != null) {
-				/*
-				 * fix to avoid zoom problems when layer and view projections
-				 * aren't the same.
-				 */
-				if (layer.getCoordTrans() != null) {
-					geometry.reProject(layer.getCoordTrans());
+		if (geometry != null) {
+			/*
+			 * fix to avoid zoom problems when layer and view projections aren't
+			 * the same.
+			 */
+			if (layer.getCoordTrans() != null) {
+				geometry.reProject(layer.getCoordTrans());
+			}
+			Envelope envelope = geometry.getEnvelope();
+			if (envelope.getLength(0) < 200) {
+				// TODO. En lugar de 500 debería ser un parámetro configurable.
+				// Y dado que son unidades del mapa cuando trabajemos con grados
+				// esto no va a funcionar
+				try {
+					Geometry buffer = geometry.buffer(500);
+					envelope.add(buffer);
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
 				}
-				Envelope envelope = geometry.getEnvelope();
-				if (envelope.getLength(0) < 200) {
-					// rectangle.setFrameFromCenter(rectangle.getCenterX(),
-					// rectangle.getCenterY(),
-					// rectangle.getCenterX() + 100,
-					// rectangle.getCenterY() + 100);
-
-				}
-
-				if (envelope != null) {
-					layer.getMapContext().getViewPort().setEnvelope(envelope);
-				}
-			} else {
-				JOptionPane.showMessageDialog(this,
-						_("feature_has_no_geometry_to_zoom"));
 			}
 
+			if (envelope != null) {
+				MapContext mapContext = layer.getMapContext();
+				mapContext.zoomToEnvelope(envelope);
+			}
+		} else {
+			JOptionPane.showMessageDialog(this,
+					_("feature_has_no_geometry_to_zoom"));
 		}
 	}
 
