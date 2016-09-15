@@ -66,7 +66,8 @@ public class TableController implements IController {
 	public TableController(TableDocument model) {
 		this.model = model;
 		try {
-			FeatureStore store = model.getFeatureStore();
+			// FeatureStore store = model.getFeatureStore();
+			FeatureStore store = model.getStore();
 			FeatureType featType = store.getDefaultFeatureType();
 			int fieldCount = featType.size();
 			Map<String, Integer> idx = new HashMap<String, Integer>(fieldCount);

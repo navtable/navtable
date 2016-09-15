@@ -246,9 +246,9 @@ public class EmptyFeature implements Feature {
 		return null;
 	}
 
-	@Override
-	public FeatureStore getStore() {
-		return null;
-	}
+	// @Override
+	// public FeatureStore getStore() {
+	// return null;
+	// }
 
 }

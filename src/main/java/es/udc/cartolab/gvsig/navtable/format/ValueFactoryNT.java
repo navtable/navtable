@@ -179,7 +179,7 @@ public class ValueFactoryNT extends ValueFactory {
 			}
 			break;
 
-		case DataTypes.BIGDECIMAL:
+			// case DataTypes.BIGDECIMAL:
 		case DataTypes.FLOAT:
 		case DataTypes.DOUBLE:
 			NumberFormat doubleFormat = DoubleFormatNT.getDisplayingFormat();

@@ -78,7 +78,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		case DataTypes.STRING:
 			menus = getMenuItemsForString(filterExt, st_expr, attrValue);
 			break;
-		case DataTypes.BIGDECIMAL:
+			// case DataTypes.BIGDECIMAL:
 		case DataTypes.BYTE:
 		case DataTypes.DOUBLE:
 		case DataTypes.FLOAT:
