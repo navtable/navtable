@@ -2,14 +2,14 @@ package es.icarto.gvsig.navtable.edition;
 
 import org.gvsig.app.ApplicationLocator;
 import org.gvsig.app.project.documents.table.TableDocument;
-import org.gvsig.editing.EditingNotification;
-import org.gvsig.editing.EditingNotificationManager;
+import org.gvsig.fmap.dal.EditingNotification;
+import org.gvsig.fmap.dal.EditingNotificationManager;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.EditableFeature;
 import org.gvsig.fmap.dal.feature.Feature;
 import org.gvsig.fmap.dal.feature.FeatureStore;
 import org.gvsig.fmap.dal.feature.FeatureType;
-import org.gvsig.fmap.mapcontrol.MapControlLocator;
+import org.gvsig.fmap.dal.swing.DALSwingLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class TableEdition {
 	}
 
 	public void doStartEditing(TableDocument doc) throws DataException {
-		EditingNotificationManager editingNotification = MapControlLocator
+		EditingNotificationManager editingNotification = DALSwingLocator
 				.getEditingNotificationManager();
 		EditingNotification notification = editingNotification.notifyObservers(
 				this, EditingNotification.BEFORE_ENTER_EDITING_STORE, doc,
@@ -86,7 +86,7 @@ public class TableEdition {
 	 * the table has been put correctly in NO edition mode
 	 */
 	public boolean stopEditing(TableDocument doc, boolean cancel) {
-		EditingNotificationManager editingNotification = MapControlLocator
+		EditingNotificationManager editingNotification = DALSwingLocator
 				.getEditingNotificationManager();
 		EditingNotification notification = editingNotification.notifyObservers(
 				this, EditingNotification.BEFORE_ENTER_EDITING_STORE, doc,
