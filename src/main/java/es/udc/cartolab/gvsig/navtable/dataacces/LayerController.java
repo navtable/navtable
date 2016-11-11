@@ -188,7 +188,8 @@ public class LayerController implements IController {
 
 	@Override
 	public void setValue(String fieldName, String value) {
-		if (!values.get(fieldName).equals(value)) {
+		String orgValue = values.get(fieldName);
+		if ((orgValue == null) || (!orgValue.equals(value))) {
 			valuesChanged.put(fieldName, value);
 		}
 	}
