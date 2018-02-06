@@ -69,6 +69,7 @@ import com.iver.cit.gvsig.fmap.layers.FLayer;
 import com.iver.cit.gvsig.fmap.layers.FLyrVect;
 import com.iver.cit.gvsig.project.documents.table.ProjectTable;
 import com.iver.cit.gvsig.project.documents.table.gui.Table;
+import com.iver.cit.gvsig.project.documents.table.gui.TablesFor;
 
 import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
@@ -125,7 +126,7 @@ public class ToggleEditing {
 		ProjectTable pt = pe.getProject().getTable(lv);
 		if (pt != null) {
 		    pt.setModel(vea);
-		    Table table = getModelTable(pt);
+		    Table table = TablesFor.projectTable(pt).get();
 		    if(table != null) {
 			table.setModel(pt);
 			vea.getCommandRecord().addCommandListener(table);
@@ -192,7 +193,7 @@ public class ToggleEditing {
 	} catch (CancelEditingLayerException e) {
 	    logger.error(e.getMessage(), e);
 	}
-	Table table = getTableFromLayer(layer);
+	Table table = TablesFor.layer((FLyrVect) layer).get();
 	if(table != null){
 	    try {
 		table.cancelEditing();
@@ -238,7 +239,7 @@ public class ToggleEditing {
 		.getSource();
 
 	ISpatialWriter writer = (ISpatialWriter) vea.getWriter();
-	Table table = getTableFromLayer(layer);
+	Table table = TablesFor.layer(layer).get();
 	if(table != null){
 	    table.stopEditingCell();
 	}
@@ -475,41 +476,6 @@ public class ToggleEditing {
 	}
     }
 
-    private Table getModelTable(ProjectTable pt) {
-	// TODO: see how drop this IWindow dependence, by getting the Table
-	// from internal info (layer, MapControl) instead of iterating
-	// through all windows
-	com.iver.andami.ui.mdiManager.IWindow[] views = PluginServices
-		.getMDIManager().getAllWindows();
-	for (int i = 0; i < views.length; i++) {
-	    if (views[i] instanceof Table) {
-		Table table = (Table) views[i];
-		ProjectTable model = table.getModel();
-		if (model.equals(pt)) {
-		    return table;
-		}
-	    }
-	}
-	return null;
-    }
 
-    private Table getTableFromLayer(FLayer layer) {
-	//TODO: see how drop this IWindow dependence
-	com.iver.andami.ui.mdiManager.IWindow[] views = null;
-	try {
-	    views = PluginServices.getMDIManager().getAllWindows();
-	    for (int j = 0; j < views.length; j++) {
-		    if (views[j] instanceof Table) {
-			Table table = (Table) views[j];
-			if (table.getModel().getAssociatedTable() != null
-				&& table.getModel().getAssociatedTable().equals(layer)) {
-			    return table;
-			}
-		    }
-	    }
-	} catch (NullPointerException e) {}
-	
-	return null;
-    }
 
 }

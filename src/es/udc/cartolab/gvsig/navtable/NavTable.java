@@ -58,6 +58,7 @@ import com.iver.cit.gvsig.fmap.layers.SelectableDataSource;
 import com.iver.cit.gvsig.fmap.layers.VectorialDBAdapter;
 import com.iver.cit.gvsig.fmap.layers.VectorialFileAdapter;
 import com.iver.cit.gvsig.fmap.layers.layerOperations.AlphanumericData;
+import com.iver.cit.gvsig.project.documents.table.gui.TablesFor;
 import com.iver.utiles.extensionPoints.ExtensionPoint;
 import com.iver.utiles.extensionPoints.ExtensionPoints;
 import com.iver.utiles.extensionPoints.ExtensionPointsSingleton;
@@ -526,6 +527,7 @@ public class NavTable extends AbstractNavTable {
     public boolean saveRecord() throws StopWriterVisitorException {
 	if (isSaveable()) {
 	    setSavingValues(true);
+	    TablesFor.layer(layer).closeWindow();
 	    int[] attIndexes = getIndexes();
 	    String[] attValues = getValues();
 	    int currentPos = Long.valueOf(getPosition()).intValue();
