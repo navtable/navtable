@@ -254,6 +254,8 @@ public class TableController implements IController {
 
 	@Override
 	public Feature newEmptyRecord() {
+		values.clear();
+		valuesChanged.clear();
 		FeatureStore store = model.getStore();
 		try {
 			return store.createNewFeature();
