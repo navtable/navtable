@@ -59,7 +59,7 @@ public class LayerController implements IController {
 		try {
 			FeatureStore store = layer.getFeatureStore();
 			FeatureType featType = store.getDefaultFeatureType();
-			int fieldCount = featType.size() - 1; // Geometry is ignored
+			int fieldCount = featType.size();
 			Map<String, Integer> idx = new HashMap<String, Integer>(fieldCount);
 			Map<String, Integer> type = new HashMap<String, Integer>(fieldCount);
 			List<String> fNames = new ArrayList<String>(fieldCount);
@@ -99,7 +99,7 @@ public class LayerController implements IController {
 		values.clear();
 		valuesChanged.clear();
 		ValueWriter vWriter = new ValueFormatNT();
-		for (String name : indexes.keySet()) {
+		for (String name : this.fieldNames) {
 			Object o = feat.get(name);
 			Value value = ValueFactory.createValue(o);
 			values.put(name, value.getStringValue(vWriter));
@@ -116,9 +116,7 @@ public class LayerController implements IController {
 			if (!wasEditing) {
 				te.startEditing(layer);
 			}
-			Feature f = te.modifyValues(layer, feat,
-					this.getIndexesOfValuesChanged(), this.getValuesChanged()
-							.values().toArray(new String[0]));
+			Feature f = te.modifyValues(layer, feat, valuesChanged);
 			read(f);
 			if (!wasEditing) {
 				te.stopEditing(layer, false);
@@ -138,6 +136,13 @@ public class LayerController implements IController {
 	}
 
 	@Override
+	@Deprecated
+	/*
+	 * No deberíamos usar esto así en gvSIG 2. valuesChanged.keySet y valuesChanged.values
+	 * podrían devolver los resultados en orden distinto y por tanto este método ya no tendría
+	 * sentido. Lo que tendría sentido es un método que devolviera un Mapa con el Índice en la capa
+	 * y el nuevo valor y a partir de ese método si que se podrían sacar listas separadas ordenadas
+	 */
 	public int[] getIndexesOfValuesChanged() {
 		int[] idxs = new int[valuesChanged.size()];
 		Set<String> names = valuesChanged.keySet();

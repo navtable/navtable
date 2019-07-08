@@ -1,5 +1,7 @@
 package es.icarto.gvsig.navtable.edition;
 
+import java.util.Map;
+
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.app.project.documents.view.gui.IView;
@@ -71,6 +73,37 @@ public class LayerEdition {
 		}
 		return true;
 	}
+	
+	public Feature modifyValues(FLyrVect layer, Feature feat,
+			Map<String, String> valuesChanged) throws DataException {
+		FeatureStore store = layer.getFeatureStore();
+		EditableFeature f = feat.getEditable();
+		setNewAttributes(f, valuesChanged);
+		store.update(f);
+		return f;
+	}
+	
+
+	private void setNewAttributes(EditableFeature f,
+			Map<String, String> valuesChanged) {
+		FeatureType featType = f.getType();
+		for (String key : valuesChanged.keySet()) {
+			String valueStr = valuesChanged.get(key);
+			if (valueStr == null || valueStr.trim().length() == 0) {
+				f.set(key, null);
+			} else {
+				int type = featType.getAttributeDescriptor(key).getType();
+				Object value;
+				try {
+					value = ValueFactoryNT.createValueByType2(valueStr, type)
+							.getObjectValue();
+					f.set(key, value);
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
+		}
+	}
 
 	public Feature modifyValues(FLyrVect layer, Feature feat, int[] attIndexes,
 			String[] attValues) throws DataException {
@@ -83,6 +116,7 @@ public class LayerEdition {
 
 	private void setNewAttributes(EditableFeature f, int[] attIndexes,
 			String[] attValues) {
+		
 		FeatureType featType = f.getType();
 		for (int i = 0; i < attIndexes.length; i++) {
 			String att = attValues[i];
@@ -123,4 +157,5 @@ public class LayerEdition {
 		}
 		return null;
 	}
+
 }
