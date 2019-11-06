@@ -52,6 +52,7 @@ public class LayerController implements IController {
 	private final List<String> fieldNames;
 	private final Map<String, String> values = new HashMap<String, String>();
 	private Geometry geom;
+	private Geometry geomChanged;
 	private final Map<String, String> valuesChanged = new HashMap<String, String>();
 
 	public LayerController(FLyrVect layer) {
@@ -104,6 +105,7 @@ public class LayerController implements IController {
 			Value value = ValueFactory.createValue(o);
 			values.put(name, value.getStringValue(vWriter));
 		}
+		geomChanged = null;
 		geom = feat.getDefaultGeometry();
 	}
 
@@ -116,7 +118,12 @@ public class LayerController implements IController {
 			if (!wasEditing) {
 				te.startEditing(layer);
 			}
-			Feature f = te.modifyValues(layer, feat, valuesChanged);
+			Feature f;
+			if (geomChanged != null) {
+				f = te.modifyValues(layer, feat, valuesChanged, geomChanged);
+			} else {
+				f = te.modifyValues(layer, feat, valuesChanged);
+			}
 			read(f);
 			if (!wasEditing) {
 				te.stopEditing(layer, false);
@@ -138,10 +145,11 @@ public class LayerController implements IController {
 	@Override
 	@Deprecated
 	/*
-	 * No deberíamos usar esto así en gvSIG 2. valuesChanged.keySet y valuesChanged.values
-	 * podrían devolver los resultados en orden distinto y por tanto este método ya no tendría
-	 * sentido. Lo que tendría sentido es un método que devolviera un Mapa con el Índice en la capa
-	 * y el nuevo valor y a partir de ese método si que se podrían sacar listas separadas ordenadas
+	 * No deberíamos usar esto así en gvSIG 2. valuesChanged.keySet y
+	 * valuesChanged.values podrían devolver los resultados en orden distinto y
+	 * por tanto este método ya no tendría sentido. Lo que tendría sentido es un
+	 * método que devolviera un Mapa con el Índice en la capa y el nuevo valor y
+	 * a partir de ese método si que se podrían sacar listas separadas ordenadas
 	 */
 	public int[] getIndexesOfValuesChanged() {
 		int[] idxs = new int[valuesChanged.size()];
@@ -164,7 +172,18 @@ public class LayerController implements IController {
 
 	@Override
 	public Geometry getGeom() {
+		if (geomChanged != null) {
+			return geomChanged;
+		}
 		return geom;
+	}
+
+	public Geometry getGeomOriginal() {
+		return geom;
+	}
+
+	public void setGeom(Geometry geom_) {
+		geomChanged = geom_;
 	}
 
 	@Override

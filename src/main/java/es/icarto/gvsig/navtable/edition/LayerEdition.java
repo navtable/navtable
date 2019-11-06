@@ -10,6 +10,7 @@ import org.gvsig.fmap.dal.feature.EditableFeature;
 import org.gvsig.fmap.dal.feature.Feature;
 import org.gvsig.fmap.dal.feature.FeatureStore;
 import org.gvsig.fmap.dal.feature.FeatureType;
+import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.mapcontext.layers.FLayer;
 import org.gvsig.fmap.mapcontext.layers.vectorial.FLyrVect;
 import org.gvsig.fmap.mapcontrol.MapControl;
@@ -73,7 +74,7 @@ public class LayerEdition {
 		}
 		return true;
 	}
-	
+
 	public Feature modifyValues(FLyrVect layer, Feature feat,
 			Map<String, String> valuesChanged) throws DataException {
 		FeatureStore store = layer.getFeatureStore();
@@ -82,7 +83,17 @@ public class LayerEdition {
 		store.update(f);
 		return f;
 	}
-	
+
+	public Feature modifyValues(FLyrVect layer, Feature feat,
+			Map<String, String> valuesChanged, Geometry geom)
+			throws DataException {
+		FeatureStore store = layer.getFeatureStore();
+		EditableFeature f = feat.getEditable();
+		setNewAttributes(f, valuesChanged);
+		f.setDefaultGeometry(geom);
+		store.update(f);
+		return f;
+	}
 
 	private void setNewAttributes(EditableFeature f,
 			Map<String, String> valuesChanged) {
@@ -116,7 +127,7 @@ public class LayerEdition {
 
 	private void setNewAttributes(EditableFeature f, int[] attIndexes,
 			String[] attValues) {
-		
+
 		FeatureType featType = f.getType();
 		for (int i = 0; i < attIndexes.length; i++) {
 			String att = attValues[i];
