@@ -23,6 +23,7 @@ import org.gvsig.fmap.dal.DALLocator;
 import org.gvsig.fmap.dal.DataManager;
 import org.gvsig.fmap.dal.DataStoreNotification;
 import org.gvsig.fmap.dal.exception.DataException;
+import org.gvsig.fmap.dal.feature.EditableFeature;
 import org.gvsig.fmap.dal.feature.Feature;
 import org.gvsig.fmap.dal.feature.FeatureAttributeDescriptor;
 import org.gvsig.fmap.dal.feature.FeatureQuery;
@@ -631,6 +632,21 @@ public class NavigationHandler implements ActionListener, Observer {
 		}
 		lastPos = set.getTotalSize() - 1;
 		setPosition(currentPosition);
+	}
+	
+	public void insertFeature() throws BaseException {
+		FeatureStore store = nt.getLayer().getFeatureStore();
+		boolean editing = store.isEditing();
+		if (!editing) {
+			store.edit();
+		}
+		EditableFeature feature = store.createNewFeature();
+		set.insert(feature);
+		if (!editing) {
+			store.finishEditing();
+		}
+		lastPos = set.getTotalSize() - 1;
+		setPosition(lastPos);
 	}
 
 	public long getLastPos() {
