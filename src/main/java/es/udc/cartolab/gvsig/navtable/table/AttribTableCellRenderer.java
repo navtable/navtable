@@ -38,54 +38,53 @@ import javax.swing.table.TableCellRenderer;
  * @author Pablo Sanxiao, Nacho Uve
  * 
  */
-public class AttribTableCellRenderer extends JTextArea implements
-	TableCellRenderer {
+public class AttribTableCellRenderer extends JTextArea implements TableCellRenderer {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final Vector noEditableRows = new Vector();
+	private final Vector noEditableRows = new Vector();
 
-    public void addNoEditableRow(int rowNumber) {
-	noEditableRows.addElement(new Integer(rowNumber));
-    }
-
-    public void emptyNoEditableRows() {
-	noEditableRows.removeAllElements();
-
-    }
-
-    public Component getTableCellRendererComponent(JTable table, Object value,
-	    boolean isSelected, boolean hasFocus, int row, int column) {
-
-	this.setText(value.toString().trim());
-	if (column == 0) {
-	    Font f = new Font("Sans", Font.BOLD, 12);
-	    this.setFont(f);
-	} else {
-	    Font f = new Font("Sans", Font.PLAIN, 12);
-	    this.setFont(f);
+	public void addNoEditableRow(int rowNumber) {
+		noEditableRows.addElement(new Integer(rowNumber));
 	}
 
-	if (noEditableRows.contains(new Integer(row))) {
-	    if (column == 0) {
-		this.setBackground(new Color(230, 200, 200));
-	    } else {
-		this.setBackground(new Color(240, 230, 230));
-	    }
-	} else {
-	    if (column == 0) {
-		this.setBackground(new Color(240, 240, 240));
-	    } else {
-		this.setBackground(Color.white);
-	    }
+	public void emptyNoEditableRows() {
+		noEditableRows.removeAllElements();
+
 	}
 
-	if (isSelected) {
-	    this.setBackground(new Color(195, 212, 232));
-	    if (noEditableRows.contains(new Integer(row))) {
-		this.setBackground(new Color(220, 170, 200));
-	    }
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+			int row, int column) {
+
+		this.setText(value.toString().trim());
+		if (column == 0) {
+			Font f = new Font("Sans", Font.BOLD, 12);
+			this.setFont(f);
+		} else {
+			Font f = new Font("Sans", Font.PLAIN, 12);
+			this.setFont(f);
+		}
+
+		if (noEditableRows.contains(new Integer(row))) {
+			if (column == 0) {
+				this.setBackground(new Color(230, 200, 200));
+			} else {
+				this.setBackground(new Color(240, 230, 230));
+			}
+		} else {
+			if (column == 0) {
+				this.setBackground(new Color(240, 240, 240));
+			} else {
+				this.setBackground(Color.white);
+			}
+		}
+
+		if (isSelected) {
+			this.setBackground(new Color(195, 212, 232));
+			if (noEditableRows.contains(new Integer(row))) {
+				this.setBackground(new Color(220, 170, 200));
+			}
+		}
+		return this;
 	}
-	return this;
-    }
 }

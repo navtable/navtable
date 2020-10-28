@@ -49,8 +49,7 @@ import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 
 public class NavigationHandler implements ActionListener, Observer {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(NavigationHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(NavigationHandler.class);
 
 	private final PositionEventSource positionEventSource = new PositionEventSource();
 
@@ -97,8 +96,7 @@ public class NavigationHandler implements ActionListener, Observer {
 
 			if (sortFields == null) {
 				sortFields = new ArrayList<Field>();
-				FeatureAttributeDescriptor[] primaryKey = store
-						.getDefaultFeatureType().getPrimaryKey();
+				FeatureAttributeDescriptor[] primaryKey = store.getDefaultFeatureType().getPrimaryKey();
 				for (FeatureAttributeDescriptor k : primaryKey) {
 					Field field = new Field(k.getName());
 					field.setSortOrder(SortOrder.ASCENDING);
@@ -121,8 +119,7 @@ public class NavigationHandler implements ActionListener, Observer {
 		FeatureQueryOrder order = new DefaultFeatureQueryOrder();
 
 		for (Field k : sortFields) {
-			boolean asc = k.getSortOrder() == SortOrder.ASCENDING ? true
-					: false;
+			boolean asc = k.getSortOrder() == SortOrder.ASCENDING ? true : false;
 			order.add(k.getKey(), asc);
 		}
 		query.setOrder(order);
@@ -154,10 +151,8 @@ public class NavigationHandler implements ActionListener, Observer {
 	}
 
 	private void registerNavTableButtonsOnNavigationToolBarExtensionPoint() {
-		firstB = getNavTableButton(firstB, "/go-first.png",
-				"goFirstButtonTooltip");
-		beforeB = getNavTableButton(beforeB, "/go-previous.png",
-				"goPreviousButtonTooltip");
+		firstB = getNavTableButton(firstB, "/go-first.png", "goFirstButtonTooltip");
+		beforeB = getNavTableButton(beforeB, "/go-previous.png", "goPreviousButtonTooltip");
 		posTF = new JTextField(5);
 		posTF.addActionListener(this);
 		totalLabel = new JLabel();
@@ -273,15 +268,13 @@ public class NavigationHandler implements ActionListener, Observer {
 	}
 
 	/**
-	 * @param newPosition
-	 *            zero-based index on recordset
+	 * @param newPosition zero-based index on recordset
 	 */
 	public void setPosition(long newPosition) {
 
 		newPosition = fixInvalidPosition(newPosition);
 
-		PositionEvent evt = new PositionEvent(this, currentPosition,
-				newPosition);
+		PositionEvent evt = new PositionEvent(this, currentPosition, newPosition);
 		positionEventSource.fireBeforePositionChange(evt);
 		currentPosition = newPosition;
 		if (currentPosition == EMPTY_REGISTER) {
@@ -346,8 +339,7 @@ public class NavigationHandler implements ActionListener, Observer {
 
 		long numberOfRowsInRecordset = lastPos + 1;
 		if (isOnlySelected()) {
-			totalLabel.setText("/" + "(" + nt.getNumberOfRowsSelected() + ") "
-					+ numberOfRowsInRecordset);
+			totalLabel.setText("/" + "(" + nt.getNumberOfRowsSelected() + ") " + numberOfRowsInRecordset);
 		} else {
 			totalLabel.setText("/" + numberOfRowsInRecordset);
 		}
@@ -411,8 +403,7 @@ public class NavigationHandler implements ActionListener, Observer {
 
 	private void deleteThisAsSelectionObserver() {
 		try {
-			nt.getLayer().getFeatureStore().getFeatureSelection()
-					.deleteObserver(this);
+			nt.getLayer().getFeatureStore().getFeatureSelection().deleteObserver(this);
 		} catch (DataException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
@@ -420,8 +411,7 @@ public class NavigationHandler implements ActionListener, Observer {
 
 	private void addThisAsSelectionObserver() {
 		try {
-			nt.getLayer().getFeatureStore().getFeatureSelection()
-					.addObserver(this);
+			nt.getLayer().getFeatureStore().getFeatureSelection().addObserver(this);
 		} catch (DataException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
@@ -528,10 +518,9 @@ public class NavigationHandler implements ActionListener, Observer {
 
 			} catch (IndexOutOfBoundsException e) {
 				/*
-				 * fpuga. 10/12/2014. Workaround When the user delete the last
-				 * record the editionChanged in EditionListener is called, and
-				 * the gui is refreshed, but getPosition returns a removed
-				 * position
+				 * fpuga. 10/12/2014. Workaround When the user delete the last record the
+				 * editionChanged in EditionListener is called, and the gui is refreshed, but
+				 * getPosition returns a removed position
 				 */
 				logger.error(e.getMessage(), e);
 				posTF.setText(String.valueOf(getPosition() - 1));
@@ -567,8 +556,7 @@ public class NavigationHandler implements ActionListener, Observer {
 
 	// Probably should be removed and use a factory instead
 	// is duplicated with NavigationHandler
-	private JButton getNavTableButton(JButton button, String iconName,
-			String toolTipName) {
+	private JButton getNavTableButton(JButton button, String iconName, String toolTipName) {
 		JButton but = new JButton(nt.getIcon(iconName));
 		but.setToolTipText(_(toolTipName));
 		but.addActionListener(this);
@@ -584,12 +572,9 @@ public class NavigationHandler implements ActionListener, Observer {
 	}
 
 	public void registerNavTableButtonsOnActionToolBarExtensionPoint() {
-		ExtensionPoints extensionPoints = ExtensionPointsSingleton
-				.getInstance();
-		selectionB = getNavTableButton(selectionB, "/Select.png",
-				"selectionButtonTooltip");
-		extensionPoints.add(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR,
-				"button-selection", selectionB);
+		ExtensionPoints extensionPoints = ExtensionPointsSingleton.getInstance();
+		selectionB = getNavTableButton(selectionB, "/Select.png", "selectionButtonTooltip");
+		extensionPoints.add(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR, "button-selection", selectionB);
 	}
 
 	@Override
@@ -635,7 +620,7 @@ public class NavigationHandler implements ActionListener, Observer {
 		lastPos = set.getTotalSize() - 1;
 		setPosition(currentPosition);
 	}
-	
+
 	public void insertFeature() throws BaseException {
 		FeatureStore store = nt.getLayer().getFeatureStore();
 		boolean editing = store.isEditing();

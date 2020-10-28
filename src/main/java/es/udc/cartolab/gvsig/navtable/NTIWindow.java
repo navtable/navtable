@@ -25,8 +25,7 @@ import es.icarto.gvsig.navtable.windowproperties.FormWindowPropertiesSerializato
 @SuppressWarnings("serial")
 public abstract class NTIWindow extends JPanel implements IWindow {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(NTIWindow.class);
+	private static final Logger logger = LoggerFactory.getLogger(NTIWindow.class);
 
 	private WindowInfo windowInfo = null;
 	private String title;
@@ -48,8 +47,7 @@ public abstract class NTIWindow extends JPanel implements IWindow {
 	@Override
 	public WindowInfo getWindowInfo() {
 		if (windowInfo == null) {
-			windowInfo = new WindowInfo(WindowInfo.MODELESSDIALOG
-					| WindowInfo.PALETTE | WindowInfo.RESIZABLE);
+			windowInfo = new WindowInfo(WindowInfo.MODELESSDIALOG | WindowInfo.PALETTE | WindowInfo.RESIZABLE);
 
 			if (title != null) {
 				windowInfo.setTitle(title);
@@ -127,11 +125,9 @@ public abstract class NTIWindow extends JPanel implements IWindow {
 			formWindowPropertiesList.add(fwpToAdd);
 		}
 
-		String xml = FormWindowPropertiesSerializator
-				.toXML(formWindowPropertiesList);
+		String xml = FormWindowPropertiesSerializator.toXML(formWindowPropertiesList);
 		try {
-			FileWriter fileWriter = new FileWriter(new File(
-					getFormWindowPropertiesXMLPath()));
+			FileWriter fileWriter = new FileWriter(new File(getFormWindowPropertiesXMLPath()));
 			Writer writer = new BufferedWriter(fileWriter);
 			writer.write(xml);
 			writer.close();
@@ -144,13 +140,11 @@ public abstract class NTIWindow extends JPanel implements IWindow {
 		if (!new File(getFormWindowPropertiesXMLPath()).exists()) {
 			return new ArrayList<FormWindowProperties>();
 		} else {
-			return FormWindowPropertiesSerializator.fromXML(new File(
-					getFormWindowPropertiesXMLPath()));
+			return FormWindowPropertiesSerializator.fromXML(new File(getFormWindowPropertiesXMLPath()));
 		}
 	}
 
 	protected String getFormWindowPropertiesXMLPath() {
-		return Launcher.getAppHomeDir() + File.separator
-				+ "FormWindowProperties.xml";
+		return Launcher.getAppHomeDir() + File.separator + "FormWindowProperties.xml";
 	}
 }

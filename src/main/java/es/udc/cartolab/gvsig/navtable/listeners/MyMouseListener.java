@@ -29,9 +29,9 @@ public class MyMouseListener implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		/*
-		 * TODO At the moment, filters do not work with automatic calculated
-		 * fields "length" and "area". Besides, the filter panel only is
-		 * activated if only 1 row is selected.
+		 * TODO At the moment, filters do not work with automatic calculated fields
+		 * "length" and "area". Besides, the filter panel only is activated if only 1
+		 * row is selected.
 		 */
 		if (e.getButton() == NavTable.BUTTON_RIGHT) {
 			if (e.getSource() != null) {
@@ -55,11 +55,9 @@ public class MyMouseListener implements MouseListener {
 
 				JPopupMenu popup = new JPopupMenu();
 
-				ExtensionPoint extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
-						.getInstance().get(
-								AbstractNavTable.NAVTABLE_CONTEXT_MENU);
-				Iterator<INavTableContextMenu> it = extensionPoint.values()
-						.iterator();
+				ExtensionPoint extensionPoint = (ExtensionPoint) ExtensionPointsSingleton.getInstance()
+						.get(AbstractNavTable.NAVTABLE_CONTEXT_MENU);
+				Iterator<INavTableContextMenu> it = extensionPoint.values().iterator();
 				while (it.hasNext()) {
 					INavTableContextMenu c = it.next();
 					c.setNavtableInstance(navtable);

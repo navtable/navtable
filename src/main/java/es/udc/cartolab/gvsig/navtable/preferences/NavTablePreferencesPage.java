@@ -29,97 +29,90 @@ import es.udc.cartolab.gvsig.navtable.contextualmenu.INavTableContextMenu;
  */
 public class NavTablePreferencesPage extends AbstractPreferencePage {
 
-    
-	private static final Logger logger = LoggerFactory
-			.getLogger(NavTablePreferencesPage.class);
+	private static final Logger logger = LoggerFactory.getLogger(NavTablePreferencesPage.class);
 
-    private HashMap<INavTableContextMenu, JCheckBox> contextMenuMap = new HashMap<INavTableContextMenu, JCheckBox>();
+	private HashMap<INavTableContextMenu, JCheckBox> contextMenuMap = new HashMap<INavTableContextMenu, JCheckBox>();
 
-    ExtensionPoint extensionPoint;
+	ExtensionPoint extensionPoint;
 
+	public NavTablePreferencesPage() {
+		super();
 
-    public NavTablePreferencesPage() {
-	super();
-	
+		JLabel addonsVisibility = new JLabel(_("contextMenuAddonsEnabled"));
+		addComponent(addonsVisibility);
 
-	JLabel addonsVisibility = new JLabel(_("contextMenuAddonsEnabled"));
-	addComponent(addonsVisibility);
+		extensionPoint = (ExtensionPoint) ExtensionPointsSingleton.getInstance()
+				.get(AbstractNavTable.NAVTABLE_CONTEXT_MENU);
 
-	extensionPoint = (ExtensionPoint) ExtensionPointsSingleton
-	.getInstance().get(AbstractNavTable.NAVTABLE_CONTEXT_MENU);
-
-	for (Object contextMenuAddon : extensionPoint.values()) {
-	    try {
-		INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
-		JCheckBox chb = new JCheckBox(_(c.getDescription()));
-		contextMenuMap.put(c, chb);
-		addComponent(chb);
-	    } catch (ClassCastException cce) {
-		logger.error("Class is not a navtable context menu", cce);
-	    }
+		for (Object contextMenuAddon : extensionPoint.values()) {
+			try {
+				INavTableContextMenu c = (INavTableContextMenu) contextMenuAddon;
+				JCheckBox chb = new JCheckBox(_(c.getDescription()));
+				contextMenuMap.put(c, chb);
+				addComponent(chb);
+			} catch (ClassCastException cce) {
+				logger.error("Class is not a navtable context menu", cce);
+			}
+		}
 	}
-    }
 
-    public String getID() {
-	return this.getClass().getName();
-    }
-
-    public String getTitle() {
-	return _("navtable");
-    }
-
-    public JPanel getPanel() {
-	return this;
-    }
-
-    public void initializeValues() {
-	XMLEntity xml = PluginServices.getPluginServices(this)
-	.getPersistentXML();
-	for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
-	    boolean value = false;
-	    try {
-		value = xml.getBooleanProperty(contextMenu.getName());
-	    } catch (NotExistInXMLEntity e) {
-		value = contextMenu.getDefaultVisibiliy();
-		xml.putProperty(contextMenu.getName(), value);
-	    }
-	    contextMenuMap.get(contextMenu).setSelected(value);
-	    contextMenu.setUserVisibility(value);
+	public String getID() {
+		return this.getClass().getName();
 	}
-    }
 
-
-    public void initializeDefaults() {
-
-	for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
-	    JCheckBox chb = contextMenuMap.get(contextMenu);
-	    chb.setSelected(contextMenu.getDefaultVisibiliy());
+	public String getTitle() {
+		return _("navtable");
 	}
-    }
 
-    public ImageIcon getIcon() {
-	return null;
-    }
-
-    public boolean isValueChanged() {
-	return super.hasChanged();
-    }
-
-    @Override
-    public void storeValues() throws StoreException {
-	XMLEntity xml = PluginServices.getPluginServices(this)
-	.getPersistentXML();
-	for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
-	    boolean visibility = contextMenuMap.get(contextMenu).isSelected();
-	    xml.putProperty(contextMenu.getName(), visibility);
-	    contextMenu.setUserVisibility(visibility);
+	public JPanel getPanel() {
+		return this;
 	}
-    }
 
-    @Override
-    public void setChangesApplied() {
-	// TODO: fpuga, i'm not sure how this method works.
-	setChanged(false);
-    }
+	public void initializeValues() {
+		XMLEntity xml = PluginServices.getPluginServices(this).getPersistentXML();
+		for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
+			boolean value = false;
+			try {
+				value = xml.getBooleanProperty(contextMenu.getName());
+			} catch (NotExistInXMLEntity e) {
+				value = contextMenu.getDefaultVisibiliy();
+				xml.putProperty(contextMenu.getName(), value);
+			}
+			contextMenuMap.get(contextMenu).setSelected(value);
+			contextMenu.setUserVisibility(value);
+		}
+	}
+
+	public void initializeDefaults() {
+
+		for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
+			JCheckBox chb = contextMenuMap.get(contextMenu);
+			chb.setSelected(contextMenu.getDefaultVisibiliy());
+		}
+	}
+
+	public ImageIcon getIcon() {
+		return null;
+	}
+
+	public boolean isValueChanged() {
+		return super.hasChanged();
+	}
+
+	@Override
+	public void storeValues() throws StoreException {
+		XMLEntity xml = PluginServices.getPluginServices(this).getPersistentXML();
+		for (INavTableContextMenu contextMenu : contextMenuMap.keySet()) {
+			boolean visibility = contextMenuMap.get(contextMenu).isSelected();
+			xml.putProperty(contextMenu.getName(), visibility);
+			contextMenu.setUserVisibility(visibility);
+		}
+	}
+
+	@Override
+	public void setChangesApplied() {
+		// TODO: fpuga, i'm not sure how this method works.
+		setChanged(false);
+	}
 
 }

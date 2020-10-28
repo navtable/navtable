@@ -25,8 +25,7 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
  */
 public class FiltersAddon implements INavTableContextMenu {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(FiltersAddon.class);
+	private static final Logger logger = LoggerFactory.getLogger(FiltersAddon.class);
 
 	private NavTable navtable;
 	// private SelectableDataSource sds;
@@ -58,15 +57,12 @@ public class FiltersAddon implements INavTableContextMenu {
 	private ArrayList<JMenuItem> getFilterMenusForRowSelected() {
 		int rowSelected = table.getSelectedRow();
 
-		final String attrName = (String) table.getModel().getValueAt(
-				rowSelected, 0);
-		final String attrValue = (String) table.getModel().getValueAt(
-				rowSelected, 1);
+		final String attrName = (String) table.getModel().getValueAt(rowSelected, 0);
+		final String attrValue = (String) table.getModel().getValueAt(rowSelected, 1);
 		final int attrType = getAttrTypeForValueSelected(attrName);
 
 		final SelectByAttributes filterExt = new SelectByAttributes();
-		filterExt.setDatasource(navtable.getLayer().getFeatureStore(), navtable
-				.getLayer().getName());
+		filterExt.setDatasource(navtable.getLayer().getFeatureStore(), navtable.getLayer().getName());
 
 		// final String st_expr = "select * from '" + sds.getName() + "' where "
 		// + attrName;
@@ -78,7 +74,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		case DataTypes.STRING:
 			menus = getMenuItemsForString(filterExt, st_expr, attrValue);
 			break;
-			// case DataTypes.BIGDECIMAL:
+		// case DataTypes.BIGDECIMAL:
 		case DataTypes.BYTE:
 		case DataTypes.DOUBLE:
 		case DataTypes.FLOAT:
@@ -86,14 +82,12 @@ public class FiltersAddon implements INavTableContextMenu {
 		case DataTypes.LONG:
 			String attrValueWithgvSIGFormat = "";
 			try {
-				attrValueWithgvSIGFormat = ValueFactoryNT.createValueByType2(
-						attrValue, attrType).toString();
+				attrValueWithgvSIGFormat = ValueFactoryNT.createValueByType2(attrValue, attrType).toString();
 			} catch (Exception e) {
 
 				logger.error(e.getMessage(), e);
 			}
-			menus = getMenuItemsForNumeric(filterExt, st_expr,
-					attrValueWithgvSIGFormat, attrValue);
+			menus = getMenuItemsForNumeric(filterExt, st_expr, attrValueWithgvSIGFormat, attrValue);
 			break;
 
 		case DataTypes.BOOLEAN:
@@ -118,21 +112,18 @@ public class FiltersAddon implements INavTableContextMenu {
 	}
 
 	private JMenuItem getMenuItemForSetFilter(final SelectByAttributes filterExt) {
-		JMenuItem tmpMenuItem = new JMenuItem(_("filter_filter"),
-				navtable.getIcon("/filter.png"));
+		JMenuItem tmpMenuItem = new JMenuItem(_("filter_filter"), navtable.getIcon("/filter.png"));
 		tmpMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				filterExt.setDatasource(navtable.getLayer().getFeatureStore(),
-						navtable.getLayer().getName());
+				filterExt.setDatasource(navtable.getLayer().getFeatureStore(), navtable.getLayer().getName());
 				filterExt.execute();
 			}
 		});
 		return tmpMenuItem;
 	}
 
-	private ArrayList<JMenuItem> getMenuItemsForBoolean(
-			final SelectByAttributes filterExt, final String st_expr) {
+	private ArrayList<JMenuItem> getMenuItemsForBoolean(final SelectByAttributes filterExt, final String st_expr) {
 
 		ArrayList<JMenuItem> booleanMenu = new ArrayList<JMenuItem>();
 
@@ -159,14 +150,12 @@ public class FiltersAddon implements INavTableContextMenu {
 		return booleanMenu;
 	}
 
-	private ArrayList<JMenuItem> getMenuItemsForNumeric(
-			final SelectByAttributes filterExt, final String st_expr,
+	private ArrayList<JMenuItem> getMenuItemsForNumeric(final SelectByAttributes filterExt, final String st_expr,
 			final String attrValue, String attrValueAsNTFormat) {
 
 		ArrayList<JMenuItem> numericMenu = new ArrayList<JMenuItem>();
 
-		JMenuItem tmpMenuItem = new JMenuItem(_("filter_numeric_equals")
-				+ " \t'" + attrValueAsNTFormat + "'");
+		JMenuItem tmpMenuItem = new JMenuItem(_("filter_numeric_equals") + " \t'" + attrValueAsNTFormat + "'");
 		tmpMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -176,8 +165,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		});
 		numericMenu.add(tmpMenuItem);
 
-		tmpMenuItem = new JMenuItem(_("filter_numeric_different") + " \t'"
-				+ attrValueAsNTFormat + "'");
+		tmpMenuItem = new JMenuItem(_("filter_numeric_different") + " \t'" + attrValueAsNTFormat + "'");
 		tmpMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -187,8 +175,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		});
 		numericMenu.add(tmpMenuItem);
 
-		tmpMenuItem = new JMenuItem(_("filter_numeric_less") + " \t'"
-				+ attrValueAsNTFormat + "'");
+		tmpMenuItem = new JMenuItem(_("filter_numeric_less") + " \t'" + attrValueAsNTFormat + "'");
 		tmpMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -198,8 +185,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		});
 		numericMenu.add(tmpMenuItem);
 
-		tmpMenuItem = new JMenuItem(_("filter_numeric_greater") + " \t'"
-				+ attrValueAsNTFormat + "'");
+		tmpMenuItem = new JMenuItem(_("filter_numeric_greater") + " \t'" + attrValueAsNTFormat + "'");
 		tmpMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -212,14 +198,12 @@ public class FiltersAddon implements INavTableContextMenu {
 		return numericMenu;
 	}
 
-	private ArrayList<JMenuItem> getMenuItemsForString(
-			final SelectByAttributes filterExt, final String st_expr,
+	private ArrayList<JMenuItem> getMenuItemsForString(final SelectByAttributes filterExt, final String st_expr,
 			final String attrValue) {
 
 		ArrayList<JMenuItem> stringMenu = new ArrayList<JMenuItem>();
 
-		JMenuItem tmpMenuItem = new JMenuItem(_("filter_equals") + " '"
-				+ attrValue + "'");
+		JMenuItem tmpMenuItem = new JMenuItem(_("filter_equals") + " '" + attrValue + "'");
 		tmpMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -229,8 +213,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		});
 		stringMenu.add(tmpMenuItem);
 
-		tmpMenuItem = new JMenuItem(_("filter_different") + " '" + attrValue
-				+ "'");
+		tmpMenuItem = new JMenuItem(_("filter_different") + " '" + attrValue + "'");
 		tmpMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -241,16 +224,14 @@ public class FiltersAddon implements INavTableContextMenu {
 		stringMenu.add(tmpMenuItem);
 
 		tmpMenuItem = new JMenuItem(_("filter_contains"));
-		tmpMenuItem.addActionListener(new StringFilterActionListener(navtable,
-				attrValue, st_expr, filterExt));
+		tmpMenuItem.addActionListener(new StringFilterActionListener(navtable, attrValue, st_expr, filterExt));
 		stringMenu.add(tmpMenuItem);
 
 		return stringMenu;
 	}
 
 	private JMenuItem getMenuItemForUnsetFilter() {
-		JMenuItem tmpMenuItem = new JMenuItem(_("filter_remove_filter"),
-				navtable.getIcon("/nofilter.png"));
+		JMenuItem tmpMenuItem = new JMenuItem(_("filter_remove_filter"), navtable.getIcon("/nofilter.png"));
 		tmpMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -287,8 +268,7 @@ public class FiltersAddon implements INavTableContextMenu {
 		return true;
 	}
 
-	public void executeFilter(final SelectByAttributes filterExt,
-			final String st_expr) {
+	public void executeFilter(final SelectByAttributes filterExt, final String st_expr) {
 		try {
 			filterExt.newSet(st_expr);
 			navtable.setOnlySelected(true);

@@ -19,8 +19,7 @@ import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
 
 public class FilterButton implements ActionListener {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(FilterButton.class);
+	private static final Logger logger = LoggerFactory.getLogger(FilterButton.class);
 
 	public final JButton filterB;
 	private final FLyrVect layer;
@@ -78,8 +77,7 @@ public class FilterButton implements ActionListener {
 
 	private boolean selectionIsEmpty() {
 		try {
-			FeatureSelection selection = layer.getFeatureStore()
-					.getFeatureSelection();
+			FeatureSelection selection = layer.getFeatureStore().getFeatureSelection();
 			return selection.isEmpty();
 		} catch (DataException e) {
 			logger.error(e.getMessage(), e);
@@ -89,8 +87,7 @@ public class FilterButton implements ActionListener {
 
 	private void clearSelection() {
 		try {
-			FeatureSelection selection = layer.getFeatureStore()
-					.getFeatureSelection();
+			FeatureSelection selection = layer.getFeatureStore().getFeatureSelection();
 			selection.deselectAll();
 		} catch (DataException e) {
 			logger.error(e.getMessage(), e);

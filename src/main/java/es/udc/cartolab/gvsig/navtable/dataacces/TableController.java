@@ -51,8 +51,7 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
  */
 public class TableController implements IController {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(TableController.class);
+	private static final Logger logger = LoggerFactory.getLogger(TableController.class);
 
 	public final static long NO_ROW = -1;
 
@@ -74,8 +73,7 @@ public class TableController implements IController {
 			Map<String, Integer> type = new HashMap<String, Integer>(fieldCount);
 			List<String> fNames = new ArrayList<String>(fieldCount);
 			for (int i = 0; i < fieldCount; i++) {
-				FeatureAttributeDescriptor attDesc = featType
-						.getAttributeDescriptor(i);
+				FeatureAttributeDescriptor attDesc = featType.getAttributeDescriptor(i);
 				String name = attDesc.getName();
 				idx.put(name, i);
 				type.put(name, attDesc.getType());
@@ -101,13 +99,11 @@ public class TableController implements IController {
 		te.stopEditing(model, false);
 	}
 
-	private EditableFeature createFeatureFromHashMap(
-			Map<String, String> newValues) throws Exception {
+	private EditableFeature createFeatureFromHashMap(Map<String, String> newValues) throws Exception {
 		EditableFeature f = model.getStore().createNewFeature();
 		for (String key : newValues.keySet()) {
 			int index = getIndex(key);
-			Object value = ValueFactoryNT.createValueByType2(
-					newValues.get(key), types.get(key)).getObjectValue();
+			Object value = ValueFactoryNT.createValueByType2(newValues.get(key), types.get(key)).getObjectValue();
 			f.set(index, value);
 		}
 		return f;

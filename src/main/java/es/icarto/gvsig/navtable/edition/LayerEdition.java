@@ -2,7 +2,6 @@ package es.icarto.gvsig.navtable.edition;
 
 import java.util.Map;
 
-import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.app.project.documents.view.gui.IView;
@@ -22,8 +21,7 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 public class LayerEdition {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(LayerEdition.class);
+	private static final Logger logger = LoggerFactory.getLogger(LayerEdition.class);
 
 	public boolean startEditing(FLyrVect layer) {
 		IView view = getViewFromLayer(layer);
@@ -76,8 +74,7 @@ public class LayerEdition {
 		return true;
 	}
 
-	public Feature modifyValues(FLyrVect layer, Feature feat,
-			Map<String, String> valuesChanged) throws DataException {
+	public Feature modifyValues(FLyrVect layer, Feature feat, Map<String, String> valuesChanged) throws DataException {
 		FeatureStore store = layer.getFeatureStore();
 		EditableFeature f = feat.getEditable();
 		setNewAttributes(f, valuesChanged);
@@ -85,8 +82,7 @@ public class LayerEdition {
 		return f;
 	}
 
-	public Feature modifyValues(FLyrVect layer, Feature feat,
-			Map<String, String> valuesChanged, Geometry geom)
+	public Feature modifyValues(FLyrVect layer, Feature feat, Map<String, String> valuesChanged, Geometry geom)
 			throws DataException {
 		FeatureStore store = layer.getFeatureStore();
 		EditableFeature f = feat.getEditable();
@@ -96,8 +92,7 @@ public class LayerEdition {
 		return f;
 	}
 
-	private void setNewAttributes(EditableFeature f,
-			Map<String, String> valuesChanged) {
+	private void setNewAttributes(EditableFeature f, Map<String, String> valuesChanged) {
 		FeatureType featType = f.getType();
 		for (String key : valuesChanged.keySet()) {
 			String valueStr = valuesChanged.get(key);
@@ -107,8 +102,7 @@ public class LayerEdition {
 				int type = featType.getAttributeDescriptor(key).getType();
 				Object value;
 				try {
-					value = ValueFactoryNT.createValueByType2(valueStr, type)
-							.getObjectValue();
+					value = ValueFactoryNT.createValueByType2(valueStr, type).getObjectValue();
 					f.set(key, value);
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
@@ -117,8 +111,8 @@ public class LayerEdition {
 		}
 	}
 
-	public Feature modifyValues(FLyrVect layer, Feature feat, int[] attIndexes,
-			String[] attValues) throws DataException {
+	public Feature modifyValues(FLyrVect layer, Feature feat, int[] attIndexes, String[] attValues)
+			throws DataException {
 		FeatureStore store = layer.getFeatureStore();
 		EditableFeature f = feat.getEditable();
 		setNewAttributes(f, attIndexes, attValues);
@@ -126,8 +120,7 @@ public class LayerEdition {
 		return f;
 	}
 
-	private void setNewAttributes(EditableFeature f, int[] attIndexes,
-			String[] attValues) {
+	private void setNewAttributes(EditableFeature f, int[] attIndexes, String[] attValues) {
 
 		FeatureType featType = f.getType();
 		for (int i = 0; i < attIndexes.length; i++) {
@@ -139,8 +132,7 @@ public class LayerEdition {
 				int type = featType.getAttributeDescriptor(idx).getType();
 				Object value;
 				try {
-					value = ValueFactoryNT.createValueByType2(att, type)
-							.getObjectValue();
+					value = ValueFactoryNT.createValueByType2(att, type).getObjectValue();
 					f.set(idx, value);
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);

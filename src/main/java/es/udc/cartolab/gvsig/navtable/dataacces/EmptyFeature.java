@@ -13,8 +13,6 @@ import org.gvsig.fmap.dal.feature.FeatureStore;
 import org.gvsig.fmap.dal.feature.FeatureType;
 import org.gvsig.fmap.geom.Geometry;
 import org.gvsig.fmap.geom.primitive.Envelope;
-import org.gvsig.timesupport.Instant;
-import org.gvsig.timesupport.Interval;
 import org.gvsig.tools.dynobject.DynObject;
 import org.gvsig.tools.evaluator.EvaluatorData;
 import org.slf4j.Logger;
@@ -23,8 +21,7 @@ import org.slf4j.LoggerFactory;
 import es.icarto.gvsig.navtable.navigation.NavigationHandler;
 
 public class EmptyFeature implements Feature {
-	private static final Logger logger = LoggerFactory
-			.getLogger(NavigationHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(NavigationHandler.class);
 
 	private final FeatureType type;
 
@@ -216,7 +213,6 @@ public class EmptyFeature implements Feature {
 		return null;
 	}
 
-
 	@Override
 	public DynObject getAsDynObject() {
 		return null;
@@ -227,16 +223,17 @@ public class EmptyFeature implements Feature {
 		return null;
 	}
 
-	 @Override
-	 public FeatureStore getStore() {
-	 return null;
-	 }
-	 
-	 @Override
+	@Override
+	public FeatureStore getStore() {
+		return null;
+	}
+
+	@Override
 	public Object getFromProfile(int index) {
 		return null;
 	}
-	 @Override
+
+	@Override
 	public Object getFromProfile(String name) {
 		return null;
 	}
@@ -403,7 +400,7 @@ public class EmptyFeature implements Feature {
 
 	@Override
 	public void setExtraValue(String name, Object value) {
-		
+
 	}
 
 	@Override

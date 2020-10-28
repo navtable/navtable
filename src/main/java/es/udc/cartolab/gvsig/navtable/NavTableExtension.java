@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import org.gvsig.about.AboutManager;
 import org.gvsig.andami.IconThemeHelper;
 import org.gvsig.andami.Launcher;
-import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.plugins.Extension;
 import org.gvsig.andami.preferences.IPreference;
 import org.gvsig.andami.preferences.IPreferenceExtension;
@@ -57,8 +56,7 @@ import es.udc.cartolab.gvsig.navtable.contextualmenu.SorterAddon;
 import es.udc.cartolab.gvsig.navtable.preferences.NavTablePreferencesPage;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 
-public class NavTableExtension extends Extension implements
-IPreferenceExtension {
+public class NavTableExtension extends Extension implements IPreferenceExtension {
 
 	private IPreference[] preferencesPage;
 
@@ -77,8 +75,7 @@ IPreferenceExtension {
 				}
 			}
 		} else if (isActiveWindowAttTableFromLayer()) {
-			VectorLayer data = ((FeatureTableDocumentPanel) iWindow).getModel()
-					.getAssociatedLayer();
+			VectorLayer data = ((FeatureTableDocumentPanel) iWindow).getModel().getAssociatedLayer();
 			if (data instanceof FLyrVect) {
 				NavTable nt = new NavTable((FLyrVect) data);
 				if (nt.init()) {
@@ -92,33 +89,27 @@ IPreferenceExtension {
 	public void initialize() {
 		ApplicationManager application = ApplicationLocator.getManager();
 		AboutManager about = application.getAbout();
-		about.addDeveloper("NavTable",
-				getClass().getClassLoader().getResource("/about.htm"), 1);
+		about.addDeveloper("NavTable", getClass().getClassLoader().getResource("/about.htm"), 1);
 		String id = this.getClass().getName();
 		IconThemeHelper.registerIcon("action", id, this);
 		initTOCMenuEntry();
 		// Entry at TOC contextual menu
-		ExtensionPoints extensionPoints = ExtensionPointsSingleton
-				.getInstance();
+		ExtensionPoints extensionPoints = ExtensionPointsSingleton.getInstance();
 		// Add NavTable "official" context menu addons to the extension point
 		INavTableContextMenu filtersAddon = new FiltersAddon();
-		extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU,
-				filtersAddon.getName(), filtersAddon);
+		extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU, filtersAddon.getName(), filtersAddon);
 		INavTableContextMenu sorterAddon = new SorterAddon();
-		extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU,
-				sorterAddon.getName(), sorterAddon);
+		extensionPoints.add(AbstractNavTable.NAVTABLE_CONTEXT_MENU, sorterAddon.getName(), sorterAddon);
 
 		// Creating config Dir
-		String configDirStr = Launcher.getAppHomeDir() + File.separator
-				+ "NavTable";
+		String configDirStr = Launcher.getAppHomeDir() + File.separator + "NavTable";
 		File configDir = new File(configDirStr);
 		Preferences p = new Preferences(configDir);
 	}
 
 	private void initTOCMenuEntry() {
 		ProjectManager projectManager = ApplicationLocator.getProjectManager();
-		ViewManager viewManager = (ViewManager) projectManager
-				.getDocumentManager(ViewManager.TYPENAME);
+		ViewManager viewManager = (ViewManager) projectManager.getDocumentManager(ViewManager.TYPENAME);
 		AbstractTocContextMenuAction tableMenuEntry = new ShowAttributesTableTocMenuEntry();
 		String group = tableMenuEntry.getGroup();
 		int groupOrder = tableMenuEntry.getGroupOrder();
@@ -136,8 +127,7 @@ IPreferenceExtension {
 	}
 
 	protected boolean enableNavtable() {
-		return !getActiveVectorialLayersOnTheActiveWindow().isEmpty()
-				|| isActiveWindowAttTableFromLayer();
+		return !getActiveVectorialLayersOnTheActiveWindow().isEmpty() || isActiveWindowAttTableFromLayer();
 	}
 
 	private boolean isActiveWindowAttTableFromLayer() {
@@ -153,8 +143,7 @@ IPreferenceExtension {
 		ArrayList<FLyrVect> activeVectorialLayers = new ArrayList<FLyrVect>();
 
 		if (iWindow instanceof IView) {
-			FLayer[] activeLayers = ((IView) iWindow).getMapControl()
-					.getMapContext().getLayers().getActives();
+			FLayer[] activeLayers = ((IView) iWindow).getMapControl().getMapContext().getLayers().getActives();
 			for (FLayer lyr : activeLayers) {
 				if (lyr instanceof FLyrVect) {
 					activeVectorialLayers.add((FLyrVect) lyr);

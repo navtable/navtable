@@ -41,8 +41,7 @@ import es.udc.cartolab.gvsig.navtable.AbstractNavTable;
  */
 public class EditionListener implements LayerListener, Observer {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(EditionListener.class);
+	private static final Logger logger = LoggerFactory.getLogger(EditionListener.class);
 
 	private AbstractNavTable nt;
 
@@ -81,8 +80,7 @@ public class EditionListener implements LayerListener, Observer {
 			FeatureStoreNotification not = (FeatureStoreNotification) notification;
 			String type = not.getType();
 			// AfterRowEditEvent
-			if (FeatureStoreNotification.AFTER_UPDATE.equals(type)
-					|| FeatureStoreNotification.AFTER_DELETE.equals(type)
+			if (FeatureStoreNotification.AFTER_UPDATE.equals(type) || FeatureStoreNotification.AFTER_DELETE.equals(type)
 					|| FeatureStoreNotification.AFTER_INSERT.equals(type)) {
 				if (!nt.isSavingValues()) {
 					nt.refreshGUI();

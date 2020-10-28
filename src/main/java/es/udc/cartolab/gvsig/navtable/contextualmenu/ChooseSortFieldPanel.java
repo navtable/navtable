@@ -12,9 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SortOrder;
 
-import net.miginfocom.swing.MigLayout;
 import es.icarto.gvsig.commons.gui.WidgetFactory;
 import es.icarto.gvsig.commons.utils.Field;
+import net.miginfocom.swing.MigLayout;
 
 @SuppressWarnings("serial")
 public class ChooseSortFieldPanel extends JPanel {

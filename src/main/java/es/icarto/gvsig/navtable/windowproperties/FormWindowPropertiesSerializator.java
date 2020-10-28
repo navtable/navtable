@@ -15,8 +15,7 @@ public class FormWindowPropertiesSerializator {
 		return xstream.toXML(fields);
 	}
 
-	public static List<FormWindowProperties> fromXML(File xml)
-			throws XStreamException {
+	public static List<FormWindowProperties> fromXML(File xml) throws XStreamException {
 		XStream xstream = new XStream();
 		xstream.alias("forms-window-properties", List.class);
 		xstream.alias("form", FormWindowProperties.class);

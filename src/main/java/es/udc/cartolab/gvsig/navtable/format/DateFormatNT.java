@@ -1,6 +1,5 @@
 package es.udc.cartolab.gvsig.navtable.format;
 
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,64 +20,60 @@ import es.icarto.gvsig.commons.gvsig2.Value;
  */
 public class DateFormatNT {
 
+	private static final Logger logger = LoggerFactory.getLogger(DateFormatNT.class);
 
-private static final Logger logger = LoggerFactory
-		.getLogger(DateFormatNT.class);
+	private static SimpleDateFormat dateFormat;
 
-    private static SimpleDateFormat dateFormat;
+	public static String convertDateValueToString(Value date) {
+		String dateString;
+		if (date instanceof NullValue) {
+			dateString = "";
+		} else {
+			Date tmp = ((DateValue) date).getValue();
+			SimpleDateFormat formatter = getDateFormat();
+			dateString = formatter.format(tmp);
+		}
+		return dateString;
+	}
 
-    public static String convertDateValueToString(Value date) {
-	String dateString;
-	if(date instanceof NullValue) {
-	    dateString = "";
-	} else {
-	    Date tmp = ((DateValue) date).getValue();
-	    SimpleDateFormat formatter = getDateFormat();
-	    dateString = formatter.format(tmp);
+	public static Value convertStringToValue(String date) {
+		if (date == "") {
+			return ValueFactoryNT.createNullValue();
+		} else {
+			SimpleDateFormat formatter = getDateFormat();
+			try {
+				return ValueFactoryNT.createValue(formatter.parse(date));
+			} catch (ParseException e) {
+				logger.error(e.getMessage(), e);
+				return ValueFactoryNT.createNullValue();
+			}
+		}
 	}
-	return dateString;
-    }
 
-    public static Value convertStringToValue(String date) {
-	if(date == "") {
-	    return ValueFactoryNT.createNullValue();
-	} else {
-	    SimpleDateFormat formatter = getDateFormat();
-	    try {
-		return ValueFactoryNT.createValue(formatter.parse(date));
-	    } catch (ParseException e) {
-		logger.error(e.getMessage(), e);
-		return ValueFactoryNT.createNullValue();
-	    }
+	public static java.util.Date convertStringToDate(String strDate) {
+		java.util.Date date = null;
+		if ((strDate == null) || (strDate.isEmpty())) {
+			return null;
+		}
+		SimpleDateFormat formatter = getDateFormat();
+		try {
+			date = formatter.parse(strDate);
+		} catch (ParseException e) {
+			logger.error(e.getMessage(), e);
+		}
+		return date;
 	}
-    }
-    
-    public static java.util.Date convertStringToDate(String strDate) {
-	java.util.Date date = null;
-	if ((strDate == null) || (strDate.isEmpty())) {
-	    return null;
-	}
-	SimpleDateFormat formatter = getDateFormat();
-	try {
-	    date = formatter.parse(strDate);
-	} catch (ParseException e) {
-		logger.error(e.getMessage(), e);
-	}
-	return date;
-    }
-	
 
-    public static SimpleDateFormat getDateFormat() {
-	if (dateFormat == null) {
-	    dateFormat = (SimpleDateFormat) DateFormat
-		    .getDateInstance(DateFormat.SHORT);
-	    String p = dateFormat.toLocalizedPattern();
-	    if (!p.contains("yyyy")) {
-		p = p.replaceAll("yy", "yyyy");
-		dateFormat = new SimpleDateFormat(p);
-	    }
+	public static SimpleDateFormat getDateFormat() {
+		if (dateFormat == null) {
+			dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT);
+			String p = dateFormat.toLocalizedPattern();
+			if (!p.contains("yyyy")) {
+				p = p.replaceAll("yy", "yyyy");
+				dateFormat = new SimpleDateFormat(p);
+			}
+		}
+		return dateFormat;
 	}
-	return dateFormat;
-    }
 
 }

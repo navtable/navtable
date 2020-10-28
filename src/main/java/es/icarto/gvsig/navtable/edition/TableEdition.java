@@ -18,12 +18,11 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFactoryNT;
 
 public class TableEdition {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(TableEdition.class);
+	private static final Logger logger = LoggerFactory.getLogger(TableEdition.class);
 
 	/**
-	 * Based on org.gvsig.app.extension.TableEditStartExtension Returns true is
-	 * the table has been put correctly in edition mode
+	 * Based on org.gvsig.app.extension.TableEditStartExtension Returns true is the
+	 * table has been put correctly in edition mode
 	 */
 	public boolean startEditing(TableDocument doc) {
 		try {
@@ -36,23 +35,19 @@ public class TableEdition {
 	}
 
 	public void doStartEditing(TableDocument doc) throws DataException {
-		EditingNotificationManager editingNotification = DALSwingLocator
-				.getEditingNotificationManager();
-		EditingNotification notification = editingNotification.notifyObservers(
-				this, EditingNotification.BEFORE_ENTER_EDITING_STORE, doc,
-				doc.getStore());
+		EditingNotificationManager editingNotification = DALSwingLocator.getEditingNotificationManager();
+		EditingNotification notification = editingNotification.notifyObservers(this,
+				EditingNotification.BEFORE_ENTER_EDITING_STORE, doc, doc.getStore());
 		if (notification.isCanceled()) {
 			return;
 		}
 		doc.getStore().edit(FeatureStore.MODE_FULLEDIT);
 		ApplicationLocator.getManager().refreshMenusAndToolBars();
-		editingNotification.notifyObservers(this,
-				EditingNotification.AFTER_ENTER_EDITING_STORE, doc,
-				doc.getStore());
+		editingNotification.notifyObservers(this, EditingNotification.AFTER_ENTER_EDITING_STORE, doc, doc.getStore());
 	}
 
-	public Feature modifyValues(TableDocument doc, Feature feat,
-			int[] attIndexes, String[] attValues) throws DataException {
+	public Feature modifyValues(TableDocument doc, Feature feat, int[] attIndexes, String[] attValues)
+			throws DataException {
 		EditableFeature f = feat.getEditable();
 		FeatureStore store = doc.getStore();
 		setNewAttributes(f, attIndexes, attValues);
@@ -60,8 +55,7 @@ public class TableEdition {
 		return f;
 	}
 
-	private void setNewAttributes(EditableFeature f, int[] attIndexes,
-			String[] attValues) {
+	private void setNewAttributes(EditableFeature f, int[] attIndexes, String[] attValues) {
 		FeatureType featType = f.getType();
 		for (int i = 0; i < attIndexes.length; i++) {
 			String att = attValues[i];
@@ -82,15 +76,13 @@ public class TableEdition {
 	}
 
 	/**
-	 * Based on org.gvsig.app.extension.TableEditStopExtension Returns true is
-	 * the table has been put correctly in NO edition mode
+	 * Based on org.gvsig.app.extension.TableEditStopExtension Returns true is the
+	 * table has been put correctly in NO edition mode
 	 */
 	public boolean stopEditing(TableDocument doc, boolean cancel) {
-		EditingNotificationManager editingNotification = DALSwingLocator
-				.getEditingNotificationManager();
-		EditingNotification notification = editingNotification.notifyObservers(
-				this, EditingNotification.BEFORE_ENTER_EDITING_STORE, doc,
-				doc.getStore());
+		EditingNotificationManager editingNotification = DALSwingLocator.getEditingNotificationManager();
+		EditingNotification notification = editingNotification.notifyObservers(this,
+				EditingNotification.BEFORE_ENTER_EDITING_STORE, doc, doc.getStore());
 		if (notification.isCanceled()) {
 			return false;
 		}
@@ -103,15 +95,12 @@ public class TableEdition {
 		}
 
 		ApplicationLocator.getManager().refreshMenusAndToolBars();
-		editingNotification.notifyObservers(this,
-				EditingNotification.AFTER_ENTER_EDITING_STORE, doc,
-				doc.getStore());
+		editingNotification.notifyObservers(this, EditingNotification.AFTER_ENTER_EDITING_STORE, doc, doc.getStore());
 
 		return true;
 	}
 
-	private void doStopEditing(TableDocument doc, boolean cancel)
-			throws DataException {
+	private void doStopEditing(TableDocument doc, boolean cancel) throws DataException {
 		if (cancel) {
 			doc.getStore().cancelEditing();
 		} else {

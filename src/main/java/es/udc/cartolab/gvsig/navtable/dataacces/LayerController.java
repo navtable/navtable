@@ -43,8 +43,7 @@ import es.udc.cartolab.gvsig.navtable.format.ValueFormatNT;
 
 public class LayerController implements IController {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(LayerController.class);
+	private static final Logger logger = LoggerFactory.getLogger(LayerController.class);
 
 	private final FLyrVect layer;
 	private final Map<String, Integer> indexes;
@@ -65,8 +64,7 @@ public class LayerController implements IController {
 			Map<String, Integer> type = new HashMap<String, Integer>(fieldCount);
 			List<String> fNames = new ArrayList<String>(fieldCount);
 			for (int i = 0; i < fieldCount; i++) {
-				FeatureAttributeDescriptor attDesc = featType
-						.getAttributeDescriptor(i);
+				FeatureAttributeDescriptor attDesc = featType.getAttributeDescriptor(i);
 				int attType = attDesc.getDataType().getType();
 				if (attType == DataTypes.GEOMETRY) {
 					continue;
@@ -87,9 +85,8 @@ public class LayerController implements IController {
 
 	@Override
 	/**
-	 * Not implemented jet
-	 * the field with "geom" identifier will contain the WKT representation
-	 * of the geometry
+	 * Not implemented jet the field with "geom" identifier will contain the WKT
+	 * representation of the geometry
 	 */
 	public void create(Map<String, String> newValues) throws Exception {
 		throw new RuntimeException("Not implemented jet");
@@ -146,10 +143,10 @@ public class LayerController implements IController {
 	@Deprecated
 	/*
 	 * No deberíamos usar esto así en gvSIG 2. valuesChanged.keySet y
-	 * valuesChanged.values podrían devolver los resultados en orden distinto y
-	 * por tanto este método ya no tendría sentido. Lo que tendría sentido es un
-	 * método que devolviera un Mapa con el Índice en la capa y el nuevo valor y
-	 * a partir de ese método si que se podrían sacar listas separadas ordenadas
+	 * valuesChanged.values podrían devolver los resultados en orden distinto y por
+	 * tanto este método ya no tendría sentido. Lo que tendría sentido es un método
+	 * que devolviera un Mapa con el Índice en la capa y el nuevo valor y a partir
+	 * de ese método si que se podrían sacar listas separadas ordenadas
 	 */
 	public int[] getIndexesOfValuesChanged() {
 		int[] idxs = new int[valuesChanged.size()];

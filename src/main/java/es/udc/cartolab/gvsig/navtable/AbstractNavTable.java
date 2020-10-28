@@ -44,8 +44,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import net.miginfocom.swing.MigLayout;
-
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiFrame.MainFrame;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
@@ -79,6 +77,7 @@ import es.udc.cartolab.gvsig.navtable.listeners.PositionEvent;
 import es.udc.cartolab.gvsig.navtable.listeners.PositionListener;
 import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * <img src="images/NavTableWindow.png">
@@ -90,11 +89,9 @@ import es.udc.cartolab.gvsig.navtable.utils.EditionListener;
  */
 
 @SuppressWarnings("serial")
-public abstract class AbstractNavTable extends NTIWindow implements
-		ActionListener, IWindowListener, PositionListener {
+public abstract class AbstractNavTable extends NTIWindow implements ActionListener, IWindowListener, PositionListener {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(AbstractNavTable.class);
+	private static final Logger logger = LoggerFactory.getLogger(AbstractNavTable.class);
 
 	public static final long EMPTY_REGISTER = Long.MIN_VALUE;
 	protected static final int BUTTON_REMOVE = 0;
@@ -167,8 +164,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	}
 
 	protected void initGUI() {
-		MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]",
-				"[][grow][]");
+		MigLayout thisLayout = new MigLayout("inset 0, align center", "[grow]", "[][grow][]");
 		this.setLayout(thisLayout);
 		this.add(getNorthPanel(), "shrink, wrap, align center");
 		this.add(getCenterPanel(), "shrink, growx, growy, wrap");
@@ -176,9 +172,9 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	}
 
 	/**
-	 * In NavTable it will get the attribute names from the layer and set it on
-	 * the left column of the table. On AbstractForm it will initialize the
-	 * widget vector from the Abeille file
+	 * In NavTable it will get the attribute names from the layer and set it on the
+	 * left column of the table. On AbstractForm it will initialize the widget
+	 * vector from the Abeille file
 	 */
 	protected abstract void initWidgets();
 
@@ -225,8 +221,8 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	}
 
 	/**
-	 * It fills NavTable with empty values. Used when "Selected" option is set
-	 * on, but there are any selection registers.
+	 * It fills NavTable with empty values. Used when "Selected" option is set on,
+	 * but there are any selection registers.
 	 *
 	 */
 	public abstract void fillEmptyValues();
@@ -271,8 +267,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		if ((!openEmptyLayers)) {
 
 			MainFrame frame = ApplicationLocator.getManager().getMainFrame();
-			JOptionPane.showMessageDialog((Component) frame, _("emptyLayer"),
-					"", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog((Component) frame, _("emptyLayer"), "", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -337,14 +332,12 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	 * @return the File of the image.
 	 */
 	protected File getHeaderFile() {
-		File folder = PluginServices.getPluginServices(this)
-				.getPluginDirectory();
-		File header = new File(folder.getAbsolutePath() + File.separator
-				+ "images" + File.separator + "navtable_header.png");
+		File folder = PluginServices.getPluginServices(this).getPluginDirectory();
+		File header = new File(
+				folder.getAbsolutePath() + File.separator + "images" + File.separator + "navtable_header.png");
 
 		if (!header.exists()) {
-			header = new File(Preferences.getConfigDir()
-					+ "/navtable_header.png");
+			header = new File(Preferences.getConfigDir() + "/navtable_header.png");
 		}
 		return header;
 	}
@@ -380,8 +373,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 
 	// Probably should be removed and use a factory instead
 	// is duplicated with NavigationHandler
-	private JButton getNavTableButton(JButton button, String iconName,
-			String toolTipName) {
+	private JButton getNavTableButton(JButton button, String iconName, String toolTipName) {
 		JButton but = new JButton(getIcon(iconName));
 		but.setToolTipText(_(toolTipName));
 		but.addActionListener(this);
@@ -400,8 +392,8 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		if (actionsToolBar == null) {
 			actionsToolBar = new JPanel(new FlowLayout());
 			registerNavTableButtonsOnActionToolBarExtensionPoint();
-			ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton
-					.getInstance().get(NAVTABLE_ACTIONS_TOOLBAR);
+			ExtensionPoint actionToolBarEP = (ExtensionPoint) ExtensionPointsSingleton.getInstance()
+					.get(NAVTABLE_ACTIONS_TOOLBAR);
 			actionsToolBar.add(filterAction.filterB);
 			for (Object button : actionToolBarEP.values()) {
 				actionsToolBar.add((JButton) button);
@@ -411,18 +403,13 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	}
 
 	protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
-		ExtensionPoints extensionPoints = ExtensionPointsSingleton
-				.getInstance();
+		ExtensionPoints extensionPoints = ExtensionPointsSingleton.getInstance();
 
-		copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png",
-				"copySelectedButtonTooltip");
-		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-selected",
-				copySelectedB);
+		copySelectedB = getNavTableButton(copySelectedB, "/copy-selected.png", "copySelectedButtonTooltip");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-selected", copySelectedB);
 
-		copyPreviousB = getNavTableButton(copyPreviousB, "/copy.png",
-				"copyPreviousButtonTooltip");
-		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-previous",
-				copyPreviousB);
+		copyPreviousB = getNavTableButton(copyPreviousB, "/copy.png", "copyPreviousButtonTooltip");
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-copy-previous", copyPreviousB);
 
 		zoomB = getNavTableButton(zoomB, "/zoom.png", "zoomButtonTooltip");
 		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-zoom", zoomB);
@@ -440,11 +427,9 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		removeB = getNavTableButton(removeB, "/delete.png", "delete_register");
 		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-remove", removeB);
 
-		undoB = getNavTableButton(undoB, "/edit-undo.png",
-				"clearChangesButtonTooltip");
+		undoB = getNavTableButton(undoB, "/edit-undo.png", "clearChangesButtonTooltip");
 		undoB.setEnabled(false);
-		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes",
-				undoB);
+		extensionPoints.add(NAVTABLE_ACTIONS_TOOLBAR, "button-clear-changes", undoB);
 	}
 
 	protected JPanel getSouthPanel() {
@@ -457,8 +442,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	}
 
 	/**
-	 * Zooms to the current feature. The feature will fill the visualization
-	 * area.
+	 * Zooms to the current feature. The feature will fill the visualization area.
 	 *
 	 */
 	public void zoom() {
@@ -466,8 +450,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 
 		if (geometry != null) {
 			/*
-			 * fix to avoid zoom problems when layer and view projections aren't
-			 * the same.
+			 * fix to avoid zoom problems when layer and view projections aren't the same.
 			 */
 			if (layer.getCoordTrans() != null) {
 				geometry.reProject(layer.getCoordTrans());
@@ -490,15 +473,13 @@ public abstract class AbstractNavTable extends NTIWindow implements
 				mapContext.zoomToEnvelope(envelope);
 			}
 		} else {
-			JOptionPane.showMessageDialog(this,
-					_("feature_has_no_geometry_to_zoom"));
+			JOptionPane.showMessageDialog(this, _("feature_has_no_geometry_to_zoom"));
 		}
 	}
 
 	/**
-	 * It forces the application to use the current scale when navigating
-	 * between features. It also centers the visualization to the feature when
-	 * navigating.
+	 * It forces the application to use the current scale when navigating between
+	 * features. It also centers the visualization to the feature when navigating.
 	 *
 	 */
 	private void fixScale() {
@@ -576,16 +557,15 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	public boolean copySelected() {
 		if (getNumberOfRowsSelected() != 1) {
 			// show error
-			JOptionPane.showMessageDialog(null, _("justOneRecordMessage"),
-					_("justOneRecordTitle"), JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(null, _("justOneRecordMessage"), _("justOneRecordTitle"),
+					JOptionPane.WARNING_MESSAGE);
 			return false;
 		}
 
 		DisposableIterator it = null;
 
 		try {
-			FeatureSelection sel = layer.getFeatureStore()
-					.getFeatureSelection();
+			FeatureSelection sel = layer.getFeatureStore().getFeatureSelection();
 			it = sel.fastIterator();
 			Feature feat = (Feature) it.next();
 			copyFrom(feat);
@@ -635,24 +615,20 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		} else if (e.getSource() == saveB) {
 			tryToSave();
 		} else if (e.getSource() == removeB) {
-			int answer = JOptionPane.showConfirmDialog(null,
-					_(deleteMessageKey), null, JOptionPane.YES_NO_OPTION);
+			int answer = JOptionPane.showConfirmDialog(null, _(deleteMessageKey), null, JOptionPane.YES_NO_OPTION);
 			if (answer == 0) {
 				try {
 					deleteRecord();
 				} catch (BaseException ex) {
 					logger.error(ex.getMessage(), ex);
-					String errorMessage = (ex.getCause() != null) ? ex
-							.getCause().getMessage() : ex.getMessage(), auxMessage = errorMessage
-							.replace("ERROR: ", "").replace(" ", "_")
-							.replace("\n", ""), auxMessageIntl = _(auxMessage);
-							if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-								errorMessage = auxMessageIntl;
-							}
-							JOptionPane.showMessageDialog(
-									(Component) PluginServices.getMainFrame(),
-									errorMessage, _(saveErrorTitleKey),
-									JOptionPane.ERROR_MESSAGE);
+					String errorMessage = (ex.getCause() != null) ? ex.getCause().getMessage() : ex.getMessage(),
+							auxMessage = errorMessage.replace("ERROR: ", "").replace(" ", "_").replace("\n", ""),
+							auxMessageIntl = _(auxMessage);
+					if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+						errorMessage = auxMessageIntl;
+					}
+					JOptionPane.showMessageDialog((Component) PluginServices.getMainFrame(), errorMessage,
+							_(saveErrorTitleKey), JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		} else if (e.getSource() == undoB) {
@@ -665,22 +641,19 @@ public abstract class AbstractNavTable extends NTIWindow implements
 			if (saveRecord()) {
 				refreshGUI();
 			} else {
-				JOptionPane.showMessageDialog(this,
-						_(saveErrorGenericMessageKey), "",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, _(saveErrorGenericMessageKey), "", JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (DataException ex) {
 			logger.error(ex.getMessage(), ex);
-			String errorMessage = (ex.getCause() != null) ? ex.getCause()
-					.getMessage() : ex.getMessage(), auxMessage = errorMessage
-					.replace("ERROR: ", "").replace(" ", "_").replace("\n", ""), auxMessageIntl = _(auxMessage);
-					if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
-						errorMessage = auxMessageIntl;
-					}
-					JOptionPane.showMessageDialog(
-							(Component) PluginServices.getMainFrame(), errorMessage,
-							_(saveErrorTitleKey), JOptionPane.ERROR_MESSAGE);
-					return false;
+			String errorMessage = (ex.getCause() != null) ? ex.getCause().getMessage() : ex.getMessage(),
+					auxMessage = errorMessage.replace("ERROR: ", "").replace(" ", "_").replace("\n", ""),
+					auxMessageIntl = _(auxMessage);
+			if (auxMessageIntl.compareToIgnoreCase(auxMessage) != 0) {
+				errorMessage = auxMessageIntl;
+			}
+			JOptionPane.showMessageDialog((Component) PluginServices.getMainFrame(), errorMessage, _(saveErrorTitleKey),
+					JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
 		return true;
 	}
@@ -751,10 +724,8 @@ public abstract class AbstractNavTable extends NTIWindow implements
 		if (isChangedValues()) {
 			boolean save = false;
 			Object[] options = { _("saveButtonTooltip"), _("ignoreButton") };
-			int response = JOptionPane.showOptionDialog(this,
-					_("unsavedDataMessage"), _("unsavedDataTitle"),
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, // do not use a custom Icon
+			int response = JOptionPane.showOptionDialog(this, _("unsavedDataMessage"), _("unsavedDataTitle"),
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, // do not use a custom Icon
 					options, // the titles of buttons
 					options[0]); // default button title
 			if (response == JOptionPane.YES_OPTION) {
@@ -804,8 +775,7 @@ public abstract class AbstractNavTable extends NTIWindow implements
 	public int getFieldType(String fieldName) {
 		try {
 			FeatureType type = layer.getFeatureStore().getDefaultFeatureType();
-			FeatureAttributeDescriptor attDesc = type
-					.getAttributeDescriptor(fieldName);
+			FeatureAttributeDescriptor attDesc = type.getAttributeDescriptor(fieldName);
 			return attDesc.getType();
 			// layerController.getType(fieldName);
 		} catch (DataException e) {

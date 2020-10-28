@@ -82,8 +82,7 @@ import es.udc.cartolab.gvsig.navtable.table.NavTableModel;
  */
 public class NavTable extends AbstractNavTable {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(NavTable.class);
+	private static final Logger logger = LoggerFactory.getLogger(NavTable.class);
 	private static final long serialVersionUID = 1L;
 
 	private boolean isFillingValues = false;
@@ -114,8 +113,8 @@ public class NavTable extends AbstractNavTable {
 	}
 
 	/**
-	 * It creates a panel with a table that shows the data linked to a feature
-	 * of the layer. Each row is a attribute-value pair.
+	 * It creates a panel with a table that shows the data linked to a feature of
+	 * the layer. Each row is a attribute-value pair.
 	 *
 	 */
 	@Override
@@ -186,8 +185,7 @@ public class NavTable extends AbstractNavTable {
 				for (int i = e.getFirstRow(); i <= e.getLastRow(); i++) {
 					String fieldName = model.getValueAt(i, 0).toString();
 					String tableValue = model.getValueAt(i, 1).toString();
-					String valueInLayer = layerController
-							.getValueInLayer(fieldName);
+					String valueInLayer = layerController.getValueInLayer(fieldName);
 					if (!tableValue.equals(valueInLayer)) {
 						int fieldType = layerController.getType(fieldName);
 						if (fieldType == Types.DATE) {
@@ -209,25 +207,22 @@ public class NavTable extends AbstractNavTable {
 	@Override
 	protected void registerNavTableButtonsOnActionToolBarExtensionPoint() {
 		/*
-		 * TODO: this will make the extension point mechanims not work as
-		 * expected for navtable extension. It only will add the regular buttons
-		 * navtable has, not all included in the extensionpoint (as the default
-		 * behaviour is).
+		 * TODO: this will make the extension point mechanims not work as expected for
+		 * navtable extension. It only will add the regular buttons navtable has, not
+		 * all included in the extensionpoint (as the default behaviour is).
 		 *
-		 * Probably we need to get rid of extensionpoints mechanism as -roughly-
-		 * it is a global variable mechanism, which is not what we need. For
-		 * action buttons, it'll be desirable a mechanism that:
+		 * Probably we need to get rid of extensionpoints mechanism as -roughly- it is a
+		 * global variable mechanism, which is not what we need. For action buttons,
+		 * it'll be desirable a mechanism that:
 		 *
-		 * 1) allow adding buttons for custom forms build on abstractnavtable.
-		 * 2) don't share those buttons between all children of
-		 * abstractnavtable, unless requested otherwise.
+		 * 1) allow adding buttons for custom forms build on abstractnavtable. 2) don't
+		 * share those buttons between all children of abstractnavtable, unless
+		 * requested otherwise.
 		 *
 		 * Check decorator pattern, as it seems to fit well here.
 		 */
-		ExtensionPoints extensionPoints = ExtensionPointsSingleton
-				.getInstance();
-		ExtensionPoint ep = (ExtensionPoint) extensionPoints
-				.get(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR);
+		ExtensionPoints extensionPoints = ExtensionPointsSingleton.getInstance();
+		ExtensionPoint ep = (ExtensionPoint) extensionPoints.get(AbstractNavTable.NAVTABLE_ACTIONS_TOOLBAR);
 
 		if (ep != null) {
 			ep.clear();
@@ -312,8 +307,7 @@ public class NavTable extends AbstractNavTable {
 		if (layer.isWritable()) {
 			return true;
 		} else {
-			JOptionPane.showMessageDialog(this,
-					_("non_editable", layer.getName()));
+			JOptionPane.showMessageDialog(this, _("non_editable", layer.getName()));
 			return false;
 		}
 	}

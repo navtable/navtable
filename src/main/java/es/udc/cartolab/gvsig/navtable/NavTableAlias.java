@@ -17,8 +17,7 @@ import es.udc.cartolab.gvsig.navtable.preferences.Preferences;
 
 public class NavTableAlias {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(NavTableAlias.class);
+	private static final Logger logger = LoggerFactory.getLogger(NavTableAlias.class);
 
 	private final static String EXT = ".alias";
 
