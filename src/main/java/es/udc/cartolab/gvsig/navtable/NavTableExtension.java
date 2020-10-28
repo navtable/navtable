@@ -36,6 +36,7 @@ import org.gvsig.andami.plugins.Extension;
 import org.gvsig.andami.preferences.IPreference;
 import org.gvsig.andami.preferences.IPreferenceExtension;
 import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.app.ApplicationLocator;
 import org.gvsig.app.ApplicationManager;
 import org.gvsig.app.project.ProjectManager;
@@ -67,12 +68,12 @@ IPreferenceExtension {
 	}
 
 	private void openNavtable() {
-		IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
+		IWindow iWindow = MDIManagerFactory.getManager().getActiveWindow();
 		if (iWindow instanceof IView) {
 			for (FLyrVect vectorialLyr : getActiveVectorialLayersOnTheActiveWindow()) {
 				NavTable navtable = new NavTable(vectorialLyr);
 				if (navtable.init()) {
-					PluginServices.getMDIManager().addCentredWindow(navtable);
+					MDIManagerFactory.getManager().addCentredWindow(navtable);
 				}
 			}
 		} else if (isActiveWindowAttTableFromLayer()) {
@@ -81,7 +82,7 @@ IPreferenceExtension {
 			if (data instanceof FLyrVect) {
 				NavTable nt = new NavTable((FLyrVect) data);
 				if (nt.init()) {
-					PluginServices.getMDIManager().addCentredWindow(nt);
+					MDIManagerFactory.getManager().addCentredWindow(nt);
 				}
 			}
 		}
@@ -140,7 +141,7 @@ IPreferenceExtension {
 	}
 
 	private boolean isActiveWindowAttTableFromLayer() {
-		IWindow w = PluginServices.getMDIManager().getActiveWindow();
+		IWindow w = MDIManagerFactory.getManager().getActiveWindow();
 		if (!(w instanceof FeatureTableDocumentPanel)) {
 			return false;
 		}
@@ -148,7 +149,7 @@ IPreferenceExtension {
 	}
 
 	private ArrayList<FLyrVect> getActiveVectorialLayersOnTheActiveWindow() {
-		IWindow iWindow = PluginServices.getMDIManager().getActiveWindow();
+		IWindow iWindow = MDIManagerFactory.getManager().getActiveWindow();
 		ArrayList<FLyrVect> activeVectorialLayers = new ArrayList<FLyrVect>();
 
 		if (iWindow instanceof IView) {

@@ -15,9 +15,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
 
-import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
 import org.gvsig.andami.ui.mdiManager.IWindowListener;
+import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.andami.ui.mdiManager.WindowInfo;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.slf4j.Logger;
@@ -27,11 +27,9 @@ import es.icarto.gvsig.commons.gvsig2.SelectByAttributes;
 import es.udc.cartolab.gvsig.navtable.NavTable;
 
 @SuppressWarnings("serial")
-public class StringFilterActionListener extends JPanel implements
-		ActionListener, IWindow, IWindowListener {
+public class StringFilterActionListener extends JPanel implements ActionListener, IWindow, IWindowListener {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(StringFilterActionListener.class);
+	private static final Logger logger = LoggerFactory.getLogger(StringFilterActionListener.class);
 
 	NavTable navtable;
 	String st_expr;
@@ -49,8 +47,7 @@ public class StringFilterActionListener extends JPanel implements
 	private JRootPane jRootPane;
 	private JButton okBtn;
 
-	public StringFilterActionListener(final NavTable navtable,
-			final String attrValue, final String st_expr,
+	public StringFilterActionListener(final NavTable navtable, final String attrValue, final String st_expr,
 			final SelectByAttributes filterExt) {
 
 		super();
@@ -65,68 +62,65 @@ public class StringFilterActionListener extends JPanel implements
 
 	private void initGUI() {
 
-		windowInfo = this.getWindowInfo();
+		this.windowInfo = this.getWindowInfo();
 
 		add(new JLabel(_("nt_filter_write_string")));
 		final JTextField tf = new JTextField(16);
-		tf.setText(attrValue);
+		tf.setText(this.attrValue);
 		tf.setSelectionStart(0);
-		tf.setSelectionEnd(attrValue.length());
+		tf.setSelectionEnd(this.attrValue.length());
 		tf.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String attr = tf.getText();
+				final String attr = tf.getText();
 				executeFilter(attr);
-				PluginServices.getMDIManager().closeWindow(
-						StringFilterActionListener.this);
+				MDIManagerFactory.getManager().closeWindow(StringFilterActionListener.this);
 			}
 		});
 		add(tf);
 
-		JPanel rbPanel = new JPanel(new GridLayout(3, 1));
+		final JPanel rbPanel = new JPanel(new GridLayout(3, 1));
 
-		rbContainsWith = new JRadioButton(_("filter_contains"));
-		rbContainsWith.setSelected(true);
-		rbStartsWith = new JRadioButton(_("filter_startswith"));
-		rbEndsWith = new JRadioButton(_("filter_endswith"));
+		this.rbContainsWith = new JRadioButton(_("filter_contains"));
+		this.rbContainsWith.setSelected(true);
+		this.rbStartsWith = new JRadioButton(_("filter_startswith"));
+		this.rbEndsWith = new JRadioButton(_("filter_endswith"));
 
-		ButtonGroup bg = new ButtonGroup();
-		bg.add(rbContainsWith);
-		bg.add(rbStartsWith);
-		bg.add(rbEndsWith);
-		rbPanel.add(rbContainsWith);
-		rbPanel.add(rbStartsWith);
-		rbPanel.add(rbEndsWith);
+		final ButtonGroup bg = new ButtonGroup();
+		bg.add(this.rbContainsWith);
+		bg.add(this.rbStartsWith);
+		bg.add(this.rbEndsWith);
+		rbPanel.add(this.rbContainsWith);
+		rbPanel.add(this.rbStartsWith);
+		rbPanel.add(this.rbEndsWith);
 		add(rbPanel);
 
-		JPanel cbPanel = new JPanel(new GridLayout(2, 1));
+		final JPanel cbPanel = new JPanel(new GridLayout(2, 1));
 
-		cbIgnoreCase = new JCheckBox(_("filter_ignorecase"));
-		cbIgnoreAcutes = new JCheckBox(_("filter_ignoreacutesvowels"));
+		this.cbIgnoreCase = new JCheckBox(_("filter_ignorecase"));
+		this.cbIgnoreAcutes = new JCheckBox(_("filter_ignoreacutesvowels"));
 
-		cbPanel.add(cbIgnoreCase);
-		cbPanel.add(cbIgnoreAcutes);
+		cbPanel.add(this.cbIgnoreCase);
+		cbPanel.add(this.cbIgnoreAcutes);
 		add(cbPanel);
 
-		JPanel btnPanel = new JPanel();
-		JButton okBtn = new JButton(_("ok"));
+		final JPanel btnPanel = new JPanel();
+		final JButton okBtn = new JButton(_("ok"));
 		okBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String attr = tf.getText();
+				final String attr = tf.getText();
 				executeFilter(attr);
-				PluginServices.getMDIManager().closeWindow(
-						StringFilterActionListener.this);
+				MDIManagerFactory.getManager().closeWindow(StringFilterActionListener.this);
 			}
 		});
 		btnPanel.add(okBtn);
 
-		JButton cancelBtn = new JButton(_("cancel"));
+		final JButton cancelBtn = new JButton(_("cancel"));
 		cancelBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PluginServices.getMDIManager().closeWindow(
-						StringFilterActionListener.this);
+				MDIManagerFactory.getManager().closeWindow(StringFilterActionListener.this);
 			}
 		});
 		btnPanel.add(cancelBtn);
@@ -135,7 +129,7 @@ public class StringFilterActionListener extends JPanel implements
 
 	private String ignoreCaseAndAcutesVowels(String attr) {
 		String aux = "";
-		for (char c : attr.toCharArray()) {
+		for (final char c : attr.toCharArray()) {
 			switch (c) {
 			case 'a':
 			case 'A':
@@ -168,8 +162,7 @@ public class StringFilterActionListener extends JPanel implements
 				aux += "[uUúÚ]";
 				break;
 			default:
-				aux += "[" + Character.toLowerCase(c)
-						+ Character.toUpperCase(c) + "]";
+				aux += "[" + Character.toLowerCase(c) + Character.toUpperCase(c) + "]";
 				break;
 			}
 		}
@@ -178,7 +171,7 @@ public class StringFilterActionListener extends JPanel implements
 
 	private String ignoreCase(String attr) {
 		String aux = "";
-		for (char c : attr.toCharArray()) {
+		for (final char c : attr.toCharArray()) {
 			switch (c) {
 			case 'a':
 			case 'A':
@@ -221,8 +214,7 @@ public class StringFilterActionListener extends JPanel implements
 				aux += "[úÚ]";
 				break;
 			default:
-				aux += "[" + Character.toLowerCase(c)
-						+ Character.toUpperCase(c) + "]";
+				aux += "[" + Character.toLowerCase(c) + Character.toUpperCase(c) + "]";
 				break;
 			}
 		}
@@ -231,7 +223,7 @@ public class StringFilterActionListener extends JPanel implements
 
 	private String ignoreAcutesVowels(String attr) {
 		String aux = "";
-		for (char c : attr.toCharArray()) {
+		for (final char c : attr.toCharArray()) {
 			switch (c) {
 			case 'a':
 			case 'á':
@@ -288,32 +280,32 @@ public class StringFilterActionListener extends JPanel implements
 			String expr = "";
 			String aux = "";
 
-			if (cbIgnoreAcutes.isSelected()) {
-				if (cbIgnoreCase.isSelected()) {
+			if (this.cbIgnoreAcutes.isSelected()) {
+				if (this.cbIgnoreCase.isSelected()) {
 					aux = ignoreCaseAndAcutesVowels(attr);
 				} else {
 					aux = ignoreAcutesVowels(attr);
 				}
 			} else {
-				if (cbIgnoreCase.isSelected()) {
+				if (this.cbIgnoreCase.isSelected()) {
 					aux = ignoreCase(attr);
 				} else {
 					aux = attr;
 				}
 			}
 
-			if (rbStartsWith.isSelected()) {
-				expr = st_expr + " like '" + aux + "%'";
-			} else if (rbEndsWith.isSelected()) {
-				expr = st_expr + " like '%" + aux + "'";
+			if (this.rbStartsWith.isSelected()) {
+				expr = this.st_expr + " like '" + aux + "%'";
+			} else if (this.rbEndsWith.isSelected()) {
+				expr = this.st_expr + " like '%" + aux + "'";
 			} else {
 				// rbContains.isSelected()
-				expr = st_expr + " like '%" + aux + "%'";
+				expr = this.st_expr + " like '%" + aux + "%'";
 			}
 			try {
-				filterExt.newSet(expr);
-				navtable.setOnlySelected(true);
-			} catch (DataException e) {
+				this.filterExt.newSet(expr);
+				this.navtable.setOnlySelected(true);
+			} catch (final DataException e) {
 				logger.error(e.getMessage(), e);
 			}
 		}
@@ -321,19 +313,18 @@ public class StringFilterActionListener extends JPanel implements
 
 	@Override
 	public void actionPerformed(ActionEvent evt) {
-		PluginServices.getMDIManager().addWindow(this);
+		MDIManagerFactory.getManager().addWindow(this);
 	}
 
 	@Override
 	public WindowInfo getWindowInfo() {
-		if (windowInfo == null) {
-			windowInfo = new WindowInfo(WindowInfo.MODALDIALOG
-					| WindowInfo.PALETTE);
-			windowInfo.setTitle(_("filter_contains_window_title"));
-			windowInfo.setWidth(220);
-			windowInfo.setHeight(150);
+		if (this.windowInfo == null) {
+			this.windowInfo = new WindowInfo(WindowInfo.MODALDIALOG | WindowInfo.PALETTE);
+			this.windowInfo.setTitle(_("filter_contains_window_title"));
+			this.windowInfo.setWidth(220);
+			this.windowInfo.setHeight(150);
 		}
-		return windowInfo;
+		return this.windowInfo;
 	}
 
 	@Override
@@ -343,10 +334,10 @@ public class StringFilterActionListener extends JPanel implements
 
 	@Override
 	public void windowActivated() {
-		if (jRootPane == null) {
-			jRootPane = this.getRootPane();
-			if (jRootPane != null) {
-				jRootPane.setDefaultButton(okBtn);
+		if (this.jRootPane == null) {
+			this.jRootPane = this.getRootPane();
+			if (this.jRootPane != null) {
+				this.jRootPane.setDefaultButton(this.okBtn);
 			}
 		}
 	}

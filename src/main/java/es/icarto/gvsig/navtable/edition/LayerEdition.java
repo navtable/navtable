@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.gvsig.andami.PluginServices;
 import org.gvsig.andami.ui.mdiManager.IWindow;
+import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 import org.gvsig.app.project.documents.view.gui.IView;
 import org.gvsig.fmap.dal.exception.DataException;
 import org.gvsig.fmap.dal.feature.EditableFeature;
@@ -159,7 +160,7 @@ public class LayerEdition {
 
 	private IView getViewFromLayer(FLayer layer) {
 		// TODO: see how drop this IWindow dependence
-		IWindow[] views = PluginServices.getMDIManager().getAllWindows();
+		IWindow[] views = MDIManagerFactory.getManager().getAllWindows();
 		for (int j = 0; j < views.length; j++) {
 			if (views[j] instanceof IView) {
 				IView view = (IView) views[j];

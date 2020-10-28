@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.swing.JButton;
 
 import org.gvsig.andami.PluginServices;
+import org.gvsig.andami.ui.mdiManager.MDIManagerFactory;
 
 import net.miginfocom.swing.MigLayout;
 import es.icarto.gvsig.commons.gui.AbstractIWindow;
@@ -100,7 +101,7 @@ ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 	status = e.getActionCommand();
-	PluginServices.getMDIManager().closeWindow(this);
+	MDIManagerFactory.getManager().closeWindow(this);
     }
 
     public String open() {
