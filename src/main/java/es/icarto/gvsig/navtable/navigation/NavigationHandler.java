@@ -30,6 +30,7 @@ import org.gvsig.fmap.dal.feature.FeatureQuery;
 import org.gvsig.fmap.dal.feature.FeatureQueryOrder;
 import org.gvsig.fmap.dal.feature.FeatureSelection;
 import org.gvsig.fmap.dal.feature.FeatureStore;
+import org.gvsig.fmap.dal.feature.impl.DefaultFeatureQueryOrder;
 import org.gvsig.fmap.dal.feature.paging.FeaturePagingHelper;
 import org.gvsig.tools.exception.BaseException;
 import org.gvsig.tools.observer.Observable;
@@ -117,7 +118,7 @@ public class NavigationHandler implements ActionListener, Observer {
 
 	private FeatureQuery createQuery(FeatureStore store, List<Field> sortFields) {
 		FeatureQuery query = store.createFeatureQuery();
-		FeatureQueryOrder order = new FeatureQueryOrder();
+		FeatureQueryOrder order = new DefaultFeatureQueryOrder();
 
 		for (Field k : sortFields) {
 			boolean asc = k.getSortOrder() == SortOrder.ASCENDING ? true
@@ -125,6 +126,7 @@ public class NavigationHandler implements ActionListener, Observer {
 			order.add(k.getKey(), asc);
 		}
 		query.setOrder(order);
+		query.retrievesAllAttributes();
 		return query;
 	}
 
