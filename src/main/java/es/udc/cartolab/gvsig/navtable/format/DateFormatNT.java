@@ -75,5 +75,9 @@ public class DateFormatNT {
 		}
 		return dateFormat;
 	}
+	
+	public static void setDateFormat(SimpleDateFormat _dateFormat) {
+		dateFormat = _dateFormat;
+	}
 
 }
